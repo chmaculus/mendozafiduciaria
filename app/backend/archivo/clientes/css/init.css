@@ -1,0 +1,118 @@
+#jqxgrid{
+    margin-top: 15px;
+    margin-left: 15px;
+}
+.content-form{
+    
+    width: 800px;
+}
+.content-forment{
+    height: 200px;
+    width: 800px;
+}
+.content-formadd{
+    width: 520px;
+    min-height: 800px;
+}
+
+.elem_med{
+    width: 370px;
+    float: left;
+    clear: none!important;    
+}
+.elem_med input{
+    width: 235px;
+}
+.indent{
+    margin-left: 106px!important;
+}
+.elem label{
+    padding-top: 8px;
+}
+
+.btn_add_footer{
+   float: left; margin-top:20px;
+}
+
+.btn_add_footer input{
+    margin-left: 20px;
+}
+.content-formadd .title{
+    width: 98%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.medium{
+    width: 605px !important;
+}
+.medium-select{
+    width: 200px !important;
+}
+
+.formError{
+    left: 589px !important;
+}
+#label_action{
+    margin-right: 5px;
+    float: left;
+}
+.to-right{
+    float: right;
+    margin-right: 12px;
+}
+
+.content-gird{
+    /*height: 500px!important;*/
+}
+
+.provinciaformError{
+    top:62px !important;
+    left:260px !important;
+}
+.group{
+    float: left;
+    padding: 0px;
+    padding-top: 3px;
+    padding-bottom: 7px;
+    margin-top: 9px;
+    width: 741px;
+    position: relative;
+    left:-6px;
+}
+.group label{
+    padding-left: 6px;
+}
+.group_more{
+    float: right;
+    margin-right: 12px;
+    cursor: pointer;
+    background: url('../../../../../general/css/images/32x32/User.png') no-repeat 89% 6px !important;
+    background-size: 17px 17px !important;
+    width: 160px;
+    height: 23px;
+    font-size: 14px;
+    font-weight: bold;
+    color: green;
+    line-height: 30px;
+    
+}
+.elem_group{
+    float: left;
+    background-color: #ccc;
+    margin-bottom: 6px;
+    padding-bottom: 7px;
+}
+
+.elem_cerrar{
+    float: right;
+    margin-top: 24px;
+    font-size: 10px;
+    background: url('../../../../../general/css/images/32x32/Close.png') no-repeat 50% 6px !important;
+    margin-right: 4px;
+    width: 20px;
+    height: 23px;
+    background-size: 17px 17px !important;
+    cursor: pointer;
+}

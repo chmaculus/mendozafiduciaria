@@ -1,0 +1,24 @@
+RewriteEngine on
+# For security reasons, Option followsymlinks cannot be overridden.
+#Options +FollowSymLinks
+Options +SymLinksIfOwnerMatch
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+RewriteBase /fideicomiso
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^(general/extends/extra)/(.*)$ extra.php?url=$1&file=$2  [QSA]
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?url=$1 
+
+
+
+ErrorDocument 404 /error.php
+ErrorDocument 303 /error.php
+
+AddDefaultCharset utf-8

@@ -1,0 +1,328 @@
+.content-cuotas-variaciones{
+    float: left;
+    padding:20px;
+    margin:15px;
+    border: 1px solid #e4e3e3;
+}
+
+.content-cuotas-variaciones ul{
+    width:100%;
+    float: left;
+    clear: both;
+}
+.content-cuotas-variaciones li{
+    width:100%;
+    float: left;
+    clear: both;
+    padding:3px 0px;
+    
+}
+
+.content-cuotas-variaciones li span{
+    float: left;
+    width:150px;
+    position: relative;
+}
+
+
+.segmentos-ul{
+    margin-left: 0px;
+    list-style: none;
+}
+
+
+.saldo_cuotas{
+    float: left;
+    width:100%;
+    display: block;
+    position: relative;
+}
+
+.saldo_cuotas ul li{
+    float: left;
+    width:100%;
+    position: relative;
+    display: block;
+    padding:5px 0px;
+    margin: 5px 0px;
+    border-bottom: 1px solid #e4e3e3;
+}
+
+.saldo_cuotas ul li div{
+    float: left;
+    display: block;
+    position: relative;
+    width:100%;
+    padding:3px 0px;
+}
+
+.content-cuotas-detalle span{
+    float: left;
+    display: inline;
+    min-width: 150px;
+    padding:0px 10px;
+}
+
+
+.content-cuotas-detalle span.splabel{
+    width:250px;
+}
+.content-cuotas-detalle span.total{
+    width:150px;
+}
+.content-cuotas-detalle  span.cancelado{
+    width:150px;
+}
+.content-cuotas-detalle span.saldo{
+    width:150px;
+}
+
+.resumen-cuota{
+    float: left;
+    padding:5px;
+    border-radius: 5px;
+    background: #2b45ff;
+    width:60% !important;
+    color: white;
+}
+
+
+
+/*PAGOS*/
+.ul-lista-pagos{
+    float: left;
+    display: block;
+    width:100%;
+    list-style: none;
+}
+
+.ul-lista-pagos li{
+    float: left;
+    width:100%;
+    position: relative;
+}
+
+.ul-lista-pagos li span{
+    float: left;
+    position: relative;
+    min-width: 120px;
+}
+.ul-lista-pagos li span.detalle-pago{
+    float: left;
+    position: relative;
+    min-width: 120px;
+}
+.ul-lista-pagos li span.monto-pago{
+    float: left;
+    position: relative;
+    min-width: 120px;
+}
+
+
+.ul-lista-pagos .full_field{
+    width:100%;
+}
+
+
+.titulos-saldos{
+    border: none !important;
+    font-weight: bold;
+    padding:5px 0px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.titulo_cuota{
+    font-weight: bold;
+    padding:3px;
+    border-radius: 5px;
+    background: black;
+    color: white;
+}
+
+.cuotas_div_pagos{
+    float: left;
+    padding:20px;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    background: #fbffcc;
+    clear: both;
+}
+
+.cuotas_div_pagos .cuota_title{
+    float: left;
+    clear: both;
+    width:400px;
+    padding:3px 0px;
+    font-weight: bolder;
+    
+    
+}
+
+.total_pago{
+    background: black;
+    color: white;
+    font-weight: bold;
+    width:450px !important;
+    padding:  0px 10px;
+}
+
+
+
+.content-cuotas-detalle > div{
+    float: left;
+    overflow: hidden;
+    height: auto;
+    width: 900px;
+        
+}
+
+.full_field.resta{
+    color: red;
+}
+
+.subsidio_compensatorio.resta, 
+.iva_compensatorio_subsidiado.resta{
+    color: red;
+}
+
+#tabs_cuotas{
+    height:500px;
+}
+
+.jqx-rc-b{
+    min-height: 500px !important;
+}
+
+.versiones_content{
+    float: left;
+    display: block;
+}
+
+.versiones_content > div{
+    float: left;
+    display: block;
+    position: relative;
+    margin:10px;
+}
+
+
+.versiones_content div.version_opciones{
+    border: 1px solid #C7C7C7;
+    width:150px;
+    padding:20px 10px;
+}
+
+.versiones_content div.version_opciones button{
+    width:100%;
+}
+
+
+
+
+.content-cuotas-esp .item-pago{
+    float: left;
+    padding:2px 0px;
+}
+
+
+.content-cuotas-esp .item-pago.resaltado{
+    background: #fbffcc;
+    margin: 10px 0px;
+    padding: 10px 0px;
+}
+
+
+
+
+/*LISTA SOLICITUD DESEMBOLSOS*/
+#eventos-pendientes{
+    position: absolute;
+    display: none;
+    overflow: hidden;
+    top:0px;
+    left:0px;
+    background: white;
+    width:100%;
+    height:100%;
+}
+
+
+#ul-sol-desembolsos{
+    float: left;
+    width: 100%;
+    list-style: none;
+    margin-left: 15px;
+    padding-bottom: 20px;
+    padding-top: 7px;
+}
+
+li.lista-desmbolsos-solicitados{
+    float: left;
+    clear: both;
+    cursor: pointer;
+    
+}
+li.lista-desmbolsos-solicitados-titulo{
+    float: left;
+    clear: both;
+    font-weight: bolder;
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    
+}
+
+li.lista-desmbolsos-solicitados:hover{
+    background: #F7F8F9;
+}
+
+#ul-sol-desembolsos span{
+    min-width: 100px;
+    float: left;
+    position: relative;
+}
+
+.titulo-lista-desembolso-solicitado{
+    font-weight: bolder;
+    font-size: 16px;
+    float: left;
+    margin-left: 15px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.btnList{
+    position: absolute;
+    bottom: 15px;
+    left:5px;
+}
+
+.btnList .button-a{
+    height: 26px;
+}
+
+#eventos-pendientes .indent{
+    margin-left: 20px;
+}
+#txtFecha2, #txtFecha{
+    width:150px;
+    float: left;
+    line-height: 28px;
+}
+
+#txtFecha2{
+    color: #C7C7C7 !important;
+    padding-right: 10px;
+
+}
+select, #txtFecha2{
+    background-color: #FFFFFF;
+    background-image: url("images/input.png");
+    border: 1px solid #E3E3E3;
+    border-radius: 3px 3px 3px 3px;
+    color: #575757;
+    font-family: Helvetica,Arial,sans-serif;
+    height: 28px;
+    padding-left: 10px;
+}

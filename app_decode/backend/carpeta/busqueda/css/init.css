@@ -1,0 +1,56 @@
+.main_window_fix{
+    float: left;
+    top: 68px;
+}
+.main_window_fix.busqueda{
+    left:10%;
+    top:10%;
+    width:700px;
+    height:430px;
+}
+
+.main_window_fix.busqueda ul{
+    list-style: none;
+}
+
+.main_window_fix.busqueda ul li{
+    float: left;
+    width:100%;
+    cursor: pointer;
+}
+
+.main_window_fix.busqueda ul li.none{
+    display: none!important;
+}
+.main_window_fix.busqueda ul li.over{
+    background: gray;
+}
+
+.main_window_fix.busqueda ul li span{
+    float: left;
+    display: inline;
+    
+}
+
+.table-content{
+    height:300px;
+}
+.content-lista-scroll{
+    height:400px !important;
+}
+.bc_cod{
+    width: 70px !important;
+}
+.bc_nombre{
+    width: 200px !important;
+}
+.bc_domicilio{
+    width: 200px !important;
+}
+.bc_cuit{
+    width: 150px !important;
+}
+
+
+/* general busqueda */
+

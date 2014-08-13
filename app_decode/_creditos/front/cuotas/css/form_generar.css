@@ -1,0 +1,39 @@
+ul.ul-desembolsos{
+    width: 100%;
+    float: left;
+    clear: both;
+    list-style: none;
+}
+
+
+ul.ul-desembolsos li{
+    float: left;
+    width:100%;
+}
+ul.ul-desembolsos li span.fecha_desembolso{
+    float: left;
+    width:30%;
+    position: relative;
+}
+
+ul.ul-desembolsos li span.monto_desembolso{
+    float: left;
+    width:30%;
+    position: relative;
+}
+ul.ul-desembolsos li span.borrar_desembolso{
+    float: left;
+    width:20%;
+    position: relative;
+}
+
+
+.div-desembolsos{
+    float: left;
+    border: 1px solid black;
+    padding:10px 10px;
+}
+
+.div-desembolsos .full_field{
+    width:550px;
+}

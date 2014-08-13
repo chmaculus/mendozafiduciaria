@@ -1,0 +1,136 @@
+.alertas-content{
+    position: absolute;
+    display: block;
+    width: 600px;
+    height: 300px;
+    border: 1px solid white;
+    background: #e0e0e0;
+    padding: 10px;
+    top: 150px;
+    left: 10px;
+    z-index: 100;
+}
+
+.alertas-content .stock-content,
+.alertas-content .cheques-content{
+    float: left;
+    display: inline;
+    clear: both;
+    height:230px;
+    
+}
+.alertas-content .stock-content .titulo,
+.alertas-content .cheques-content .titulo{
+    float: left;
+    display: inline;
+    clear: both;
+    font-weight: bold;
+    padding: 15px 0px;
+    font-size: 22px;
+}
+.alertas-content .stock-content ul,
+.alertas-content .cheques-content ul{
+    float: left;
+    display: inline;
+    clear: both;
+}
+.alertas-content .stock-content ul li,
+.alertas-content .cheques-content ul li{
+    float: left;
+    display: inline;
+    clear: both;
+    border-bottom: 1px solid #fefefe;
+    padding: 3px 0px;
+    cursor: pointer;
+}
+.alertas-content .stock-content ul li.pasados,
+.alertas-content .cheques-content ul li.pasados{
+    color: red;
+}
+.alertas-content .stock-content ul li.aviso,
+.alertas-content .cheques-content ul li.aviso{
+    color: #28a100;
+}
+.alertas-content .stock-content ul li.over,
+.alertas-content .cheques-content ul li.over{
+    background: #CCCCCC;
+}
+
+.alertas-content .stock-content ul li span,
+.alertas-content .cheques-content ul li span{
+    float: left;
+    display: inline;
+    width: 90px;
+}
+
+.content-tabs{
+    float: left;
+    display: inline;
+    clear: both;
+    height:30px;
+}
+
+.content-tabs span{
+    cursor: pointer;
+    padding-right: 20px;
+}
+
+.content-tabs span.selected{
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.content-tabs span.over{
+    text-decoration: underline;
+}
+
+
+.alertas-content .stock-content ul li span.codigo{
+    width:100px;
+}
+.alertas-content .stock-content ul li span.articulo{
+    width:150px;
+}
+.alertas-content .stock-content ul li span.lugar{
+    width:150px;
+}
+
+
+.foot-mod{
+    float: left;
+    display: inline;
+    clear: both;
+    width: 100%;
+    border-top: 1px solid #D2E0E6;
+}
+
+.alerta-content{
+    position:absolute;
+    
+    height:10px;
+    border: 2px solid #777777;
+}
+
+.alerta-content.over span.alertas-label{
+    background: red;;
+}
+.alerta-content span.alertas-label{
+    background: #9C0101;
+
+}
+.alerta-content.over span.avisos-label{
+    background: green;
+}
+.alerta-content span.avisos-label{
+    background: #1a6800;
+}
+.alerta-content span{
+    color: white;
+    width:40px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+    float: left;
+    display: inline;
+    
+}

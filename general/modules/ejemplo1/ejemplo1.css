@@ -1,0 +1,8 @@
+.module_hello{
+    float: left;
+    display: inline;
+    clear: both;
+    width: 150px;
+    height: 30px;
+    background: red;
+}

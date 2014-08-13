@@ -1,0 +1,75 @@
+.th_title{
+  width: 50px;
+}
+.th_status{
+  width: 210px;
+}
+.btnAgregar{
+  width: 100%;text-align: right;padding-top: 10px;
+}
+#label_action{
+  display:inline
+}
+
+.div_2 {
+    clear: none;
+    float: left;
+    width: 390px;
+}
+.indent{
+  margin-left: 60px;
+}
+
+.indentselect{
+  margin-left: 150px;
+}
+
+.medium-select {
+		width:49%;
+	}
+    
+#dynamic{
+    margin-top:56px
+      }
+      #dynamicsr{
+    margin-top:6px
+      }
+
+.medium-select {
+    width:30%;
+}
+.formtext{
+  width: 530px;
+}
+table.display td{
+  text-align: center;
+}
+.indent .verfoto{
+  color: #55585D;
+  cursor: pointer;
+  display: inline;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  position: relative;
+  top: -10px;
+  width: 120px;
+  display: none;
+}
+#datatable tbody tr,#examplesr tbody tr{
+    /*cursor:move !important;*/
+}
+
+
+#estado{
+    width: 110px;
+}
+
+#content #container{
+    width: 96% !important;
+    margin-left: 30px;
+    
+}
+iframe{
+    display: none;
+}

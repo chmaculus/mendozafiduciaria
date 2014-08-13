@@ -1,0 +1,58 @@
+/**********************/
+#calendar .dia{
+
+    padding-top: 5px;
+    height:25px;
+    float: left;
+    display: inline;
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 3px;
+    
+
+}
+#calendar .dia_vacio{
+
+    height:30px;
+    float: left;
+    display: inline;
+
+}
+
+#calendar{
+    clear: both;
+    float: left;
+    width:265px;
+    margin-top: 20px;
+}
+
+#calendar .dia.select{
+    background: #D2E0E6;
+    color: white;
+    font-weight: bold;
+}
+
+#calendar .dia_semana{
+    height:30px;
+    width: 30px;
+    float: left;
+    display: block;
+    cursor: pointer;
+}
+
+.domingo{
+    background: #f1f0f0;
+}
+.sabado{
+    background: #f1f0f0;
+}
+#calendar .dia_semana.select{
+    background: #3CF;
+}
+
+
+#calendar .dia.over_day{
+    background: #3CF !important;
+    color: white;
+}

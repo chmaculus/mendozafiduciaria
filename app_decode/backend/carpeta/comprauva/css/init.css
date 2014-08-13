@@ -1,0 +1,489 @@
+#jqxgrid{
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.content-form{
+    width: 950px;
+    min-height: 450px;
+    float: left;
+}
+.content-forment{
+    height: 200px;
+    width: 800px;
+}
+
+.content-formadd{
+    width: 480px;
+}
+
+.content-formchk{
+    width: 780px;
+}
+
+.elem_med{
+    width: 340px!important;
+    float: left;
+    clear: none!important;    
+    margin-right: 80px;
+}
+.elem_med input{
+    width: 198px;
+    margin-right: 30px;
+}
+
+.form_cuentbanco .elem_med label{
+    width: 220px;
+}
+
+#tabs-3 .elem_med{
+    margin-left: 50px;
+}
+
+.indent{
+    margin-left: 145px!important;
+}
+.elem label{
+    padding-top: 8px;
+}
+
+.btn_add_footer{
+   float: left; margin-top:20px;
+}
+
+.btn_add_footer input{
+    margin-left: 20px;
+}
+.content-formadd .title,.content-formchk .title{
+    width: 98%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.medium{
+    width: 605px !important;
+}
+.medium-select{
+    width: 258px !important;
+}
+
+.medium-select1{
+    width: 638px !important;
+}
+
+
+.formError{
+    left: 589px !important;
+}
+#label_action{
+    margin-right: 5px;
+    float: left;
+}
+.to-right{
+    float: right;
+    margin-right: 12px;
+}
+.tabNavigation li img{
+    position: relative;
+    top: 2px;
+    margin-right: 3px;
+}
+.tabNavigation li a{
+    position: relative;
+    top: -4px;
+}
+
+#tabs .content-gird div p{
+    min-height: 26px;
+    line-height: 20px;
+}
+.contenedor_entidades{
+    margin-top:20px;
+    margin-left: 15px;
+    width: 140px;
+    float: left;
+    border: 1px solid #e3e3e3;
+    margin-right: 27px;
+    padding: 9px;
+}
+#tabs .content-gird{
+    min-height: 390px;
+}
+.contenedor_entidades2{
+    width: 640px;
+    float: left;
+    padding-top: 20px;
+}
+.lista_opciones{
+    height: 30px;
+    width: 30px;
+    margin-top: 18px;
+    float: left;
+    cursor: pointer;
+}
+.lista_opciones.add{
+    background: url('../../../../../general/css/images/32x32/Add.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+}
+.lista_opciones.save{
+    background: url('../../../../../general/css/images/32x32/Floppy.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+}
+#add_banco{
+    margin-left: 45px;
+    margin-top: 7px;
+    margin-bottom: 15px;
+}
+.lista_ents,.lista_banco{
+    list-style: none;
+    margin-top: 35px;
+    float: left;
+    margin-left: 23px;
+}
+.lista_ents li,.lista_banco li{
+    margin-top: 3px;
+    width: 637px;
+    height: 26px;
+    float: left;
+    clear: both;
+    background: url('../../../../../general/css/images/32x32/Close.png') no-repeat 99% 6px !important;
+    background-size:18px 18px !important;
+    cursor: pointer;
+    padding-left: 9px;
+    padding-top: 7px;
+    color: white;
+    background-color: #3B8EF3!important;
+    font-weight: bold;
+    font-size: 13px;
+}
+.lista_banco li{
+    width: 840px!important;
+    
+    
+}
+
+.lista_banco li span{
+    width: 50px;
+    overflow: hidden;
+}
+.elempie{
+    float: right;
+    margin-right: -22px;
+}
+.provinciaformError {
+    top: 365px!important;
+    left: 589px!important;
+}
+.tipoopeformError {
+    top: 285px!important;
+    left: 589px!important;
+}
+.checklist_cont{
+    margin-top: 20px;
+}
+iframe{
+    display: none;
+}
+#upload_file1{
+    position: absolute;
+    top: 185px;
+    left: 100px;
+}
+.uploader{
+    float: left;
+}
+#btnSubirfile{
+    float: left;
+    height: 30px!important;
+    margin-left: 10px;
+    min-width: 100px;
+}
+.download_file{
+    float: left;
+    background: url('../../../../../general/css/images/32x32/Down.png') no-repeat 50% 10px !important;
+    background-size:20px 20px !important;
+    width: 40px;
+    height: 40px;
+}
+
+.title_mod{
+    margin-left: 15px;
+    margin-top: 15px;
+    font-size: 20px;
+}
+
+#upload_file2{
+    position: absolute;
+    top: 254px;
+    left: 145px;
+}
+
+#upload_file2 .uploader{
+    width: 413px;
+}
+
+#upload_file2 .uploader .filename{
+    width: 305px;
+}
+
+#frm_reqs{
+    width: 740px;
+    height: 600px;
+    
+}
+.blue{
+    height: 30px!important;
+    margin-right: 93px;
+    float: right;
+    margin-top:4px;
+}
+.lista_adj_r{
+    display: block;margin-top: 28px;width: 630px;float: left;
+}
+
+
+.lista_adj_r span{
+    float: left;
+    margin-right: 54px;
+}
+.subido{
+    color:red;
+    cursor: pointer;
+}
+.lista_reqs_adj{
+    list-style: none;
+    float:left;
+    width: 510px;
+    height: 30px!important;
+    overflow: auto;
+    margin-left: 146px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    height: 36px;
+}
+.lista_reqs_adj li{
+    /*min-width: 20px;*/
+    color:red;
+    float: left;
+    margin-right: 10px;
+    width: 80%;
+}
+.lista_reqs_adj a{
+    float:right;
+}
+.btn_suf{
+    float: left;
+    margin-right: 200px;
+    background-color: #00EA00!important;
+    background-image: none!important;
+    border: 1px solid #00EA00!important;
+    display: none!important;
+}
+.btn_insuf{
+    float: left;
+    margin-right:8px;
+    background-color: #EC3100!important;
+    background-image: none!important;
+    border: 1px solid #EC3100!important;
+    display: none!important;
+}
+.ver_fuerte{
+    display: block!important;
+}
+.title_adj{
+    font-weight: bold;
+    text-align: center;
+    font-size: 22px;
+}
+
+.modbtn1{
+    position: relative!important;
+    left: 70px!important;
+}
+.grid_adj_ope{
+    float: left;
+    margin-left: 3px!important;
+    width: 666px!important;
+}
+
+
+.elemod1{
+    padding-top: 7px!important;
+}
+.elemod2{
+    margin-top:1px!important;
+    width: 107px!important;
+}
+.elemod3{
+    margin-left:0!important;
+}
+#req_descripcion{
+    width: 468px!important;
+    margin-left: 38px!important;
+    height: 40px!important;
+}
+#direccion,#nombre{
+    width: 618px!important;
+}
+
+.env_form, .nuevafact_form{
+    margin-left: 33px;
+    min-height: 520px;
+    width: 980px;
+    position: relative;
+    top: 20px;
+    display: none;
+    float: left;
+}
+
+#div_subrubro{
+    width: 400px!important;
+}
+#observacion,#observacion_fact{
+    margin-left: 145px;
+    width: 618px!important;
+}
+#nuevafactura,#send{
+    display: none;
+}
+.div_cius{
+    border: 1px solid gray;
+    float: left;
+    width: 852px;
+    padding: 10px;
+    margin-top: 12px;
+}
+#add_cius{
+    float: right;
+    margin-top: 12px;
+    margin-right: 67px;
+    margin-bottom: 20px;
+}
+.refresgrid{
+    color: red;
+    font-size: 12px;
+    width: 77px;
+    display: inline;
+    cursor: pointer;
+    
+    margin-top: 58px;
+    float: left;
+    position: relative;
+    left: 338px;
+    
+    
+}
+#jqxgridcius{
+    margin-top: 70px;
+}
+
+.suma_aportes{
+    width: 273px;
+    margin-top: 7px;
+    font-size: 20px;
+    text-align: right;
+    display: none;
+}
+
+#suma_aporte1{
+    position: relative;
+    left: 193px;
+}
+#nombre2{
+    width: 620px;
+}
+
+#jqxgrid_listado{
+    margin-left: 20px;
+}
+
+#ciu_num, #ciu_insc{
+    text-transform: uppercase;
+}
+#fot_car{
+    margin-left: 30px;
+}
+
+
+.lista_adjuntos,.lista_banco,.lista_reqs,.lista_adj_ope{
+    list-style: none;
+    margin-top: 18px;
+    float: left;
+    margin-left: 23px;
+}
+
+.lista_adjuntos li span{
+    color: red;
+    float: right!important;
+}
+
+
+.lista_adjuntos li, .lista_banco li, .lista_reqs li, .lista_adj_ope li{
+    margin-top: 3px;
+    width: 890px;
+    height: 26px;
+    float: left;
+    clear: both;
+    /*background: url('../../../../../general/css/images/32x32/Close.png') no-repeat 99% 6px !important;
+    background-size:18px 18px !important;*/
+    cursor: auto;
+    padding-left: 9px;
+    padding-top: 7px;
+    color: white;
+    background-color: #3B8EF3!important;
+    font-weight: bold;
+    font-size: 13px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.lista_adjuntos li,.lista_adj_ope li{
+    width: 450px!important;
+}
+.lista_reqs li,.lista_adj_ope li{
+    background-image: none!important;
+}
+.lista_adjuntos li span,.lista_reqs li span,.lista_adj_ope li span{
+    float:left;
+    margin-right: 36px;
+    width: 20px!important;
+    line-height: 25px;
+    cursor: pointer;
+    background: url('../../../../../general/css/images/32x32/Close.png') no-repeat 99% 2px !important;
+    background-size:18px 18px !important;
+}
+
+.lista_adjuntos li a:visited,
+.lista_adjuntos li a:link,
+.lista_adjuntos li a:hover{
+    color:white;
+}
+
+
+.green {
+    color: white;
+    background-color: #b6ff00\9;
+}
+.yellow {
+    color: black\9;
+    background-color: yellow\9;
+}
+.red {
+    color: black\9;
+    background-color: #FF141C\9;
+}
+.green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .green:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: #b6ff00;
+}
+.yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .yellow:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: black;
+    background-color: yellow;
+}
+.red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected), .jqx-widget .red:not(.jqx-grid-cell-hover):not(.jqx-grid-cell-selected) {
+    color: white;
+    background-color: #FF141C;
+}
+
+

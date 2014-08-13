@@ -1,0 +1,41 @@
+<table>
+    <thead>
+        <tr>
+            <td colspan="3">Cuota 3</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>15/10/2014</td>        
+            <td>Cambio de tasa</td>        
+            <td>Int.Compensatorio:15%</td>        
+            <td>Int.Punitorio:15%</td>        
+            <td>Int.Moratorio:15%</td>        
+            <td>Int.Bonificacion:15%</td>        
+        </tr>
+        <tr>
+            <td>15/10/2014</td>        
+            <td>Desembolso</td>        
+            <td></td>        
+            <td></td>        
+            <td></td>        
+            <td>$15000</td>        
+        </tr>
+        <tr>
+            <td>15/10/2014</td>        
+            <td>Recupero</td>        
+            <td>Capital:$1500</td>        
+            <td>Int.Compensatorio:$100</td>        
+            <td>Int.Moratorio y Pun:$100</td>        
+            <td>Total:$4000</td>        
+        </tr>
+        <tr>
+            <td>15/10/2014</td>        
+            <td>Vencimiento</td>        
+            <td></td>        
+            <td></td>        
+            <td></td>        
+            <td></td>        
+        </tr>
+    </tbody>
+</table>

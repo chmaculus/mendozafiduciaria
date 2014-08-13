@@ -1,0 +1,1 @@
+SELECT t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES, ID_OPERACION  FROM fid_creditos t  left JOIN fid_fideicomiso f ON ( f.ID = t.ID_FIDEICOMISO )  left JOIN fid_operatorias o ON ( o.ID = t.ID_OPERATORIA )      ORDER By t.ID ASC 

@@ -1,0 +1,319 @@
+.content-cuotas{
+    float: left;
+    display: inline;
+    clear: both;
+    min-height: 800px;
+    padding-bottom: 20px;
+    width:100%;
+}
+
+
+#div-list-cuotas   .div-result  ul{
+    float: left;
+    clear: both;
+    width:90%;
+    list-style: none;
+}
+
+#div-list-cuotas   .div-result  ul > li{
+    float: left;
+    position: relative;
+    clear: both;
+    width:100%;
+    padding: 3px 0px;
+
+}
+
+#div-list-cuotas   ul > li.cuotas{
+    float: left;
+    position: relative;
+    width:840px;
+    padding: 2px 0px;
+    border-bottom: 1px solid #dddbdb;
+
+}
+
+#div-list-cuotas    ul li.over .linea-cuota{
+    cursor: pointer;
+    float: left;
+}
+
+#div-list-cuotas    ul li span{
+    float: left;
+    position: relative;
+    min-width: 70px;
+}
+
+#div-list-cuotas    ul li span.fecha_no_select{
+    width:70px;
+}
+#div-list-cuotas    ul li span.fecha_sp{    width:70px; cursor: pointer; color: #666; font-weight: bold; font-style: italic;}
+#div-list-cuotas    ul li span.cuota{    width:50px; }
+#div-list-cuotas   ul li span.capital{    width:90px; }
+#div-list-cuotas   ul li span.por_int_compensatoriol{    width:70px; }
+
+/*FULLFIELD*/
+.full_field{
+    float: left;
+    display: inline;
+    clear: both;
+    width: 100%;
+    padding: 7px 0px;
+    font-family: sans-serif;
+    line-height: 20px;
+}
+
+.full_field input{
+    border: 1px solid #33ccff;
+    border-radius: 5px;
+    width: 80%;
+    padding: 5px;
+    color: #989999;
+}
+
+.full_field span{
+    width:150px;
+    float: left;
+}
+
+
+
+
+/*MIDFIELD*/
+.mid_field{
+    float: left;
+    display: inline;
+    width: 120px;
+    padding: 7px 0px;
+    font-family: sans-serif;
+    line-height: 20px;
+    padding-right: 30px;
+}
+.mid_field input{
+    border: 1px solid #33ccff;
+    border-radius: 5px;
+    width: 80%;
+    padding: 5px;
+    color: #989999;
+}
+
+
+
+/*FIELD FORM*/
+.full_field_alta{
+    float: left;
+    width:100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.field_fecha{
+    float: left; position: relative;
+    width:100%;
+}
+.field-accion{
+    float: left; position: relative;
+    width:200px;
+}
+.field-monto{
+    float: left; position: relative;
+    width:100px;
+}
+.field-monto input{
+    width:60px;
+}
+
+.field_tasas{
+    width:100px;
+}
+
+.field_tasas input{
+    width:60px;
+}
+.field-descripcion{
+    float: left; position: relative;
+    width:500px;
+}
+.field-descripcion input{
+    float: left; position: relative;
+    width:400px;
+}
+
+.button-search {
+    float: left;
+    margin-left: 0px;
+    
+    padding:3px;
+    margin-top: 14px;
+    cursor: pointer;
+}
+
+.form_cuotas{
+    padding:20px;
+    margin:20px;
+    border: 1px solid #dddbdb;
+    overflow: hidden;
+    position: relative;
+}
+
+
+ul.ul-cuotas{
+    padding:0px 3px;
+    margin: 0% 3px;
+    list-style: none;
+}
+
+ul.ul-titulo-segmento{
+    padding:0px 0%;
+    margin: 0px 3px;    
+    font-weight: bold;
+    list-style: none;
+}
+
+ul.ul-titulo{
+    padding:3px 3px;
+    margin: 2px 3px;    
+    float: left;
+    background: #E0E9F5;
+    color: black;
+    font-weight: bold;
+    list-style: none;
+    border:1px solid #A4BED4;
+    border-radius: 0px;
+}
+
+ul.ul-cuotas ul li.cuotas{
+    float: left;
+    margin-left: 30px;
+    
+}
+
+ul.ul-titulo-segmento li{
+    margin-left: 0px !important;
+    float: left;
+    
+}
+
+.content-segmento{
+    float: left;
+    display: block;
+    background: #fbfffd;
+    border:1px solid #eee;
+    border-radius: 5px;
+    margin:5px 0px;
+    width:700px;
+    padding:5px 5px 30px 5px;
+}
+
+.div-result{
+    border: 1px solid #DDDBDB;
+    margin: 20px;
+    overflow: hidden;
+    padding: 20px;
+    position: relative;
+}
+
+.content-segmento li.subcuentas.over{
+    background: #3DC7F8;
+    color: white;
+}
+
+.subcuentas span.remove{
+    cursor: pointer;
+    background: url("images/borrar.png") no-repeat;
+    
+    color: white;
+    width:60px !important;
+    min-width: 0px !important;
+    text-align: center;
+}
+.subcuentas span.edit{
+    cursor: pointer;
+    background: red;
+    color: white;
+    width:60px !important;
+    min-width: 0px !important;
+    text-align: center;
+}
+
+.subcuentas .opciones_evento{
+    float: right;
+}
+
+.subcuentas{
+    clear: both;
+    float: left;
+    margin:2px 0px;
+    padding: 2px 0px;
+    border-bottom: 1px solid #A4BED4;
+    width:100%;
+}
+
+
+/*Button filtro*/
+.field-filtros{
+    float: left;
+    width:100%;
+    margin: 15px 15px 0px 0px;
+    
+}
+/*Button form actions*/
+.field-buttons{
+    float: left;
+    width:100%;
+    margin: 15px 15px 0px 0px;
+    
+}
+
+.field-buttons .button-a{
+    height:26px;
+    float: left !important;
+    margin-right: 20px !important;
+}
+
+.titulo-ingreso-eventos{
+    font-weight: bold;
+    font-size: 18px;
+    float: left;
+    margin-bottom: 10px;
+}
+
+
+.datos-credito{
+    float: left;
+    position: relative;
+    clear: both;
+    padding:3px 0px;
+    width: 100%;
+    border:1px solid #E0E9F5;
+    background: #eee;
+}
+
+.datos-credito .credito_id{
+    margin-left: 10px;
+}
+
+
+
+/*CHEQUERA*/
+
+.content-result{
+    float: left;
+    width: 1000px;
+    height:450px;
+    margin-left: 40px;
+    display: none;
+}
+
+.content-result .field-buttons{
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom:  1px solid #A4BED4;
+}
+
+#frmPrint{
+    display: block;
+    width:1000px;
+    border:none;
+    height:430px;
+}

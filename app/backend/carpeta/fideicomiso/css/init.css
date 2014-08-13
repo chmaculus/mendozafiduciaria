@@ -1,0 +1,225 @@
+#jqxgrid{
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.content-form{
+    width: 950px;
+    min-height: 450px;
+    float: left;
+}
+.content-forment{
+    height: 200px;
+    width: 800px;
+}
+
+.content-formadd{
+    width: 480px;
+}
+
+.elem_med{
+    width: 370px;
+    float: left;
+    clear: none!important;    
+   
+}
+.elem_med input{
+    width: 235px;
+}
+
+#tabs-3 .elem_med{
+    margin-left: 50px;
+}
+
+.indent{
+    margin-left: 106px!important;
+}
+.elem label{
+    padding-top: 8px;
+}
+
+.btn_add_footer{
+   float: left; margin-top:20px;
+}
+
+.btn_add_footer input{
+    margin-left: 20px;
+}
+.content-formadd .title{
+    width: 98%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.medium{
+    width: 605px !important;
+}
+.medium-select{
+    width: 258px !important;
+}
+.large-select{
+    width: 650px !important;
+}
+
+.medium-select1{
+    width: 638px !important;
+}
+
+
+.formError{
+    left: 589px !important;
+}
+#label_action{
+    margin-right: 5px;
+    float: left;
+}
+.to-right{
+    float: right;
+    margin-right: 12px;
+}
+.tabNavigation li img{
+    position: relative;
+    top: 2px;
+    margin-right: 3px;
+}
+.tabNavigation li a{
+    position: relative;
+    top: -4px;
+}
+
+#tabs .content-gird div p{
+    min-height: 26px;
+    line-height: 20px;
+}
+.contenedor_entidades{
+    margin-top:20px;
+    margin-left: 15px;
+    width: 140px;
+    float: left;
+    border: 1px solid #e3e3e3;
+    margin-right: 27px;
+    padding: 9px;
+}
+#tabs .content-gird{
+    min-height: 390px;
+}
+.contenedor_entidades2,.contenedor_operatorias{
+    width: 640px;
+    float: left;
+    padding-top: 20px;
+}
+.e3{
+    width: 760px!important;
+}
+.lista_opciones{
+    height: 30px;
+    width: 30px;
+    margin-top: 18px;
+    float: left;
+    cursor: pointer;
+}
+.lista_opciones.add{
+    background: url('../../../../../general/css/images/32x32/Add.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+}
+.lista_opciones.save{
+    background: url('../../../../../general/css/images/32x32/Floppy.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+}
+.lista_opciones.addope{
+    background: url('../../../../../general/css/images/32x32/Add.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+    margin-top: 28px!important;
+}
+#add_banco,#add_aporte{
+    margin-left: 45px;
+    margin-top: 7px;
+    margin-bottom: 15px;
+}
+.lista_ope{
+    margin-left: 108px;
+}
+.lista_uploads{
+    float: left;
+    margin-top: 38px;
+    position: absolute;
+    top:92px;
+    margin-left: 81px;  
+}
+.lista_ents,.lista_banco,.lista_ope,.lista_uploads{
+    list-style: none;
+    margin-top: 10px;
+    float: left;
+}
+.lista_ents li,.lista_banco li,.lista_ope li,.lista_uploads li{
+    margin-top: 3px;
+    width: 629px;
+    height: 26px;
+    float: left;
+    clear: both;
+    background: url('../../../../../general/css/images/32x32/Close.png') no-repeat 99% 6px !important;
+    background-size:18px 18px !important;
+    cursor: pointer;
+    padding-left: 9px;
+    padding-top: 7px;
+    color: white;
+    background-color: #3B8EF3!important;
+    font-weight: bold;
+    font-size: 13px;
+}
+.lista_banco li{
+    width: 840px!important;
+}
+
+.lista_banco li span{
+    width: 50px;
+    overflow: hidden;
+}
+.elempie{
+    float: right;
+    margin-right: 18px;
+}
+.provinciaformError{
+    position: relative!important;
+    float: left!important;
+    top : 0px!important;
+    left: 180px!important;
+}
+.finiformError{
+    top : 284px!important;
+    left: 340px!important;
+}
+iframe{
+    display: none;
+}
+#upload_file1{
+    display: none;
+    position: absolute;
+    top: 510px;
+    left: 132px;
+}
+.uploader{
+    float: left;
+}
+#btnSubirfile{
+    float: left;
+    height: 30px!important;
+    margin-left: 10px;
+    min-width: 100px;
+}
+.download_file{
+    float: left;
+    background: url('../../../../../general/css/images/32x32/Down.png') no-repeat 50% 10px !important;
+    background-size:20px 20px !important;
+    width: 40px;
+    height: 40px;
+}
+
+.suma_aportes{
+    width: 873px;
+    margin-top: 20px;
+    font-size: 20px;
+    text-align: right;
+    display: none;
+}
