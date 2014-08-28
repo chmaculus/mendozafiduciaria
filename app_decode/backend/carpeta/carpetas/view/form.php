@@ -47,6 +47,12 @@
                     if(isset($obj_js)):
                         echo "var _array_obj = ". $obj_js . ";\n";
                     endif;
+                    if(isset($_arr_operatoria_js)):
+                        echo "var _array_operatoria = ". $_arr_operatoria_js . ";\n";
+                    endif;
+                    
+                    
+                    
             ?>
             </script>
 

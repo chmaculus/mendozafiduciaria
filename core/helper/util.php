@@ -163,7 +163,7 @@ function borrar_directorio($dir, $borrarme) {
     }
 }
 
-function crypt_blowfish($password, $digito = 7) {
+function crypt_blowfish($password, $digito = 7){
     $set_salt = './1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     $salt = sprintf('$2a$%02d$', $digito);
     for ($i = 0; $i < 22; $i++) {

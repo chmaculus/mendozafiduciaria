@@ -263,7 +263,7 @@ $(document).ready(function(){
                         type : "post",
                         success : function(data1){
                             var clase_asignar;
-                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
+                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a1:</div>';
                             if(data1){
                                 $.each(data1, function (index, value){
                                     clase_asignar = 'link_asignar_atras';
@@ -312,7 +312,7 @@ $(document).ready(function(){
                                     success : function(datar){
 
                                         var clase_asignar;
-                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
+                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a2:</div> <div class="regresar_ar">Regresar</div>';
                                         if(datar){
                                             $.each(datar, function (index, value){
 
@@ -863,7 +863,7 @@ $(document).ready(function(){
                                 dataType : "json",
                                 type : "post",
                                 success : function(data){
-                                    
+
                                     if(data.result>0){
                                         jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
                                             $.unblockUI();
@@ -899,8 +899,11 @@ $(document).ready(function(){
                                                     type : "post",
                                                     success : function(data1){
                                                         var clase_asignar;
-                                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
+                                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a3:</div>';
                                                         if(data1){
+                                                            
+                                                            //_USUARIO_SESION_ACTUAL
+                                                            
                                                             $.each(data1, function (index, value){
                                                                 clase_asignar = 'link_asignar';
                                                                 if (value.IID!=_USUARIO_SESION_ACTUAL){
@@ -922,7 +925,7 @@ $(document).ready(function(){
                                                                     regresar_a_listado();
                                                             }
                                                         });
-
+                                                        
 
                                                         $(".x_area").click(function(e1){
                                                             e1.preventDefault();
@@ -949,19 +952,25 @@ $(document).ready(function(){
                                                                 success : function(datar){
 
                                                                     var clase_asignar;
-                                                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
+                                                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a4:</div> <div class="regresar_ar">Regresar</div>';
                                                                     if(datar){
+                                                                                                                                                
                                                                         $.each(datar, function (index, value){
 
                                                                             clase_asignar = 'link_asignar';
-                                                                            //if (value.IID!=_USUARIO_SESION_ACTUAL){
-                                                                            if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
-
-                                                                                cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
-                                                                                cadhtml += '</span></div>';
-
+                                                                            //if (parseFloat(_array_obj.obj_operatoria.COORDOPE)>0 && _USER_ROL==9 && _array_obj.ID_ETAPA_ACTUAL==1){
+                                                                            if (parseFloat(_array_obj.obj_operatoria.COORDOPE)>0 && _array_obj.obj_operatoria.COORDOPE==value.IID && _USER_ROL==9 && _array_obj.ID_ETAPA_ACTUAL==1){
+                                                                                    cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
+                                                                                    cadhtml += '</span></div>';
+                                                                                return false;
+                                                                            }else{
+                                                                                if (parseFloat(_array_obj.obj_operatoria.COORDOPE)<=0){
+                                                                                    if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
+                                                                                        cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
+                                                                                        cadhtml += '</span></div>';
+                                                                                    }
+                                                                                }
                                                                             }
-
                                                                         });
                                                                     }
 
@@ -1300,7 +1309,7 @@ $(document).ready(function(){
                         $.unblockUI();
                         $("#jqxgrid").hide();
                         $("#wpopup").html(data);
-                                                
+                        
                         
                         actualizarBarraHerramientas();
                         //boton guardar
@@ -1350,12 +1359,13 @@ $(document).ready(function(){
                             }else{
                                 if (_array_obj.ID_PROCESO=='2'){
                                     if (_array_obj.ID_ETAPA_ACTUAL!=14){
-                                        if (index=='1'){
+                                        if (index<='1'){
+                                            console.log('aquiiii 111111 ++' + index);
                                             $items.removeClass('selected');
                                             $(this).addClass('selected');
                                             $('#vtab>div').hide().eq(index).show();
                                         }else{
-                                            console.log('aquiiii');
+                                            console.log('aquiiii 22222222 ++' + index);
                                             if (_array_obj.ID_ETAPA_ACTUAL!=14){
                                                 jAlert('Esta etapa aun no está disponible.', $.ucwords(_etiqueta_modulo),function(){
                                                 });
@@ -2717,7 +2727,7 @@ $(document).ready(function(){
                                 success : function(data1){
 
                                     var clase_asignar;
-                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
+                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a5:</div>';
                                     if(data1){
                                         $.each(data1, function (index, value){
                                             clase_asignar = 'link_asignar';
@@ -2726,12 +2736,12 @@ $(document).ready(function(){
                                                 
                                                 if (value.ETAPA==3 || value.ETAPA==12 || value.ETAPA==13){
                                                     if (index==1){
-                                                        cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in+'"><span>' + value.DENOMINACION+'</span></div>';
+                                                        cadhtml +=  '<div data-xxx="11111" class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in+'"><span>' + value.DENOMINACION+'</span></div>';
                                                     }else{
                                                         if (value.puesto_in1){
-                                                            cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in1+'"><span>' + value.DENOMINACION +'</span></div>';
+                                                            cadhtml +=  '<div data-xxx="2222222" class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in1+'"><span>' + value.DENOMINACION +'</span></div>';
                                                         }else{
-                                                            cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in+'"><span>' + value.DENOMINACION +'</span></div>';
+                                                            cadhtml +=  '<div data-xxx="3333333" class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in+'"><span>' + value.DENOMINACION +'</span></div>';
                                                         }
                                                     }
                                                     //cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in+'"><span>' + value.DENOMINACION;
@@ -2739,7 +2749,7 @@ $(document).ready(function(){
                                                         //cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'" data-puesto_in="'+value.puesto_in1+'"><span>' + value.DENOMINACION;
                                                 }
                                                 else{
-                                                    cadhtml +=  '<div class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'"><span>' + value.DENOMINACION  +'</span></div>';
+                                                    cadhtml +=  '<div data-xxx="4444444" class="' + clase_asignar + ' x_area" data-etapa="'+value.ETAPA+'" data-iid="'+value.ID+'"><span>' + value.DENOMINACION  +'</span></div>';
                                                 }
                                                 
                                                 //cadhtml += '</span></div>';
@@ -2786,14 +2796,30 @@ $(document).ready(function(){
                                             success : function(datar){
                                                 //console.dir(datar);
                                                 var clase_asignar;
-                                                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
+                                                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a6:</div> <div class="regresar_ar">Regresar</div>';
                                                 if(datar){
+                                                    
+                                                    console.log("xxxxx:::::");
+                                                    console.dir(_array_obj);
+                                                    //_array_obj.obj_operatoria.COORDOPE
+                                                    
+                                                    
+
+                                                    if (parseFloat(_array_obj.obj_operatoria.COORDOPE)<=0){
+                                                        if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
+                                                            cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
+                                                            cadhtml += '</span></div>';
+                                                        }
+                                                    }
+
+                                                    
+                                                    
                                                                                                         
                                                     $.each(datar, function (index, value){
                                                         console.log( 'ACTUAL: '+ _array_obj.ID_ETAPA_ACTUAL );
                                                         console.log( 'rol: '+_USER_ROL);
                                                         console.log( 'ETAPA: '+value.ETAPA );
-                                                        
+
                                                         clase_asignar = 'link_asignar';
                                                         
                                                         if (value.ETAPA==3 && _array_obj.ID_ETAPA_ACTUAL!=2 && _array_obj.ID_ETAPA_ACTUAL!=1 && _array_obj.ID_ETAPA_ACTUAL!=6 && _array_obj.ID_ETAPA_ACTUAL!=5 && _array_obj.ID_ETAPA_ACTUAL!=4){
@@ -2808,75 +2834,99 @@ $(document).ready(function(){
                                                             clase_asignar = 'link_asignar_tipob';
                                                         }
                                                         
-                                                        //si es igual a Jefe de Operaciones (PUESTO = 6)
-                                                        //if (value.IID!=_USUARIO_SESION_ACTUAL && (value.PUESTOID=='6' || value.PUESTOID=='7')){
-                                                        if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA=='13' ) || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
+                                                        var info_div='';
+                                                        if (parseFloat(_array_obj.obj_operatoria.COORDOPE)>0 && _array_obj.obj_operatoria.COORDOPE==value.IID && _USER_ROL==9 && _array_obj.ID_ETAPA_ACTUAL==1){
+                                                            console.log('rrr11111');
+                                                            info_div =  '<div class="myButton acomite" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Acta de Comité</div>';
                                                             cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
-                                                            //console.log('etapa actual: '+_array_obj.ID_ETAPA_ACTUAL);
-                                                            //console.log('rol: '+_USER_ROL);
-                                                            var info_div='';
-                                                            if( _array_obj.ID_ETAPA_ACTUAL==8 && _USER_ROL==10) //_USER_ROL 11 es rol de Coordinador de Op
-                                                                info_div =  '<div class="myButton acomite" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Acta de Comité</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==3 && _USER_ROL==11) //
-                                                                info_div =  '<div class="myButton acomite" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Elevación a Comité</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==9 && _USER_ROL==11) //
-                                                                info_div =  '<div class="myButton acontrato" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Confeccion de Contrato</div>';
-                                                            else if( _array_obj.ID_PROCESO == 1 && _array_obj.ID_ETAPA_ACTUAL==10 && jQuery.inArray(_USER_ROL, ['12','13','14'])!=-1){
-                                                                var conformidad_cr = $("#chk_rcontrato").is(':checked');
-                                                                
-                                                                if (conformidad_cr){ // conformidad
-                                                                    info_div =  '<div class="myButton afirmacontrato" data-proceso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Firma de Contrato</div>';
-                                                                }else{
-                                                                    info_div =  '<div class="myButton afirmacontrato" data-proceso="1" data-regresar="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Firma de Contrato222</div>';
-                                                                }
-                                                                
-                                                            }else if( _array_obj.ID_PROCESO == 2 && _array_obj.ID_ETAPA_ACTUAL==10 && jQuery.inArray(_USER_ROL, ['12','13','14'])!=-1) //
-                                                                info_div =  '<div class="myButton afirmacontrato" data-proceso="2" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Solicitud de Desembolso (Acotado)</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==10) //
-                                                                info_div =  '<div class="myButton adelegacionfirmacontrato" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Delegación de Firma de Contrato</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==11 && _array_obj.ID_PROCESO == 1) //
-                                                                info_div =  '<div class="myButton adelegacionfirmacontrato" data-deleg_respuesta="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Respuesta a Delegación de Firma de Contrato</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==11 && _array_obj.ID_PROCESO == 2) //
-                                                                info_div =  '<div class="myButton adelegacionfirmacontrato" data-aalta_credito_proceso2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Alta de Credito (Acotado)</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==12 && _USER_ROL==10) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Alta de Crédito</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==12 && _USER_ROL==20) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paradesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolsos</div>';
-                                                            else if(_array_obj.ID_PROCESO==2 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==13) //
-                                                                //_array_obj.ID_ETAPA
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Emisión de Desembolso (Acotado)</div>';
-                                                            else if(_array_obj.ID_PROCESO==1 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==13) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso3="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolso</div>';
-                                                            else if(_array_obj.ID_PROCESO==1 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA==13) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso4="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolso (Autopase)</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==12)//
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Emisión de Desembolso</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && (value.ETAPA==4 || value.ETAPA==5 || value.ETAPA==6 ) ) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraauditoria="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Auditoría</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && (_USER_ROL>=12 && _USER_ROL<=18 ) && (value.ETAPA==3 || value.ETAPA==5 || value.ETAPA==6) ) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paradevolucion_a_cordina="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Cordinador en Desembolsos</div>';
-                                                            else if(_array_obj.ID_PROCESO==2 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==22 ){ //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paradevolucion_a_cordina2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Cordinador en Desembolsos (Acotado)</div>';
-                                                            }
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==20 && value.ETAPA==13) //
-                                                                info_div =  '<div class="myButton aaltacredito" data-paraejecutardesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para ejecutar Desembolso</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==22 && value.ETAPA==13) //
-                                                                info_div =  '<div class="myButton adesembolso" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para realizar Desembolso</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA==3) //
-                                                                info_div =  '<div class="myButton adesembolso" data-paraotraiteracion="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==14 && _USER_ROL==20 && _array_obj.ID_PROCESO==2 ) //
-                                                                info_div =  '<div class="myButton adesembolso" data-paraotraiteracion2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
-                                                            /*
-                                                            else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==20 && value.ETAPA==3) //
-                                                                info_div =  '<div class="myButton adesembolso" data-paraotraiteracion="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
-                                                              */
-
                                                             if(clase_asignar=='link_asignar_tipob')
                                                                 cadhtml += '</span><div class="info_div">'+info_div+'</div>'+ '</div>';
                                                             else
                                                                 cadhtml += '</span></div>';
+                                                            return false;
+                                                        }else{
+                                                            console.log('rrr22222');
+                                                            if (1 || parseFloat(_array_obj.obj_operatoria.COORDOPE)<=0){
+                                                                //si es igual a Jefe de Operaciones (PUESTO = 6)
+                                                                //if (value.IID!=_USUARIO_SESION_ACTUAL && (value.PUESTOID=='6' || value.PUESTOID=='7')){
+                                                                if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA=='13' ) || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
+                                                                    cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
+                                                                    //console.log('etapa actual: '+_array_obj.ID_ETAPA_ACTUAL);
+                                                                    //console.log('rol: '+_USER_ROL);
+                                                                    if( _array_obj.ID_ETAPA_ACTUAL==8 && _USER_ROL==10) //_USER_ROL 11 es rol de Coordinador de Op
+                                                                        info_div =  '<div class="myButton acomite" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Acta de Comité</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==3 && _USER_ROL==11) //
+                                                                        info_div =  '<div class="myButton acomite" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Elevación a Comité</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==9 && _USER_ROL==11) //
+                                                                        info_div =  '<div class="myButton acontrato" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Confeccion de Contrato</div>';
+                                                                    else if( _array_obj.ID_PROCESO == 1 && _array_obj.ID_ETAPA_ACTUAL==10 && jQuery.inArray(_USER_ROL, ['12','13','14'])!=-1){
+                                                                        var conformidad_cr = $("#chk_rcontrato").is(':checked');
 
+                                                                        if (conformidad_cr){ // conformidad
+                                                                            info_div =  '<div class="myButton afirmacontrato" data-proceso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Firma de Contrato</div>';
+                                                                        }else{
+                                                                            info_div =  '<div class="myButton afirmacontrato" data-proceso="1" data-regresar="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Firma de Contrato222</div>';
+                                                                        }
+
+                                                                    }else if( _array_obj.ID_PROCESO == 2 && _array_obj.ID_ETAPA_ACTUAL==10 && jQuery.inArray(_USER_ROL, ['12','13','14'])!=-1) //
+                                                                        info_div =  '<div class="myButton afirmacontrato" data-proceso="2" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Solicitud de Desembolso (Acotado)</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==10) //
+                                                                        info_div =  '<div class="myButton adelegacionfirmacontrato" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Delegación de Firma de Contrato</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==11 && _array_obj.ID_PROCESO == 1) //
+                                                                        info_div =  '<div class="myButton adelegacionfirmacontrato" data-deleg_respuesta="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Respuesta a Delegación de Firma de Contrato</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==11 && _USER_ROL==11 && _array_obj.ID_PROCESO == 2) //
+                                                                        info_div =  '<div class="myButton adelegacionfirmacontrato" data-aalta_credito_proceso2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Alta de Credito (Acotado)</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==12 && _USER_ROL==10) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Alta de Crédito</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==12 && _USER_ROL==20) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paradesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolsos</div>';
+                                                                    else if(_array_obj.ID_PROCESO==2 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==13) //
+                                                                        //_array_obj.ID_ETAPA
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Emisión de Desembolso (Acotado)</div>';
+                                                                    else if(_array_obj.ID_PROCESO==1 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==13) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso3="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolso</div>';
+                                                                    else if(_array_obj.ID_PROCESO==1 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA==13) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso4="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Desembolso (Autopase)</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && value.ETAPA==12)//
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraemisiondesembolso2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Emisión de Desembolso</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==11 && (value.ETAPA==4 || value.ETAPA==5 || value.ETAPA==6 ) ) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraauditoria="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Auditoría</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && (_USER_ROL>=12 && _USER_ROL<=18 ) && (value.ETAPA==3 || value.ETAPA==5 || value.ETAPA==6) ) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paradevolucion_a_cordina="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Cordinador en Desembolsos</div>';
+                                                                    else if(_array_obj.ID_PROCESO==2 && _array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==22 ){ //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paradevolucion_a_cordina2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para Cordinador en Desembolsos (Acotado)</div>';
+                                                                    }
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==20 && value.ETAPA==13) //
+                                                                        info_div =  '<div class="myButton aaltacredito" data-paraejecutardesembolso="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para ejecutar Desembolso</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==22 && value.ETAPA==13) //
+                                                                        info_div =  '<div class="myButton adesembolso" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para realizar Desembolso</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==24 && value.ETAPA==3) //
+                                                                        info_div =  '<div class="myButton adesembolso" data-paraotraiteracion="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==14 && _USER_ROL==20 && _array_obj.ID_PROCESO==2 ) //
+                                                                        info_div =  '<div class="myButton adesembolso" data-paraotraiteracion2="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
+                                                                    /*
+                                                                    else if(_array_obj.ID_ETAPA_ACTUAL==13 && _USER_ROL==20 && value.ETAPA==3) //
+                                                                        info_div =  '<div class="myButton adesembolso" data-paraotraiteracion="1" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'">Para desembolso, auditoría o archivo</div>';
+                                                                      */
+
+                                                                    if(clase_asignar=='link_asignar_tipob')
+                                                                        cadhtml += '</span><div class="info_div">'+info_div+'</div>'+ '</div>';
+                                                                    else
+                                                                        cadhtml += '</span></div>';
+
+                                                                }
+                                                            }
+                                                            
                                                         }
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
                                                         
                                                     });
                                                 }
@@ -7169,7 +7219,7 @@ function process_asignar(){
             type : "post",
             success : function(data1){
                 var clase_asignar;
-                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
+                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a7:</div>';
                 if(data1){
                     $.each(data1, function (index, value){
                         clase_asignar = 'link_asignar';
@@ -7219,7 +7269,7 @@ function process_asignar(){
                         success : function(datar){
 
                             var clase_asignar;
-                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
+                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a8:</div> <div class="regresar_ar">Regresar</div>';
                             if(datar){
                                 $.each(datar, function (index, value){
 

@@ -219,6 +219,13 @@ class clientes extends main_controller{
         echo $obj;
     }
     
+    function x_getclavenivel(){
+        $passw = $_POST['passw'];
+        $nivel = $_POST['nivel'];
+        $obj = $this->mod->getclavenivel($passw,$nivel);
+        echo json_encode($obj);
+    }
+    
     function x_verificarcuit(){
         $cuit = $_POST['cuit'];
         $obj = $this->mod->verificarcuit($cuit);

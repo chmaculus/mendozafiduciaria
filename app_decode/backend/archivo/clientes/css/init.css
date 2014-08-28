@@ -116,3 +116,46 @@
     background-size: 17px 17px !important;
     cursor: pointer;
 }
+
+.div_pidepass{
+    border: 1px solid black;
+    height: 41px;
+    width: 645px;
+    background-color: transparent;
+    opacity: 0.6;
+    position: absolute;
+    top: 389px;
+    left: 125px;
+}
+
+.div_pidepass span{
+    float: right;
+    padding: 13px;
+    margin-right: 8px;
+}
+
+#obs_cob{
+    display: none;
+    position: absolute;
+    float: left;
+    top: 43px;
+    border: 2px solid white;
+    width: 208px;
+    left: 241px;
+    z-index: 99999;
+    background-color: #19334A;
+    color: white;
+    padding: 27px;
+    height: 72px;
+}
+
+#obs_cob input{
+    margin-left: 7px;
+    width: 81px;
+    font-size: 18px;
+}
+
+#obs_cob div{
+    margin-top: 14px;
+    margin-left: 25px;
+}

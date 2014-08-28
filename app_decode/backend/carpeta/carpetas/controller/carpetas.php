@@ -547,6 +547,9 @@ class carpetas extends main_controller{
         if ($tmp){
             $data['entidad'] = $tmp[0];
             $data['obj_js'] = json_encode(  $tmp[0] );
+            //zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+            //$data['obj_js']
+            
             $lst_operatoria_checklist = $this->mod->get_operacion_checklist( $tmp[0]['ID'] );
             $lst_comite_checklist = $this->mod->get_comite_checklist( $tmp[0]['ID'] );
             $lst_desembolso_checklist = $this->mod->get_desembolso_checklist( $tmp[0]['ID'] );
@@ -567,6 +570,9 @@ class carpetas extends main_controller{
             
             //$enviadoa = $this->mod->get_enviadoa( $tmp[0]['ENVIADA_A'] );
             //$data['etapaactual'] = $etapaactual[0]['NOMBRE'];
+            
+            $data['_arr_operatoria_'] = $this->x_get_arr_operatoria( $tmp[0]['ID_OPERATORIA'] );
+            $data['_arr_operatoria_js'] = json_encode(  $this->x_get_arr_operatoria( $tmp[0]['ID_OPERATORIA'] ) );
             
             $data['lst_reqs'] = $this->x_get_reqs( $tmp[0]['ID'] );
             $data['lst_uploads'] = $this->x_get_uploads( $tmp[0]['ID'] );
@@ -1225,6 +1231,14 @@ class carpetas extends main_controller{
         $obj = $this->mod->get_solicitud_de_credito( $idope );
         echo trim(json_encode($obj?$obj[0]:array()));
     }
+    
+    function x_get_arr_operatoria($idoperatoria){
+        $obj = $this->mod->get_arr_operatoria( $idoperatoria );
+        //echo trim(json_encode($obj?$obj[0]:array()));
+        return ($obj?$obj[0]:array());
+    }
+    
+    
     
     function x_get_tienecuotas(){
         $idcredito = $_POST["idcredito"];
