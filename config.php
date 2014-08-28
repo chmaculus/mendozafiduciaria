@@ -52,7 +52,7 @@ define('MYSQL_DATABASE', 'fiduciaria');
 define('SQL_SERVER', 'CARRUSEL\SQL2008R2');
 define('SQL_USER', 'sa');
 define('SQL_PASS', 'xxzza');
-define('SQL_DATABASE', 'MENDOZA_FID');
+define('SQL_DATABASE', 'MDZ_FID_25082014');
 
 
 /*

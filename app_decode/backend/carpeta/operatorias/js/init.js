@@ -195,6 +195,7 @@ $(document).ready(function(){
                             var periodicidad = $("#periodicidad").val();
                             var id_proceso = $("#id_proceso").val();
                             var jefeope = $("#jefeope").val();
+                            var cordope = $("#cordope").val();
                             
 
                             
@@ -229,6 +230,7 @@ $(document).ready(function(){
                                 DESEMBOLSOS:desembolsos,
                                 DEVOLUCIONES:devoluciones,
                                 JEFEOP:jefeope,
+                                COORDOPE:cordope,
                                 PERIODICIDAD:periodicidad,
                                 ID_TIPO_OPERATORIA:tipoope,
                                 checklist:checkedItems,
@@ -363,6 +365,9 @@ $(document).ready(function(){
                         
                         var jefeopeh = $("#jefeopeh").val();
                         $("#jefeope").val(jefeopeh).trigger("chosen:updated");
+                        
+                        var cordopeh = $("#cordopeh").val();
+                        $("#cordope").val(cordopeh).trigger("chosen:updated");
                         
                         
                         var id_procesoh = $("#id_procesoh").val()
@@ -573,6 +578,7 @@ $(document).ready(function(){
                             var devoluciones = $("#devoluciones").val();
                             var periodicidad = $("#periodicidad").val();
                             var jefeope = $("#jefeope").val();
+                            var cordope = $("#cordope").val();
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');
                             var checkedItems = [];
@@ -609,7 +615,8 @@ $(document).ready(function(){
                                 checklist:checkedItems,
                                 adjuntos:_array_uploads,
                                 ID_PROCESO:id_proceso,
-                                JEFEOP:jefeope
+                                JEFEOP:jefeope,
+                                COORDOPE:cordope
                             }
                                                         
                             $.ajax({

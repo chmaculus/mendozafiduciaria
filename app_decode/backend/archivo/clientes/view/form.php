@@ -12,6 +12,7 @@
                     <input type="hidden" id="provinciah" value="0" />
                     <input type="hidden" id="localidadh" value="0" />                    
                     
+                    <input type="hidden" id="faltah" value="<?php echo (isset($entidad["FECHA_ALTA"])?$entidad["FECHA_ALTA"]:"") ?>" />
                     <input type="hidden" id="civae" value="<?php echo (isset($entidad["ID_CONDICION_IVA"])?$entidad["ID_CONDICION_IVA"]:"") ?>" />
                     <input type="hidden" id="cibbe" value="<?php echo (isset($entidad["ID_CONDICION_IIBB"])?$entidad["ID_CONDICION_IIBB"]:"") ?>" />
                     <input type="hidden" id="prove" value="<?php echo (isset($entidad["ID_PROVINCIA"])?$entidad["ID_PROVINCIA"]:"") ?>" />
@@ -125,6 +126,7 @@
                             <div class="indent formtext">
                                 <input type="text" class="medium tip-right" title="Ingrese Valor" id="falta" readonly value="<?php echo $hora_mostrar ?>">
                             </div>
+                            <div class="div_pidepass"><span>Contenido Bloqueado</span></div>
                     </div>
                     <div class="group">
                     <?php if ($contactos): ?>
@@ -199,5 +201,16 @@
            </div>
         </div>
         <!--Form end-->
+        
+        <div id="obs_cob">
+            <span>Ingrese Clave:</span>
+            <input type="password" id="clave_desb" data-nivel="3" />
+            <div>
+                <button onclick="ingresar_pwd();">Enviar</button>
+                <button onclick="salir_pwd();">Cerrar</button>
+            </div>
+        </div>
        
 </div>
+
+

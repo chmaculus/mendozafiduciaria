@@ -23,6 +23,7 @@
                 
                 <input type="hidden" id="id_procesoh" value="<?php echo isset($entidad["ID_PROCESO"])?$entidad["ID_PROCESO"]:"" ?>" />
                 <input type="hidden" id="jefeopeh" value="<?php echo isset($entidad["JEFEOP"])?$entidad["JEFEOP"]:"" ?>" />
+                <input type="hidden" id="cordopeh" value="<?php echo isset($entidad["COORDOPE"])?$entidad["COORDOPE"]:"" ?>" />
 
                 <input type="hidden" id="a_ent" value="<?php echo $_array_checklist ?>" />
                 <script type='text/javascript'>
@@ -91,16 +92,16 @@
                 </div>
                 <?php endif; ?>
                 
-                <?php if(is_array($lst_coope) and 0): ?>
+                <?php if(is_array($lst_coope)): ?>
                 <div class="elem elem_med" >
                     <label>Coord. Operac.:</label>
                     <div class="indent">
-                    <select class="validate[required] chzn-select medium-select select" id="cope" data-prompt-position="topLeft">
-                        <option value="">Elegir Coord. Operaciones</option>
-                        <?php foreach($lst_coope as $rs_cope): ?>
-                        <option value="<?php echo $rs_cope["ID"] ?>"><?php echo $rs_cope["NOMBRE"] . " " . $rs_cope["APELLIDO"] ?></option>
-                        <?php endforeach; ?>
-                    </select>   
+                        <select class="chzn-select medium-select select" id="cordope" data-prompt-position="topLeft">
+                            <option value="">Elegir Coord. Operaciones</option>
+                            <?php foreach($lst_coope as $rs_cope): ?>
+                            <option value="<?php echo $rs_cope["ID"] ?>"><?php echo $rs_cope["NOMBRE"] . " " . $rs_cope["APELLIDO"] ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
                 <?php endif; ?>

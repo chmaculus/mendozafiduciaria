@@ -6,6 +6,10 @@ class carpetas_model extends main_model{
         if (!$id) return array();
         $this->_db->where("id = '".$id   ."'");
         $rtn = $this->_db->get_tabla($this->_tablamod);
+        if ($rtn){
+            $obj_operatoria = $this->_db->get_tabla( 'fid_operatorias', "ID='".$rtn[0]["ID_OPERATORIA"]."'" );
+            $rtn[0]["obj_operatoria"] = $obj_operatoria[0];
+        }
         return $rtn;
     }
     
@@ -694,8 +698,9 @@ class carpetas_model extends main_model{
             $resp = $this->_db->insert( 'fid_operaciones', $obj );
             //sino, guardar con cartera de en vacio
             
-            
+            $obj_operatoria = $this->_db->get_tabla( 'fid_operatorias', "ID='".$obj["ID_OPERATORIA"]."'" );
             $obj_rtn = $this->_db->get_tabla( 'fid_operaciones', "ID='".$resp."'" );
+            $obj_rtn[0]["obj_operatoria"] = $obj_operatoria[0];
             $obj_rtn = $obj_rtn[0];
             
             $acc = "add";
@@ -1707,6 +1712,11 @@ class carpetas_model extends main_model{
         
         $this->_db->select('ID,NOMBRE');
         $rtn = $this->_db->get_tabla("fid_entidades_tipos",'ID='.$id);
+        return $rtn;
+    }
+    
+    function get_arr_operatoria($idope){
+        $rtn = $this->_db->get_tabla("fid_operatorias","ID='". $idope . "'");
         return $rtn;
     }
     

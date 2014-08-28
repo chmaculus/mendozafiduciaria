@@ -51,6 +51,9 @@ class operatoria_model extends main_model{
         unset($obj["id"]);
         $id_new = $iid;
         if ($iid==0)://agregar
+            
+            //log_this('zzzzz.log', print_r($obj,1) );
+            
             $resp = $this->_db->insert($this->_tablamod, $obj);
             $acc = "add";
             $id_new = $resp;

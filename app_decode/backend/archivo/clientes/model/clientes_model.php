@@ -142,6 +142,18 @@ class clientes_model extends main_model{
         return $rtn;
     }
     
+    function getclavenivel($passw, $nivel){
+        $retornar = 0;
+        $this->_db->select("clave");
+        $rtn = $this->_db->get_tabla("fid_accesosclave", "nivel='" . $nivel . "'");
+        if ($rtn){//comparar
+            if ($rtn[0]["clave"]==$passw){
+                $retornar = 1;
+            }
+        }
+        return $retornar;
+    }
+    
     function  verificarcuit($cuit){
         if ($cuit!=''){
             $this->_db->select("ID");

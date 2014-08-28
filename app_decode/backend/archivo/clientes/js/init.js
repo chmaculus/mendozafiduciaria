@@ -1,5 +1,6 @@
 var mydata;
 var working = false;
+var working1 = false;
 var _more;
 
 function loadChild(val){
@@ -89,8 +90,9 @@ $(document).ready(function(){
                         $(".fancybox-inner").css('overflow-y','auto');
                         $("#provincia").chosen({ disable_search_threshold: 5 }); 
                         $("#condicioniva").chosen({ disable_search_threshold: 5 });
-                        $("#condicioniibb").chosen({ disable_search_threshold: 5 }); 
+                        $("#condicioniibb").chosen({ disable_search_threshold: 5 });
                         $("#tipobeneficiario").chosen({ disable_search_threshold: 5 });
+                        init_datepicker('#falta','-3','+0','1',0);
                         /*
                         $("#cuit").jqxMaskedInput({ mask: '##-########-#', width: 150, height: 22, theme: theme });
                         $("#cuit").css('height','28px').css('width','255px');
@@ -119,6 +121,12 @@ $(document).ready(function(){
                             $("#frmagregar :text").removeClass('error');
                             $("#nom").select();
 
+                        });
+                        
+                        $('.div_pidepass').on('click', function(event) {
+                            
+                            mostrar_pwd();
+                            
                         });
                         
                         $('#raz').keyup(function() {
@@ -359,6 +367,10 @@ $(document).ready(function(){
                                                 
                         $(".fancybox-inner").css('overflow-x','hidden');
                         $(".fancybox-inner").css('overflow-y','auto');
+                        
+                        init_datepicker('#falta','-3','+0','1',0);
+                        var faltah = $("#faltah").val();
+                        $("#falta").val(faltah);
                         
                         
                         $("#provincia").chosen({ disable_search_threshold: 5 }); 
@@ -787,3 +799,53 @@ $(document).ready(function(){
     });
         
 });
+
+
+function mostrar_pwd(){
+    $("#obs_cob").show();
+    $("#obs_cob input").select();
+    $("#obs_cob input").keyup(function( event ) {
+        if ( event.which == 27 ) {
+            salir_pwd();
+        }
+    });
+}
+
+function salir_pwd(){
+    $("#obs_cob").hide();
+}
+
+function ingresar_pwd(){
+    
+    var passw = $("#clave_desb").val();
+    var nivel = $("#clave_desb").data('nivel');
+    
+    if (working1==false){
+        working1 = true;
+        $.ajax({
+            url : _clientes.URL + "/x_getclavenivel",
+            data : {
+                  passw : passw,
+                  nivel : nivel
+            },
+            dataType: "json",
+            type : "post",
+            success : function(r){
+                console.dir(r);
+                if (r==1){
+                    salir_pwd();
+                    $(".div_pidepass").hide();
+                }else{
+                    jAlert('Clave incorrecta.', $.ucwords(_etiqueta_modulo),function(){
+                        $("#clave_desb").select();
+                    });
+                }
+                
+                working1 = false;
+            }
+        });
+    }
+    
+    
+    
+}

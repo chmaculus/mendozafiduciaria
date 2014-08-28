@@ -75,7 +75,7 @@ $(document).ready(function(){
                         $("#operatorias").chosen({width: "630px"});
                         $("#btnBorrar").hide();
                                               
-                        init_datepicker('#fini','-3','+0','0',1);
+                        init_datepicker('#fini','-3','+0','0');
                         init_datepicker('#ffin','-3','+10','0',1);
                         init_datepicker('#aporte_fecha','-3','+5','0',0);
                                                 
@@ -461,7 +461,7 @@ $(document).ready(function(){
                         var a_ent = $("#a_ent").val();
                         _array_entidades = javascript_array;
                                                
-                       init_datepicker('#fini','-3','+0','0',1);
+                       init_datepicker('#fini','-3','+0','0');
                        init_datepicker('#ffin','-3','+10','0',1);
                         
                         $("#fini").val(finih);
