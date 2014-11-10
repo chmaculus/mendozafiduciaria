@@ -46,7 +46,7 @@ class credito_informes_model extends credito_model {
         }
 
         $fideicomiso = array();
-        if (trim($credito['POSTULANTES'])) {
+        if ($id_fideicomiso > 0) {
             $fideicomiso = $this->_db->get_row("fid_fideicomiso", "id = " . $id_fideicomiso);
             if (!$fideicomiso){
                 $fideicomiso = array("NOMBRE"=>' ('.$id_fideicomiso.') ');
@@ -54,16 +54,19 @@ class credito_informes_model extends credito_model {
         }
 
         $operatorias = array();
-        if (trim($credito['POSTULANTES'])) {
+        if ($id_operatoria > 0) {
             $operatorias = $this->_db->get_row("fid_operatorias", "id = " . $id_operatoria);
             if (!$operatorias){
                 $operatorias = array("NOMBRE"=>' ('.$id_operatoria.') ');
             }
         }
 
+        $opciones = $this->get_creditos_opciones();
+        
         $credito['POSTULANTES'] = $postulantes;
         $credito['FIDEICOMISO'] = $fideicomiso;
         $credito['OPERATORIAS'] = $operatorias;
+        $credito['CONVENIO'] = isset($opciones['convenio'] )? $opciones['convenio']['VALOR']  : "";
         $credito['post_str'] = $post_str;
 
 

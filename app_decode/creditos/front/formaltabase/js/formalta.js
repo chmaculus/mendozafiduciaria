@@ -277,8 +277,7 @@ function generar_cuotas(){
         },
         type : "post",
         success : function(data){
-            console.log(data);
-       /*     $(".div-result").html(data);
+            $(".div-result").html(data);
             jConfirm("Desea generar otro credito?","Proceso Terminado con éxito", function(e){
                 if (e){
                     _formaltabase.restart();
@@ -286,7 +285,7 @@ function generar_cuotas(){
                 else{
                     location.href="creditos/front/creditos";
                 }
-            });*/
+            });
         }
     });
 }

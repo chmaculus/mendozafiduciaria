@@ -944,6 +944,9 @@ class cuotas extends main_controller{
     .footer .small{
         font-size:50%;
     }
+    .footer .midd{
+        font-size:65%;
+    }
 
     .div-footer{
         height: 30mm;
@@ -967,17 +970,47 @@ class cuotas extends main_controller{
   }
 </style><table  >";
         
+     //   $left_footer = $this->mod->getLeftFooter();
+        //$left_footer = $this->getLeftFooter();
+        
+        $opcionesCredito = $this->mod->get_creditos_opciones();
+        $banco = 1;
+        if (isset($opcionesCredito['banco'])){
+            if ($opcionesCredito['banco']['VALOR']==2){
+                $banco = 2;
+            }
+        }
+        
+        switch($banco){
+            case 1:
+                $left_footer = 
+        '<p class="normal"><b>Convenio: BNA 5321</b><br/>
+        Domicilio de pago: Sucursales del Banco de la Nación Argentina<br/>
+        </p>
+        <p class="normal">El Banco actúa únicamente como Agente Recaudador, no asumiendo otra responsabilidad y obligación que exceda tal carácter.<br/>
+        La falta de pago a su vencimiento provocará devengamiento de intereses moratorios y punitorios hasta la fecha de la efectiva cancelación,<br/>
+        conforme lo establecido en el contrato de prestamo y sin perjuicio de otros derechos que correspondan, quedando sin efecto la imputación que figura en la presente boleta.</p>';
+
+                $right_footer = 'Fecha de Emisión: '.date("d/m/Y H:i:s");                
+                break;
+            case 2:
         $left_footer = 
-'<p class="normal"><b>Convenio: BNA 5321</b><br/>
-Domicilio de pago: Sucursales del Banco de la Nación Argentina<br/>
+'<p class="midd"><span class="normal"><b>Convenio Supervielle - Cta cte: 2540221 - CBU: 0270066310025402210014</b> </span><br/>
+<span class="normal">Clientes con cuenta en Banco Supervielle: Cualquier Sucursal Banco Supervielle.<br/>
+No clientes del Banco Supervielle:  Anexos Banco Supervielle (Municipalidad Capital y Godoy cruz), Consejo profesional de Cs económicas. (Mendoza Centro-San Martin-Tunuyan).</span>
 </p>
-<p class="small">El Banco actúa únicamente como Agente Recaudador, no asumiendo otra responsabilidad y obligación que exceda tal carácter.<br/>
+<p class="small"  style="margin-top: -9px;display: block; ">El Banco actúa únicamente como Agente Recaudador, no asumiendo otra responsabilidad y obligación que exceda tal carácter.<br/>
 La falta de pago a su vencimiento provocará devengamiento de intereses moratorios y punitorios hasta la fecha de la efectiva cancelación,<br/>
 conforme lo establecido en el contrato de prestamo y sin perjuicio de otros derechos que correspondan, quedando sin efecto la imputación que figura en la presente boleta.</p>';
 
-        $right_footer = 'Fecha de Emisión: '.date("d/m/Y H:i:s");
-
+        $right_footer = 'Fecha de Emisión: '.date("d/m/Y H:i:s");                
+                break;
+        }
         
+     
+
+
+        $html = "";
         $html = $head;
 
         $clientes = $this->mod->get_clientes_credito();
@@ -1057,6 +1090,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             <tr class="footer"><td class="c8" colspan="8"><div class="div-footer">'.$footer.'</div></td></tr>
                         </table>
                         <div class="page-break"></div>';
+                    
                     $html .= $html_page;
                     
                     $page = '';

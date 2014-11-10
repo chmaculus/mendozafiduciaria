@@ -8,8 +8,8 @@ class formalta extends main_controller {
 
     function init($id = 0) {
         $this->constructor();
-        if (!isset($_SESSION["USERADM"]))
-            header("Location: " . '/' . URL_PATH);
+   /*     if (!isset($_SESSION["USERADM"]))
+            header("Location: " . '/' . URL_PATH);*/
         //$this->_get_loged();
         $this->setCss(array("ivory.css", "formalta.css"));
         //$this->setJs( array( "init.js",'forms.js') );
@@ -106,9 +106,6 @@ class formalta extends main_controller {
                 $credito = $credito_tmp;
             }
         }
-        
-
-
         
         //print_array($credito );
         $this->_js_array['DESEMBOLSOS'] = $credito['DESEMBOLSOS'];

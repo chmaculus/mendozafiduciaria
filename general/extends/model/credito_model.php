@@ -1305,7 +1305,10 @@ class credito_model extends main_model {
                 }
                 $rango = ($cuota['FECHA_VENCIMIENTO'] - $cuota['FECHA_INICIO']) / 86400;
             }
-
+            
+            
+            log_this('log/ddddd.log1',print_r($variacion,1));
+            
 
             $blog = false;
 

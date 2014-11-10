@@ -49,10 +49,10 @@ define('MYSQL_PASS', '');
 define('MYSQL_DATABASE', 'fiduciaria');
 
 
-define('SQL_SERVER', 'CARRUSEL\SQL2008R2');
+define('SQL_SERVER', 'SVDESARROLLO\SQL2008R2');
 define('SQL_USER', 'sa');
-define('SQL_PASS', 'xxzza');
-define('SQL_DATABASE', 'MDZ_FID_25082014');
+define('SQL_PASS', 'Xxzz@2014');
+define('SQL_DATABASE', 'MENDOZA_FID');
 
 
 /*
