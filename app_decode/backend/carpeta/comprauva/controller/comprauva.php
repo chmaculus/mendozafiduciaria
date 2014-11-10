@@ -464,8 +464,9 @@ class comprauva extends main_controller {
         $semilla = "sem";
         $etapa = "1";
         $etiqueta = "etik";
-
+        
         if (isset($_FILES['imagen'])) {
+                       
 
             $archivo['tmp'] = $_FILES["imagen"]["tmp_name"];
             $archivo['size'] = $_FILES["imagen"]["size"];
@@ -482,7 +483,7 @@ class comprauva extends main_controller {
             }
 
             if ($subir == true) {
-
+                
                 $resultado = stripos($archivo['name'], 'ciu');
                 if ($resultado !== FALSE) {
                     $file_name = 'imp_cius.xlsx';
@@ -495,6 +496,9 @@ class comprauva extends main_controller {
 
                 $extencion = substr($archivo['name'], -3);
                 $uploaded = TEMP_PATH . "importar/" . $file_name; //.".".$extencion;
+                
+                log_this('log/dddddd.log', '222222 ' . $extencion . "---" . $uploaded);
+                
                 if (file_exists($uploaded)) {
                     echo '
                             <script>
