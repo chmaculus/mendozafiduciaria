@@ -7,6 +7,7 @@
         $idope = isset($_GET["idope"])?$_GET["idope"]:'0';
         $idpro = isset($_GET["idpro"])?$_GET["idpro"]:'0';
         $idestado = isset($_GET["estado"])?$_GET["estado"]:'0';
+        $idtipo = isset($_GET["idtipo"])?$_GET["idtipo"]:'0';
         
         $cad_campos = "f.ID, c.CUIT, c.RAZON_SOCIAL";
         $arr_campos = explode(', ', $cad_campos);
@@ -32,7 +33,9 @@
             //$cad_where .= " and f.ID_ESTADO <> '12'";
             $cad_where = "( ".$cad_like . ") and f.ID_PROVINCIA='". $idpro . "' and f.ID_ESTADO <> '12'";
         }
-        $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
+        $cad_where .= " AND TIPO=" . $idtipo ;
+        
+        $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where );
         //file_put_contents('zzzzzz.log',$cnn->last_query() );
         
         echo trim(json_encode($rtn?$rtn:array()));

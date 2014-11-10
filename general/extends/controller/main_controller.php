@@ -311,27 +311,30 @@ class main_controller extends controller{
         //obtener nombre de modulo
         $name_modulo_local = $this->get_controller_name();
         $modulos = $_SESSION["MODS"];
-        if ($modulos and $name_modulo_local<>'dashboard' and $_SESSION["USER_USERNAME"]<>'admin'){
-            foreach($modulos as $m=>$v){
-                if ($v["URL"]==$name_modulo_local){
-                    $sw = 1;
-                    $id_modulo = $v["ID"];
-                    break;
-                }
-            }
-            
-            if (PERMISOS_MENU_ALL!=1){
-                //verificiar q tenga permiso
-                if ( $name_modulo_local!="formalta" && $name_modulo_local!="carpetash1" && $name_modulo_local!="carpetash" && !in_array($id_modulo,$_SESSION["USER_PERMISOS_MENU"])){
-                    
-                    //no tiene permiso
-                    header("Location: " . '/'.URL_PATH);
-                    die();
-                }
-            }
-            
-        }
         
+        if ($name_modulo_local!='compravino'){
+        
+            if ($modulos and $name_modulo_local<>'dashboard' and $_SESSION["USER_USERNAME"]<>'admin'){
+                foreach($modulos as $m=>$v){
+                    if ($v["URL"]==$name_modulo_local){
+                        $sw = 1;
+                        $id_modulo = $v["ID"];
+                        break;
+                    }
+                }
+
+                if (PERMISOS_MENU_ALL!=1){
+                    //verificiar q tenga permiso
+                    if ( $name_modulo_local!="formalta" && $name_modulo_local!="carpetash1" && $name_modulo_local!="carpetash" && !in_array($id_modulo,$_SESSION["USER_PERMISOS_MENU"])){
+
+                        //no tiene permiso
+                        header("Location: " . '/'.URL_PATH);
+                        die();
+                    }
+                }
+
+            }
+        }
         
     }
     
