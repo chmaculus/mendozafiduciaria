@@ -579,9 +579,13 @@ class credito_model_test extends credito_model {
     function _generar_codbar($id, $total) {
 
         $this->renew_datos();
+        $opcionesCredito = $this->get_creditos_opciones();
+        $numeroConvenio = isset($opcionesCredito['convenio']) ? $opcionesCredito['convenio']['VALOR'] : NUMERO_CONVENIO;
+        
+        
         $cuota = $this->_cuotas[$id];
 
-        $num_convenio = str_pad(NUMERO_CONVENIO, 4, "0", STR_PAD_LEFT);
+        $num_convenio = str_pad($numeroConvenio, 4, "0", STR_PAD_LEFT);
         $num_credito = str_pad($cuota['ID_CREDITO'], 8, "0", STR_PAD_LEFT);
 
         $fecha_vencimiento = date("Ymd", $cuota['FECHA_VENCIMIENTO']);

@@ -129,6 +129,7 @@
     height:500px;
     overflow-x: hidden;
     overflow-y: auto;
+    width:100%;
 } 
 
 .lista-extract ul.datos li.over{

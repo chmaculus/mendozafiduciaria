@@ -965,6 +965,7 @@ function salir_chequera(){
 }
 
 function imprimirEventos(){
+    
     $.ajax({
         url : _cuotas.URL + "/x_generar_eventos",
         data : {

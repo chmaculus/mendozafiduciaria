@@ -31,12 +31,13 @@ class cobros extends main_controller {
         
         
         $pagos = $this->mod->pagar_deuda($ret_reduda, $monto, $fecha);
+        
         $data = array();
         
         
         $this->mod->save_last_state(true);
         $pago_total = 0;
-        foreach($pagos as $pago){
+        foreach($pagos['pagos'] as $pago){
             if ($pago['ID_TIPO']==7){
                 //genero la variacion corerspondiente al desembolso       
                 $pago_total += $pago['MONTO'];
@@ -94,11 +95,21 @@ class cobros extends main_controller {
     }
 
     function x_enviar_archivo() {
+        $entidad = $_POST['comboEntidad'];
         $target_filepath = UPLOAD_BANCOS . basename($_FILES['txtArchivo']['name']);
 
         if (move_uploaded_file($_FILES['txtArchivo']['tmp_name'], $target_filepath)) {
             $id = $this->mod->guardar_archivo_bancario(basename($_FILES['txtArchivo']['name']), time());
-            $arr_result = $this->extract_file(basename($_FILES['txtArchivo']['name']));
+            $arr_result  = array();
+            switch ($entidad){
+                case 'Nacion':
+                    $arr_result = $this->extract_file(basename($_FILES['txtArchivo']['name']));
+                    break;
+                case 'Supervielle':
+                    $arr_result = $this->extract_file_supervielle(basename($_FILES['txtArchivo']['name']));
+                    break;
+            }
+            
 
             $insert = array();
             foreach ($arr_result as $item) {
@@ -135,6 +146,7 @@ class cobros extends main_controller {
         } else {
             
         }
+
     }
 
     function extract_file($file) {
@@ -181,6 +193,53 @@ class cobros extends main_controller {
 
         return $result;
     }
+    function extract_file_supervielle($file) {
+        $content = file_get_contents(UPLOAD_BANCOS . $file);
+
+        $content = str_replace(array("\r\n"), array(""), $content);
+        $content = str_replace(array("\n"), array(""), $content);
+
+
+        //$items = explode("\r\n",$content);
+
+        $header = substr($content, 0,73);
+        $detalle = substr(strip_tags($content), 73);
+        $items = str_split($detalle, 65);
+
+
+        //print_array($items);
+        $result = array();
+        foreach ($items as $item) {
+            $item = str_replace(array("\r", "\n"), "", $item);
+       //     echo $item;
+            $tmp = array();
+            $recaudacion = substr($item, 0, 65);
+
+            if (substr($recaudacion, 0, 34)==='9999999900000000000000000000000000'){
+                break;
+            }
+            
+            $tmp['recaudacion'] = array();
+
+            
+            $tmp['recaudacion']['FECHA_REN'] = 0000000;
+            $tmp['recaudacion']['FECHA_REC'] = substr($recaudacion, 0, 8);
+//            $importe_entero = substr($recaudacion, 8, 13);
+//          $importe_decimal = substr($recaudacion, 21, 2);
+            $tmp['recaudacion']['IMPORTE'] = substr($recaudacion, 8, 15);
+
+            $barcode = substr($item, 23, 80);
+            $tmp['barcode']['ID_CREDITO'] = substr($barcode, 4, 8);
+            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($barcode, 12, 8);
+            $tmp['barcode']['IMPORTE'] = substr($barcode, 20, 10);
+            $result[] = $tmp;
+
+
+            $cheque = substr($item, 138, 22);
+        }
+
+        return $result;
+    }
 
     function x_get_archivos_bancos() {
         $lista = $this->mod->get_archivos_bancarios();
@@ -206,7 +265,6 @@ class cobros extends main_controller {
         $cobros = $_POST['cobros'];
 
         $fecha = time();
-        print_array($cobros);
         
         //die();
         foreach ($cobros as $cobro) {
@@ -231,7 +289,6 @@ class cobros extends main_controller {
             
         }
 
-        print_array($cobros);
     }
 
 }

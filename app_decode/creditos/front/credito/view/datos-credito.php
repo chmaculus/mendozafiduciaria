@@ -108,14 +108,21 @@
                 <div class="indent">
                     <span ><?=$PLAZO_PAGO?>  </span>
                 </div>
-            </div>            
-
-            <div class="elem elem_med">
+            </div>        
+            <div class="elem elem_med tri">
                 <label class="der">Monto Solicitado:</label>
                 <div class="indent formtext">
                     <span ><?=number_format($MONTO_CREDITO,2,",",".");?>  </span>
                 </div>
-            </div>
+            </div>            
+            <div class="elem elem_med tri" >
+                <label>Convenio</label>
+                <div class="indent">
+                    <span ><?=$CONVENIO?>  </span>
+                </div>
+            </div>            
+
+
 
 
             <div class="elem">
@@ -124,6 +131,7 @@
                     <span ><?=$post_str?>  </span>
                 </div>
             </div>
+
 
             <div class="clear"> </div>
         </div>

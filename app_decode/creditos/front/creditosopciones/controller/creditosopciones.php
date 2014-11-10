@@ -12,6 +12,8 @@
  * @author dw
  */
 class creditosopciones extends main_controller {
+    
+    
     function creditosopciones(){
         $this->mod = $this->model("creditosopciones_model");
     }    
@@ -29,14 +31,22 @@ class creditosopciones extends main_controller {
     }
     
     function getOpciones(){
-        return $this->view("opciones_main");
+        $data = array("banco"=>0,"convenio"=>"");
+        if (count($this->_js_array['CREDITOS'])==1){
+           
+            $this->mod->set_credito_active($this->_js_array['CREDITOS'][0]);
+            $this->mod->set_version_active();
+            $rtn = $this->mod->get_creditos_opciones();
+            $data['banco'] = isset($rtn['banco']['VALOR']) ? $rtn['banco']['VALOR'] : 0;
+            $data['convenio'] = isset($rtn['convenio']['VALOR'])?$rtn['convenio']['VALOR'] : "";
+            
+        }
+        return $this->view("opciones_main",$data);
     }
     
     function x_guardar_opciones(){
         $opciones = isset($_POST['opciones'])?$_POST['opciones']:array();
         $creditos = $_POST['creditos'];
-        print_array($opciones);
-        print_array($creditos);
         
         $this->mod->guardar_opcion($creditos, $opciones);
     }

@@ -263,7 +263,7 @@ $(document).ready(function(){
                         type : "post",
                         success : function(data1){
                             var clase_asignar;
-                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a1:</div>';
+                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
                             if(data1){
                                 $.each(data1, function (index, value){
                                     clase_asignar = 'link_asignar_atras';
@@ -312,7 +312,7 @@ $(document).ready(function(){
                                     success : function(datar){
 
                                         var clase_asignar;
-                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a2:</div> <div class="regresar_ar">Regresar</div>';
+                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
                                         if(datar){
                                             $.each(datar, function (index, value){
 
@@ -899,7 +899,7 @@ $(document).ready(function(){
                                                     type : "post",
                                                     success : function(data1){
                                                         var clase_asignar;
-                                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a3:</div>';
+                                                        var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
                                                         if(data1){
                                                             
                                                             //_USUARIO_SESION_ACTUAL
@@ -952,7 +952,7 @@ $(document).ready(function(){
                                                                 success : function(datar){
 
                                                                     var clase_asignar;
-                                                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a4:</div> <div class="regresar_ar">Regresar</div>';
+                                                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
                                                                     if(datar){
                                                                                                                                                 
                                                                         $.each(datar, function (index, value){
@@ -2727,7 +2727,7 @@ $(document).ready(function(){
                                 success : function(data1){
 
                                     var clase_asignar;
-                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a5:</div>';
+                                    var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
                                     if(data1){
                                         $.each(data1, function (index, value){
                                             clase_asignar = 'link_asignar';
@@ -2796,7 +2796,7 @@ $(document).ready(function(){
                                             success : function(datar){
                                                 //console.dir(datar);
                                                 var clase_asignar;
-                                                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a6:</div> <div class="regresar_ar">Regresar</div>';
+                                                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
                                                 if(datar){
                                                     
                                                     console.log("xxxxx:::::");
@@ -2806,13 +2806,11 @@ $(document).ready(function(){
                                                     
 
                                                     if (parseFloat(_array_obj.obj_operatoria.COORDOPE)<=0){
-                                                        if (value.IID!=_USUARIO_SESION_ACTUAL || ( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 && value.ETAPA=='3' )  ){
+                                                        if (( _array_obj.ID_ETAPA_ACTUAL==1 && _USER_ROL==10 )  ){
                                                             cadhtml +=  '<div class="' + clase_asignar + '" data-etapa="'+value.ETAPA+'" data-iid="'+value.IID+'"><span>' + value.NOMBRE + ' ' + value.APELLIDO+ ' ('+ value.AREA+ ' - ' + value.PUESTO+')';
                                                             cadhtml += '</span></div>';
                                                         }
                                                     }
-
-                                                    
                                                     
                                                                                                         
                                                     $.each(datar, function (index, value){
@@ -7219,7 +7217,7 @@ function process_asignar(){
             type : "post",
             success : function(data1){
                 var clase_asignar;
-                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a7:</div>';
+                var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
                 if(data1){
                     $.each(data1, function (index, value){
                         clase_asignar = 'link_asignar';
@@ -7269,7 +7267,7 @@ function process_asignar(){
                         success : function(datar){
 
                             var clase_asignar;
-                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a8:</div> <div class="regresar_ar">Regresar</div>';
+                            var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
                             if(datar){
                                 $.each(datar, function (index, value){
 

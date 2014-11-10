@@ -10,8 +10,10 @@ class formalta_model extends credito_model {
 
 
         $this->_cuotas = $this->_to_array_cuotas();
+        
         $this->_variaciones = $this->_to_array_variaciones();
-
+        if (!$this->_cuotas ) return false;
+        if (!$this->_variaciones ) return false;
 
         $primera_variacion = reset($this->_variaciones);
 
@@ -260,6 +262,7 @@ class formalta_model extends credito_model {
                
             echo "CREDITOID:".$creditoRow['ID']."<br/>";
             $credito = $this->getCreditoClass($creditoRow['ID'], $fecha);
+            if (!$credito) continue;
             $this->getCreditoDeuda($credito, $fecha);
             
         }
@@ -272,11 +275,17 @@ class formalta_model extends credito_model {
         $cantidadCuotas = $cuotasCollection->size();
         
         $bDeuda = false;
-        
+        $eventos = $credito->getEventos();
+        echo $eventos->size()."-";
+        //if ()
+        //print_array($eventos->size());;
         foreach ($cuotasCollection as $cuota) {
             $calculosCuota = new CalculosCuota($cuota);
 
-            $calculosCuota->makeFIDEstado($fecha,TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+            $result = $calculosCuota->makeFIDEstado($fecha,TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+            if (!$result){
+                continue;
+            }
 
             //obtenemos informacion de lo devengado
             $estadoCuota = $cuota->getCuotaEstado();
@@ -322,5 +331,3 @@ class formalta_model extends credito_model {
     }
 
 }
-
-?>

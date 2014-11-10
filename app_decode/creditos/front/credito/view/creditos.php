@@ -2,6 +2,7 @@
     <li class="tb_add" data-top='informe'><div>Informes</div></li>
     <li class="tb_edi" data-top='eventos'><div>Eventos</div></li>
     <li class="tb_edi" data-top='estructura'><div>Estructura</div></li>
+    <li class="tb_edi" data-top='opciones'><div>Opciones</div></li>
         
     
     <div class="tb_sep"></div>

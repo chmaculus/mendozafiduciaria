@@ -50,6 +50,9 @@ $(document).ready(function(){
                 case "estructura":
                     get_estructura();
                     break;
+                case "opciones":
+                    get_opciones_credito();
+                    break;                    
                 case "listado":
                     get_listado();
                     break;
@@ -76,6 +79,24 @@ $(document).ready(function(){
 
 });
 
+function get_opciones_credito(){
+    
+    
+        
+        
+        $("#wpopup").show();
+        load_app("creditos/front/creditosopciones","#wpopup",[_credito.ID], 
+        function(){
+            $(".right.less.selected").click();           
+            $.unblockUI();
+        },
+        function(){
+        },
+        function(){
+        }); 
+        
+
+}
 
 function get_eventos(){
 
