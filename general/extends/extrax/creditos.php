@@ -1,5 +1,5 @@
 <?php
-	date_default_timezone_set("America/Argentina/Mendoza");
+    date_default_timezone_set("America/Argentina/Mendoza");
     require_once('connect.php');
      
     if (isset($_GET["accion"]) && $_GET["accion"]=='getCreditos' ){
@@ -22,9 +22,8 @@
         $cnn->join("fid_creditos_extra e","e.CREDITO_ID = t.ID AND CREDITO_ESTADO_FECHA = ".$time , "left");
         
         $creditos = $cnn->get_tabla("fid_creditos t");
-	/*	echo $d."-".$m."-".$y."<br/>";
-		echo date("d-m-Y",$time)."</br>";
-        echo $cnn->last_query();*/
+        //echo $cnn->last_query();
+        //print_array($creditos);
         $rtn = array();
         foreach($creditos as $credito){
             $clientes = array();

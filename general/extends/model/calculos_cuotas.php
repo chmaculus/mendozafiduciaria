@@ -172,6 +172,7 @@ class CalculosCuota {
         $this->_cuota->setCuotaEstado(new CuotaEstado());
         $this->_cuota->getCuotaEstado()->capital = $this->_cuota->getCapital();
 
+        if (is_null($eventoInicialTasa ))return false;
         $this->_recursiveSegmentoResult($eventosCollection, $eventoInicialTasa, $detalleItemResult);
         return $detalleItemResult;
     }

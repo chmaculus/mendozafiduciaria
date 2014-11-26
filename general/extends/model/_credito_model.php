@@ -92,7 +92,7 @@ class credito_model extends main_model {
         $cantidad = count($items);
         for ($i = 0; $i < $cantidad; $i++) {
             $tmp_arr = $this->_get_versiones_recursive($credito, $items[$i]['ID_VERSION']);
-            
+            ;
             $tmp['label'] = $items[$i]['DESCRIPCION_VERSION'] . "(" . date("d/m/Y", $items[$i]['FECHA_VERSION']) . ")";
             $tmp['value'] = $items[$i]['ID_VERSION'];
 
@@ -103,12 +103,6 @@ class credito_model extends main_model {
             $arr_rtn[] = $tmp;
         }
         return $arr_rtn;
-    }
-    
-    function get_creditos_opciones(){
-        $id_credito = $this->_id_credito;
-        $this->_db->set_key("CLAVE");
-        return $this->_db->get_tabla("fid_creditos_opciones","CREDITO_ID = ".$id_credito);
     }
 
     //evento en tabla principal en fid_creditos_eventos, devuelve el id generado
@@ -2239,23 +2233,7 @@ class credito_model extends main_model {
                 $this->_db->order_by("FECHA_VERSION", "desc");
                 $version = $this->_db->get_row("fid_creditos_version");
 
-                if ($version){
-                    $this->_db->update("fid_creditos_version", array("ACTIVA" => 1), "ID_VERSION = " . $version['ID_VERSION']);
-                }
-                else{
-        //ETAPA 1
-                    $version = array(
-                        "FECHA_VERSION" => $fecha,
-                        "ID_CREDITO_VERSION" => $this->_id_credito,
-                        "TIPO_VERSION" => 1,
-                        "DESCRIPCION_VERSION" => "Inicial",
-                        "PARENT_ID" => 0,
-                        "UPDATE_TIME" => time()
-                    );
-                    $id_version = $this->_db->insert("fid_creditos_version", $version);
-                    $this->_id_version = $id_version;
-                }
-                
+                $this->_db->update("fid_creditos_version", array("ACTIVA" => 1), "ID_VERSION = " . $version['ID_VERSION']);
             }
             $id_version = $version['ID_VERSION'];
         } else {
