@@ -52,7 +52,12 @@ class cobros_model extends credito_model{
     }
     
     function get_cobros_bancos($id){
-        $datos = $this->_db->get_tabla("fid_creditos_bancos_cobros","ID_FILE = ".$id);
+        $this->_db->select("cb.*, cl.RAZON_SOCIAL");
+        
+        $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID", "left");
+        $this->_db->join("fid_clientes cl","cl.ID = c.POSTULANTES", "left");
+        $datos = $this->_db->get_tabla("fid_creditos_bancos_cobros cb","cb.ID_FILE = ".$id);
+        //echo $this->_db->last_query();die();
         return $datos;
     }
     
