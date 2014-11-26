@@ -92,7 +92,7 @@ class credito_model extends main_model {
         $cantidad = count($items);
         for ($i = 0; $i < $cantidad; $i++) {
             $tmp_arr = $this->_get_versiones_recursive($credito, $items[$i]['ID_VERSION']);
-            ;
+            
             $tmp['label'] = $items[$i]['DESCRIPCION_VERSION'] . "(" . date("d/m/Y", $items[$i]['FECHA_VERSION']) . ")";
             $tmp['value'] = $items[$i]['ID_VERSION'];
 
@@ -103,6 +103,12 @@ class credito_model extends main_model {
             $arr_rtn[] = $tmp;
         }
         return $arr_rtn;
+    }
+    
+    function get_creditos_opciones(){
+        $id_credito = $this->_id_credito;
+        $this->_db->set_key("CLAVE");
+        return $this->_db->get_tabla("fid_creditos_opciones","CREDITO_ID = ".$id_credito);
     }
 
     //evento en tabla principal en fid_creditos_eventos, devuelve el id generado
@@ -672,11 +678,14 @@ class credito_model extends main_model {
                         $ultima_variacion = end($this->_variaciones);
                         $id = $ultima_variacion['ID'];
 
-                        $this->_variaciones[$id];
+                        
+                        //si es evento informe
                         if ($this->_variaciones[$id]['TIPO'] == EVENTO_INFORME) {
-                            if ($fecha_actual_calculo < $this->_variaciones[$id]['FECHA']) {
+                            
+                            //y la fecha de vencimiento de cuota (calculo) es menor al informe
+                           // if ($fecha_actual_calculo < $this->_variaciones[$id]['FECHA']) {
                                 $fecha_actual_calculo = $this->_variaciones[$id]['FECHA'];
-                            }
+                           // }
 
                             //           $this->_variaciones[$id]['FECHA'] = $fecha_actual_calculo;
                         }
@@ -686,12 +695,11 @@ class credito_model extends main_model {
 
                     //se calculan los segmentos de la cuota segun la fecha establecida
                     $this->_make_segmento_cuota($cuota['ID'], $fecha_actual_calculo);
-                    if ($cuota['CUOTAS_RESTANTES'] == 30) {
-//echo ":::".$this->_tipo_devengamiento."::".$cuota['CUOTAS_RESTANTES']." - ".$cuota['ESTADO']."__".date("d/m/Y",$fecha_actual_calculo)."<br/>";                        
-//print_array($this->_cuotas[$cuota['ID']]);
-                    }
+
                     //se unen los segmentos para realizar el calculo de la cuota
                     $tmp = $this->_join_segmento_cuota($cuota['ID'], $fecha_actual_calculo);
+                    
+                  //  if ($cuota['CUOTAS_RESTANTES']==22)die();
                     if (!$tmp)
                         continue;
                 }
@@ -752,10 +760,13 @@ class credito_model extends main_model {
 
             reset($this->_variaciones);
             foreach ($this->_variaciones as $variacion) {
+
                 if ($variacion['FECHA'] >= $FECHA_INICIO_VARIACION && $variacion['ESTADO'] > -1 && $variacion['FECHA'] <= $fecha_get) {
+
                     $variaciones[] = $variacion;
                 }
             }
+
 
             //REVER-------------------------------------------------
             $subcuotas = array();
@@ -764,11 +775,13 @@ class credito_model extends main_model {
             $primera_variacion = reset($this->_variaciones);
             //si es la primera cuota la fecha de inicio de la cuota es la primera variacion(desembolso)
             if ($variaciones && $bprimera_cuota) {
+                
                 $primera_variacion = array_shift($variaciones);
                 foreach ($variaciones as $variacion) {
                     //foreach ($this->_variaciones as $variacion) {
                     if ($variacion['TIPO'] == EVENTO_DESEMBOLSO || $variacion['TIPO'] == EVENTO_AJUSTE) {
                         $cuota['FECHA_INICIO'] = $variacion['FECHA'];
+                        
                         break;
                     }
                 }
@@ -875,11 +888,10 @@ class credito_model extends main_model {
 
                     $tmp['FECHA_INICIO_REAL'] = $tmp_fecha_inicio;
                     $tmp['FECHA_VENCIMIENTO_REAL'] = $subcuotas[$i]['TMP']['VARIACION']['FECHA'];
-                    ;
+
 
                     $fecha_inicio = $tmp_fecha_inicio;
                     $fecha_vencimiento = $subcuotas[$i]['TMP']['VARIACION']['FECHA'];
-
 
                     //fecha vencimiento de segmento: si es el ultimo segmento la fecha de vencimiento
                     //es la misma de la cuota, de lo contrario es la siguiente variacion
@@ -888,8 +900,14 @@ class credito_model extends main_model {
 
                     $tmp['FECHA_INICIO'] = $fecha_inicio;
                     $tmp['FECHA_VENCIMIENTO'] = $fecha_vencimiento;
-                    $capital_arr = $this->_get_saldo_capital($fecha_vencimiento - 1, true, false);
+                    
+                    
+                    $fecha_saldo_capital = $fecha_vencimiento - 1;
 
+                    
+                    
+                    
+                    $capital_arr = $this->_get_saldo_capital($fecha_saldo_capital, true, false);
                     $SALDO_CAPITAL = $capital_arr['BASE_CALCULO'];
                     $tmp['_PARENT'] = $cuota['ID'];
                     $tmp['_ESTADO'] = 5;
@@ -1135,7 +1153,7 @@ class credito_model extends main_model {
     //y los calcula para formar el registro de cuota
     function _join_segmento_cuota($cuota_id, $fecha_actual = false) {
 
-  
+
         $fecha = $fecha_actual ? $fecha_actual : $this->_fecha_actual;
 
         $cuota = $this->_cuotas[$cuota_id];
@@ -1143,6 +1161,8 @@ class credito_model extends main_model {
         //obtenemos los segmentos hasta la fecha especificada
         $segmentos = array();
 
+
+        
         
         foreach ($cuota['CHILDREN'] as $cuota_item) {
             if ($cuota_item['FECHA_VENCIMIENTO'] <= $fecha) {
@@ -1164,6 +1184,7 @@ class credito_model extends main_model {
 
             //si es la cuota actual de calculo
             if ($cuota['FECHA_INICIO'] <= $fecha && $cuota['FECHA_VENCIMIENTO'] > $fecha) {
+                
                 if ($this->_tipo_credito == TIPO_MICROCREDITO) {
                     $bsegmentos = false;
                 }
@@ -1305,10 +1326,7 @@ class credito_model extends main_model {
                 }
                 $rango = ($cuota['FECHA_VENCIMIENTO'] - $cuota['FECHA_INICIO']) / 86400;
             }
-            
-            
-            log_this('log/ddddd.log1',print_r($variacion,1));
-            
+
 
             $blog = false;
 
@@ -1377,6 +1395,9 @@ class credito_model extends main_model {
         unset($cuota['FECHA']);
         unset($cuota['CHILDREN']);
 
+        
+
+        
         if ($this->_bsave) {
             $this->_db->update("fid_creditos_cuotas", $cuota, "ID = " . $cuota_id);
         }
@@ -2218,7 +2239,23 @@ class credito_model extends main_model {
                 $this->_db->order_by("FECHA_VERSION", "desc");
                 $version = $this->_db->get_row("fid_creditos_version");
 
-                $this->_db->update("fid_creditos_version", array("ACTIVA" => 1), "ID_VERSION = " . $version['ID_VERSION']);
+                if ($version){
+                    $this->_db->update("fid_creditos_version", array("ACTIVA" => 1), "ID_VERSION = " . $version['ID_VERSION']);
+                }
+                else{
+        //ETAPA 1
+                    $version = array(
+                        "FECHA_VERSION" => $fecha,
+                        "ID_CREDITO_VERSION" => $this->_id_credito,
+                        "TIPO_VERSION" => 1,
+                        "DESCRIPCION_VERSION" => "Inicial",
+                        "PARENT_ID" => 0,
+                        "UPDATE_TIME" => time()
+                    );
+                    $id_version = $this->_db->insert("fid_creditos_version", $version);
+                    $this->_id_version = $id_version;
+                }
+                
             }
             $id_version = $version['ID_VERSION'];
         } else {

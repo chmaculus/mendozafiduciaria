@@ -1058,7 +1058,9 @@ function validarFechafunc( fecha ) {
 }
 
 function refresGridevent(){
+    console.log('aaaaa');
     $(".refresgrid").click(function(e){
+        console.log('bbbbbb');
         var namegrid = $(this).data("gridname");
         $('#'+namegrid).jqxGrid('render');
     });
