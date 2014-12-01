@@ -17,7 +17,7 @@
             <div class="elem elem_med" >
                 <label>Fideicomiso:</label>
                 <div class="indent">
-                    <span ><?=$FIDEICOMISO['NOMBRE']?></span>
+                    <span ><?=(isset($FIDEICOMISO['NOMBRE']))?$FIDEICOMISO['NOMBRE']:''?></span>
                 </div>
             </div>
 
@@ -25,7 +25,7 @@
             <div class="elem elem_med">
                 <label>Operatoria:</label>
                 <div class="indent" id="div_operatoria">
-                    <span ><?=$OPERATORIAS['NOMBRE']?>  </span>
+                    <span ><?=(isset($OPERATORIAS['NOMBRE']))?$OPERATORIAS['NOMBRE']:''?>  </span>
                 </div>
             </div>
 
