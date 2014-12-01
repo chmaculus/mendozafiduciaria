@@ -87,6 +87,38 @@ class cuotas extends main_controller{
         echo $this->_get_cuotas();
     }
     
+    function x_set_varios_pagos() {
+        ini_set('set_time_limit', 0);
+        ini_set('max_execution_time', 100000);
+        
+        if(isset($_POST['credito_id']) && $_POST['credito_id']) {
+            $credito_id = $_POST['credito_id'];
+            $version=0;
+            
+            if(isset($_POST['datos']) && $_POST['datos']) {
+                $datos = explode("\n", trim($_POST['datos']));
+                
+                $this->mod->set_credito_active($credito_id);
+                $this->mod->set_version_active($version);
+                foreach($datos as $dato) {
+                    $dato=explode("\t", str_replace(array("$", ","), array("", "."), $dato));
+                    
+                    if(count($dato)==2) {
+                        $monto=trim($dato[0]);
+                        $fecha=strtotime(str_replace("/", "-", trim($dato[1])));
+                        
+                        echo $fecha." $".$monto."\n";
+                        if($monto && $fecha) {
+                            $this->realizar_pago($fecha,  $monto);
+                            $this->mod->renew_datos();
+                        }
+                    }
+                }
+                echo $this->_get_cuotas();
+            }
+        }
+    }
+    
     function realizar_pago($fecha, $monto){
         
         

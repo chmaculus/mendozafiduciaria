@@ -229,6 +229,9 @@ function agregar_variacion() {
         case 8:
             generar_chequeras();
             break;            
+        case 9:
+            generar_varios_recuperos(_cuotas.ID_CREDITO);
+            break;
     }
 
     $("#txtMonto").val("");
@@ -652,6 +655,7 @@ function cambiar_accion() {
     $("#eventos-pendientes").hide().html("");
     $("#spMonto").text("Monto");
     $("#div-descripcion").hide();
+    $("#div-recuperos").hide();
     $(".field_tasas").hide();
     
     switch (selected) {
@@ -674,6 +678,10 @@ function cambiar_accion() {
             $(".field_tasas").show();
             break;
         case 4:
+            break;
+        case 9:
+            $("#div-monto").hide();
+            $("#div-recuperos").show();
             break;
     }
 }
@@ -983,4 +991,21 @@ function imprimirEventos(){
         
         
     });
+}
+
+function generar_varios_recuperos(id_credito){
+    console.log($("#vsRecupero").val());
+    $.ajax({
+        url: _cuotas.URL + "/x_set_varios_pagos",
+        data: {
+            credito_id: id_credito,
+            datos: $("#vsRecupero").val(),
+            version_id: 0
+        },
+        type: "post",
+        success: function(result) {
+            $(".div-result").html(result);
+            $("#vsRecupero").val('');
+        }
+    }); 
 }

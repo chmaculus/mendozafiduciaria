@@ -29,6 +29,7 @@
                     <option value="6" class="editar">Enviar Cuotas</option>
                     <option value="7" class="editar">Saldo traspaso</option>
                     <option value="8" class="editar">Generar Chequeras</option>
+                    <option value="9" class="editar">Varios Recupero</option>
                 </select>
             </div>
 
@@ -53,6 +54,10 @@
             <div class="field-descripcion" id="div-descripcion">
                 <span class="" id="spMonto">Descripcion</span><br/>
                 <input type="text"  id="txtDescripcion">        
+            </div>
+            <div class="field-monto" id="div-recuperos">
+                <span class="" id="spMonto">#Cuota/Monto/Fecha (Excel)</span><br/>
+                <textarea id="vsRecupero" rows="10" cols="50"></textarea>      
             </div>
         </div>
         <div class="field-buttons">
