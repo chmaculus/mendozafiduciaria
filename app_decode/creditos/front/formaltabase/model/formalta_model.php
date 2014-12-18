@@ -186,6 +186,7 @@ class formalta_model extends credito_model {
         $cuotas_amort = $cuotas_restantes - $cuotas_gracia;
 
         $monto_cuotas = $monto / $cuotas_amort;
+        $monto_total_cuotas = 0;
         $cuotas_arr = array();
 
         for ($i = 0; $i < $cuotas_restantes; $i++) {
@@ -258,7 +259,12 @@ class formalta_model extends credito_model {
                 $monto_restante = $monto - $monto_cuotas * ($i - $cuotas_gracia);
                 echo "<br/>MONTO:".$monto_restante;
                 $divisor = $cuotas_arr[$i]['CUOTAS_RESTANTES'] + ($cantidad_cuotas_anteriores == 0 ? 0 : 1);
-                $cuotas_arr[$i]['CAPITAL_CUOTA'] = $monto_restante / $divisor;
+                if ( $i==($cuotas_restantes-1) ) {
+                    $cuotas_arr[$i]['CAPITAL_CUOTA'] = $monto - $monto_total_cuotas;
+                } else {
+                    $cuotas_arr[$i]['CAPITAL_CUOTA'] = round($monto_restante / $divisor, 2);
+                    $monto_total_cuotas += $cuotas_arr[$i]['CAPITAL_CUOTA'];
+                }
 
                 $cuotas_arr[$i]['INT_COMPENSATORIO'] = $this->_calcular_interes($monto_restante, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
                 $cuotas_arr[$i]['INT_COMPENSATORIO_IVA'] = $cuotas_arr[$i]['INT_COMPENSATORIO'] * $IVA;

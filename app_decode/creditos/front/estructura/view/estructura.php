@@ -13,12 +13,18 @@
         </li>        
         <?php 
         $total = 0;
+        $total_amortizacion = 0;
+        
+        foreach($cuotas as $cuota){ 
+            $total_amortizacion += $cuota['DATA']['AMORTIZACION_CUOTA'];
+        }
+        
         foreach($cuotas as $cuota){ 
             $total += $cuota['CAPITAL_CUOTA'];
             ?>
         <li class="datos" data-id="<?=$cuota['ID']?>">
             <span class="cuota_nro"><?=$cantidad - $cuota['CUOTAS_RESTANTES'] + 1?></span>
-            <span class="cuotas_monto"><input type="text" value="<?=$cuota['DATA']['AMORTIZACION_CUOTA']?>"/></span>
+            <span class="cuotas_monto"><input type="text" value="<?=($total_amortizacion)?$cuota['DATA']['AMORTIZACION_CUOTA']:$cuota['CAPITAL_CUOTA']?>"/></span>
             <span class="cuotas_fecha_modificar" ><?=date("d/m/Y",$cuota['FECHA_VENCIMIENTO'])?></span>
             <span class="cuotas_fecha"><?=$cuota['DATA']['AMORTIZACION_CUOTA']?></span>
         </li>
