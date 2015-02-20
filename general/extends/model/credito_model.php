@@ -1420,7 +1420,12 @@ class credito_model extends main_model {
         $dias = floor($dias);
         $interes = $interes / 100;
         //0.5 = 5 / 100;
-        $base = 1 + ($interes * $periodicidad / $this->_interese_compensatorio_plazo);
+		if ($this->_interese_compensatorio_plazo) {
+			$base = 1 + ($interes * $periodicidad / $this->_interese_compensatorio_plazo);
+		} else {
+			$base = 1;
+		}
+		
         //  1.083 =   1 + ( 0.5 * 60 / 360);
         $exponente = $dias / $periodicidad;
         //0.3833 = 23 / 60
