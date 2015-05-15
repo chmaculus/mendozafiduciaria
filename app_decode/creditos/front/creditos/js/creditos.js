@@ -249,14 +249,17 @@ function init_grid(id_usuario,tipo){
         columnsresize: true,
         showtoolbar: true,
         localization: getLocalization(),
+        sortable: true,
+        filterable: true,
+        showfilterrow: true,
         rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
             var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
-            toolbar.append(container);
-            container.append(span);
-            container.append(input);
+            //toolbar.append(container);
+            //container.append(span);
+            //container.append(input);
             if (theme != "") {
                 input.addClass('jqx-widget-content-' + theme);
                 input.addClass('jqx-rc-all-' + theme);
