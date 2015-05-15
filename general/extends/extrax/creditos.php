@@ -35,6 +35,9 @@
             foreach($clientes as $cliente){
                 $cl[] = $cliente['RAZON_SOCIAL'];
             }
+            
+            $cuit = isset($clientes[0]['CUIT']) ? $clientes[0]['CUIT'] : '';
+            
             $tomadores = implode(", ",$cl);
             if (startsWith($credito['ID_CREDITO'], $word) || 
                 strpos($tomadores , $word) !==false   || strlen($word)==0
@@ -50,7 +53,7 @@
                     "FIDEICOMISO"=>$credito['FIDEICOMISO'],
                     "ESTADO"=>$estado,
                     "CARPETA"=>$credito['ID_OPERACION'] ? $credito['ID_OPERACION'] : " - ",
-                    
+                    "CUIT"=>$cuit
                 );
             }
             
