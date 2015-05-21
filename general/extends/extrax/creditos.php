@@ -36,7 +36,7 @@
                 $cl[] = $cliente['RAZON_SOCIAL'];
             }
             
-            $cuit = isset($clientes[0]['CUIT']) ? $clientes[0]['CUIT'] : '';
+            $cuit = isset($clientes[0]['CUIT']) ? preg_replace("/[^0-9]/", "", $clientes[0]['CUIT']) : '';
             
             $tomadores = implode(", ",$cl);
             if (startsWith($credito['ID_CREDITO'], $word) || 
