@@ -48,8 +48,9 @@ class estructura extends main_controller{
     
     function x_guardar_montos(){
         $cuotas = $_POST['cuotas'];
+        $credito_id = $_POST['credito_id'];
         $this->mod->save_estructura($cuotas);
-        $this->_recalcular_pagos(NO_FECHA);
+        $this->_recalcular_pagos($credito_id, NO_FECHA);
         $this->mod->get_segmentos_cuota();        
         
     }
@@ -87,7 +88,9 @@ class estructura extends main_controller{
         echo $this->view("opciones_cuota",$cuota);
     }       
     
-    function _recalcular_pagos($fecha = false){
+    function _recalcular_pagos($credito_id, $fecha = false){
+        $this->mod->set_credito_active($credito_id);
+        $this->mod->set_version_active();
         $this->mod->renew_datos();
         
         $this->mod->save_last_state(true);
