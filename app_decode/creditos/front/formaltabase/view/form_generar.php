@@ -1,8 +1,8 @@
 <div class="form-content">
     <div class="form_generar">
-        <div class="row c12 grupo">
-            <div class="c3">
-                <span class="titulo-seccion">
+            <div class="row c12 grupo">
+                <div class="c3">
+                    <span class="titulo-seccion">
                     General
                 </span>
             </div>

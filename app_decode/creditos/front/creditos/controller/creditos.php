@@ -9,7 +9,7 @@ class creditos extends main_controller{
         $this->constructor();
         if ( !isset($_SESSION["USERADM"]))
             header("Location: " . '/'.URL_PATH);
-
+        
         $this->setCss( array("init.css","informes.css","informes_cuota.css") );
         $this->setJs( array( "creditos.js") );
         $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid"));

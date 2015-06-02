@@ -7,7 +7,7 @@ class formaltabase extends main_controller {
     }
 
     function init($id = 0) {
-       
+
         if (!isset($_SESSION["USERADM"]))
             header("Location: " . '/' . URL_PATH);
         //$this->_get_loged();
@@ -17,17 +17,17 @@ class formaltabase extends main_controller {
 
         $id_permiso = 12;
         $arr_permiso_mod = isset($_SESSION["USER_PERMISOS"][$id_permiso]) ? $_SESSION["USER_PERMISOS"][$id_permiso] : 0;
-        
-            $arr_permiso_mod = array
+
+        $arr_permiso_mod = array
             (
-                "MOSTRAR" => 1,
-                "ALTA" => 1,
-                "BAJA" => 1,
-                "MODIFICACION" => 1,
-                "EXPORTAR" => 1,
-                "OTROS" => 1
-            );
-        
+            "MOSTRAR" => 1,
+            "ALTA" => 1,
+            "BAJA" => 1,
+            "MODIFICACION" => 1,
+            "EXPORTAR" => 1,
+            "OTROS" => 1
+        );
+
         $datax = array();
         $datax['main'] = $this->_obtener_main( $id);
         $datax['titulo'] = "Administracion";
@@ -46,7 +46,7 @@ class formaltabase extends main_controller {
     function _obtener_main( $id) {
 
         $ultimo = $this->mod->get_next_id();
-        
+
         $credito = array("ID" => $ultimo,
             "ID_OPERACION" => 0,
             "ACTIVIDAD" => "",
@@ -76,11 +76,11 @@ class formaltabase extends main_controller {
             "ID_OPERATORIO" => 0,
             "ID_FIDEICOMISO" => 0,
         );
-        
+
         if ($id > 0){
             $credito = $this->mod->get_credito_from_id($id);
         }
-        
+
 
         $credito['POSTULANTES'] = $this->mod->get_clientes();
         $this->_js_array['FIDEICOMISOS'] = $credito['FIDEICOMISOS'] = $this->mod->get_fideicomisos();
@@ -94,15 +94,191 @@ class formaltabase extends main_controller {
         return $this->view("form_generar", array("credito" => $credito));
         /* permiso mostrar */
     }
+
+    function x_guardar_creditos_excel() {
+        if ($this->_guardar_creditos_excel()) {
+            echo "Proceso finalizado";
+            if ($_SESSION['msg_err']) {
+                echo "<br />" . $_SESSION['msg_err'];
+            }
+        } else {
+            echo $_SESSION['msg_err'];
+        }
+        die();
+    }
     
+    function _guardar_creditos_excel() {
+        $_SESSION['msg_err'] = "";
+        $excel = $_FILES['fexcel'];
+        if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
+
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
+
+            $objReader = new PHPExcel_Reader_Excel2007();
+            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+                set_time_limit(0);
+
+                $objPHPExcel->setActiveSheetIndex(0);
+                $fideicomiso = trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("B1")->getCalculatedValue()));
+                if ($fideicomiso) {
+                    $fideicomiso = $this->mod->getFideicomisoId($fideicomiso);
+                } else {
+                    $fideicomiso = 0;
+                }
+
+                $operatoria = trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("B2")->getCalculatedValue()));
+                if ($operatoria) {
+                    $operatoria = $this->mod->getOperatoriaId($operatoria);
+                } else {
+                    $operatoria = 0;
+                }
+
+                $microcredito = str_ireplace("si", "si", trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("B3")->getCalculatedValue())));
+                if ($microcredito) {
+                    $microcredito = 1;
+                } else {
+                    $microcredito = 0;
+                }
+
+                $err = "";
+
+                for ($j = 7; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
+
+                    $cuit = $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue();
+                    if (!$cuit) {
+                        break;
+                    }
+                    //falta poner para mas de un postulante
+
+                    if (!($postulante = $this->mod->getClienteIdCUIT($cuit))) {
+                        $cliente = array(
+                            'RAZON_SOCIAL' => trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue())),
+                            'CUIT' => $cuit
+                        );
+                        $postulante = $this->mod->guardar_postulante($cliente);
+                    }
+
+                    $credito_id = trim($objPHPExcel->getActiveSheet()->getCell("C" . $j)->getCalculatedValue());
+
+                    if ($credito_id) {
+                        $credito = $this->mod->get_credito_from_id($credito_id);
+
+                        if (true || !isset($credito['ID'])) {
+                            $_POST = array();
+
+                            $_POST['fecha'] = '';
+                            $_POST['micro'] = $microcredito;
+                            $_POST['fecha_inicio'] = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("D" . $j)->getCalculatedValue());
+                            $_POST['credito_id'] = $credito_id;
+                            $_POST['int_compensatorio'] = $objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue();
+                            if($_POST['int_compensatorio'] && $_POST['int_compensatorio']<1) { //si el valor era porcenta va a traer los datos mal,arreglamos
+                                $_POST['int_compensatorio'] = $_POST['int_compensatorio'] * 100;
+                            }
+                            
+                            $_POST['plazo_compensatorio'] = $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue();
+                            $_POST['int_moratorio'] = $objPHPExcel->getActiveSheet()->getCell("G" . $j)->getCalculatedValue();
+                            if($_POST['int_moratorio'] && $_POST['int_moratorio']<1) {
+                                $_POST['int_moratorio'] = $_POST['int_moratorio'] * 100;
+                            }
+                            
+                            $_POST['plazo_moratorio'] = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getCalculatedValue();
+                            $_POST['int_punitorio'] = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getCalculatedValue();
+                            if($_POST['int_punitorio'] && $_POST['int_punitorio']<1) {
+                                $_POST['int_punitorio'] = $_POST['int_punitorio'] * 100;
+                            }
+                            
+                            $_POST['plazo_punitorio'] = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getCalculatedValue();
+
+                            $_POST['int_subsidio'] = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getCalculatedValue();
+                            if($_POST['int_subsidio'] && $_POST['int_subsidio']<1) {
+                                $_POST['int_subsidio'] = $_POST['int_subsidio'] * 100;
+                            }
+
+                            $_POST['cuotas'] = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getCalculatedValue();
+                            $_POST['cuotas_gracia'] = $objPHPExcel->getActiveSheet()->getCell("M" . $j)->getCalculatedValue();
+
+                            $_POST['plazo_pago'] = $objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue();
+                            $_POST['periodicidad'] = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getCalculatedValue();
+                            $_POST['periodicidad_tasa'] = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getCalculatedValue();
+
+
+
+                            $_POST['total_credito'] = 0;
+                            $_POST['clientes'] = array(
+                                $postulante
+                            );
+                            $_POST['fideicomiso'] = $fideicomiso;
+                            $_POST['operatoria'] = $operatoria;
+
+                            $_POST['desembolsos'] = array();
+
+                            if ($objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue()) {
+                                $_POST['desembolsos'][] = array(
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue())),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue()
+                                );
+                            }
+
+                            if ($objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue()) {
+                                $_POST['desembolsos'][] = array(
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue())),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue()
+                                );
+                            }
+
+                            if ($objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue()) {
+                                $_POST['desembolsos'][] = array(
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue())),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue()
+                                );
+                            }
+
+                            if ($objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue()) {
+                                $_POST['desembolsos'][] = array(
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue())),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue()
+                                );
+                            }
+
+                            foreach ($_POST['desembolsos'] as $des) {
+                                $_POST['total_credito'] += $des['monto'];
+                            }
+                            print_r($_POST); die();
+                            $this->x_generar_cuotas(FALSE);
+                        } else {
+                            $err .= "El crédito $credito_id ya existe<br />";
+                        }
+                    }
+                }
+
+                if ($err) {
+                    $_SESSION['msg_err'] = $err;
+                }
+                //si se ha llegado acá debería haber guardado todo bien
+                return TRUE;
+            } else {
+                $_SESSION['msg_err'] = "El archivo no tiene formato de excel";
+                return FALSE;
+            }
+
+            //return $this->view("form_excel", array("creditos" => $creditos));
+        }
+        $_SESSION['msg_err'] = "Hubo un problema al cargar el archivo";
+        return FALSE;
+    }
+    
+
     function x_get_operatorias(){
         $id_fideicomiso = $_POST['id_fideicomiso'];
         $operatorias = $this->mod->get_operatorias_alta($id_fideicomiso );
         echo json_encode($operatorias);
         
-    }    
+    }
 
-    function x_generar_cuotas() {
+    function x_generar_cuotas($retorno = TRUE) {
+        
+        print_r($_POST);die();
 
         $data['fecha'] = $_POST['fecha'];
 
@@ -112,11 +288,11 @@ class formaltabase extends main_controller {
         $data['fecha_inicio'] = (mktime(0, 0, 0, $m - $_POST['periodicidad'], $d, $y));
 
         $data['cuotas'] = $_POST['cuotas'];
-        $micro  = $_POST['micro'];
+        $micro = $_POST['micro'];
         $data['cuotas_gracia'] = $_POST['cuotas_gracia'];
-        
+
         $data['total_credito'] = $_POST['total_credito'];
-        
+
         $data['por_int_compensatorio'] = $_POST['int_compensatorio'];
         $data['por_int_subsidio'] = $_POST['int_subsidio'];
         $data['plazo_pago'] = $_POST['plazo_pago'];
@@ -128,44 +304,44 @@ class formaltabase extends main_controller {
         $data['iva'] = key_exists('iva', $_POST) ? $_POST['iva'] : 0.21;
 
         $desembolsos = $_POST['desembolsos'];
-        
+
         $postulantes = $_POST['clientes'];
         $fideicomiso = $_POST['fideicomiso'];
         $operatoria = $_POST['operatoria'];
-        
+
         $plazo_compensatorio = $_POST['plazo_compensatorio'];
         $plazo_moratorio = $_POST['plazo_moratorio'];
         $plazo_punitorio = $_POST['plazo_punitorio'];
 
         $credito_id = key_exists('credito_id', $_POST) ? $_POST['credito_id'] : 1;
-        
+
         $this->mod->set_tipo_credito($micro);
         $this->mod->set_credito_active($credito_id);
         $this->mod->borrar_credito();
-        
+
         $this->mod->set_compensatorio_plazo($plazo_compensatorio);
         $this->mod->set_moratorio_plazo($plazo_moratorio);
         $this->mod->set_punitorio_plazo($plazo_punitorio);
-        
+
         $this->mod->set_postulantes($postulantes);
         $this->mod->set_fideicomiso($fideicomiso);
         $this->mod->set_operatoria($operatoria);
-        
-        
+
+
         //si el desembolso inicial es posterior a la fecha de primer vencimiento agregamos un desembolso ficticio al inicio de la cuota de 0
         $desembolso_inicial = reset($desembolsos);
         $monto_incial = $desembolso_inicial['monto'];
         list($d, $m, $y) = explode("-", $desembolso_inicial['fecha']);
         $fecha_desembolso_inicial = mktime(0, 0, 0, $m, $d, $y);
-        
-        
-        if ($fecha_desembolso_inicial > $primer_vencimiento){
-            array_unshift($desembolsos, array("fecha"=> date("d-m-Y",$primer_vencimiento - 100), "monto"=>0.01));
+
+
+        if ($fecha_desembolso_inicial > $primer_vencimiento) {
+            array_unshift($desembolsos, array("fecha" => date("d-m-Y", $primer_vencimiento - 100), "monto" => 0.01));
         }
-        
+
         $desembolso_inicial = reset($desembolsos);
 
-        
+
         $this->mod->set_credito_active($credito_id);
         $this->mod->agregar_version($desembolsos[0]['fecha'], 1, "VERSION INICIAL");
         $this->mod->set_version_active();
@@ -174,45 +350,45 @@ class formaltabase extends main_controller {
         //$desembolso_inicial = array_shift($desembolsos);
         list($d, $m, $y) = explode("-", $desembolso_inicial['fecha']);
         $fecha = mktime(0, 0, 0, $m, $d, $y);
-        
+
         $data['fecha'] = $fecha;
         $data['monto'] = $monto_incial ;
 
         $ret = $this->mod->generar_evento($data, false, $fecha);
-        
-        
+
+
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
-        $this->mod->generar_cuotas($ret  );
+        $this->mod->generar_cuotas($ret, 0, $retorno);
 
       /*  $i = 0;
 
-        //incluimos  todos los desembolsos
-        foreach ($desembolsos as $desembolso) {
+            //incluimos  todos los desembolsos
+            foreach ($desembolsos as $desembolso) {
 
-            //generamos fecha formato timestamp
-            list($d, $m, $y) = explode("-", $desembolso['fecha']);
-            $fecha = mktime(0, 0, 0, $m, $d, $y);
+                //generamos fecha formato timestamp
+                list($d, $m, $y) = explode("-", $desembolso['fecha']);
+                $fecha = mktime(0, 0, 0, $m, $d, $y);
 
-            $data['Tipo'] = $desembolso['monto'];
-            $data['monto'] = $desembolso['monto'];
+                $data['Tipo'] = $desembolso['monto'];
+                $data['monto'] = $desembolso['monto'];
 
-            //genero la variacion corerspondiente al desembolso
-            $data['TIPO'] = 1;
-            $data['ESTADO'] = 5;
-            $ret = $this->mod->generar_evento($data, true, $fecha);
-            $cuotas_restantes = $this->mod->get_cuotas_restantes($fecha);
+                //genero la variacion corerspondiente al desembolso
+                $data['TIPO'] = 1;
+                $data['ESTADO'] = 5;
+                $ret = $this->mod->generar_evento($data, true, $fecha);
+                $cuotas_restantes = $this->mod->get_cuotas_restantes($fecha);
 
-            //agrego el registro desembolso a la db        
-            $this->mod->agregar_desembolso($data['monto'], $cuotas_restantes, $fecha);
-            $this->mod->assign_id_evento($ret['ID'], 1);
+                //agrego el registro desembolso a la db
+                $this->mod->agregar_desembolso($data['monto'], $cuotas_restantes, $fecha);
+                $this->mod->assign_id_evento($ret['ID'], 1);
         }*/
-        
+
 
         $this->mod->set_fecha_actual();
         $this->mod->set_fecha_calculo();
-        
+
         $this->mod->save_operacion_credito();
     }
-    
+
     
 }

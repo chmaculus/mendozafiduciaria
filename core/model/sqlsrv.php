@@ -124,7 +124,7 @@ class sqldatasql {
         if ($this->_having)
             $this->_having = " HAVING " . implode(" AND ", $this->_having);
 
-        $sql = "SELECT " . $this->_select . " FROM $tab " . $this->_join . " " . $where . " " . $this->_group . " " . $this->_having . " " . $order . " " . $this->_limit;
+        echo $sql = "SELECT " . $this->_select . " FROM $tab " . $this->_join . " " . $where . " " . $this->_group . " " . $this->_having . " " . $order . " " . $this->_limit;
 
         $this->_sql = $sql;
         if ($this->_show)

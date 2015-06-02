@@ -122,7 +122,7 @@ class formalta_model extends credito_model {
    //se gneran las cuotas a partir de una variacion en particular
     //si no se pasa el parametro se utiliza la ultima variacion ingresada.
 
-    function generar_cuotas($variacion = false,  $micro = 0) {
+    function generar_cuotas($variacion = false,  $micro = 0, $ret=TRUE) {
         $credito_id = $this->_id_credito;
 
         $bDb = true;
@@ -135,7 +135,7 @@ class formalta_model extends credito_model {
         } else {
             $cuotas_restantes = $variacion['CANTIDAD_CUOTAS'];
         }
-
+        
         //si no quedan cuotas para generar se deuvleve vacio
         if ($cuotas_restantes == 0)
             return array();
@@ -256,7 +256,9 @@ class formalta_model extends credito_model {
 
 
                 $monto_restante = $monto - $monto_cuotas * ($i - $cuotas_gracia);
-                echo "<br/>MONTO:".$monto_restante;
+                if ($ret) {
+                    echo "<br/>MONTO:".$monto_restante;
+                }
                 $divisor = $cuotas_arr[$i]['CUOTAS_RESTANTES'] + ($cantidad_cuotas_anteriores == 0 ? 0 : 1);
                 $cuotas_arr[$i]['CAPITAL_CUOTA'] = $monto_restante / $divisor;
 
@@ -293,6 +295,85 @@ class formalta_model extends credito_model {
         }
 
         return $cuotas_arr;
+    }
+
+    function verificar_desembolsos_inciales($fecha) {
+
+
+        if (!$this->_cuotas)
+            return;
+
+        $cuota = reset($this->_cuotas);
+        if ($fecha < $cuota['FECHA_VENCIMIENTO'])
+            return true;
+
+        $desembolso_inicial = array();
+        foreach ($this->_variaciones as $variacion) {
+            if ($variacion['TIPO'] == 1 && $variacion['ESTADO'] == 0) {
+                $desembolso_inicial = $variacion;
+                break;
+            }
+        }
+
+        //existen desembolsos
+        if ($desembolso_inicial) {
+
+            //obtenemos la primera cuota
+
+            echo "<br/>" . $desembolso_inicial['FECHA'] . "<" . $cuota['FECHA_VENCIMIENTO'] . "<br/>";
+            if ($desembolso_inicial['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
+                return true;
+            } else {
+                return $cuota['FECHA_VENCIMIENTO'] - 1;
+            }
+        } else {
+            return $cuota['FECHA_VENCIMIENTO'] - 1;
+        }
+    }
+    
+    public function getFideicomisoId($fideicomiso) {
+        $fideicomiso =  str_replace("  ", " ", str_replace(",", " ", $fideicomiso));
+        $fideicomiso =  "%".str_replace(" ", "%", $fideicomiso)."%";
+        
+        $this->_db->select("ID");
+        $this->_db->where("NOMBRE LIKE '$fideicomiso'");
+        
+        if ($result = $this->_db->get_row("fid_fideicomiso")) {
+            return $result['ID'];
+        } else {
+            return 0;
+        }
+    }
+    
+    public function getOperatoriaId ($operatoria) {
+        $operatoria =  str_replace("  ", " ", str_replace(",", " ", $operatoria));
+        $operatoria =  "%".str_replace(" ", "%", $operatoria)."%";
+        
+        $this->_db->select("ID");
+        $this->_db->where("NOMBRE LIKE '$operatoria'");
+        
+        if ($result = $this->_db->get_row("fid_operatorias")) {
+            return $result['ID'];
+        } else {
+            return 0;
+        }
+    }
+    
+    public function getClienteIdCUIT ($cuit) {
+        $cuit =  str_replace(" ", "", str_replace("-", "", $cuit));
+        
+        $this->_db->select("ID");
+        $this->_db->where("REPLACE(CUIT, '-', '')  LIKE '$cuit'");
+        
+        if ($result = $this->_db->get_row("fid_clientes")) {
+            return $result['ID'];
+        } else {
+            return 0;
+        }
+    }
+    
+    function guardar_postulante($cliente) {
+        return $this->_db->insert("fid_clientes", $cliente);
     }
     
     

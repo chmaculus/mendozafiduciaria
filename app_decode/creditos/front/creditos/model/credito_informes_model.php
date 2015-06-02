@@ -388,7 +388,7 @@ class credito_informes_model extends credito_model {
         }
         return $tasas;
     }
-
+    
 }
-
+    
 ?>

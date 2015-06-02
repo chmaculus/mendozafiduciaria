@@ -2226,6 +2226,9 @@ class credito_model extends main_model {
             $this->_total_credito = $row_credito['MONTO_CREDITO'];
             $this->_estado_credito = $row_credito['CREDITO_ESTADO'];
             $this->_tipo_credito = $row_credito['TIPO_CREDITO'];
+            return TRUE;
+        } else {
+            return FALSE;
         }
     }
 

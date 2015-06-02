@@ -1125,6 +1125,74 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         
 
     }
+    
+    function x_guardar_pagos_excel() {
+        if ($this->_guardar_pagos_excel()) {
+            echo "Proceso finalizado";
+            if ($_SESSION['msg_err']) {
+                echo "<br />" . $_SESSION['msg_err'];
+            }
+        } else {
+            echo $_SESSION['msg_err'];
+        }
+        die();
+    }
+    
+    function _guardar_pagos_excel() {
+        $_SESSION['msg_err'] = "";
+        $excel = $_FILES['fexcel'];
+        if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
+
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
+            
+            $objReader = new PHPExcel_Reader_Excel2007();
+            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+                set_time_limit(0);
+                $err = "";
+                $objPHPExcel->setActiveSheetIndex(0);
+                $arr_creditos = array();
+                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
+                    $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
+                    if (!$credito_id) {
+                        break;
+                    }
+                    
+                    $arr_creditos[$credito_id][] = array(
+                        'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()),
+                        'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
+                        );
+                }
+                
+                foreach ($arr_creditos as $credito_id=>$creditos) {
+                    //obtener array de cuotas
+                    if ($this->mod->set_credito_active($credito_id)) {
+                        $this->mod->set_version_active();
+                        $this->mod->renew_datos();
+                        
+                        foreach ($creditos as $pago) {
+                            $this->realizar_pago($pago['FP'], $pago['PAGO']);
+                        }
+                    } else {
+                        $err .= "El crédito $credito_id no existe<br />";
+                    }
+                    
+                    die("aca");
+                }
+                
+                if ($err) {
+                    $_SESSION['msg_err'] = $err;
+                }
+                
+                RETURN TRUE;
+            }
+            
+        } else {
+            $_SESSION['msg_err'] = "Hubo un problema al cargar el archivo";
+        }
+        
+        return FALSE;
+    }
 }
 
 
