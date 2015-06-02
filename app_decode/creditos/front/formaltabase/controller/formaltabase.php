@@ -378,7 +378,7 @@ class formaltabase extends main_controller {
         $fecha = mktime(0, 0, 0, $m, $d, $y);
 
         $data['fecha'] = $fecha;
-        $data['monto'] = $monto_incial ;
+        $data['monto'] = $data['total_credito'];//cambio porque guarda mal el monto total del crédito
 
         $ret = $this->mod->generar_evento($data, false, $fecha);
 
