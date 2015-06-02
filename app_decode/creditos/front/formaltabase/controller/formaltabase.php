@@ -169,7 +169,7 @@ class formaltabase extends main_controller {
 
                             $_POST['fecha'] = '';
                             $_POST['micro'] = $microcredito;
-                            $_POST['fecha_inicio'] = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("D" . $j)->getCalculatedValue());
+                            $_POST['fecha_inicio'] = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("D" . $j)->getCalculatedValue()) + 86400;
                             $_POST['credito_id'] = $credito_id;
                             $_POST['int_compensatorio'] = $objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue();
                             if($_POST['int_compensatorio'] && $_POST['int_compensatorio']<1) { //si el valor era porcenta va a traer los datos mal,arreglamos
@@ -199,11 +199,11 @@ class formaltabase extends main_controller {
                             $_POST['cuotas_gracia'] = $objPHPExcel->getActiveSheet()->getCell("M" . $j)->getCalculatedValue();
 
                             $_POST['plazo_pago'] = $objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue();
-                            $_POST['periodicidad'] = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getCalculatedValue();
-                            $_POST['periodicidad_tasa'] = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getCalculatedValue();
-
-
-
+                            $_POST['periodicidad'] = $objPHPExcel->getActiveSheet()->getCell("O" . $j)->getCalculatedValue();
+                            $_POST['periodicidad_tasa'] = $objPHPExcel->getActiveSheet()->getCell("N" . $j)->getCalculatedValue();
+                            
+                            $_POST['int_subsidio'] = 0;
+                            
                             $_POST['total_credito'] = 0;
                             $_POST['clientes'] = array(
                                 $postulante
@@ -213,38 +213,38 @@ class formaltabase extends main_controller {
 
                             $_POST['desembolsos'] = array();
 
-                            if ($objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue()) {
+                            if ($objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("P" . $j)->getCalculatedValue())),
-                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue()
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue())+86400),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue()
                                 );
                             }
 
-                            if ($objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue()) {
+                            if ($objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue())),
-                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue()
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue())+86400),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue()
                                 );
                             }
 
-                            if ($objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue()) {
+                            if ($objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue())),
-                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue()
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue())+86400),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue()
                                 );
                             }
 
-                            if ($objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue()) {
+                            if ($objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue())),
-                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue()
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue())+86400),
+                                    'monto' => $objPHPExcel->getActiveSheet()->getCell("X" . $j)->getCalculatedValue()
                                 );
                             }
 
                             foreach ($_POST['desembolsos'] as $des) {
                                 $_POST['total_credito'] += $des['monto'];
                             }
-                            print_r($_POST); die();
+                            
                             $this->x_generar_cuotas(FALSE);
                         } else {
                             $err .= "El crédito $credito_id ya existe<br />";
@@ -277,8 +277,6 @@ class formaltabase extends main_controller {
     }
 
     function x_generar_cuotas($retorno = TRUE) {
-        
-        print_r($_POST);die();
 
         $data['fecha'] = $_POST['fecha'];
 
