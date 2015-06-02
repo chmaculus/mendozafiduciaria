@@ -216,28 +216,28 @@ class formaltabase extends main_controller {
 
                             if ($objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue())+86400),
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("Q" . $j)->getCalculatedValue()) + 86400),
                                     'monto' => $objPHPExcel->getActiveSheet()->getCell("R" . $j)->getCalculatedValue()
                                 );
                             }
 
                             if ($objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue())+86400),
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("S" . $j)->getCalculatedValue()) + 86400),
                                     'monto' => $objPHPExcel->getActiveSheet()->getCell("T" . $j)->getCalculatedValue()
                                 );
                             }
 
                             if ($objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue())+86400),
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("U" . $j)->getCalculatedValue()) + 86400),
                                     'monto' => $objPHPExcel->getActiveSheet()->getCell("V" . $j)->getCalculatedValue()
                                 );
                             }
 
                             if ($objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue()) {
                                 $_POST['desembolsos'][] = array(
-                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue())+86400),
+                                    'fecha' => date('d-m-Y', PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("W" . $j)->getCalculatedValue()) + 86400),
                                     'monto' => $objPHPExcel->getActiveSheet()->getCell("X" . $j)->getCalculatedValue()
                                 );
                             }

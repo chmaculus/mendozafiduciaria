@@ -1159,13 +1159,14 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     }
                     
                     $arr_creditos[$credito_id][] = array(
-                        'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()),
+                        'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400,
                         'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
                         );
                 }
                 
                 foreach ($arr_creditos as $credito_id=>$creditos) {
                     //obtener array de cuotas
+                    $this->mod->clear();
                     if ($this->mod->set_credito_active($credito_id)) {
                         $this->mod->set_version_active();
                         $this->mod->renew_datos();
@@ -1176,8 +1177,6 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     } else {
                         $err .= "El crédito $credito_id no existe<br />";
                     }
-                    
-                    die("aca");
                 }
                 
                 if ($err) {
