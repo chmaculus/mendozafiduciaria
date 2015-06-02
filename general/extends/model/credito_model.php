@@ -33,6 +33,36 @@ class credito_model extends main_model {
     var $_estado_credito = ESTADO_CREDITO_NORMAL;
     var $_blog = false;
     var $_periodicidad = 60;
+    
+    function clear() {
+        $this->_i = 0;
+        $this->_id_operatoria = 0;
+        $this->_id_fideicomiso = 0;
+        $this->_postulantes = array();
+        $this->_id_credito = 0;
+        $this->_id_version = 0;
+        $this->_anc_version = 0;
+        $this->_anc_version_array = 0;
+        $this->_fecha_actual = NO_FECHA;
+        $this->_fecha_calculo = NO_FECHA;
+        $this->_interese_compensatorio_plazo = 365;
+        $this->_interese_moratorio_plazo = 365;
+        $this->_interese_punitorio_plazo = 365;
+        $this->_total_credito = 0;
+        $this->_credito = array();
+        $this->_variaciones = array();
+        $this->_cuotas = array();
+        $this->_pagos = array();
+        $this->_gastos = array();
+        $this->_tipo_credito = TIPO_CREDITO_NORMAL;
+        $this->_bsave = true;
+        $this->_ultimo_vencimiento_subsidio = 0;
+        $this->_tipo_devengamiento = TIPO_DEVENGAMIENTO_AUTO;
+        $this->_forzar_no_devengamiento = false;
+        $this->_estado_credito = ESTADO_CREDITO_NORMAL;
+        $this->_blog = false;
+        $this->_periodicidad = 60;
+    }
 
     function set_log($log = true) {
         $this->_blog = $log;
@@ -80,6 +110,7 @@ class credito_model extends main_model {
     //obtiene la lista de versiones en un array en arbol
     function get_versiones() {
         $items = $this->_get_versiones_recursive($this->_id_credito, 0);
+        log_this("sql.txt", "aca\n");
         return $items;
     }
 
@@ -87,7 +118,7 @@ class credito_model extends main_model {
         $this->_db->where("ID_CREDITO_VERSION = " . $credito);
         $this->_db->where("PARENT_ID = " . $parent);
         $items = $this->_db->get_tabla("fid_creditos_version");
-
+        
         $arr_rtn = array();
         $cantidad = count($items);
         for ($i = 0; $i < $cantidad; $i++) {

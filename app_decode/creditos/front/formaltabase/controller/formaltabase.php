@@ -164,7 +164,8 @@ class formaltabase extends main_controller {
                     if ($credito_id) {
                         $credito = $this->mod->get_credito_from_id($credito_id);
 
-                        if (true || !isset($credito['ID'])) {
+                        if (!isset($credito['ID'])) {
+                            $this->mod->clear();
                             $_POST = array();
 
                             $_POST['fecha'] = '';
@@ -246,6 +247,33 @@ class formaltabase extends main_controller {
                             }
                             
                             $this->x_generar_cuotas(FALSE);
+                            
+                            //guardar los desembolsos
+                            $credito = $_POST;
+                            if (count($credito['desembolsos'])) {
+                                //$this->mod->clear();
+                                $this->mod->set_credito_active($credito['credito_id']);
+                                $this->mod->set_version_active();
+                                
+                                $versiones = $this->mod->get_versiones();
+                                if (!isset($versiones[0]['value'])) {
+                                   echo $credito['credito_id'];
+                                   echo "<br />";
+                                }
+                                $version = $versiones[0]['value'];
+                                foreach ($credito['desembolsos'] as $desembolso) {
+                                    $_POST = array();
+                                    $_POST['credito_id'] = $credito['credito_id'];
+                                    $_POST['fecha'] = strtotime($desembolso['fecha']);
+                                    $_POST['tipo'] = 1;
+                                    $_POST['reset'] = 0;
+                                    $_POST['version_id'] = $version;
+                                    $_POST['monto'] = $desembolso['monto'];
+                                    
+                                    $this->x_agregar_desembolso();
+                                }
+                            }
+                            
                         } else {
                             $err .= "El crédito $credito_id ya existe<br />";
                         }
@@ -386,6 +414,76 @@ class formaltabase extends main_controller {
         $this->mod->set_fecha_calculo();
 
         $this->mod->save_operacion_credito();
+    }
+    
+    function x_agregar_desembolso(){
+        $credito_id = $_POST['credito_id'];
+        $version_id = $_POST['version_id'];
+        $tipo = $_POST['tipo'];
+        
+        $this->mod->set_credito_active($credito_id);
+        $this->mod->set_version_active($version_id);
+        $desembolso_solicitud = isset($_POST['desembolso']) ? $_POST['desembolso'] : 0;
+        
+        
+        if ($desembolso_solicitud){
+            $this->mod->agregar_desembolso_solicitado($desembolso_solicitud);
+        }
+
+        $data = array();
+        $data['monto'] = $_POST['monto'];
+        $reset = isset($_POST['reset']) ? $_POST['reset'] : 0;
+        
+        
+        if ($tipo==EVENTO_DESEMBOLSO){
+            $data['TIPO'] = EVENTO_DESEMBOLSO;
+        }
+        else{
+            $data['TIPO'] = EVENTO_AJUSTE;
+        }
+        
+        $fecha = $_POST['fecha'];
+      
+        $cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
+        //evaluamos que existan desembolsos reales anteriores al vencimiento de la primera cuota
+        //si no que este desembolso sea mayor al desembolso
+        
+        $fecha_desembolso_nuevo = $this->mod->verificar_desembolsos_inciales($fecha);
+        
+        if ( $fecha_desembolso_nuevo!==true){
+            //si no existe generamos un desembolso minimo sobre el vencimiento de la primera cuota
+
+            //genero la variacion corerspondiente al desembolso
+            $ret = $this->mod->generar_evento( $data, true, $fecha_desembolso_nuevo);
+
+
+            //agrego el registro desembolso a la db   
+            $data['monto'] = 0;
+            $this->mod->agregar_desembolso( $data['monto'], $cuotas_restantes, $fecha_desembolso_nuevo);
+            $this->mod->assign_id_evento($ret['ID'],EVENTO_DESEMBOLSO);                
+        }
+        $data['monto'] = $_POST['monto'];
+
+        //genero la variacion corerspondiente al desembolso
+        $ret = $this->mod->generar_evento( $data, true, $fecha);
+
+
+        //agrego el registro desembolso a la db        
+        $this->mod->agregar_desembolso( $data['monto'], $cuotas_restantes, $fecha);
+        $this->mod->assign_id_evento($ret['ID'],EVENTO_DESEMBOLSO);
+
+
+        //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
+        //y recalcula los pagos desde esa fecha
+        if ( ($fecha_planchado = $this->mod->modificar_planchado($fecha)) > 0 ){
+            //se debe reimputar los pagos desde la fecha de planchado
+            $this->_recalcular_pagos($fecha_planchado);
+        }
+
+        $this->mod->get_segmentos_cuota();
+        $this->mod->renew_datos();
+
+        return TRUE;
     }
 
     
