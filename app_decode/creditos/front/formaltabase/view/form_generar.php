@@ -12,7 +12,7 @@
                             <span >CREDITO ID</span>
                         </div>
                         <div class="c7">
-                            <input type="text" class="" id="txtCreditoID-opc" value="<?=$credito['ID']?>"/>
+                            <input type="text" class="" id="txtCreditoID-opc" value="<?=$credito['ID']?>" readonly="readonly" />
                         </div>
                     </div>
 

@@ -86,7 +86,7 @@ $(document).ready(function(){
     if (_this_app.URL!='main'){
         setInterval(function(){
             actualizaNotif();
-        },6000);
+        },15000);
     }
     if ( _this_app.URL!='main' && _this_app.URL!='backend/cambiarpassword' )
         $("#jMenu").jMenu()
