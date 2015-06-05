@@ -446,3 +446,11 @@ select.styled { position: relative; width: ' + selectWidth + 'px; opacity: 0; fi
 #middle #container-main{
     margin-top: -40px;
 }
+
+.form-import{display:none;}
+#msgs,.form-import{clear:both;width:98%;margin-left:15px}
+.form-import h2{margin:20px 0 10px;color:#0044ff;font-size:24px}
+.form-import form{clear:both}
+
+#msg_ok{color:green;font-weight:bold}
+#msg_err{color:red;font-weight:bold;margin-top:10px}
