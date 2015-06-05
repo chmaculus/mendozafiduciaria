@@ -126,6 +126,13 @@ $(document).ready(function(){
         e.preventDefault();
         init_grid(_USUARIO_SESION_ACTUAL,'pendiente');
     });
+    
+    $('.tb_imp').on('click', function(e){
+        e.preventDefault();
+        $(".form-import").show();
+        $.unblockUI();
+    });
+    
 });
 
 function get_opciones(){

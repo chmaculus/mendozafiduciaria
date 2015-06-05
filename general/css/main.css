@@ -78,6 +78,9 @@ verfoto img{
 .tb_lis{
     background: url('../../general/css/images/32x32/listados.jpg') no-repeat 50% 6px !important;
 }
+.tb_imp{
+    background: url('../../general/css/images/32x32/exportar.png') no-repeat 50% 6px !important;
+}
 .tb_exp{
     background: url('../../general/css/images/32x32/exportar.png') no-repeat 50% 6px !important;
 }

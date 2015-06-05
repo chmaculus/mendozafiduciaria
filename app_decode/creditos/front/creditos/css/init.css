@@ -760,3 +760,6 @@ iframe{
 #liAlta, #liBaja, #liModificacion, #liVer{
     display: none;
 }
+
+.form-import{display:none;clear:both;width:98%;margin-left:15px}
+.form-import h2{margin:20px 0 10px;color:#0044ff}
