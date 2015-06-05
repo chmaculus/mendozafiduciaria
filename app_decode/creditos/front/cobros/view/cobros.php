@@ -9,6 +9,7 @@
                     <select id="comboEntidad" name="comboEntidad">
                         <option value="Nacion">Nacion</option>
                         <option value="Supervielle">Supervielle</option>
+                        <option value="Rapipago">Rapipago</option>
                     </select>
                     <button type='submit'>Subir</button>
                 </div>

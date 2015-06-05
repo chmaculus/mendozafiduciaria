@@ -108,6 +108,9 @@ class cobros extends main_controller {
                 case 'Supervielle':
                     $arr_result = $this->extract_file_supervielle(basename($_FILES['txtArchivo']['name']));
                     break;
+                case 'Rapipago':
+                    $arr_result = $this->extract_file_rapipago(basename($_FILES['txtArchivo']['name']));
+                    break;
             }
 
             $insert = array();
@@ -261,6 +264,44 @@ class cobros extends main_controller {
 
 
             $cheque = substr($item, 138, 22);
+        }
+
+        return $result;
+    }
+    
+    function extract_file_rapipago($file) {
+        $content = file_get_contents(UPLOAD_BANCOS . $file);
+        $items = explode("\n",$content);
+        
+        $result = array();
+        $array = array();
+        
+        foreach ($items as $k=>$item) {
+            $item = trim(strip_tags($item));
+            $item = trim(str_replace(array("\r", "\n"), "", $item));
+            
+            $kp = (int) ($k/3);
+            $array[$kp][] = $item;
+        }
+        
+        foreach ($array as $item) {
+            $tmp = array();
+            $tmp['recaudacion'] = array();
+
+            $tmp['recaudacion']['CODENT'] = "";
+            $tmp['recaudacion']['SUC_ORIGEN'] = "";
+            $tmp['recaudacion']['SUC_BCRA'] = "";
+            $tmp['recaudacion']['FECHA_REC'] = substr($tmp[0], 28, 36);
+            $tmp['recaudacion']['FECHA_REN'] = substr($tmp[1], 0, 8);
+            $tmp['recaudacion']['COD_MOV'] = "";
+            $tmp['recaudacion']['NRO_MOV'] = "";
+            $tmp['recaudacion']['IMPORTE'] = substr($tmp[1], 8, 23);
+            $tmp['recaudacion']['MONEDA'] = 1;
+            $tmp['barcode']['ID_CREDITO'] = substr($tmp[0], 0, 8);
+            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($tmp, 35, 8);
+            $tmp['barcode']['IMPORTE'] = substr($tmp[], 44, 10);
+            
+            $result[] = $tmp;
         }
 
         return $result;
