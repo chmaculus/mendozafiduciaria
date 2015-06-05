@@ -103,13 +103,12 @@ class cobros extends main_controller {
             $arr_result  = array();
             switch ($entidad){
                 case 'Nacion':
-                    $arr_result = $this->extract_file(basename($_FILES['txtArchivo']['name']));
+                    $arr_result = $this->extract_file_nacion(basename($_FILES['txtArchivo']['name']));
                     break;
                 case 'Supervielle':
                     $arr_result = $this->extract_file_supervielle(basename($_FILES['txtArchivo']['name']));
                     break;
             }
-            
 
             $insert = array();
             foreach ($arr_result as $item) {
@@ -149,50 +148,76 @@ class cobros extends main_controller {
 
     }
 
-    function extract_file($file) {
+    function extract_file_nacion($file) {
         $content = file_get_contents(UPLOAD_BANCOS . $file);
-
-        $content = str_replace(array("\r\n"), array(""), $content);
-        $content = str_replace(array("\n"), array(""), $content);
-
-
-        //$items = explode("\r\n",$content);
-
-        $items = str_split($content, 160);
-
-        //print_array($items);
+        $items = explode("\n",$content);
+        
         $result = array();
+        $fec_rec = "";
         foreach ($items as $item) {
-            $item = str_replace(array("\r", "\n"), "", $item);
-            $tmp = array();
-            $recaudacion = substr($item, 0, 58);
-
-            $tmp['recaudacion'] = array();
-
-
-            $tmp['recaudacion']['CODENT'] = substr($recaudacion, 0, 10);
-            $tmp['recaudacion']['SUC_ORIGEN'] = substr($recaudacion, 10, 4);
-            $tmp['recaudacion']['SUC_BCRA'] = substr($recaudacion, 14, 4);
-            $tmp['recaudacion']['FECHA_REC'] = substr($recaudacion, 18, 8);
-            $tmp['recaudacion']['FECHA_REN'] = substr($recaudacion, 26, 8);
-            $tmp['recaudacion']['COD_MOV'] = substr($recaudacion, 34, 2);
-            $tmp['recaudacion']['NRO_MOV'] = substr($recaudacion, 36, 6);
-            $tmp['recaudacion']['IMPORTE'] = substr($recaudacion, 42, 15);
-            $tmp['recaudacion']['MONEDA'] = substr($recaudacion, 57, 1);
-
-
-            $barcode = substr($item, 58, 80);
-            $tmp['barcode']['ID_CREDITO'] = substr($barcode, 4, 8);
-            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($barcode, 12, 8);
-            $tmp['barcode']['IMPORTE'] = substr($barcode, 20, 10);
-            $result[] = $tmp;
-
-
-            $cheque = substr($item, 138, 22);
+            $item = trim(strip_tags($item));
+            $item = trim(str_replace(array("\r", "\n"), "", $item));
+            if (strlen($item)>54) {
+                $result[] = $this->extract_file_nacion1($item);
+            } elseif(strlen($item)==36) {
+                $fec_rec = substr($item, 28, 8);
+            } elseif(strlen($item)==54) {
+                $result[] = $this->extract_file_nacion2($item, $fec_rec);
+            }
         }
 
         return $result;
     }
+    
+    function extract_file_nacion1($item) {
+        $tmp = array();
+        $recaudacion = substr($item, 0, 58);
+
+        $tmp['recaudacion'] = array();
+
+
+        $tmp['recaudacion']['CODENT'] = substr($recaudacion, 0, 10);
+        $tmp['recaudacion']['SUC_ORIGEN'] = substr($recaudacion, 10, 4);
+        $tmp['recaudacion']['SUC_BCRA'] = substr($recaudacion, 14, 4);
+        $tmp['recaudacion']['FECHA_REC'] = substr($recaudacion, 18, 8);
+        $tmp['recaudacion']['FECHA_REN'] = substr($recaudacion, 26, 8);
+        $tmp['recaudacion']['COD_MOV'] = substr($recaudacion, 34, 2);
+        $tmp['recaudacion']['NRO_MOV'] = substr($recaudacion, 36, 6);
+        $tmp['recaudacion']['IMPORTE'] = substr($recaudacion, 42, 15);
+        $tmp['recaudacion']['MONEDA'] = substr($recaudacion, 57, 1);
+
+
+        $barcode = substr($item, 58, 80);
+        $tmp['barcode']['ID_CREDITO'] = substr($barcode, 4, 8);
+        $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($barcode, 12, 8);
+        $tmp['barcode']['IMPORTE'] = substr($barcode, 20, 10);
+        
+        return $tmp;
+    }
+    
+    function extract_file_nacion2($item, $fec_rec) {
+        $tmp = array();
+        $recaudacion = $item;
+
+        $tmp['recaudacion'] = array();
+
+        $tmp['recaudacion']['CODENT'] = "";
+        $tmp['recaudacion']['SUC_ORIGEN'] = "";
+        $tmp['recaudacion']['SUC_BCRA'] = "";
+        $tmp['recaudacion']['FECHA_REC'] = $fec_rec;
+        $tmp['recaudacion']['FECHA_REN'] = substr($recaudacion, 0, 8);
+        $tmp['recaudacion']['COD_MOV'] = "";
+        $tmp['recaudacion']['NRO_MOV'] = "";
+        $tmp['recaudacion']['IMPORTE'] = substr($recaudacion, 9, 15);
+        $tmp['recaudacion']['MONEDA'] = 1;
+        $tmp['barcode']['ID_CREDITO'] = substr($recaudacion, 28, 7);
+        $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($recaudacion, 35, 8);
+        $tmp['barcode']['IMPORTE'] = substr($recaudacion, 44, 10);
+        
+        return $tmp;
+    }
+    
+    
     function extract_file_supervielle($file) {
         $content = file_get_contents(UPLOAD_BANCOS . $file);
 
