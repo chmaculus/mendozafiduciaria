@@ -1134,13 +1134,10 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
     
     function x_guardar_pagos_excel() {
         if ($this->_guardar_pagos_excel()) {
-            echo "Proceso finalizado";
-            if ($_SESSION['msg_err']) {
-                echo "<br />" . $_SESSION['msg_err'];
-            }
-        } else {
-            echo $_SESSION['msg_err'];
+            $_SESSION['msg_ok'] = "El proceso de importación de pagos ha finalizado";
         }
+        
+        header('Location:/' . URL_PATH . 'creditos/front/creditos');
         die();
     }
     
@@ -1154,20 +1151,38 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             
             $objReader = new PHPExcel_Reader_Excel2007();
             if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+                $_SESSION['msg_err'] = "";
                 set_time_limit(0);
                 $err = "";
                 $objPHPExcel->setActiveSheetIndex(0);
                 $arr_creditos = array();
+                $creditos_err = array();
                 for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
                     if (!$credito_id) {
-                        break;
+                        
+                        //voy a buscar si anteriormente se habían cargado créditos y buscar por cuit del postulante
+                        $cuit = trim(str_replace("-", "", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue()));
+                        if (!$cuit) {
+                            break;
+                        }
+                        if (isset($_SESSION['creditos_importados'][$cuit]) && $_SESSION['creditos_importados'][$cuit]) {
+                            $credito_id = $_SESSION['creditos_importados'][$cuit];
+                        } else {
+                            $creditos_err[$cuit] = $cuit;
+                        }
                     }
                     
-                    $arr_creditos[$credito_id][] = array(
-                        'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400,
-                        'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
-                        );
+                    if ($credito_id) {
+                        $arr_creditos[$credito_id][] = array(
+                            'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400,
+                            'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
+                            );
+                    }
+                }
+                
+                if (count($creditos_err)>0) {
+                    $_SESSION['msg_err'] = "Los siguientes créditos no se imputaron pagos: " . implode(", ", $creditos_err);
                 }
                 
                 foreach ($arr_creditos as $credito_id=>$creditos) {
@@ -1186,7 +1201,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 }
                 
                 if ($err) {
-                    $_SESSION['msg_err'] = $err;
+                    $_SESSION['msg_err'] .= $err;
                 }
                 
                 RETURN TRUE;

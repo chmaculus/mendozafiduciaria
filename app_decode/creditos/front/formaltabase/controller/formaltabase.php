@@ -97,13 +97,10 @@ class formaltabase extends main_controller {
 
     function x_guardar_creditos_excel() {
         if ($this->_guardar_creditos_excel()) {
-            echo "Proceso finalizado";
-            if ($_SESSION['msg_err']) {
-                echo "<br />" . $_SESSION['msg_err'];
-            }
-        } else {
-            echo $_SESSION['msg_err'];
+            $_SESSION['msg_ok'] = "Proceso de importación de créditos finalizado";
         }
+        
+        header('Location:/' . URL_PATH . 'creditos/front/creditos');
         die();
     }
     
@@ -142,6 +139,8 @@ class formaltabase extends main_controller {
                 }
 
                 $err = "";
+                
+                $_SESSION['creditos_importados'] = array();
 
                 for ($j = 7; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
 
@@ -245,6 +244,9 @@ class formaltabase extends main_controller {
                             foreach ($_POST['desembolsos'] as $des) {
                                 $_POST['total_credito'] += $des['monto'];
                             }
+                            
+                            $cuit = trim(str_replace("-", "", $cuit));
+                            $_SESSION['creditos_importados'][$cuit] = $credito_id;
                             
                             $this->x_generar_cuotas(FALSE);
                             

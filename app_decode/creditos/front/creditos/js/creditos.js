@@ -133,6 +133,9 @@ $(document).ready(function(){
         $.unblockUI();
     });
     
+    $('#content').on('click', function(e){
+        $("#msgs").fadeOut(500);
+    });
 });
 
 function get_opciones(){

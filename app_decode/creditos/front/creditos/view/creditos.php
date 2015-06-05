@@ -12,6 +12,23 @@
     <li class="tb_imp"><div>Importar</div></li>
 </ul>
 
+<div id="msgs">
+    <?php
+    if (isset($_SESSION['msg_ok'])) {
+        ?>
+        <div id="msg_ok"><?= $_SESSION['msg_ok'] ?></div>
+        <?php
+        unset($_SESSION['msg_ok']);
+    }
+
+    if (isset($_SESSION['msg_err'])) {
+        ?>
+        <div id="msg_err"><?= $_SESSION['msg_err'] ?></div>
+        <?php
+        unset($_SESSION['msg_err']);
+    }
+    ?>
+</div>
 <div class="form-import">
     <form action="creditos/front/formaltabase/x_guardar_creditos_excel" method="post" enctype="multipart/form-data">
         <h2>Importar créditos desde Excel</h2>

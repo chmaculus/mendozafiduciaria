@@ -761,5 +761,9 @@ iframe{
     display: none;
 }
 
-.form-import{display:none;clear:both;width:98%;margin-left:15px}
+.form-import{display:none;}
+#msgs,.form-import{clear:both;width:98%;margin-left:15px}
 .form-import h2{margin:20px 0 10px;color:#0044ff}
+
+#msg_ok{color:green;font-weight:bold}
+#msg_err{color:red;font-weight:bold;margin-top:10px}
