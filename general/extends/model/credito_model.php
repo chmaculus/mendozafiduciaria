@@ -2792,29 +2792,34 @@ ORDER BY T1.lvl DESC');
 
     function get_clientes_credito() {
         $credito = $this->_db->get_row("fid_creditos", "ID = " . $this->_id_credito);
-
+        
 
         $postulantes = array();
-        if ($credito['ID_OPERACION'] == 0) {
+        if ($credito['ID_OPERACION'] == 0 && $credito['POSTULANTES']) {
             $postulantes = explode("|", $credito['POSTULANTES']);
         } else {
 
             $rows = $this->_db->get_tabla("fid_operacion_cliente", "ID_OPERACION = " . $credito['ID_OPERACION']);
 
             if (!$rows) {
-                $postulantes = explode("|", $credito['POSTULANTES']);
-            } else {
                 foreach ($rows as $row) {
                     $postulantes[] = $row['ID_CLIENTE'];
                 }
+            } elseif($credito['POSTULANTES']) {
+                $postulantes = explode("|", $credito['POSTULANTES']);
             }
         }
-        $this->_db->select("c.*,ifnull(d.LOCALIDAD,'-') as LOCALIDAD, ifnull(p.PROVINCIA,'-') as PROVINCIA");
-        $this->_db->join("fid_localidades d", "c.ID_DEPARTAMENTO = d.ID", "left");
-        $this->_db->join("fid_provincias p", "c.ID_PROVINCIA = p.ID", "left");
-        $clientes = $this->_db->get_tabla("fid_clientes c", "c.ID in (" . implode(",", $postulantes) . ")");
+        
+        if (count($postulantes)>0) {
+            $this->_db->select("c.*,ifnull(d.LOCALIDAD,'-') as LOCALIDAD, ifnull(p.PROVINCIA,'-') as PROVINCIA");
+            $this->_db->join("fid_localidades d", "c.ID_DEPARTAMENTO = d.ID", "left");
+            $this->_db->join("fid_provincias p", "c.ID_PROVINCIA = p.ID", "left");
+            $clientes = $this->_db->get_tabla("fid_clientes c", "c.ID in (" . implode(",", $postulantes) . ")");
 
-        return $clientes;
+            return $clientes;
+        }
+        
+        return FALSE;
     }
 
     function set_tipo_credito($tipo = TIPO_CREDITO_NORMAL) {

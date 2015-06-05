@@ -1014,10 +1014,16 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $html = $head;
 
         $clientes = $this->mod->get_clientes_credito();
-        $credito_arr = array();
-        $credito_arr['DOMICILIO'] = $clientes[0]['DIRECCION']." - ".$clientes[0]['LOCALIDAD']." - ".$clientes[0]['PROVINCIA'];
-        $credito_arr['CUIT'] = $clientes[0]['CUIT'];
-        $credito_arr['RAZONSOCIAL'] = $clientes[0]['RAZON_SOCIAL'];
+        $credito_arr = array(
+            'DOMICILIO'=>'',
+            'CUIT'=>'',
+            'RAZONSOCIAL'=>''
+            );
+        if ($clientes) {
+            $credito_arr['DOMICILIO'] = $clientes[0]['DIRECCION']." - ".$clientes[0]['LOCALIDAD']." - ".$clientes[0]['PROVINCIA'];
+            $credito_arr['CUIT'] = $clientes[0]['CUIT'];
+            $credito_arr['RAZONSOCIAL'] = $clientes[0]['RAZON_SOCIAL'];
+        }
 
 
 //        $cuotas = $credito['CUOTAS'];

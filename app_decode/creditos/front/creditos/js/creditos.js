@@ -201,12 +201,13 @@ function init_grid(id_usuario,tipo){
     var sourceope ={
         datatype: "json",
         datafields: [
-            { name: 'ID_CREDITO' },
+            { name: 'ID_CREDITO', type: 'string' },
             { name: 'TOMADORES', type: 'string' },
+            { name: 'CUIT', type: 'string' },
             { name: 'OPERATORIA', type: 'string' },
             { name: 'FIDEICOMISO', type: 'string' },
             { name: 'CARPETA', type: 'string' },
-            { name: 'ESTADO', type: 'string' },
+            { name: 'ESTADO', type: 'string' }
         ],
         url: 'general/extends/extra/creditos.php',
         data:{
@@ -275,8 +276,9 @@ function init_grid(id_usuario,tipo){
             });
         },
         columns: [
-            { text: 'ID', datafield: 'ID_CREDITO', width: '6%', groupable:false, filterable:false , pinned: true},
+            { text: 'ID', datafield: 'ID_CREDITO', width: '6%', groupable:false, filterable:true },
             { text: 'TOMADORES', datafield: 'TOMADORES', width: '20%', hidden : false, filterable : true },
+            { text: 'CUIT', datafield: 'CUIT', width: '10%', hidden : false, filterable : true },
             { text: 'OPERATORIA', datafield: 'OPERATORIA', width: '20%', hidden : false, filterable : true },
             { text: 'FIDEICOMISO', datafield: 'FIDEICOMISO', width: '20%', hidden : false, filterable : true },
             { text: 'CARPETA', datafield: 'CARPETA', width: '10%', hidden : false, filterable : true },
