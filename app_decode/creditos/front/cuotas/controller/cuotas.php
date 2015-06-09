@@ -1157,6 +1157,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $objPHPExcel->setActiveSheetIndex(0);
                 $arr_creditos = array();
                 $creditos_err = array();
+                $cuit_creditos = array();
                 for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
                     if (!$credito_id) {
@@ -1168,6 +1169,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         }
                         if (isset($_SESSION['creditos_importados'][$cuit]) && $_SESSION['creditos_importados'][$cuit]) {
                             $credito_id = $_SESSION['creditos_importados'][$cuit];
+                            $cuit_creditos[$credito_id] = $cuit;
                         } else {
                             $creditos_err[$cuit] = $cuit;
                         }
@@ -1194,6 +1196,11 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         
                         foreach ($creditos as $pago) {
                             $this->realizar_pago($pago['FP'], $pago['PAGO']);
+                        }
+                        
+                        if(isset($cuit_creditos[$credito_id])) {
+                            $cuit = $cuit_creditos[$credito_id];
+                            unset($_SESSION['creditos_importados'][$cuit]);
                         }
                     } else {
                         $err .= "El crédito $credito_id no existe<br />";

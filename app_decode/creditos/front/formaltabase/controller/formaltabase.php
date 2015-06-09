@@ -96,8 +96,8 @@ class formaltabase extends main_controller {
     }
 
     function x_guardar_creditos_excel() {
-        if ($this->_guardar_creditos_excel()) {
-            $_SESSION['msg_ok'] = "Proceso de importación de créditos finalizado";
+        if (($total = $this->_guardar_creditos_excel())) {
+            $_SESSION['msg_ok'] = "Proceso de importación de créditos finalizado, se importaron ($total) créditos";
         }
         
         header('Location:/' . URL_PATH . 'creditos/front/creditos');
@@ -140,7 +140,10 @@ class formaltabase extends main_controller {
 
                 $err = "";
                 
-                $_SESSION['creditos_importados'] = array();
+                if (!isset($_SESSION['creditos_importados'])) {
+                    $_SESSION['creditos_importados'] = array();
+                }
+                $total_creditos = 0;
 
                 for ($j = 7; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
 
@@ -249,6 +252,7 @@ class formaltabase extends main_controller {
                             $_SESSION['creditos_importados'][$cuit] = $credito_id;
                             
                             $this->x_generar_cuotas(FALSE);
+                            ++$total_creditos;
                             
                             //guardar los desembolsos
                             $credito = $_POST;
@@ -285,8 +289,14 @@ class formaltabase extends main_controller {
                 if ($err) {
                     $_SESSION['msg_err'] = $err;
                 }
+                
                 //si se ha llegado acá debería haber guardado todo bien
-                return TRUE;
+                if($total_creditos>0) {
+                    return $total_creditos;
+                } else {
+                    $_SESSION['msg_err'] = "Hubo un inconveniente y no se importaron créditos, verifique el archivo";
+                    return FALSE;
+                }
             } else {
                 $_SESSION['msg_err'] = "El archivo no tiene formato de excel";
                 return FALSE;

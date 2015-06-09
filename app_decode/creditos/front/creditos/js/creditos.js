@@ -467,3 +467,11 @@ function get_formalta(){
 function get_multiple_informes(creditos_id){
     console.dir(creditos_id);
 }
+
+$(document).ready(function(){
+   $('.form-import form input.btnImp').on({
+       "click" : function(){
+           $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+       }
+   });
+});
