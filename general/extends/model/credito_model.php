@@ -2614,7 +2614,7 @@ ORDER BY T1.lvl DESC');
         $desembolsos = array();
         $total_desembolso = 0;
         foreach ($this->_variaciones as $variacion) {
-            if ($variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['ESTADO'] != 5) {
+            if (isset($variacion['ASOC']['MONTO']) && $variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['ESTADO'] != 5) {
                 if ($fecha > 0 && $variacion['FECHA'] > $fecha)
                     break;
 
@@ -2623,8 +2623,8 @@ ORDER BY T1.lvl DESC');
         }
         $i = 1;
         foreach ($this->_variaciones as $variacion) {
-
-            if ($variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['ESTADO'] != 5) {
+            
+            if (isset($variacion['ASOC']['MONTO']) && $variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['ESTADO'] != 5) {
                 if ($fecha > 0 && $variacion['FECHA'] > $fecha)
                     break;
 
