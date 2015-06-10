@@ -461,7 +461,7 @@ class formaltabase extends main_controller {
         //si no que este desembolso sea mayor al desembolso
         
         $fecha_desembolso_nuevo = $this->mod->verificar_desembolsos_inciales($fecha);
-        
+        /*
         if ( $fecha_desembolso_nuevo!==true){
             //si no existe generamos un desembolso minimo sobre el vencimiento de la primera cuota
 
@@ -473,7 +473,7 @@ class formaltabase extends main_controller {
             $data['monto'] = 0;
             $this->mod->agregar_desembolso( $data['monto'], $cuotas_restantes, $fecha_desembolso_nuevo);
             $this->mod->assign_id_evento($ret['ID'],EVENTO_DESEMBOLSO);                
-        }
+        }*/
         $data['monto'] = $_POST['monto'];
 
         //genero la variacion corerspondiente al desembolso
