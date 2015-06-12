@@ -440,11 +440,13 @@ function get_credito(edit){
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     
     if (selectedrowindexes.length === 1){
-        var credito_selected = _creditos_lista[selectedrowindexes[0] ];
-        var url = urlbase+"/init/"+credito_selected.ID_CREDITO+"/"+edit;
+        var credito_selected = $('.jqx-grid-cell-selected :first').html();
+        var url = urlbase+"/init/"+credito_selected+"/"+edit;
         location.href=url;
         return false;
         
+    } else {
+        alert("Seleccione sólo un (1) crédito");
     }
      
 }
