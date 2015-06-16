@@ -443,3 +443,4 @@ select.styled { position: relative; width: ' + selectWidth + 'px; opacity: 0; fi
 #middle #container-main{
     margin-top: -40px;
 }
+#ui-datepicker-div{z-index:1100 !important}

@@ -45,11 +45,11 @@ foreach($cuotas as $cuota){
     $iva_punitorio_total = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['TOTAL'] : 0 ; 
     $iva_compensatorio_total = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['TOTAL'] : 0 ; 
     
-    $iva_moratorio_saldo = isset($cuota['IVA_MORATORIO']['TOTAL']) ? $cuota['IVA_MORATORIO']['SALDO'] : 0 ; 
-    $iva_punitorio_saldo = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['SALDO'] : 0 ;     
-    $iva_compensatorio_saldo = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['SALDO'] : 0 ;     
+    $iva_moratorio_saldo = isset($cuota['IVA_MORATORIO']['SALDO']) ? $cuota['IVA_MORATORIO']['SALDO'] : 0 ; 
+    $iva_punitorio_saldo = isset($cuota['IVA_PUNITORIO']['SALDO']) ? $cuota['IVA_PUNITORIO']['SALDO'] : 0 ;     
+    $iva_compensatorio_saldo = isset($cuota['IVA_COMPENSATORIO']['SALDO']) ? $cuota['IVA_COMPENSATORIO']['SALDO'] : 0 ;     
     
-    $iva_moratorio_pagado = $iva_moratorio_total - $iva_moratorio_saldo; 
+    $iva_moratorio_pagado = $cuota['IVA_MORATORIO']['PAGOS']; 
     //echo "<br/>IVAMOR t/s:".$iva_moratorio_total ."/". $iva_punitorio_saldo  ."-";
     $iva_punitorio_pagado = $iva_punitorio_total - $iva_punitorio_saldo;
     $iva_compensatorio_pagado = $cuota['IVA_COMPENSATORIO']['PAGOS'];//$iva_compensatorio_total - $iva_compensatorio_saldo ;

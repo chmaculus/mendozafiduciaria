@@ -427,21 +427,6 @@ class credito_model extends main_model {
                     "TIPO" => 1,
                     "SALDO" => ($tmp) - $saldo);
 
-                //IVA MORATORIO
-                $tmp = $cuota['INT_MORATORIO'];
-
-                $tmp = $tmp * $IVA;
-                $tmp = $tmp < 0 ? 0 : $tmp;
-                $saldo = round($pago[PAGO_IVA_MORATORIO], 2);
-                $tmp = round($tmp, 2) == 0 ? $saldo : $tmp;
-
-
-                $arr_iva_moratorio = array(
-                    "TOTAL" => $tmp,
-                    "PAGOS" => $pago[PAGO_IVA_MORATORIO],
-                    "TIPO" => 2,
-                    "SALDO" => ($tmp) - $saldo);
-
                 //PUNITORIO
                 $tmp = $cuota['INT_PUNITORIO'];
 
@@ -457,15 +442,44 @@ class credito_model extends main_model {
 
                 //MORATORIO
                 $tmp = $cuota['INT_MORATORIO'];
-
+                
+                if ($dif_dias > 0) {
+                    $saldo_pagado = 0;
+                    $saldo_pagado += $pago[PAGO_CAPITAL];
+                    $saldo_pagado += $pago[PAGO_COMPENSATORIO];
+                    $saldo_pagado += $pago[PAGO_IVA_COMPENSATORIO];
+                    $saldo_pagado += $pago[PAGO_PUNITORIO];
+                    $saldo_pagado += $pago[PAGO_IVA_PUNITORIO];
+                    
+                    $monto = $cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA'] - $cuota['INT_COMPENSATORIO_SUBSIDIO'] - $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'];
+                    $monto -= $saldo_pagado;
+                    
+                    if ($monto > 0.3) {
+                        $tmp = $monto * $cuota['POR_INT_MORATORIO'] * $dif_dias / 100 / $this->_credito['PLAZO_MORATORIO'];
+                    }
+                }
+                
                 $tmp = $tmp < 0 ? 0 : $tmp;
                 $saldo = $pago[PAGO_MORATORIO];
-                $tmp = round($tmp, 2) == 0 ? $saldo : $tmp;
+                //$tmp = round($tmp, 2) == 0 ? $saldo : $tmp;
+                $aux = $tmp / (1 + IMP_IVA);
+                $dif_aux = $aux - $pago[PAGO_MORATORIO];
+                if ($dif_aux < 0.1) $dif_aux=0;
                 $arr_moratorio = array(
-                    "TOTAL" => $tmp,
+                    "TOTAL" => $aux,
                     "PAGOS" => $pago[PAGO_MORATORIO],
                     "TIPO" => 5,
-                    "SALDO" => ($tmp) - $pago[PAGO_MORATORIO]);
+                    "SALDO" => $dif_aux);
+                
+                //IVA
+                $aux = $tmp * IMP_IVA / (1 + IMP_IVA);
+                $dif_aux = $aux - $pago[PAGO_IVA_MORATORIO];
+                if ($dif_aux < 0.1) $dif_aux=0;
+                $arr_iva_moratorio = array(
+                    "TOTAL" => $aux,
+                    "PAGOS" => $pago[PAGO_IVA_MORATORIO],
+                    "TIPO" => 2,
+                    "SALDO" => $dif_aux);
             }
 
             //dependiendo si la cuota esta vencida o no es el orden de los items
@@ -2618,8 +2632,8 @@ ORDER BY T1.lvl DESC');
                 if ($fecha > 0 && $variacion['FECHA'] > $fecha)
                     break;
 
+                $total_monto = 0;
                 if ($variacion['ASOC']) {
-                    $total_monto = 0;
                     foreach ($variacion['ASOC'] as $valor) {
                         $total_monto += $valor['MONTO'];
                     }
