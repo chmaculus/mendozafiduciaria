@@ -3,6 +3,9 @@
         .page-break	{ display: none; }
     }
 
+    .codbar{font-size:0;position:relative;}
+    .codbar div{-webkit-print-color-adjust:exact}
+    
     @page {
         size: A4;
         margin-left: 1.15cm;
