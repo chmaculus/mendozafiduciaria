@@ -845,6 +845,7 @@ class credito_model extends main_model {
                 $IVA_INT_SUBSIDIO_ACUMULADO = 0;
 
 
+                $parche_cuotas=true;
                 for ($i = 0; $i < count($subcuotas) && !$bfin_segmento; $i++) {
                     unset($subcuotas[$i]['CHILDREN']);
                     unset($subcuotas[$i]['TMP']['VARIACION']['ASOC']);
@@ -958,8 +959,11 @@ class credito_model extends main_model {
                            
                         }
                     } else { //interes simple
-                        $tmp['POR_INT_COMPENSATORIO'] = ($INTERES_COMPENSATORIO_VARIACION / $this->_interese_compensatorio_plazo) * $rango;
-                        $tmp['INT_COMPENSATORIO'] = $INTERES_COMPENSATORIO_VARIACION * $tmp['CAPITAL_CUOTA'] / 100;
+                        if ($parche_cuotas) {
+                            $tmp['POR_INT_COMPENSATORIO'] = ($INTERES_COMPENSATORIO_VARIACION / $this->_interese_compensatorio_plazo) * $rango;
+                            $tmp['INT_COMPENSATORIO'] = $INTERES_COMPENSATORIO_VARIACION * $tmp['CAPITAL_CUOTA'] / 100;
+                            $parche_cuotas = FALSE;
+                        }
                     }
                         
 
