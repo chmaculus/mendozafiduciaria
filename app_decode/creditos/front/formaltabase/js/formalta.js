@@ -180,8 +180,21 @@ function cambiar_accion() {
     }
 }
 
+function generar_cuotas() {
+    var periodicidad = $("#txtPeriodicidad").val();
+    
+    if (periodicidad != 1 && periodicidad != 6 && periodicidad != 12) {
+        jConfirm("La periocidad ingresa es " + periodicidad + ", está seguro?","Periocidad de Intereses", function(r){
+            if (r){
+                _generar_cuotas();
+            }
+        });
+    } else {
+        _generar_cuotas();
+    }
+}
 
-function generar_cuotas(){
+function _generar_cuotas(){
     $("#txtMonto").removeClass("error");
     $("#txtCantidadCuotasGracia").removeClass("error");
     $("#txtCreditoID-opc").removeClass("error");

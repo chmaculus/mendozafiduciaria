@@ -162,14 +162,14 @@
                     <div class="c5">
                         <div class="row">
                             <div class="c1">
-                                <input type="radio"  id="chkUnsub" name="chkSubidio" value="0" checked="<?= $credito['T_BONIFICACION'] > 0 ? '' : 'checked' ?>" onclick="change_subsidio();"/>
+                                <input type="radio"  id="chkUnsub" name="chkSubidio" value="0" <?= $credito['T_BONIFICACION'] > 0 ? '' : 'checked="checked"' ?> onclick="change_subsidio();"/>
                             </div>
                             <div class="c3">
                                 <span >No</span>
                             </div>
 
                             <div class="c1">
-                                <input type="radio"  id="chkSub" name="chkSubidio" value="1" checked="<?= $credito['T_BONIFICACION'] > 0 ? 'checked' : '' ?>" onclick="change_subsidio();"/>
+                                <input type="radio"  id="chkSub" name="chkSubidio" value="1" <?= $credito['T_BONIFICACION'] > 0 ? 'checked="checked"' : '' ?> onclick="change_subsidio();"/>
                             </div>
                             <div class="c3">
                                 <span >Si</span>
