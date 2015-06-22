@@ -4,7 +4,7 @@
     <li class="listado-credito tb_edi" id="liVer" data-top='ver' data-loc="creditos/front/credito" ><div>Ver</div></li>
     <li class="listado-credito tb_edi" id="liModificacion" data-top='editar'><div>Ver/Editar</div></li>
     <li class="listado-credito tb_edi" id="liOpcion" data-top='opciones'><div>Opciones</div></li>
-    <!-- <li class="listado-credito tb_del" id="liBaja" data-top='eliminar'><div>Eliminar</div></li>-->
+    <li class="listado-credito tb_del" id="liBaja2" data-top='eliminar' style="display:none"><div>Eliminar</div></li>
     
     
     <div class=" tb_sep"></div>
