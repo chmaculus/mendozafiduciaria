@@ -62,7 +62,7 @@
                         <span >Periodicidad</span>
                     </div>
                     <div class="c7">
-                        <input type="text" class="" id="txtPeriodicidad" value="<?= $credito['INTERES_CUOTAS'] ?>"/>
+                        <input type="text" class="" id="txtPeriodicidad" value="1"/>
                     </div>
                 </div>
                 <div class="row">
