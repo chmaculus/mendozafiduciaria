@@ -2,7 +2,7 @@
     <li class="tb_add" data-top='add'><div>Agregar</div></li>
     <li class="tb_edi" data-top='edi'><div>Editar</div></li>
     <li class="tb_ver" data-ver='ver' data-top='edi'><div>Ver</div></li>
-    <li class="tb_del" data-top='del'><div>Eliminar</div></li>
+    <!-- <li class="tb_del" data-top='del'><div>Eliminar</div></li>-->
     
     <?php if ($_SESSION["USER_SU_1"]==1 || $_SESSION["USER_SU_2"]==1): ?>
         <div class="tb_sep"></div>

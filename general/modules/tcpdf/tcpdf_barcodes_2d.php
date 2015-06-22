@@ -142,7 +142,7 @@ class TCPDF2DBarcode {
  	 * @public
 	 */
 	public function getBarcodeHTML($w=10, $h=10, $color='black') {
-		$html = '<div style="font-size:0;position:relative;width:'.($w * $this->barcode_array['num_cols']).'px;height:'.($h * $this->barcode_array['num_rows']).'px;">'."\n";
+		$html = '<div class="codbar" style="width:'.($w * $this->barcode_array['num_cols']).'px;height:'.($h * $this->barcode_array['num_rows']).'px;">'."\n";
 		// print barcode elements
 		$y = 0;
 		// for each row
