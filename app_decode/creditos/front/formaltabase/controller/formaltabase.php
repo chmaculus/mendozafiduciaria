@@ -65,7 +65,7 @@ class formaltabase extends main_controller {
             "T_PUNITORIO" => 24,
             "T_BONIFICACION" => 0,
             "T_MORATORIO" => 12,
-            "INTERES_CUOTAS" => 6,
+            "INTERES_CUOTAS" => 1,
             "INTERES_VTO" => date("Y-m-d"),
             "INTERES_PERIODO" => 09,
             "CAPITAL_CUOTAS" => 6,
