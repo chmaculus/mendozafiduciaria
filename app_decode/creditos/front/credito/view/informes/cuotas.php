@@ -33,7 +33,7 @@ $total_cuota_pagado = 0;
 $total_cuota_subsidio = 0;
 $total_cuota_iva_subsidiado = 0;
  
-
+$cuotas_pendientes = 0;
 
 $total_cuota_gastos = 0;
 //print_array($cuotas);
@@ -117,6 +117,37 @@ foreach($cuotas as $cuota){
             $class = "cancelada";
         }
     }
+    
+    if ($bmoratorio){
+        $total_moratorio = $cuota['MORATORIO']['TOTAL'];
+        $pagado_moratorio = $cuota['MORATORIO']['TOTAL'] - $cuota['MORATORIO']['SALDO'];
+        $saldo_moratorio = $cuota['MORATORIO']['SALDO'];
+    }
+    
+    if ($bpunitorio){
+        $total_punitorio = $cuota['PUNITORIO']['TOTAL'];
+        $pagado_punitorio = $cuota['PUNITORIO']['TOTAL'] - $cuota['PUNITORIO']['SALDO'];
+        $saldo_punitorio = $cuota['PUNITORIO']['SALDO'];
+    }
+    
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $iva_total;
+    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $iva_saldo;
+    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $iva_pagado;
+    $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
+
+    $total_cuota_total += $total_total;
+    $total_cuota_saldo += $total_saldo;
+    $total_cuota_pagado += $total_pagado;
+    $total_cuota_subsidio += $total_subsidio;
+    $total_cuota_iva_subsidio += $total_iva_subsidio;
+    
+             
+    if ($total_total > 0 && $total_saldo < 0.05 && $cuotas_pendientes == 0 ) {
+        $estado = "Cancelada";
+        $class = "cancelada";
+    } else {
+        ++$cuotas_pendientes;
+    }
     ?>
     <li class="datos <?=$class?>" data-id="<?=$cuota['ID']?>" >
         <span class="numero-desembolso"><?=$cuota['_INFO']['NUM']?></span>
@@ -134,10 +165,7 @@ foreach($cuotas as $cuota){
                     <span class="titulo-estado resumido">Pagado</span>
                     <span class="titulo-estado ">Saldo</span>
                 </li>
-                <?php if ($bmoratorio){
-                    $total_moratorio = $cuota['MORATORIO']['TOTAL'];
-                    $pagado_moratorio = $cuota['MORATORIO']['TOTAL'] - $cuota['MORATORIO']['SALDO'];
-                    $saldo_moratorio = $cuota['MORATORIO']['SALDO'];                    
+                <?php if ($bmoratorio){        
                     ?>
                 <li>
                     <span class="titulo-esp ">Interes Moratorio</span>
@@ -148,9 +176,6 @@ foreach($cuotas as $cuota){
                 </li>
                 <?php }?>
                 <?php if ($bpunitorio){
-                    $total_punitorio = $cuota['PUNITORIO']['TOTAL'];
-                    $pagado_punitorio = $cuota['PUNITORIO']['TOTAL'] - $cuota['PUNITORIO']['SALDO'];
-                    $saldo_punitorio = $cuota['PUNITORIO']['SALDO'];
                     ?>
                 <li>
                     <span class="titulo-esp ">Interes Punitorio</span>
@@ -181,20 +206,6 @@ foreach($cuotas as $cuota){
                     <span class="dato-esp"><?=number_format($iva_pagado,2,",",".")?></span>
                     <span class="dato-esp"><?=number_format(abs(round($iva_saldo,2)),2,",",".")?></span>
                 </li>
-                
-                <?php
-                $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $iva_total;
-                $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $iva_saldo;
-                $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $iva_pagado;
-                $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
-                
-                $total_cuota_total += $total_total;
-                $total_cuota_saldo += $total_saldo;
-                $total_cuota_pagado += $total_pagado;
-                $total_cuota_subsidio += $total_subsidio;
-                $total_cuota_iva_subsidio += $total_iva_subsidio;
-                
-                ?>
                 
                 <li class="totales-cuota">
                     <span class="titulo-esp ">TOTALES CUOTA</span>

@@ -381,7 +381,7 @@ class credito_model extends main_model {
                     "TIPO" => 3,
                     "SALDO" => $total - $pago[PAGO_IVA_COMPENSATORIO] - $IVA_COMPENSATORIO_SUBSIDIO);
                 
-                if($arr_iva_compensatorio['SALDO'] < 0.5) $arr_iva_compensatorio['SALDO'] = 0;
+                //if($arr_iva_compensatorio['SALDO'] < 0.5) $arr_iva_compensatorio['SALDO'] = 0;
 
                 $arr_iva_compensatorio_subsidio = array(
                     "TOTAL" => $IVA_COMPENSATORIO_SUBSIDIO, //$subsidio
@@ -907,9 +907,9 @@ class credito_model extends main_model {
                     
                     $fecha_saldo_capital = $fecha_vencimiento - 1;
 
-                    if ($fecha_saldo_capital > $cuota['FECHA_VENCIMIENTO']) {
+                    /*if ($fecha_saldo_capital > $cuota['FECHA_VENCIMIENTO']) {
                         break;
-                    }
+                    }*/
                     
                     $capital_arr = $this->_get_saldo_capital($fecha_saldo_capital, true, false);
                     $SALDO_CAPITAL = $capital_arr['BASE_CALCULO'];
