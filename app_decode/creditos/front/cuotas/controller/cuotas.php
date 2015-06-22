@@ -1059,7 +1059,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $page .= '<tr class="detalle"><td colspan="7">Intereses Compensatorios</td><td >$'.number_format($cuota['COMPENSATORIO']['SALDO'],2,",",".").'</td></tr>';
                 $int_mor = $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO'];
                if ($int_mor< 0.10) $int_mor= 0;
-                $page .= '<tr class="detalle"><td colspan="7">Interese Moratorios y Punitorios</td><td >$'.number_format($int_mor ,2,",",".").'</td></tr>';
+                $page .= '<tr class="detalle"><td colspan="7">Intereses Moratorios y Punitorios</td><td >$'.number_format($int_mor ,2,",",".").'</td></tr>';
                 $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) ;
                 if ($iva< 0.10) $iva= 0;
                 $page .= '<tr class="detalle"><td colspan="7">IVA</td><td >$'.number_format($iva,2,",",".").'</td></tr>';
