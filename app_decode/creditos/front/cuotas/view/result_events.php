@@ -10,6 +10,9 @@
         margin-bottom: 0cm;
         margin-top: 0cm;        
     }
+    
+    .codbar{font-size:0;position:relative;}
+    .codbar div{-webkit-print-color-adjust:exact}
 
     @media print {
         .page {

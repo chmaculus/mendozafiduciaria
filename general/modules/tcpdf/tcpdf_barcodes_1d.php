@@ -145,7 +145,7 @@ class TCPDFBarcode {
  	 * @public
 	 */
 	public function getBarcodeHTML($w=2, $h=30, $color='black') {
-		$html = '<div style="font-size:0;position:relative;width:'.($this->barcode_array['maxw'] * $w).'px;height:'.($h).'px;">'."\n";
+		$html = '<div class="codbar" style="width:'.($this->barcode_array['maxw'] * $w).'px;height:'.($h).'px;">'."\n";
 		// print bars
 		$x = 0;
 		foreach ($this->barcode_array['bcode'] as $k => $v) {

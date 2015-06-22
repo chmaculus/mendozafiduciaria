@@ -336,22 +336,20 @@ function get_eventos(){
 function get_eliminar(){
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     if (selectedrowindexes.length===0){
-        $.unblockUI();
-        return;
+        jAlert("No ha seleccionado ningún crédito para eliminar","Eliminar Crédito", function(){
+            $.unblockUI();
+            return;
+        });
     }
     else{
         
         var credito_selected = [];
-        //_creditos_lista[selectedrowindexes[0]
-        //console.dir(_creditos_lista);
-        var str_list_creditos = "";
-        for(var i = 0 ; i < selectedrowindexes.length ; i++){
-            credito_selected.push(parseInt(_creditos_lista[selectedrowindexes[i]].ID_CREDITO) );
-            if (i > 0){
-                str_list_creditos  += ", ";
-            }
-            str_list_creditos  +=  _creditos_lista[selectedrowindexes[i]].ID_CREDITO;
-        }
+        $('#contenttablejqxgrid div > .jqx-grid-cell-selected:first-child').each(function() {
+            credito_selected.push($(this).text());
+        });
+        
+        var str_list_creditos = credito_selected.join(", ");
+        
         console.log(str_list_creditos);
         $.unblockUI();
         
@@ -450,11 +448,16 @@ function get_credito(edit){
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     
     if (selectedrowindexes.length === 1){
-        var credito_selected = _creditos_lista[selectedrowindexes[0] ];
-        var url = urlbase+"/init/"+credito_selected.ID_CREDITO+"/"+edit;
+        var credito_selected = $('.jqx-grid-cell-selected :first').html();
+        var url = urlbase+"/init/"+credito_selected+"/"+edit;
         location.href=url;
         return false;
         
+    } else {
+        jAlert("Debe seleccionar solo un crédito","Editar Créditos", function(){
+            $.unblockUI();
+            return;
+        });
     }
      
 }
