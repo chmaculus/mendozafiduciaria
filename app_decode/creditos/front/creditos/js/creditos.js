@@ -105,6 +105,9 @@ $(document).ready(function(){
                 case "eventos-multiples":
                     get_multiple_eventos();
                     break;
+                case "exportar":
+                    exportar();
+                    break;
             }
     });
 

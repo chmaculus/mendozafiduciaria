@@ -918,7 +918,13 @@ class credito_model extends main_model {
                         //$PERIODICIDAD_TASA_VARIACION = $subcuotas[$i - 1]['TMP']['VARIACION']['PERIODICIDAD_TASA'];
                         $PLAZO_PAGO = $subcuotas[$i - 1]['TMP']['VARIACION']['PLAZO_PAGO'];
                     }
-
+                    
+                    /* en caso de cuotas que vencen sábado o domingo 
+                    if (date('w', $tmp_fecha_inicio) == 0) {
+                        $tmp_fecha_inicio += (24 * 3600);
+                    } elseif (date('w', $tmp_fecha_inicio) == 6) {
+                        $tmp_fecha_inicio += (48 * 3600);
+                    }*/
 
                     $tmp['FECHA_INICIO_REAL'] = $tmp_fecha_inicio;
                     $tmp['FECHA_VENCIMIENTO_REAL'] = $subcuotas[$i]['TMP']['VARIACION']['FECHA'];
@@ -957,7 +963,7 @@ class credito_model extends main_model {
                     //de vencimiento de la cuota, se evalua la fecha de envio
                     //si la fecha de envio es menor a la fecha de vencimiento del segmento
                     $fecha_vencimiento_rango = $tmp['FECHA_VENCIMIENTO'];
-
+                    
                     $rango_tmp = ($fecha_vencimiento_rango - $tmp['FECHA_INICIO']) / (24 * 60 * 60);
                     $rango = $rango_tmp < 0 ? 0 : round($rango_tmp);
                     

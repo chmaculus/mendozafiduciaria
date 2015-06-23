@@ -181,7 +181,7 @@ class formalta_model extends credito_model {
         $DIA_INICIO = date("d", $fecha_venvimiento);
         $YEAR_INICIO = date("Y", $fecha_venvimiento);
         $MES_INICIO = date("m", $fecha_venvimiento);
-        $fecha_venvimiento = mktime(0, 0, 0, $MES_INICIO + ($periodicidad * $cantidad_cuotas_iniciadas), $DIA_INICIO, $YEAR_INICIO);
+        $fecha_venvimiento = $this->obtener_fecha_vencimiento($fecha_venvimiento, $variacion['PERIODICIDAD_TASA'] * $cantidad_cuotas_iniciadas);
 
         $cuotas_amort = $cuotas_restantes - $cuotas_gracia;
 
@@ -208,7 +208,7 @@ class formalta_model extends credito_model {
             }
             if (!$bcuota_exist) {
                 $fecha_inicio = $fecha_venvimiento;
-                $fecha_venvimiento = mktime(0, 0, 0, date("m", $fecha_venvimiento) + $periodicidad, $DIA_INICIO, date("Y", $fecha_venvimiento));
+                $fecha_venvimiento = $this->obtener_fecha_vencimiento($fecha_venvimiento, $variacion['PERIODICIDAD_TASA']);
             }
 
             $cuotas_arr[$i]['POR_INT_COMPENSATORIO'] = $variacion['POR_INT_COMPENSATORIO'] / 12 * $periodicidad;
@@ -374,6 +374,12 @@ class formalta_model extends credito_model {
     
     function guardar_postulante($cliente) {
         return $this->_db->insert("fid_clientes", $cliente);
+    }
+    
+    function obtener_fecha_vencimiento($fecha, $periodicidad) {
+        $fecha_vencimiento = $fecha + ($periodicidad * 3600 * 24);
+        
+        return $fecha_vencimiento;
     }
     
     
