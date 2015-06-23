@@ -5,7 +5,7 @@
     <li class="listado-credito tb_edi" id="liModificacion" data-top='editar'><div>Ver/Editar</div></li>
     <li class="listado-credito tb_edi" id="liOpcion" data-top='opciones'><div>Opciones</div></li>
     <li class="listado-credito tb_del" id="liBaja2" data-top='eliminar' style="display:none"><div>Eliminar</div></li>
-    
+    <li class="tb_exportar" data-top='exportar'><div>Exportar</div></li>
     
     <div class=" tb_sep"></div>
     <li class="tb_todas" data-top='cobros'><div>Cobros</div></li>

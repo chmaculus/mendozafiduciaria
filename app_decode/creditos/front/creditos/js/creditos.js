@@ -74,6 +74,8 @@ $(document).ready(function(){
             var obj = [];
             $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
             
+            $('.tb_exportar').hide();
+            
             switch(top){
                 case "ver":
                     get_credito(0);
@@ -97,6 +99,7 @@ $(document).ready(function(){
                     get_eliminar();
                     break;
                 case "listado":
+                    $('.tb_exportar').show();
                     get_listado();
                     break;
                 case "cobros":
@@ -106,6 +109,7 @@ $(document).ready(function(){
                     get_multiple_eventos();
                     break;
                 case "exportar":
+                    $('.tb_exportar').show();
                     exportar();
                     break;
             }
@@ -481,3 +485,50 @@ $(document).ready(function(){
        }
    });
 });
+
+function exportar() {
+    $.ajax({
+        url : _creditos.URL + "/x_getexportar",
+        type : "post",
+        success : function(data){
+            $.unblockUI();
+            $.fancybox(
+                data,
+                {
+                    'padding'   :  20,
+                    'autoScale' :true,
+                    'scrolling' : 'no'
+                }
+            );
+
+            $(".div_exportar .toolbar li").hover(
+                function () {
+                    $(this).removeClass('li_sel').addClass('li_sel');
+                },
+                function () {
+                    $(this).removeClass('li_sel');
+                }
+            );
+
+            var url_e = $(".div_exportar ul").data('url_e');
+            $('.div_exportar .toolbar li').on('click', function(event){
+                event.preventDefault();
+                var tipo = $(this).data('acc');
+                switch(tipo) {
+                    case 'exc':
+                        $("#jqxgrid").jqxGrid('exportdata', 'xls', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'csv':
+                        $("#jqxgrid").jqxGrid('exportdata', 'csv', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'htm':
+                        $("#jqxgrid").jqxGrid('exportdata', 'html','ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'xml':
+                        $("#jqxgrid").jqxGrid('exportdata', 'xml', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                }
+            });
+
+        }
+    });
+}
