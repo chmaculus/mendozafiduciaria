@@ -760,3 +760,7 @@ iframe{
 #liAlta, #liBaja, #liModificacion, #liVer{
     display: none;
 }
+
+.tb_exportar{
+    background: url('../../../../../general/css/images/32x32/exportar.png') no-repeat 50% 6px !important;
+}
