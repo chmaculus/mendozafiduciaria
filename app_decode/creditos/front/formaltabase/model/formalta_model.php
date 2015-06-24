@@ -181,7 +181,7 @@ class formalta_model extends credito_model {
         $DIA_INICIO = date("d", $fecha_venvimiento);
         $YEAR_INICIO = date("Y", $fecha_venvimiento);
         $MES_INICIO = date("m", $fecha_venvimiento);
-        $fecha_venvimiento = $this->obtener_fecha_vencimiento($fecha_venvimiento, $variacion['PERIODICIDAD_TASA'] * $cantidad_cuotas_iniciadas);
+        $fecha_venvimiento = $this->obtener_fecha_vencimiento($DIA_INICIO, $fecha_venvimiento, $variacion['PERIODICIDAD_TASA'] * $cantidad_cuotas_iniciadas);
 
         $cuotas_amort = $cuotas_restantes - $cuotas_gracia;
 
@@ -208,7 +208,7 @@ class formalta_model extends credito_model {
             }
             if (!$bcuota_exist) {
                 $fecha_inicio = $fecha_venvimiento;
-                $fecha_venvimiento = $this->obtener_fecha_vencimiento($fecha_venvimiento, $variacion['PERIODICIDAD_TASA']);
+                $fecha_venvimiento = $this->obtener_fecha_vencimiento($DIA_INICIO, $fecha_venvimiento, $variacion['PERIODICIDAD_TASA']);
             }
 
             $cuotas_arr[$i]['POR_INT_COMPENSATORIO'] = $variacion['POR_INT_COMPENSATORIO'] / 12 * $periodicidad;
@@ -376,8 +376,31 @@ class formalta_model extends credito_model {
         return $this->_db->insert("fid_clientes", $cliente);
     }
     
-    function obtener_fecha_vencimiento($fecha, $periodicidad) {
-        $fecha_vencimiento = $fecha + ($periodicidad * 3600 * 24);
+    function obtener_fecha_vencimiento($dia_inicio, $fecha, $periodicidad) {
+        switch ($periodicidad) {
+            case 30:
+                $mes = date('m', $fecha) + 1;
+				$anio = date('Y', $fecha);
+                if ($mes>12) {
+                    $mes=1;
+                    $anio++;
+                }
+				//echo $anio;die();
+                $fecha_vencimiento = $anio . "-" . $mes;
+                $dia_mes = date('t', strtotime($fecha_vencimiento));
+				if ($dia_inicio > $dia_mes) {
+                    $dia_inicio = $dia_mes;
+                }
+                
+                $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
+                break;
+            
+            default :
+                $fecha_vencimiento = $fecha + ($periodicidad * 3600 * 24);
+                break;
+        }
+        
+        
         
         return $fecha_vencimiento;
     }

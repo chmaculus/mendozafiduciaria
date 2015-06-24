@@ -1174,16 +1174,31 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             $credito_id = $_SESSION['creditos_importados'][$cuit];
                             $cuit_creditos[$credito_id] = $cuit;
                         } else {
-                            $creditos_err[$cuit] = $cuit;
+                            //busco el cliente por el cuit, luego busco 
+                            $credito_id = $this->mod->buscarCreditoPorCuit($cuit);
                         }
-                    }
+                    }                    
                     
                     if ($credito_id) {
-                        $arr_creditos[$credito_id][] = array(
-                            'FP' => PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400,
+                        $fpago = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400;
+                        $_fpago = (int)$fpago;
+                        
+                        if (isset($arr_creditos[$credito_id][$_fpago])) {
+                            $_fpago++;
+                        }
+                        
+                        $arr_creditos[$credito_id][$_fpago] = array(
+                            'FP' => date('Y-m-d', $fpago),
                             'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
                             );
+                    } else {
+                        $creditos_err[$cuit] = $cuit;
                     }
+                }
+                
+                foreach ($arr_creditos as $credito_id=>$creditos) { //ordenamos los pagos
+                    ksort($creditos);
+                    $arr_creditos[$credito_id] = $creditos;
                 }
                 
                 if (count($creditos_err)>0) {

@@ -2864,6 +2864,30 @@ ORDER BY T1.lvl DESC');
                     ), "ID = " . $variacion['ID']);
         }
     }
+    
+    function buscarCreditoPorCuit($cuit) {
+        $cuit =  str_replace(" ", "", str_replace("-", "", $cuit));
+        
+        $this->_db->select("ID");
+        $this->_db->where("REPLACE(CUIT, '-', '')  LIKE '$cuit'");
+        
+        if ($result = $this->_db->get_row("fid_clientes")) {
+            $id_cliente = $result['ID'];
+            
+            $this->_db->select("ID");
+            $this->_db->where("POSTULANTES  = $id_cliente");
+            if ($result = $this->_db->get_row("fid_creditos")) {
+                return $result['ID'];
+            }
+            
+            echo $this->_db->last_query();
+            
+        }
+        
+        return FALSE;
+    }
+    
+    
 
 }
 
