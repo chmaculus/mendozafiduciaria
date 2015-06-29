@@ -1,3 +1,4 @@
+<style>table tr{text-align:left}td.iva{width:65px}</style>
 <ul class="lista-informe cuotas">
     <li class="titulo">
         <span class="numero-desembolso">NUMERO</span>
@@ -157,64 +158,80 @@ foreach($cuotas as $cuota){
         <span class="opcion ampliar">( + )</span>
         <span class="opcion evolucion" >( Evolucion + )</span>
         <div class="especificaciones">
-            <ul>
-                <li>
-                    <span class="titulo-estado titulo-esp resumido">Concepto</span>
-                    <span class="titulo-estado resumido">Devengado</span>
-                    <span class="titulo-estado resumido">Subsidio</span>
-                    <span class="titulo-estado resumido">Pagado</span>
-                    <span class="titulo-estado ">Saldo</span>
-                </li>
+            <table width="100%">
+                <tr>
+                    <th class="titulo-estado titulo-esp resumido">Concepto</th>
+                    <th class="titulo-estado resumido">Devengado</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado resumido">Subsidio</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado resumido">Pagado</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado">Saldo</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                </tr>
                 <?php if ($bmoratorio){        
                     ?>
-                <li>
-                    <span class="titulo-esp ">Interes Moratorio</span>
-                    <span class="dato-esp"><?=number_format($total_moratorio,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_moratorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format(abs(round($saldo_moratorio,2)),2,",",".")?></span>
-                </li>
+                <tr>
+                    <td class="titulo-esp ">Interes Moratorio</td>
+                    <td class="dato-esp"><?=number_format($total_moratorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_moratorio_total,2,",",".")?></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_moratorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_moratorio_pagado,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format(abs(round($saldo_moratorio,2)),2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_moratorio_saldo,2,",",".")?></td>
+                </tr>
                 <?php }?>
                 <?php if ($bpunitorio){
                     ?>
-                <li>
-                    <span class="titulo-esp ">Interes Punitorio</span>
-                    <span class="dato-esp"><?=number_format($total_punitorio,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_punitorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format(abs(round($saldo_punitorio,2)),2,",",".")?></span>
+                <tr>
+                    <td class="titulo-esp ">Interes Punitorio</td>
+                    <td class="dato-esp"><?=number_format($total_punitorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_punitorio_total,2,",",".")?></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_punitorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_punitorio_pagado,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format(abs(round($saldo_punitorio,2)),2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_punitorio_saldo,2,",",".")?></td>
                 </li>
                 <?php }?>
-                <li>
-                    <span class="titulo-esp ">Interes Compensatorio</span>
-                    <span class="dato-esp"><?=number_format($total_compensatorio,2,",",".")?></span>
-                    <span class="dato-esp res"><?=number_format($cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'],2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($pagado_compenstorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format(abs(round($saldo_compensatorio,2)),2,",",".") ?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">Capital</span>
-                    <span class="dato-esp"><?=number_format($total_capital,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_capital,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format(abs(round($saldo_capital,2)),2,",",".")?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">IVA</span>
-                    <span class="dato-esp"><?=number_format($iva_total,2,",",".")?></span>
-                    <span class="dato-esp res"><?=number_format($iva_subsidiado,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($iva_pagado,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format(abs(round($iva_saldo,2)),2,",",".")?></span>
-                </li>
-                
-                <li class="totales-cuota">
-                    <span class="titulo-esp ">TOTALES CUOTA</span>
-                    <span class="dato-esp total"><?=number_format($total_total,2,",",".")  ?></span>
-                    <span class="dato-esp total res"><?=number_format($total_subsidio,2,",",".")  ?></span>
-                    <span class="dato-esp total"><?=number_format($total_pagado,2,",",".")  ?></span>
-                    <span class="dato-esp total"><?=number_format(abs(round($total_saldo,2)),2,",",".")  ?></span>
-                </li>
-            </ul>
+                <tr>
+                    <td class="titulo-esp ">Interes Compensatorio</td>
+                    <td class="dato-esp"><?=number_format($total_compensatorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_total,2,",",".")?></td>
+                    <td class="dato-esp res"><?=number_format($cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'],2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_subsidiado,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($pagado_compenstorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_pagado,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format(abs(round($saldo_compensatorio,2)),2,",",".") ?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_saldo,2,",",".")?></td>
+                </tr>
+                <tr>
+                    <td class="titulo-esp ">Capital</td>
+                    <td class="dato-esp"><?=number_format($total_capital,2,",",".")?></td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_capital,2,",",".")?></td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format(abs(round($saldo_capital,2)),2,",",".")?></td>
+                    <td class="dato-esp iva"></td>
+                </tr>
+                <tr class="totales-cuota">
+                    <td class="titulo-esp ">TOTALES CUOTA</td>
+                    <td class="dato-esp total"><?=number_format($total_total,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($iva_total,2,",",".")  ?></td>
+                    <td class="dato-esp total res"><?=number_format($total_subsidio,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($iva_subsidiado,2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format($total_pagado,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($iva_pagado,2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format(abs(round($total_saldo,2)),2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format(abs(round($iva_saldo,2)),2,",",".")  ?></td>
+                </tr>
+            </table>
             
         </div>
         <div class="evolucion">
@@ -229,59 +246,75 @@ foreach($cuotas as $cuota){
         <span class="porcentaje-desembolso">$<?= number_format($total_cuota_saldo,2)?></span>
         <span class="opcion ampliar">( + )</span>
         <div class="especificaciones">
-            <ul>
-                <li>
-                    <span class="titulo-estado titulo-esp resumido">Concepto</span>
-                    <span class="titulo-estado resumido">Devengado</span>
-                    <span class="titulo-estado resumido">Subsidio</span>
-                    <span class="titulo-estado resumido">Pagado</span>
-                    <span class="titulo-estado ">Saldo</span>
+            <table width="100%">
+                <tr>
+                    <th class="titulo-estado titulo-esp resumido">Concepto</th>
+                    <th class="titulo-estado resumido">Devengado</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado resumido">Subsidio</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado resumido">Pagado</th>
+                    <th class="titulo-estado resumido">IVA</th>
+                    <th class="titulo-estado ">Saldo</th>
+                    <th class="titulo-estado ">IVA</th>
                 </li>
-                <li>
-                    <span class="titulo-esp ">Interes Moratorio</span>
-                    <span class="dato-esp"><?=number_format($total_cuota_moratorio,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_cuota_moratorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($saldo_cuota_moratorio,2,",",".")?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">Interes Punitorio</span>
-                    <span class="dato-esp"><?=number_format($total_cuota_punitorio,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_cuota_punitorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($saldo_cuota_punitorio,2,",",".")?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">Interes Compensatorio</span>
-                    <span class="dato-esp"><?=number_format($total_cuota_compensatorio,2,",",".")?></span>
-                    <span class="dato-esp res"><?=number_format($total_cuota_subsidio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($pagado_cuota_compensatorio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($saldo_cuota_compensatorio,2,",",".") ?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">Capital</span>
-                    <span class="dato-esp"><?=number_format($total_cuota_capital,2,",",".")?></span>
-                    <span class="dato-esp res">0</span>
-                    <span class="dato-esp"><?=number_format($pagado_cuota_capital,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($saldo_cuota_capital,2,",",".")?></span>
-                </li>
-                <li>
-                    <span class="titulo-esp ">IVA</span>
-                    <span class="dato-esp"><?=number_format($total_cuota_iva,2,",",".")?></span>
-                    <span class="dato-esp res"><?=number_format($total_cuota_iva_subsidio,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($pagado_cuota_iva,2,",",".")?></span>
-                    <span class="dato-esp"><?=number_format($saldo_cuota_iva,2,",",".")?></span>
-                </li>
-                
+                <tr>
+                    <td class="titulo-esp ">Interes Moratorio</td>
+                    <td class="dato-esp"><?=number_format($total_cuota_moratorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_cuota_moratorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_moratorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                </tr>
+                <tr>
+                    <td class="titulo-esp ">Interes Punitorio</td>
+                    <td class="dato-esp"><?=number_format($total_cuota_punitorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_cuota_punitorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_punitorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                </tr>
+                <tr>
+                    <td class="titulo-esp ">Interes Compensatorio</td>
+                    <td class="dato-esp"><?=number_format($total_cuota_compensatorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp res"><?=number_format($total_cuota_subsidio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($pagado_cuota_compensatorio,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_compensatorio,2,",",".") ?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".") ?></td>
+                </tr>
+                <tr>
+                    <td class="titulo-esp ">Capital</td>
+                    <td class="dato-esp"><?=number_format($total_cuota_capital,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_cuota_capital,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_capital,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                </tr>
                 
                 <li class="totales-cuota">
-                    <span class="titulo-esp ">TOTALES GENERALES</span>
-                    <span class="dato-esp total"><?=number_format($total_cuota_total,2,",",".")  ?></span>
-                    <span class="dato-esp total res"><?=number_format($total_cuota_subsidio,2,",",".")  ?></span>
-                    <span class="dato-esp total"><?=number_format($total_cuota_pagado,2,",",".")  ?></span>
-                    <span class="dato-esp total"><?=number_format($total_cuota_saldo,2,",",".")  ?></span>
-                </li>
-            </ul>
+                    <td class="titulo-esp ">TOTALES GENERALES</td>
+                    <td class="dato-esp total"><?=number_format($total_cuota_total,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($total_cuota_iva,2,",",".")  ?></td>
+                    <td class="dato-esp total res"><?=number_format($total_cuota_subsidio,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($total_cuota_iva_subsidio,2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format($total_cuota_pagado,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($pagado_cuota_iva,2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format($total_cuota_saldo,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($saldo_cuota_iva,2,",",".")  ?></td>
+                </tr>
+            </table>
             
         </div>
     </li>

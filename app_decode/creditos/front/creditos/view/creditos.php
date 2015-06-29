@@ -1,3 +1,4 @@
+<?php //die(); ?>
 <ul class="toolbar">
 
     <li class="tb_add" data-top='nuevo-credito'  id="liAlta"><div>Nuevo Credito</div></li>
@@ -5,13 +6,14 @@
     <li class="listado-credito tb_edi" id="liModificacion" data-top='editar'><div>Ver/Editar</div></li>
     <li class="listado-credito tb_edi" id="liOpcion" data-top='opciones'><div>Opciones</div></li>
     <li class="listado-credito tb_del" id="liBaja2" data-top='eliminar' style="display:none"><div>Eliminar</div></li>
-    <li class="tb_exportar" data-top='exportar'><div>Exportar</div></li>
     
     <div class=" tb_sep"></div>
+    <li class="tb_exportar" data-top='exportar'><div>Exportar</div></li>
+    <li class="tb_mora" data-top='moratorias' style="display:none"><div>Moratorias</div></li>
     <li class="tb_todas" data-top='cobros'><div>Cobros</div></li>
     <li class="tb_todas" data-top='eventos'><div>Eventos Multiples</div></li>
-    <li class="tb_lis" data-top='listado'><div>Listado</div></li>
     <li class="tb_imp"><div>Importar</div></li>
+    <li class="tb_lis" data-top='listado'><div>Listado</div></li>
 </ul>
 
 <div id="msgs">

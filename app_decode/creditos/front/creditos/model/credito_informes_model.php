@@ -389,6 +389,90 @@ class credito_informes_model extends credito_model {
         return $tasas;
     }
     
+    public function getCreditosMoratorios() {
+        $_creditos = $this->get_creditos_moratorios();
+        
+        if ($_creditos) {
+            $creditos_moratorios = array();
+            $fecha = time();
+            foreach ($_creditos as $cr) {
+                $credito_id = $cr['ID'];
+                
+                $this->clear();
+                $this->set_credito_active($credito_id);
+                $version = $this->set_version_active();
+                
+                $this->set_fecha_actual($fecha);
+                $this->set_fecha_calculo();
+
+                $this->renew_datos();
+                
+                $desembolsos = $this->get_desembolsos(0);
+        
+                
+                $desembolsado = 0;
+                foreach($desembolsos as $desembolso){
+                    $desembolsado += $desembolso['MONTO'];
+                }
+                
+                if ($desembolsado == 0) {
+                    continue;
+                }
+                
+                $this->save_last_state(false);
+                $this->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+                $this->generar_evento(array(), true, $fecha);
+                $ret_deuda = $this->get_deuda($fecha, true );
+                
+                if (isset($ret_deuda['cuotas'])) {
+                    
+                    $moratorias = array();
+                    foreach ($ret_deuda['cuotas'] as $cc) {
+                        if ($cc['_INFO']['HASTA'] < $fecha) {
+                            $arr = array(
+                                'MONTO' => $cc['MORATORIO']['TOTAL'],
+                                'IVA' => $cc['IVA_MORATORIO']['TOTAL'],
+                                'PAGO' => $cc['MORATORIO']['PAGOS'] + $cc['IVA_MORATORIO']['PAGOS'],
+                                'FECHA' => $cc['_INFO']['HASTA']
+                            );
+                            $moratorias[] = $arr;
+                        }
+                        
+                    }
+                    
+                    if (count($moratorias) > 0) {
+                        $postulantes = array();
+                        $_postulantes = $this->get_clientes_credito();
+                        if ($_postulantes) {
+                            foreach ($_postulantes as $ps) {
+                                $postulantes[] = $ps['RAZON_SOCIAL'];
+                            }
+                        }
+                        
+                        if (count($postulantes) > 0) {
+                            $postulantes = implode("<br>", $postulantes);
+                        } else {
+                            $postulantes = "";
+                        }
+                        
+                        $creditos_moratorios[$credito_id]['ID_CREDITO'] = $credito_id;
+                        $creditos_moratorios[$credito_id]['INTERES_VTO'] = $cr['INTERES_VTO'];
+                        $creditos_moratorios[$credito_id]['MONTO'] = $cr['MONTO_CREDITO'];
+                        $creditos_moratorios[$credito_id]['POSTULANTES'] = $postulantes;
+                        $creditos_moratorios[$credito_id]['MORATORIAS'] = $moratorias;
+                        
+                    }
+                }
+            }
+            
+            if (count($creditos_moratorios) > 0) {
+                return $creditos_moratorios;
+            }
+        }
+        
+        return FALSE;
+    }
+    
 }
     
 ?>

@@ -14,6 +14,25 @@ class creditos extends main_controller{
         $this->setJs( array( "creditos.js") );
         $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid"));
         
+        $arr_permiso_mod = $this->_init();
+        $datax = array();
+        $datax['main'] = $this->_obtener_main($arr_permiso_mod);
+        $datax['titulo']= "Administracion";
+        $datax['etiqueta_modulo'] = "Créditos";
+        $datax['name_modulo'] = $this->get_controller_name();
+        $this->_js_var['_etiqueta_modulo'] = $datax['etiqueta_modulo'];
+        $this->_js_var['_USUARIO_SESION_ACTUAL'] = $_SESSION["USERADM"];
+        $this->_js_var['_USER_AREA'] = $_SESSION["USER_AREA"];
+        $this->_js_var['_USER_PUESTO'] = $_SESSION["USER_PUESTO"];
+        $this->_js_var['_USER_ROL'] = $_SESSION["USER_ROL"];
+
+        $this->_js_var['FECHA'] = time();
+        
+        $this->render($datax);
+        //etapas
+    }
+    
+    function _init() {
         $id_permiso = 12;
         $arr_permiso_mod = isset($_SESSION["USER_PERMISOS"][$id_permiso])?$_SESSION["USER_PERMISOS"][$id_permiso]:0;
         $_SESSION["USER_ROL"]=0;
@@ -49,21 +68,7 @@ class creditos extends main_controller{
             $this->_js_var['_permiso_modificacion'] = 0;
         /* permiso alta*/
         
-        $datax = array();
-        $datax['main'] = $this->_obtener_main($arr_permiso_mod);
-        $datax['titulo']= "Administracion";
-        $datax['etiqueta_modulo'] = "Carpetas";
-        $datax['name_modulo'] = $this->get_controller_name();
-        $this->_js_var['_etiqueta_modulo'] = $datax['etiqueta_modulo'];
-        $this->_js_var['_USUARIO_SESION_ACTUAL'] = $_SESSION["USERADM"];
-        $this->_js_var['_USER_AREA'] = $_SESSION["USER_AREA"];
-        $this->_js_var['_USER_PUESTO'] = $_SESSION["USER_PUESTO"];
-        $this->_js_var['_USER_ROL'] = $_SESSION["USER_ROL"];
-
-        $this->_js_var['FECHA'] = time();
-        
-        $this->render($datax);
-        //etapas
+        return $arr_permiso_mod;
     }
 
     function _obtener_main($arr_permiso_mod){
@@ -232,6 +237,42 @@ class creditos extends main_controller{
     }
     
     function borrar_credito(){
+        
+    }
+    
+    function resumen_moratorias() {
+        $this->constructor();
+        if ( !isset($_SESSION["USERADM"]))
+            header("Location: " . '/'.URL_PATH);
+        
+        $this->setCss( array("init.css","resumen_cuenta.css") );
+        $this->setJs( array( "creditos.js") );
+        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid"));
+        
+        $arr_permiso_mod = $this->_init();
+        $datax = array();
+        $datax['main'] = $this->_resumen_moratorias($arr_permiso_mod);
+        $datax['titulo']= "Administracion";
+        $datax['etiqueta_modulo'] = "Créditos - Moratorias";
+        $datax['name_modulo'] = $this->get_controller_name();
+        $this->_js_var['_etiqueta_modulo'] = $datax['etiqueta_modulo'];
+        $this->_js_var['_USUARIO_SESION_ACTUAL'] = $_SESSION["USERADM"];
+        $this->_js_var['_USER_AREA'] = $_SESSION["USER_AREA"];
+        $this->_js_var['_USER_PUESTO'] = $_SESSION["USER_PUESTO"];
+        $this->_js_var['_USER_ROL'] = $_SESSION["USER_ROL"];
+
+        $this->_js_var['FECHA'] = time();
+        
+        $this->render($datax);
+    }
+    
+    function _resumen_moratorias($arr_permiso_mod) {
+        $creditos_moratorias = $this->mod->getCreditosMoratorios();
+        
+        if($_SESSION["USER_ROL"]==1 || $arr_permiso_mod['MOSTRAR'] == 1)
+            return $this->view("resumen_moratorias", array("creditos_moratorias" => $creditos_moratorias));
+        else
+            return $this->view("error404",array(),"backend/dashboard");
         
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+ini_set('display_errors', 'off');
 $conn = mysqli_connect($_config ['database'] ['server'], $_config ['database'] ['user'], $_config ['database'] ['password'], $_config ['database'] ['database']);
 
 if (!$conn) {

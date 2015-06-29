@@ -82,7 +82,7 @@ function handleShutdownController($path) {
             $file = $ar_err['file'];
             //        $file  = $_SESSION['FILE'];
             echo "<div style='border: 1px solid black; font-size:24px;;background: #ddf;padding: 50px;'>Error en archivo: " . $file . "<br/>";
-            echo $ar_err['message'];
+            echo htmlentities(strip_tags($ar_err['message']));
             echo "<br/>En linea " . $ar_err['line'];
 
             write_error_log("Archivo: " . $file . "\nMensaje: " . $ar_err['message'] . "\nLinea: " . $ar_err['line'], $path . "/log");

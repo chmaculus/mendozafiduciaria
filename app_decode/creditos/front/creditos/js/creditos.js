@@ -74,7 +74,7 @@ $(document).ready(function(){
             var obj = [];
             $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
             
-            $('.tb_exportar').hide();
+            $('.tb_exportar,#cmor').hide();
             
             switch(top){
                 case "ver":
@@ -98,6 +98,9 @@ $(document).ready(function(){
                 case "eliminar":
                     get_eliminar();
                     break;
+                case "listado2":
+                    volver_creditos();
+                    break;
                 case "listado":
                     $('.tb_exportar').show();
                     get_listado();
@@ -111,6 +114,9 @@ $(document).ready(function(){
                 case "exportar":
                     $('.tb_exportar').show();
                     exportar();
+                    break;
+                case "moratorias":
+                    get_moratorias();
                     break;
             }
     });
@@ -143,6 +149,17 @@ $(document).ready(function(){
     $('#content').on('click', function(e){
         $("#msgs").fadeOut(500);
     });
+    
+    $('#cmor table tr td').on('click', function(e){
+        
+        var clase = $(this).parent('tr').attr('class');
+        clase = clase.split("-");
+        clase = clase[1];
+        $('tr.cri').hide();
+        $('tr.cri' + clase).show();
+        console.log('tr.cri-' + clase);
+    });
+    
 });
 
 function get_opciones(){
@@ -341,6 +358,14 @@ function get_eventos(){
 
 
 function get_eliminar(){
+    
+    if (_creditos._permiso_baja==0) {
+        jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            $.unblockUI();
+        });
+        return false;
+    }
+    
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     if (selectedrowindexes.length===0){
         jAlert("No ha seleccionado ningún crédito para eliminar","Eliminar Crédito", function(){
@@ -531,4 +556,16 @@ function exportar() {
 
         }
     });
+}
+
+
+function get_moratorias() {
+    var urlbase = $("#liVer").data("loc");
+    
+    var url = urlbase+"s/resumen_moratorias/";
+    location.href=url;
+}
+
+function volver_creditos() {
+    location.href=$(".tb_lis").data("loc");
 }
