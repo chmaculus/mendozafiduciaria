@@ -1184,11 +1184,11 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $_fpago = (int)$fpago;
                         
                         if (isset($arr_creditos[$credito_id][$_fpago])) {
-                            $_fpago++;
+                            $_fpago += $j;
                         }
                         
                         $arr_creditos[$credito_id][$_fpago] = array(
-                            'FP' => date('Y-m-d', $fpago),
+                            'FP' => $fpago,
                             'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
                             );
                     } else {
@@ -1209,11 +1209,21 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     //obtener array de cuotas
                     $this->mod->clear();
                     if ($this->mod->set_credito_active($credito_id)) {
+                        $ultimo_pago = $this->mod->obtener_ultimo_pago();
                         $this->mod->set_version_active();
                         $this->mod->renew_datos();
                         
+                        $pagos_no = 0;
                         foreach ($creditos as $pago) {
-                            $this->realizar_pago($pago['FP'], $pago['PAGO']);
+                            if(!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
+                                $this->realizar_pago($pago['FP'], $pago['PAGO']);
+                            } else {
+                                ++$pagos_no;
+                            }
+                        }
+                        
+                        if ($pagos_no) {
+                            $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
                         }
                         
                         if(isset($cuit_creditos[$credito_id])) {

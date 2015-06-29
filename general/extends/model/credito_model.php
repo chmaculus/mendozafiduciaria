@@ -2892,26 +2892,19 @@ ORDER BY T1.lvl DESC');
         $this->_db->where("T_MORATORIO > 0");
         $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
         return $this->_db->get_tabla("fid_creditos");
+    }
+    
+    function obtener_ultimo_pago() {
+        $this->_db->limit(1, 1);
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+        $this->_db->order_by("FECHA", "DESC");
+        $pago = $this->_db->get_tabla("fid_creditos_pagos");
         
-        /*$this->_db->select("ID_CREDITO, ID_TIPO, MONTO");
-        $this->_db->where("ID_TIPO IN (3,7)");
-        $items = $this->_db->get_tabla("fid_creditos_pagos");
-
-        $creditos = array();
-        if (count($items) > 0) {
-            foreach ($items as $it) {
-                $creditos[$it['ID_CREDITO']]['ID_CREDITO'] = $it['ID_CREDITO'];
-                if ($it['ID_TIPO'] == 3) {
-                    $creditos[$it['ID_CREDITO']]['IVA'][] = number_format($it['MONTO'], 2);
-                } else {
-                    $creditos[$it['ID_CREDITO']]['INTERESES'][] = number_format($it['MONTO'], 2);
-                }
-            }
-
-            return $creditos;
+        if($pago) {
+            return $pago[0];
+        } else {
+            return FALSE;
         }
-
-        return FALSE;*/
     }
 
 }
