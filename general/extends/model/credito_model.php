@@ -33,6 +33,7 @@ class credito_model extends main_model {
     var $_estado_credito = ESTADO_CREDITO_NORMAL;
     var $_blog = false;
     var $_periodicidad = 60;
+    var $_iva_operatoria = IMP_IVA;
 
     function set_log($log = true) {
         $this->_blog = $log;
@@ -243,7 +244,7 @@ class credito_model extends main_model {
 
 
 
-        $IVA = IMP_IVA;
+        $IVA = $this->_iva_operatoria;
 
         $fecha = !$fecha ? time() : $fecha;
 
@@ -1080,8 +1081,8 @@ class credito_model extends main_model {
                     $tmp['INT_MORATORIO'] = $INT_MORATORIO;
                     $tmp['INT_PUNITORIO'] = $INT_PUNITORIO;
 
-                    $tmp['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $tmp['INT_COMPENSATORIO_SUBSIDIO'] * IMP_IVA;
-                    $tmp['INT_COMPENSATORIO_IVA'] = $tmp['INT_COMPENSATORIO'] * IMP_IVA;
+                    $tmp['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $tmp['INT_COMPENSATORIO_SUBSIDIO'] * $this->_iva_operatoria;
+                    $tmp['INT_COMPENSATORIO_IVA'] = $tmp['INT_COMPENSATORIO'] * $this->_iva_operatoria;
 
                     $tmp['DIAS'] = $rango;
                     $segmentos[] = $tmp;
@@ -1124,8 +1125,8 @@ class credito_model extends main_model {
                 $cuota_segmento['ESTADO'] = $segmento['ESTADO'];
 
                 $cuota_segmento['INT_COMPENSATORIO_SUBSIDIO'] = $segmento['INT_COMPENSATORIO_SUBSIDIO'];
-                $cuota_segmento['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $segmento['INT_COMPENSATORIO_SUBSIDIO'] * IMP_IVA;
-                $cuota_segmento['INT_COMPENSATORIO_IVA'] = $segmento['INT_COMPENSATORIO'] * IMP_IVA;
+                $cuota_segmento['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $segmento['INT_COMPENSATORIO_SUBSIDIO'] * $this->_iva_operatoria;
+                $cuota_segmento['INT_COMPENSATORIO_IVA'] = $segmento['INT_COMPENSATORIO'] * $this->_iva_operatoria;
 
                         $new_id_subcuota = uniqid();
 
@@ -1615,7 +1616,7 @@ class credito_model extends main_model {
                 "INT_COMPENSATORIO" => $interes_compensatorio,
                 "INT_COMPENSATORIO_IVA" => $interes_compensatorio * $variacion['IVA'],
                 "INT_COMPENSATORIO_SUBSIDIO" => $interes_compensatorio_subsidio,
-                "INT_COMPENSATORIO_IVA_SUBSIDIO" => $interes_compensatorio_subsidio * IMP_IVA,
+                "INT_COMPENSATORIO_IVA_SUBSIDIO" => $interes_compensatorio_subsidio * $this->_iva_operatoria,
                 "INT_MORATORIO" => 0,
                 "INT_PUNITORIO" => 0,
                 "FECHA_INICIO" => $ultima_cuota['FECHA_VENCIMIENTO'],
@@ -2224,6 +2225,12 @@ class credito_model extends main_model {
         $row_credito = $this->_db->get_row("fid_creditos", "ID = " . $id_credito);
         if ($row_credito) {
             $this->_credito = $row_credito;
+            if ($row_credito['ID_OPERATORIA']) {
+                $row_operatoria = $this->_db->get_row("fid_operatorias", "ID = " . $row_credito['ID_OPERATORIA']);
+                if ($row_operatoria) {
+                    $this->_iva_operatoria = $row_operatoria['IVA'];
+                }
+            }
             $this->_interese_compensatorio_plazo = $row_credito['PLAZO_COMPENSATORIO'];
             $this->_interese_moratorio_plazo = $row_credito['PLAZO_MORATORIO'];
             $this->_interese_punitorio_plazo = $row_credito['PLAZO_PUNITORIO'];
