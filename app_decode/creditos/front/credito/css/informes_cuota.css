@@ -69,13 +69,13 @@
     font-size: 14px;
 }
 
-.totales-cuota{
+.totales-cuota, .totales-cuota-c{
     border-radius: 3px;
     border:1px solid #e7edf0;
     background: #e7edf0;
     
 }
-
+.totales-cuota-c{font-weight:bold;}
 
 
 .datos .opcion{

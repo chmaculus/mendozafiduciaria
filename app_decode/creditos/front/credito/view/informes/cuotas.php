@@ -131,10 +131,10 @@ foreach($cuotas as $cuota){
         $saldo_punitorio = $cuota['PUNITORIO']['SALDO'];
     }
     
-    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $iva_total;
-    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $iva_saldo;
-    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $iva_pagado;
-    $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital;
+    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital;
+    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital;
+    $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'];
 
     $total_cuota_total += $total_total;
     $total_cuota_saldo += $total_saldo;
@@ -176,12 +176,12 @@ foreach($cuotas as $cuota){
                     <td class="titulo-esp ">Interes Moratorio</td>
                     <td class="dato-esp"><?=number_format($total_moratorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_moratorio_total,2,",",".")?></td>
-                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp res"></td>
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_moratorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_moratorio_pagado,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format(abs(round($saldo_moratorio,2)),2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($iva_moratorio_saldo,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs($iva_moratorio_saldo),2,",",".")?></td>
                 </tr>
                 <?php }?>
                 <?php if ($bpunitorio){
@@ -190,12 +190,12 @@ foreach($cuotas as $cuota){
                     <td class="titulo-esp ">Interes Punitorio</td>
                     <td class="dato-esp"><?=number_format($total_punitorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_punitorio_total,2,",",".")?></td>
-                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp res"></td>
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_punitorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_punitorio_pagado,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format(abs(round($saldo_punitorio,2)),2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($iva_punitorio_saldo,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs($iva_punitorio_saldo),2,",",".")?></td>
                 </li>
                 <?php }?>
                 <tr>
@@ -207,13 +207,13 @@ foreach($cuotas as $cuota){
                     <td class="dato-esp"><?=number_format($pagado_compenstorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_compensatorio_pagado,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format(abs(round($saldo_compensatorio,2)),2,",",".") ?></td>
-                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_saldo,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs($iva_compensatorio_saldo),2,",",".")?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Capital</td>
                     <td class="dato-esp"><?=number_format($total_capital,2,",",".")?></td>
                     <td class="dato-esp iva"></td>
-                    <td class="dato-esp res">0</td>
+                    <td class="dato-esp res"></td>
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_capital,2,",",".")?></td>
                     <td class="dato-esp iva"></td>
@@ -230,6 +230,13 @@ foreach($cuotas as $cuota){
                     <td class="dato-esp total iva"><?=number_format($iva_pagado,2,",",".")  ?></td>
                     <td class="dato-esp total"><?=number_format(abs(round($total_saldo,2)),2,",",".")  ?></td>
                     <td class="dato-esp total iva"><?=number_format(abs(round($iva_saldo,2)),2,",",".")  ?></td>
+                </tr>
+                <tr class="totales-cuota-c">
+                    <td class="titulo-esp ">TOTALES CUOTA</td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_total + $iva_total,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_subsidio + $iva_subsidiado,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_pagado + $iva_pagado,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format(abs(round($total_saldo + $iva_saldo,2)),2,",",".")  ?></td>
                 </tr>
             </table>
             
