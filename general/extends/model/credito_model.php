@@ -2228,7 +2228,7 @@ class credito_model extends main_model {
             if ($row_credito['ID_OPERATORIA']) {
                 $row_operatoria = $this->_db->get_row("fid_operatorias", "ID = " . $row_credito['ID_OPERATORIA']);
                 if ($row_operatoria) {
-                    $this->_iva_operatoria = $row_operatoria['IVA'];
+                    $this->_iva_operatoria = $row_operatoria['IVA'] / 100;
                 }
             }
             $this->_interese_compensatorio_plazo = $row_credito['PLAZO_COMPENSATORIO'];
