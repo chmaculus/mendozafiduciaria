@@ -103,7 +103,7 @@ foreach($cuotas as $cuota){
     
     $total_cuota_gastos = 0; 
     
-    $total_a_pagar = number_format(abs(round($cuota['_INFO']['TOTAL_PAGAR'],2)),1);
+    $total_a_pagar = number_format(abs(round($cuota['_INFO']['TOTAL_PAGAR'],2)),2);
     
     $estado = "Pendiente";
     $class = "";
@@ -136,10 +136,10 @@ foreach($cuotas as $cuota){
     $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital;
     $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'];
 
-    $total_cuota_total += $total_total;
-    $total_cuota_saldo += $total_saldo;
-    $total_cuota_pagado += $total_pagado;
-    $total_cuota_subsidio += $total_subsidio;
+    $total_cuota_total += $total_total + $iva_total;
+    $total_cuota_saldo += $total_saldo + $iva_saldo;
+    $total_cuota_pagado += $total_pagado + $iva_pagado;
+    $total_cuota_subsidio += $total_subsidio + $iva_subsidiado;
     $total_cuota_iva_subsidio += $total_iva_subsidio;
     
              
