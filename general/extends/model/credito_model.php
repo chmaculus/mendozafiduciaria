@@ -276,7 +276,7 @@ class credito_model extends main_model {
 
         $IVA = IMP_IVA;
 
-        $fecha = !$fecha ? time() : $fecha;
+        $fecha = !$fecha ? time() : strtotime(date("Y-m-d", $fecha)) + 86399;
 
         //obtenemos gastos
         $this->_db->where("ESTADO = 0");
@@ -749,7 +749,7 @@ class credito_model extends main_model {
     function _make_segmento_cuota($cuota_id, $fecha = NO_FECHA) {
 
 
-        $fecha_get = $fecha;
+        $fecha_get = strtotime(date("Y-m-d", $fecha)) + 86399;
         $cuota = $this->_cuotas[$cuota_id];
 
         $primera_cuota = reset($this->_cuotas);
@@ -970,7 +970,7 @@ class credito_model extends main_model {
                     $rango_comp = $rango = $rango_tmp < 0 ? 0 : round($rango_tmp);
                     
                     if ($rango_comp > 0 && $rango_comp < $PERIODICIDAD_TASA_VARIACION) {
-                        $rango_comp = $PERIODICIDAD_TASA_VARIACION;
+                        $rango_comp = ($cuota['FECHA_VENCIMIENTO'] - $cuota['FECHA_INICIO']) / (24 * 60 * 60);
                     }
                     
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
