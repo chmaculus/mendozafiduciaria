@@ -241,6 +241,7 @@ class creditos extends main_controller{
     }
     
     function resumen_moratorias() {
+        set_time_limit(0);
         $this->constructor();
         if ( !isset($_SESSION["USERADM"]))
             header("Location: " . '/'.URL_PATH);
