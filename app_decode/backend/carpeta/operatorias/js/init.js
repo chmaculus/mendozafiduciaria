@@ -583,6 +583,7 @@ $(document).ready(function(){
                             var periodicidad = $("#periodicidad").val();
                             var jefeope = $("#jefeope").val();
                             var cordope = $("#cordope").val();
+                            var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');

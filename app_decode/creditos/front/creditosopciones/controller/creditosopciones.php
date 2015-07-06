@@ -38,6 +38,11 @@ class creditosopciones extends main_controller {
             $this->mod->set_version_active();
             $rtn = $this->mod->get_creditos_opciones();
             $data['banco'] = isset($rtn['banco']['VALOR']) ? $rtn['banco']['VALOR'] : 0;
+            if (!$data['banco']) {
+                $data['banco_conv'] = $this->mod->get_banco();
+            } else {
+                $data['banco_conv'] = 0;
+            }
             $data['convenio'] = isset($rtn['convenio']['VALOR'])?$rtn['convenio']['VALOR'] : "";
             
         }

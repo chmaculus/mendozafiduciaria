@@ -126,9 +126,23 @@
           <div id="tabs-1">
               <div class="form_cuentbanco">
                   <div class="elem elem_med">
+                      <label>Banco Convenio:</label>
+                        <div class="indent formtext">
+                            <?php
+                            $banco = isset($entidad["BANCO"]) ? $entidad["BANCO"] : 0;
+                            ?>
+                            <select id="bancoope" class="chzn-select medium-select select">
+                                <option data-connection="0" value="0" <?=($banco == 0) ? 'selected="selected"' : "" ?>>Sin banco</option>
+                                <option data-connection="1" value="1" <?=($banco == 1) ? 'selected="selected"' : "" ?>>Banco Nacion</option>
+                                <option data-connection="2" value="2" <?=($banco == 2) ? 'selected="selected"' : "" ?>>Banco Superville</option>
+                            </select>
+                        </div>
+                  </div>
+                  
+                  <div class="elem elem_med">
                       <label>IVA:</label>
                       <div class="indent formtext">
-                          <input type="text" class="" title="Ingrese Tasa de Interés Compensatoria" id="ivaope" value="<?php echo isset($entidad["IVA"])?$entidad["IVA"]:"" ?>"> 
+                          <input type="text" class="validate[required]" title="Ingrese Tasa de Interés Compensatoria" id="ivaope" value="<?php echo isset($entidad["IVA"])?$entidad["IVA"]:"" ?>"> 
                       </div>
                   </div>
                   

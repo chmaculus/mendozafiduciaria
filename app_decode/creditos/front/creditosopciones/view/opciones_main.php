@@ -5,9 +5,9 @@
                 <td class="label">Bancos:</td>
                 <td>
                     <select id="comboBancos" data-val="<?=$banco?>">
-                        <option value="0">No Modificar</option>
-                        <option value="1">Banco Nacion</option>
-                        <option value="2">Banco Superville</option>
+                        <?php if(!$banco_conv) { ?><option value="0">No Modificar</option><?php } ?>
+                        <?php if(!$banco_conv || $banco_conv==1) { ?><option value="1">Banco Nacion</option><?php } ?>
+                        <?php if(!$banco_conv || $banco_conv==2) { ?><option value="2">Banco Superville</option><?php } ?>
                     </select>
                 </td>
             </tr>
