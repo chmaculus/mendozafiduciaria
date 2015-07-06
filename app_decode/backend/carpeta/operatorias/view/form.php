@@ -126,6 +126,13 @@
           <div id="tabs-1">
               <div class="form_cuentbanco">
                   <div class="elem elem_med">
+                      <label>IVA:</label>
+                      <div class="indent formtext">
+                          <input type="text" class="" title="Ingrese Tasa de Interés Compensatoria" id="ivaope" value="<?php echo isset($entidad["IVA"])?$entidad["IVA"]:"" ?>"> 
+                      </div>
+                  </div>
+                  
+                  <div class="elem elem_med">
                       <label>Tasa de Interés Compensatoria:</label>
                       <div class="indent formtext">
                           <input type="text" class="" title="Ingrese Tasa de Interés Compensatoria" id="tasa_ic" value="<?php echo isset($entidad["TASA_INTERES_COMPENSATORIA"])?$entidad["TASA_INTERES_COMPENSATORIA"]:"" ?>"> 

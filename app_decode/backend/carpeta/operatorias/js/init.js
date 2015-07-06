@@ -196,6 +196,8 @@ $(document).ready(function(){
                             var id_proceso = $("#id_proceso").val();
                             var jefeope = $("#jefeope").val();
                             var cordope = $("#cordope").val();
+                            var ivapope = $("#ivaope").val();
+                            var bancoope = $("#bancoope").val();
                             
 
                             
@@ -235,7 +237,9 @@ $(document).ready(function(){
                                 ID_TIPO_OPERATORIA:tipoope,
                                 checklist:checkedItems,
                                 adjuntos:_array_uploads,
-                                ID_PROCESO:id_proceso
+                                ID_PROCESO:id_proceso,
+                                IVA:ivaope,
+                                BANCO:bancoope
                             }
                           
                             $.ajax({
@@ -579,6 +583,7 @@ $(document).ready(function(){
                             var periodicidad = $("#periodicidad").val();
                             var jefeope = $("#jefeope").val();
                             var cordope = $("#cordope").val();
+                            var bancoope = $("#bancoope").val();
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');
                             var checkedItems = [];
@@ -616,7 +621,9 @@ $(document).ready(function(){
                                 adjuntos:_array_uploads,
                                 ID_PROCESO:id_proceso,
                                 JEFEOP:jefeope,
-                                COORDOPE:cordope
+                                COORDOPE:cordope,
+                                IVA:ivaope,
+                                BANCO:bancoope
                             }
                                                         
                             $.ajax({
