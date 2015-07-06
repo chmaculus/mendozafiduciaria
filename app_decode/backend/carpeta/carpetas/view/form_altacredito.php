@@ -370,16 +370,44 @@
         </div>
         -->
         
+        <?php 
+        $periodicidad = 0;
+        $sl1 = $sl2 = $sl3 = $sl4 = $sl5 = $sl6 = '';
+        switch ($obj_credito['PERIODICIDAD_TASA']) {
+            case 15:
+                $sl1 = ' selected="selected"';
+                break;
+            case 30:
+                $sl2 = ' selected="selected"';
+                break;
+            case 90:
+                $sl3 = ' selected="selected"';
+                break;
+            case 180:
+                $sl4 = ' selected="selected"';
+                break;
+            case 360:
+            case 365:
+                $sl5 = ' selected="selected"';
+                break;
+            case 720:
+            case 730:
+                $sl6 = ' selected="selected"';
+                break;
+        }
+        
+        ?>
+        
         <div class="elem periodicidaddiv" >
             <label>Periodicidad:</label>
             <div class="indent">
             <select class="chzn-select medium-select_altacredito select" id="alta_cap_periodo">
-                <option value="1">Quincenal</option>
-                <option value="2">Mensual</option>
-                <option value="3">Trimestral</option>
-                <option value="4">Semestral</option>
-                <option value="5">Anual</option>
-                <option value="6">bianual</option>
+                <option value="1"<?=$sl1?>>Quincenal</option>
+                <option value="2"<?=$sl2?>>Mensual</option>
+                <option value="3"<?=$sl3?>>Trimestral</option>
+                <option value="4"<?=$sl4?>>Semestral</option>
+                <option value="5"<?=$sl5?>>Anual</option>
+                <option value="6"<?=$sl6?>>bianual</option>
             </select>   
             </div>
         </div>

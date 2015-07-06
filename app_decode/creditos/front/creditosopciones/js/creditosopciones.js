@@ -25,7 +25,9 @@ function guardarOpciones(){
         type : "post",
         success : function(){
             jAlert("Opciones Guardadas","Las opciones ingresadas han sido guardadas correctamnete",function(){
+                var __credito = _credito;
                 _creditosopciones.finish();
+                _credito = __credito;
             });
         }
     })

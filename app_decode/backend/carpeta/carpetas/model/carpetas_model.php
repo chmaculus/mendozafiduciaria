@@ -232,8 +232,22 @@ class carpetas_model extends main_model{
     
     function get_credito_ope($id_credito, $id_operacion){
         $rtn = $this->_db->get_tabla('fid_creditos',"ID='".$id_credito."' AND ID_OPERACION='".$id_operacion."'");
-        if ($rtn)
-            return $rtn[0];
+        if ($rtn) {
+            $rtn = $rtn[0];
+            
+            $this->_db->limit(1, 1);
+            $this->_db->select("PERIODICIDAD_TASA");
+            $rtn2 = $this->_db->get_tabla('fid_creditos_eventos',"ID_CREDITO=$id_credito");
+            
+            if ($rtn2) {
+                $rtn['PERIODICIDAD_TASA'] = $rtn2[0]['PERIODICIDAD_TASA'];
+            } else {
+                $rtn['PERIODICIDAD_TASA'] = 0;
+            }
+            
+            
+            return $rtn;
+        }
         return false;
     }
     
@@ -1997,6 +2011,6 @@ class carpetas_model extends main_model{
         return $rtn;
     }
     
-          
-}
+        
+    }
 ?>
