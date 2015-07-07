@@ -373,27 +373,29 @@
         <?php 
         $periodicidad = 0;
         $sl1 = $sl2 = $sl3 = $sl4 = $sl5 = $sl6 = '';
-        switch ($obj_credito['PERIODICIDAD_TASA']) {
-            case 15:
-                $sl1 = ' selected="selected"';
-                break;
-            case 30:
-                $sl2 = ' selected="selected"';
-                break;
-            case 90:
-                $sl3 = ' selected="selected"';
-                break;
-            case 180:
-                $sl4 = ' selected="selected"';
-                break;
-            case 360:
-            case 365:
-                $sl5 = ' selected="selected"';
-                break;
-            case 720:
-            case 730:
-                $sl6 = ' selected="selected"';
-                break;
+        if(isset($obj_credito['PERIODICIDAD_TASA'])) {
+            switch ($obj_credito['PERIODICIDAD_TASA']) {
+                case 15:
+                    $sl1 = ' selected="selected"';
+                    break;
+                case 30:
+                    $sl2 = ' selected="selected"';
+                    break;
+                case 90:
+                    $sl3 = ' selected="selected"';
+                    break;
+                case 180:
+                    $sl4 = ' selected="selected"';
+                    break;
+                case 360:
+                case 365:
+                    $sl5 = ' selected="selected"';
+                    break;
+                case 720:
+                case 730:
+                    $sl6 = ' selected="selected"';
+                    break;
+            }
         }
         
         ?>
