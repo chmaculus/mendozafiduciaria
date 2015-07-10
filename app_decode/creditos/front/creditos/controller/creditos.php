@@ -230,7 +230,7 @@ class creditos extends main_controller{
         $creditos = $_POST['creditos'];
         foreach($creditos as $credito_id){
             $this->mod->set_credito_active($credito_id);
-            $this->mod->set_version_active();
+            //$this->mod->set_version_active();
             $this->mod->borrar_credito();
         }
         //$this->mod->borrar_credito_soft();

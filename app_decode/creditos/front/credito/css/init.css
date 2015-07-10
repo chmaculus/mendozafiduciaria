@@ -698,3 +698,4 @@ input.large{
 }
 
 table th{text-align:left}
+#ui-datepicker-div{z-index:20 !important}

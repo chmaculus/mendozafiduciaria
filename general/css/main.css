@@ -454,4 +454,3 @@ select.styled { position: relative; width: ' + selectWidth + 'px; opacity: 0; fi
 
 #msg_ok{color:green;font-weight:bold}
 #msg_err{color:red;font-weight:bold;margin-top:10px}
-#ui-datepicker-div{z-index:20 !important}

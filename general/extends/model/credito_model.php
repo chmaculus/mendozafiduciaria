@@ -952,7 +952,7 @@ class credito_model extends main_model {
                         break;
                     }*/
                     
-                    $capital_arr = $this->_get_saldo_capital($fecha_saldo_capital, true, false);
+                    $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
                     $SALDO_CAPITAL = $capital_arr['BASE_CALCULO'];
                     $tmp['_PARENT'] = $cuota['ID'];
                     $tmp['_ESTADO'] = 5;
@@ -968,7 +968,9 @@ class credito_model extends main_model {
                     //si la fecha de envio es menor a la fecha de vencimiento del segmento
                     $fecha_vencimiento_rango = $tmp['FECHA_VENCIMIENTO'];
                     
-                    $rango_tmp = ($fecha_vencimiento_rango - $tmp['FECHA_INICIO']) / (24 * 60 * 60);
+                    $_fecha_vencimiento_rango = $fecha_vencimiento_rango < $cuota['FECHA_VENCIMIENTO'] ? $cuota['FECHA_VENCIMIENTO'] : $fecha_vencimiento_rango;
+                            
+                    $rango_tmp = ($_fecha_vencimiento_rango - $tmp['FECHA_INICIO']) / (24 * 60 * 60);
                     $rango_comp = $rango = $rango_tmp < 0 ? 0 : round($rango_tmp);
                     
                     if ($rango_comp > 0 && $rango_comp < $PERIODICIDAD_TASA_VARIACION) {
@@ -998,7 +1000,7 @@ class credito_model extends main_model {
                             $tmp['POR_INT_COMPENSATORIO'] = $rango / $PERIODICIDAD_TASA_VARIACION;
                             $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                             $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-
+                            
                             
                             $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                             //if (!$INTERES_COMPENSATORIO || ($INTERES_COMPENSATORIO && !(abs($int_compensatorio_pago-$INTERES_COMPENSATORIO) < 0.01))) { //verifico si tiene pagos, cuando tenga una míniam diferencia dejo de calcular y agregar intereses compensatorios a la cuota
@@ -1743,6 +1745,7 @@ class credito_model extends main_model {
         $DESEMBOLSOS_ACUMULADOS = 0;
         $AMORTIZACION_CUOTA_ACTUAL = 0;
         $SALDO_TEORICO = 0;
+        
 
         for ($c = 0; $c < count($cuotas); $c++) {
 

@@ -114,6 +114,8 @@ class formalta extends main_controller {
         list($y, $m, $d) = $fecha_arr;
         $credito['CAPITAL_VTO'] = $d . "-" . $m . "-" . $y;
         $credito['MICRO'] = 0;
+        
+        print_r($credito);die();
         return $this->view("form_generar", array("credito" => $credito));
         /* permiso mostrar */
     }
