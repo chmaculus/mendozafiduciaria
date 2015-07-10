@@ -5,6 +5,7 @@
         
         <input type="hidden" id="interes_periodoh" value="<?php echo isset($obj_credito["INTERES_PERIODO"])?$obj_credito["INTERES_PERIODO"]:"" ?>" />
         <input type="hidden" id="interes_capitalh" value="<?php echo isset($obj_credito["INTERES_CAPITAL"])?$obj_credito["INTERES_CAPITAL"]:"" ?>" />
+        <input type="hidden" id="id_cliente" value="<?php echo isset($cad_obj["cad_obj"][0]['ID_CLIENTE'])?$cad_obj["cad_obj"][0]['ID_CLIENTE']:"" ?>" />
     
         <div class="title">Alta de Credito</div>
         <div class="elem elem_med_alta">
