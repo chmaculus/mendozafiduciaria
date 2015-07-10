@@ -16,7 +16,7 @@
         
         $cnn->where("t.CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
         $cnn->select("t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES, ID_OPERACION, ifnull(e.CREDITO_ESTADO,0) as CR_ESTADO");
-        $cnn->order_by("t.ID","ASC");
+        $cnn->order_by("t.ID","DESC");
         $cnn->join("fid_fideicomiso f","f.ID = t.ID_FIDEICOMISO", "left");
         $cnn->join("fid_operatorias o","o.ID = t.ID_OPERATORIA", "left");
         $cnn->join("fid_creditos_extra e","e.CREDITO_ID = t.ID AND CREDITO_ESTADO_FECHA = ".$time , "left");
