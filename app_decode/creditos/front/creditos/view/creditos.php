@@ -5,7 +5,7 @@
     <li class="listado-credito tb_edi" id="liVer" data-top='ver' data-loc="creditos/front/credito" ><div>Ver</div></li>
     <li class="listado-credito tb_edi" id="liModificacion" data-top='editar'><div>Ver/Editar</div></li>
     <li class="listado-credito tb_edi" id="liOpcion" data-top='opciones'><div>Opciones</div></li>
-    <li class="listado-credito tb_del" id="liBaja2" data-top='eliminar'><div>Eliminar</div></li>
+    <?php if($permisos['BAJA']) { ?><li class="listado-credito tb_del" id="liBaja2" data-top='eliminar'><div>Eliminar</div></li><?php } ?>
     
     <div class=" tb_sep"></div>
     <li class="tb_exportar" data-top='exportar'><div>Exportar</div></li>
