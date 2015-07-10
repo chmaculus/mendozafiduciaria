@@ -72,6 +72,7 @@ class creditos extends main_controller{
         $data['hora_actual'] = date('d/m/Y H:i:s');
         $data['hora_mostrar'] = current(explode(' ',$data['hora_actual']));
         $data['hora_bd'] = $data['hora_actual'];
+        $data['permisos'] = $arr_permiso_mod;
         
         $arr_campos = array("DENOMINACION");
         $this->_js_array['_campos'] = array();
