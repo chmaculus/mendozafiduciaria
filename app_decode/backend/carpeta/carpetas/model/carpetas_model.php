@@ -267,7 +267,7 @@ class carpetas_model extends main_model{
     
     
     function get_clientes_ope_nombre($id){
-        $this->_db->select("c.CORREO as CORREO, c.RAZON_SOCIAL as RAZON_SOCIAL,c.CUIT as CUIT, op.NOMBRE as OPERATORIA, civa.CONDICION AS CONDIVA, c.DIRECCION AS DOMICILIO, d.LOCALIDAD AS DEPARTAMENTO, op.TASA_SUBSIDIADA as TASA_SUBSIDIADA, op.TASA_INTERES_COMPENSATORIA as TASA_INTERES_COMPENSATORIA, op.TASA_INTERES_MORATORIA as TASA_INTERES_MORATORIA, op.TASA_INTERES_POR_PUNITORIOS as TASA_INTERES_POR_PUNITORIOS, o.DESTINO as DESTINO, o.ID as CODIGO ");
+        $this->_db->select("oc.ID_CLIENTE, c.CORREO as CORREO, c.RAZON_SOCIAL as RAZON_SOCIAL,c.CUIT as CUIT, op.NOMBRE as OPERATORIA, civa.CONDICION AS CONDIVA, c.DIRECCION AS DOMICILIO, d.LOCALIDAD AS DEPARTAMENTO, op.TASA_SUBSIDIADA as TASA_SUBSIDIADA, op.TASA_INTERES_COMPENSATORIA as TASA_INTERES_COMPENSATORIA, op.TASA_INTERES_MORATORIA as TASA_INTERES_MORATORIA, op.TASA_INTERES_POR_PUNITORIOS as TASA_INTERES_POR_PUNITORIOS, o.DESTINO as DESTINO, o.ID as CODIGO ");
         $this->_db->join("fid_clientes c","c.ID=oc.ID_CLIENTE");
         $this->_db->join("fid_operaciones o","o.ID=oc.ID_OPERACION");
         $this->_db->join("fid_operatorias op","op.ID=o.ID_OPERATORIA");
@@ -1841,6 +1841,23 @@ class carpetas_model extends main_model{
         
         if ($iid==0)://agregar
             $acc = "add";
+            
+            $this->_db->limit(0,1);
+            $this->_db->order_by("id", "desc");
+            $resp = $this->_db->get_tabla('fid_creditos');
+            
+            if ($resp) {
+                $obj['ID'] = $resp[0]['ID'] + 1;
+            } else {
+                $obj['ID'] = 1200;
+            }
+            
+            if (!isset($obj['PLAZO_COMPENSATORIO']) && !isset($obj['PLAZO_MORATORIO']) && !isset($obj['PLAZO_PUNITORIO'])) {
+                 $obj['PLAZO_COMPENSATORIO'] = 360;
+                 $obj['PLAZO_MORATORIO'] = 365;
+                 $obj['PLAZO_PUNITORIO'] = 365;
+            }
+            
             $resp = $this->_db->insert('fid_creditos', $obj);
             $iid=$resp;
             //log_this('xxxxx.log', $this->_db->last_query() );
