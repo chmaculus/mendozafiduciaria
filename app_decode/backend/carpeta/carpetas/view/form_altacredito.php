@@ -329,17 +329,40 @@
             </div>
         </div>
         -->
+        <?php
+        $sl = 'selected="selected"';
+        $sl1 = $sl2 = $sl3 = $sl4 = $sl5 = $sl6 = "";
         
+        if (isset($obj_credito["INTERES_CUOTAS"]) && isset($obj_credito["CAPITAL_CUOTAS"]) && isset($obj_credito["INTERES_VTO"]) && isset($obj_credito["CAPITAL_VTO"])) {
+           $cuotas_gracia = $obj_credito["INTERES_CUOTAS"] - $obj_credito["CAPITAL_CUOTAS"];
+           if ($cuotas_gracia) {
+               $dias = (strtotime($obj_credito["CAPITAL_VTO"]) - strtotime($obj_credito["INTERES_VTO"])) / (24 * 3600) / $cuotas_gracia;
+                if ($dias < 30) {
+                    $sl1 = $sl; 
+                } elseif ($dias < 90) {
+                    echo $sl2 = $sl; 
+                } elseif ($dias < 180) {
+                    $sl3 = $sl; 
+                } elseif ($dias < 360) {
+                    $sl4 = $sl; 
+                } elseif ($dias < 360) {
+                    $sl5 = $sl; 
+                } else {
+                    $sl6 = $sl;
+                }
+           }
+        }
+        ?>
         <div class="elem periodicidaddiv" >
             <label>Periodicidad:</label>
             <div class="indent">
             <select class="chzn-select medium-select_altacredito select" id="alta_int_periodo">
-                <option value="1">Quincenal</option>
-                <option value="2">Mensual</option>
-                <option value="3">Trimestral</option>
-                <option value="4">Semestral</option>
-                <option value="5">Anual</option>
-                <option value="6">bianual</option>
+                <option value="1" <?=$sl1;?>>Quincenal</option>
+                <option value="2" <?=$sl2;?>>Mensual</option>
+                <option value="3" <?=$sl3;?>>Trimestral</option>
+                <option value="4" <?=$sl4;?>>Semestral</option>
+                <option value="5" <?=$sl5;?>>Anual</option>
+                <option value="6" <?=$sl6;?>>bianual</option>
             </select>   
             </div>
         </div>
@@ -370,20 +393,6 @@
             </div>
         </div>
         -->
-        
-        <div class="elem periodicidaddiv" >
-            <label>Periodicidad:</label>
-            <div class="indent">
-            <select class="chzn-select medium-select_altacredito select" id="alta_cap_periodo">
-                <option value="1">Quincenal</option>
-                <option value="2">Mensual</option>
-                <option value="3">Trimestral</option>
-                <option value="4">Semestral</option>
-                <option value="5">Anual</option>
-                <option value="6">bianual</option>
-            </select>   
-            </div>
-        </div>
         
       
         

@@ -6147,10 +6147,10 @@ function agregar_altacredito(){
                          $("#alta_cap_vto").val($("#id_capital_vtoh").val());
 
                          var interes_periodoh = $("#interes_periodoh").val();
-                         $("#alta_int_periodo").val(interes_periodoh).trigger("chosen:updated");
+                         //$("#alta_int_periodo").val(interes_periodoh).trigger("chosen:updated");
 
                          var interes_capitalh = $("#interes_capitalh").val();
-                         $("#alta_cap_periodo").val(interes_capitalh).trigger("chosen:updated");
+                         //$("#alta_cap_periodo").val(interes_capitalh).trigger("chosen:updated");
                          
                          
                          $( "#alta_propios" ).keyup(function() {
