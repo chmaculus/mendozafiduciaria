@@ -1181,6 +1181,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     
                     if ($credito_id) {
                         $fpago = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400;
+                        $fpago = strtotime(date('Y-m-d', $fpago));
                         $_fpago = (int)$fpago;
                         
                         if (isset($arr_creditos[$credito_id][$_fpago])) {
@@ -1215,7 +1216,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         
                         $pagos_no = 0;
                         foreach ($creditos as $pago) {
-                            if(!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
+                            if (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
                                 $this->realizar_pago($pago['FP'], $pago['PAGO']);
                             } else {
                                 ++$pagos_no;
