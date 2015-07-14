@@ -971,9 +971,21 @@ class credito_model extends main_model {
                     $_fecha_vencimiento_rango = $fecha_vencimiento_rango < $cuota['FECHA_VENCIMIENTO'] ? $cuota['FECHA_VENCIMIENTO'] : $fecha_vencimiento_rango;
                             
                     $rango_tmp = ($_fecha_vencimiento_rango - $tmp['FECHA_INICIO']) / (24 * 60 * 60);
+                    
+                    
+                    if($rango_tmp > $PERIODICIDAD_TASA_VARIACION) {
+                        $rango_tmp = ($_fecha_vencimiento_rango - $cuota['FECHA_VENCIMIENTO']) / (24 * 60 * 60);
+                    }
+                        
+                    /*echo date("Y-m-d", $_fecha_vencimiento_rango) ." - ";
+                    echo date("Y-m-d", $tmp['FECHA_INICIO']) ." - ";
+                    echo date("Y-m-d", $cuota['FECHA_VENCIMIENTO']) ." - ";
+                    echo date("Y-m-d", $cuota['FECHA_INICIO']) ." - ";*/
                     $rango_comp = $rango = $rango_tmp < 0 ? 0 : round($rango_tmp);
                     
-                    if ($rango_comp > 0 && $rango_comp < $PERIODICIDAD_TASA_VARIACION) {
+                    //echo $rango_comp ."<br />";
+                    
+                    if ($rango_comp > 0) {
                         $rango_comp = ($cuota['FECHA_VENCIMIENTO'] - $cuota['FECHA_INICIO']) / (24 * 60 * 60);
                     }
                     

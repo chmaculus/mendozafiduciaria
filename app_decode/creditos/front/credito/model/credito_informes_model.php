@@ -251,14 +251,16 @@ class credito_informes_model extends credito_model {
         return $res;
     }
 
-    function get_pago_evento($id_variacion) {
+    function get_pago_evento($id_variacion, $cuotas_restantes=FALSE) {
         $pagos = $this->_variaciones[$id_variacion]['ASOC'];
-
+        
         for ($i = 0; $i < 13; $i++) {
             $pago_rtn[$i] = 0;
         }
         foreach ($pagos as $pago) {
-            $pago_rtn[$pago['ID_TIPO']] = $pago['MONTO'];
+            if (!$cuotas_restantes || ($cuotas_restantes && $cuotas_restantes <= $pago['CUOTAS_RESTANTES'])) {
+                $pago_rtn[$pago['ID_TIPO']] = $pago['MONTO'];
+            }
         }
         return $pago_rtn;
     }
@@ -391,7 +393,7 @@ class credito_informes_model extends credito_model {
                 foreach ($variacion['ASOC'] as $asoc) {
                     if ($asoc['CUOTAS_RESTANTES'] == $cuota['CUOTAS_RESTANTES']) {
 
-                        $eventos[] = array("FECHA" => $variacion['FECHA'], "TIPO" => "Cobranza", "T" => 3, "PAGOS" => $this->get_pago_evento($variacion['ID']));
+                        $eventos[] = array("FECHA" => $variacion['FECHA'], "TIPO" => "Cobranza", "T" => 3, "PAGOS" => $this->get_pago_evento($variacion['ID'], $cuotas_restantes));
                         break;
                     }
                 }

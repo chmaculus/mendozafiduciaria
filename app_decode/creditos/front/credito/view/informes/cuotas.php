@@ -103,7 +103,9 @@ foreach($cuotas as $cuota){
     
     $total_cuota_gastos = 0; 
     
-    $total_a_pagar = number_format(abs(round($cuota['_INFO']['TOTAL_PAGAR'],2)),2);
+    $total_a_pagar = abs(round($cuota['_INFO']['TOTAL_PAGAR'],2));
+    $total_a_pagar = ($total_a_pagar > 0.01) ? $total_a_pagar : 0;
+    $total_a_pagar = number_format($total_a_pagar,2);
     
     $estado = "Pendiente";
     $class = "";
@@ -236,7 +238,7 @@ foreach($cuotas as $cuota){
                     <td class="dato-esp total" colspan="2"><?=number_format($total_total + $iva_total,2,",",".")  ?></td>
                     <td class="dato-esp total" colspan="2"><?=number_format($total_subsidio + $iva_subsidiado,2,",",".")  ?></td>
                     <td class="dato-esp total" colspan="2"><?=number_format($total_pagado + $iva_pagado,2,",",".")  ?></td>
-                    <td class="dato-esp total" colspan="2"><?=number_format(abs(round($total_saldo + $iva_saldo,2)),2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_a_pagar,2,",",".")  ?></td>
                 </tr>
             </table>
             
