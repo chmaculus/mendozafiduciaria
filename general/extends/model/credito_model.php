@@ -973,9 +973,9 @@ class credito_model extends main_model {
                     $rango_tmp = ($_fecha_vencimiento_rango - $tmp['FECHA_INICIO']) / (24 * 60 * 60);
                     
                     
-                    if($rango_tmp > $PERIODICIDAD_TASA_VARIACION) {
-                        $rango_tmp = ($_fecha_vencimiento_rango - $cuota['FECHA_VENCIMIENTO']) / (24 * 60 * 60);
-                    }
+                    /*if($rango_tmp > $PERIODICIDAD_TASA_VARIACION) {
+                        //$rango_tmp = ($_fecha_vencimiento_rango - $cuota['FECHA_VENCIMIENTO']) / (24 * 60 * 60);
+                    }*/ //no va
                         
                     /*echo date("Y-m-d", $_fecha_vencimiento_rango) ." - ";
                     echo date("Y-m-d", $tmp['FECHA_INICIO']) ." - ";
