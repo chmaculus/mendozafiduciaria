@@ -1004,26 +1004,11 @@ class credito_model extends main_model {
                             if ($it_pg['FECHA'] == $tmp['FECHA_VENCIMIENTO']) {
                                 $rango_int_mor = $_rango_int_mor;
                                 $_rango_moratoria = $rango_int_mor;
-                                if($cuota['ID']==7147) {
-                                echo "aca<br />";
-                                }
                             }
                             
                         }
                     } else {
                         $rango_int_mor = $_rango_int_mor;
-                    }
-                    
-                    
-                    
-                    
-                    if($cuota['ID']==7147) {
-                        echo "R:". $rango_int_mor;
-                        echo "<br/>";
-                        echo "F:". date('Y-m-d H:i:s', $cuota['FECHA_VENCIMIENTO']);
-                        echo "<br/>";
-                        echo "F:". date('Y-m-d H:i:s', $_fecha_vencimiento_rango). " - " . date('Y-m-d H:i:s', $tmp['FECHA_INICIO']);
-                        echo "<br/>";
                     }
                     
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
