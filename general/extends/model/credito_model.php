@@ -957,7 +957,7 @@ class credito_model extends main_model {
                     }*/
                     
                     $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
-                    $SALDO_CAPITAL = $capital_arr['BASE_CALCULO'];
+                    $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
                     $tmp['_PARENT'] = $cuota['ID'];
                     $tmp['_ESTADO'] = 5;
                     if ($bprimer_segmento) {
@@ -998,14 +998,15 @@ class credito_model extends main_model {
                     
                     if ($tmp['FECHA_VENCIMIENTO'] < $fecha_get0 && $_rango_int_mor) { //si no tiene pagos debería anular los intereses y dejar al último
                     
-                        
-                        foreach ($ultimos_pagos as $it_pg) {
-                            
-                            if ($it_pg['FECHA'] == $tmp['FECHA_VENCIMIENTO']) {
-                                $rango_int_mor = $_rango_int_mor;
-                                $_rango_moratoria = $rango_int_mor;
+                        if($ultimos_pagos) {
+                            foreach ($ultimos_pagos as $it_pg) {
+
+                                if ($it_pg['FECHA'] == $tmp['FECHA_VENCIMIENTO']) {
+                                    $rango_int_mor = $_rango_int_mor;
+                                    $_rango_moratoria = $rango_int_mor;
+                                }
+
                             }
-                            
                         }
                     } else {
                         $rango_int_mor = $_rango_int_mor;
@@ -1365,7 +1366,7 @@ class credito_model extends main_model {
             $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true);
             $inicial = $capital_arr['INICIAL'];
             $desembolsos = $capital_arr['DESEMBOLSOS'];
-            $SALDO_CAPITAL = $capital_arr['BASE_CALCULO'];
+            $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
 
             $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true);
             $this->_cuotas[$cuota_id]['SALDO_CAPITAL'] = $capital_arr['BASE_CALCULO'];

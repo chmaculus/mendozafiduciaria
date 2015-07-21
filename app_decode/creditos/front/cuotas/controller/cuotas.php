@@ -98,6 +98,9 @@ class cuotas extends main_controller{
         $this->mod->save_last_state(false);
         $this->mod->set_fecha_actual($fecha);
         
+        //no adelanta capital.. cancela exclusivamente intereses y luego capital
+        $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+        
         $ret_evento = $this->mod->generar_evento( array(), true, $fecha, true);
         
         $this->mod->set_log(true);

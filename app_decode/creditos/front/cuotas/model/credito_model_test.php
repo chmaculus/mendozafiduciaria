@@ -409,6 +409,8 @@ class credito_model_test extends credito_model {
         $id_credito = $this->_id_credito;
         $arr_pago = array();
         
+        //print_r($arr_deuda);
+        
         $cuotas_canceladas = array();
 
         if ($monto == 0)
@@ -510,6 +512,8 @@ class credito_model_test extends credito_model {
                 }
             }
         }
+        
+       // print_r($arr_pago);echo $monto;die("aca");
 
         //TIPO 10 es un monto no asignado.
         if ($monto > 0) {
