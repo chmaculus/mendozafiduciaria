@@ -127,6 +127,81 @@
                 },
                 "validate2fields": {
                     "alertText": "* Por favor entrar HELLO"
+                },
+                "cuit": {
+                    "func": function(field, rules, i, options){
+                        var aCUIT;
+			var sCUIT = field.val();
+			
+                        var aMult = '5432765432'; 
+                        var aMult = aMult.split(''); 
+
+                        if (sCUIT && sCUIT.length == 11) 
+                        { 
+                            
+                            aCUIT = sCUIT.split(''); 
+                            var iResult = 0; 
+                            for(i = 0; i <= 9; i++) { 
+                                iResult += aCUIT[i] * aMult[i]; 
+                            }
+                            
+                            iResult = (iResult % 11); 
+                            iResult = 11 - iResult; 
+
+                            if (iResult == 11) iResult = 0; 
+                            if (iResult == 10) iResult = 9; 
+
+                            if (iResult == aCUIT[10]) { 
+                                return true;
+                            }
+                        }
+                        
+                        return false;
+                    },
+                    "alertText": "* Cuit inválido"
+                },
+                "contacto": {
+                    "func": function(field, rules, i, options){
+                        var dd = 0;
+                        var id = field.attr("id");
+                        var validar, k;
+                        if ($("#"+id+" .elem_group").length > 0) {
+                            $("#"+id+" .elem_group").each(function(){
+                                validar = k = 0;
+
+                                $(this).find("input").each(function(){//contacto
+                                    if (k == 0) {
+                                        if ($(this).val()) {
+                                            validar++;
+                                        }
+                                    } else if (validar) {
+                                        if ($(this).val()) {
+                                            validar++;
+                                        }
+                                    }
+                                    
+                                    k++;
+                                });
+
+                                if (validar < 2) {
+                                    dd++;
+                                }
+                            });
+                        } else {
+                            dd++;
+                        }
+                        
+                        if(dd) {
+                            $("#contactosForm").val("");
+                            return false;
+                        } else {
+                            $("#contactosForm").val("ok");
+                            return true;
+                        }
+                        
+                        
+                    },
+                    "alertText": "* Debe ingresar al menos un contacto"
                 }
             };
             

@@ -159,3 +159,10 @@
     margin-top: 14px;
     margin-left: 25px;
 }
+
+.cuitformError{
+    left:394px !important
+}
+.locformError {
+    top:61px !important
+}
