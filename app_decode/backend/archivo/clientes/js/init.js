@@ -33,9 +33,6 @@ function loadChild(val){
                 });
                 var selects = $('#div_subrubro').find('select');
                 selects.chosen();
-                
-                
-                //cambioLocalidad();
                 working = false;
               }
           });
@@ -398,8 +395,6 @@ $(document).ready(function(){
                         
                         $("#provinciah").val($("#prove").val());
                         $("#localidadh,#loc").val($("#locae").val());
-                        
-                        console.log($("#locae").val());
                         
                         $('#provincia').bind('change', function(event) {
                             event.preventDefault();
@@ -866,13 +861,4 @@ function ingresar_pwd(){
     
     
     
-}
-
-
-function cambioLocalidad() {
-    //se pone esta función para evitar el bug de validacion del select cargado con ajax
-    $('#loc').val($("#subrubro").val());
-    $("#subrubro").on('change', function(){
-        $('#loc').val($(this).val());
-    });
 }
