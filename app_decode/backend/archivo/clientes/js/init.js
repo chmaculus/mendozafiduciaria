@@ -23,12 +23,13 @@ function loadChild(val){
                     options+= '<option value="'+v+'" '+connection+'>'+k+'</option>';
                 });
                 if(r.defaultText){
-                    options = '<option>'+r.defaultText+'</option>'+options;
+                    options = '<option value="">'+r.defaultText+'</option>'+options;
                 }
                 $('#div_subrubro').html('<select class="chzn-select medium-select select" id="subrubro">'+ options +'</select>');
+                $('#localidadh, #loc').val($('#subrubro').val());
                 $('#subrubro').on('change', function(event) {
                     event.preventDefault();
-                    $('#localidadh').val($('#subrubro').val());
+                    $('#localidadh, #loc').val($(this).val());
                 });
                 var selects = $('#div_subrubro').find('select');
                 selects.chosen();
@@ -51,7 +52,7 @@ $(document).ready(function(){
             $(this).removeClass('li_sel');
         }
     );
-        
+    
     $(".toolbar li").click(function(e) {
             e.preventDefault();
             var top = $(this).data('top');
@@ -163,6 +164,8 @@ $(document).ready(function(){
                             var raz = $("#raz").val();
                             var dir = $("#dir").val();
                             var tel = $("#tel").val();
+                            var tel2 = $("#tel2").val();
+                            var tel3 = $("#tel3").val();
                             var con = $("#con").val();
                             var cuit = $("#cuit").val();
                             var insiibb = $("#insiibb").val();
@@ -196,8 +199,10 @@ $(document).ready(function(){
 
                                             var contacto    = $(this).find('#con').val();
                                             var telefono    = $(this).find('#tel').val();
+                                            var telefono2    = $(this).find('#tel2').val();
+                                            var telefono3    = $(this).find('#tel3').val();
                                             var email       = $(this).find('#ema').val();
-                                            arr_contactos.push({con:contacto,tel:telefono,ema:email});
+                                            arr_contactos.push({con:contacto,tel:telefono,tel2:telefono2,tel3:telefono3,ema:email});
                                         });
 
                                        //if ( !$("#customForm").validationEngine('validate') )
@@ -215,6 +220,8 @@ $(document).ready(function(){
                                             DIRECCION:dir,
                                             RAZON_SOCIAL:raz,
                                             TELEFONO:tel,
+                                            TEL_CEL:tel2,
+                                            TEL_TRAB:tel3,
                                             CONTACTO:con,
                                             CUIT:cuit,
                                             CORREO:ema,
@@ -387,7 +394,7 @@ $(document).ready(function(){
                         
                         
                         $("#provinciah").val($("#prove").val());
-                        $("#localidadh").val($("#locae").val());
+                        $("#localidadh,#loc").val($("#locae").val());
                         
                         $('#provincia').bind('change', function(event) {
                             event.preventDefault();
@@ -482,6 +489,8 @@ $(document).ready(function(){
                             var raz = $("#raz").val();
                             var dir = $("#dir").val();
                             var tel = $("#tel").val();
+                            var tel2 = $("#tel2").val();
+                            var tel3 = $("#tel3").val();
                             var con = $("#con").val();
                             var cuit = $("#cuit").val();
                             var insiibb = $("#insiibb").val();
@@ -494,8 +503,10 @@ $(document).ready(function(){
                             $( ".group .elem_group" ).each(function() {
                                 var contacto    = $(this).find('#con').val();
                                 var telefono    = $(this).find('#tel').val();
+                                var telefono2    = $(this).find('#tel2').val();
+                                var telefono3    = $(this).find('#tel3').val();
                                 var email       = $(this).find('#ema').val();
-                                arr_contactos.push({con:contacto,tel:telefono,ema:email});
+                                arr_contactos.push({con:contacto,tel:telefono,tel2:telefono2,tel3:telefono3,ema:email});
                             });     
 
                            if ( !$("#customForm").validationEngine('validate') )
@@ -513,6 +524,8 @@ $(document).ready(function(){
                                 DIRECCION:dir,
                                 RAZON_SOCIAL:raz,
                                 TELEFONO:tel,
+                                TEL_CEL:tel2,
+                                TEL_TRAB:tel3,
                                 CONTACTO:con,
                                 CUIT:cuit,
                                 CORREO:ema,

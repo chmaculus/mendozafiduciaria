@@ -10,7 +10,7 @@
                     <input type="hidden" id="idh" value="<?php echo (isset($entidad["ID"])?$entidad["ID"]:"") ?>" />
                     <input type="hidden" id="val_ok" value="0" />
                     <input type="hidden" id="provinciah" value="0" />
-                    <input type="hidden" id="localidadh" value="0" />                    
+                    <input type="hidden" id="localidadh" value="0" />
                     
                     <input type="hidden" id="faltah" value="<?php echo (isset($entidad["FECHA_ALTA"])?$entidad["FECHA_ALTA"]:"") ?>" />
                     <input type="hidden" id="civae" value="<?php echo (isset($entidad["ID_CONDICION_IVA"])?$entidad["ID_CONDICION_IVA"]:"") ?>" />
@@ -35,10 +35,11 @@
                     
                     <div class="elem elem_med">
                            <label>Localidad:</label>
+                           <input type="hidden" class="validate[required]" id="loc" value="" />
                            <div class="indent" id="div_subrubro">
-                            <select class="chzn-select medium-select select" id="subrubro" data-prompt-position="topLeft">
-                               <option value="">Elegir Subrubro</option>
-                           </select>
+                                <select class="chzn-select medium-select select" id="subrubro" data-prompt-position="topLeft">
+                                   <option value="">Elegir Subrubro</option>
+                                </select>
                            </div>
                     </div>
                                        
@@ -94,7 +95,7 @@
                     <div class="elem">
                             <label>Dirección:</label>
                             <div class="indent formtext">
-                                <input type="text" class="medium" title="Ingrese Valor" id="dir" data-prompt-position="topLeft" value="<?php echo (isset($entidad['DIRECCION'])?$entidad['DIRECCION']:"") ?>"> 
+                                <input type="text" class="validate[required] medium" title="Ingrese Valor" id="dir" data-prompt-position="topLeft" value="<?php echo (isset($entidad['DIRECCION'])?$entidad['DIRECCION']:"") ?>"> 
                             </div>
                      </div>
                     
@@ -102,7 +103,7 @@
                     <div class="elem elem_med">
                             <label>CUIT:</label>
                             <div class="indent formtext">
-                                <input type="text" class="tip-right" title="Ingrese Valor" id="cuit" data-prompt-position="centerRight" maxlength="11" value="<?php echo (isset($entidad['CUIT'])?$entidad['CUIT']:"") ?>">
+                                <input type="text" class="validate[required,custom[cuit]] tip-right" title="Ingrese Valor" id="cuit" data-prompt-position="centerRight" maxlength="11" value="<?php echo (isset($entidad['CUIT'])?$entidad['CUIT']:"") ?>">
                             </div>
                      </div>
                     
@@ -128,7 +129,12 @@
                             </div>
                             <div class="div_pidepass"><span>Contenido Bloqueado</span></div>
                     </div>
-                    <div class="group">
+                    <div class="validate[custom[contacto]] group" id="contactos">
+                        <div class="elem">
+                            <label>Contactos:</label>
+                            <span style="margin:0 0 0 5px">Debe ingresar al menos un contacto, y debe contener nombre y algún otro campo más</span>
+                        </div>
+                        <input type="hidden" class="validate[required]" value="" id="contactosForm" />
                     <?php if ($contactos): ?>
                         <?php foreach ($contactos as $cont): ?>
                         <div class="elem_group">
@@ -144,6 +150,20 @@
                                     <label class="der">Teléfono:</label>
                                     <div class="indent formtext">
                                         <input type="text" class=" tip-right" title="Ingrese Teléfono" id="tel" data-prompt-position="centerRight" value="<?php echo $cont['TELEFONO'] ?>"> 
+                                    </div>
+                             </div>
+
+                            <div class="elem elem_med">
+                                    <label class="der">Teléfono Celular:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class=" tip-right" title="Ingrese Valor" id="tel2" data-prompt-position="centerRight" value="<?php echo $cont['TEL_CEL'] ?>"> 
+                                    </div>
+                             </div>
+
+                            <div class="elem elem_med">
+                                    <label class="der">Teléfono Trabajo:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class=" tip-right" title="Ingrese Valor" id="tel3" data-prompt-position="centerRight" value="<?php echo $cont['TEL_TRAB'] ?>"> 
                                     </div>
                              </div>
 
@@ -168,9 +188,23 @@
                              </div>
 
                             <div class="elem elem_med">
-                                    <label class="der">Teléfono:</label>
+                                    <label class="der">Teléfono Fijo:</label>
                                     <div class="indent formtext">
                                         <input type="text" class=" tip-right" title="Ingrese Valor" id="tel" data-prompt-position="centerRight" value="<?php echo (isset($entidad['TELEFONO'])?$entidad['TELEFONO']:"") ?>"> 
+                                    </div>
+                             </div>
+
+                            <div class="elem elem_med">
+                                    <label class="der">Teléfono Celular:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class=" tip-right" title="Ingrese Valor" id="tel2" data-prompt-position="centerRight" value="<?php echo (isset($entidad['TELEFONO'])?$entidad['TELEFONO']:"") ?>"> 
+                                    </div>
+                             </div>
+
+                            <div class="elem elem_med">
+                                    <label class="der">Teléfono Trabajo:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class=" tip-right" title="Ingrese Valor" id="tel3" data-prompt-position="centerRight" value="<?php echo (isset($entidad['TELEFONO'])?$entidad['TELEFONO']:"") ?>"> 
                                     </div>
                              </div>
 
