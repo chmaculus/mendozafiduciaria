@@ -6893,7 +6893,11 @@ function agregar_garantias_1(acc, _array_obj){
                                                 'DATO_1':$("#dato1").val(),
                                                 'DATO_2':$("#dato2").val(),
                                                 'DATO_3':$("#dato3").val(),
-                                                'ID_ESTADO':$("#estado_garantia").val()
+                                                'ID_ESTADO':$("#estado_garantia").val(),
+                                                'GARANTE':$("#garante").val(),
+                                                'GARANTE_DOM':$("#gar-dom").val(),
+                                                'GARANTE_CUIT':$("#gar-cuit").val(),
+                                                'GARANTE_TEL':$("#gar-tel").val()
                                             }
                                             
                                             
