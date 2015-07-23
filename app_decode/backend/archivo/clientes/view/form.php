@@ -92,12 +92,19 @@
                             </div>
                     </div>
                     
-                    <div class="elem">
+                    <div class="elem elem_dir">
                             <label>Dirección:</label>
                             <div class="indent formtext">
-                                <input type="text" class="validate[required] medium" title="Ingrese Valor" id="dir" data-prompt-position="topLeft" value="<?php echo (isset($entidad['DIRECCION'])?$entidad['DIRECCION']:"") ?>"> 
+                                <input type="text" class="validate[required]" title="Ingrese Valor" id="dir" data-prompt-position="topLeft" value="<?php echo (isset($entidad['DIRECCION'])?$entidad['DIRECCION']:"") ?>"> 
                             </div>
                      </div>
+                    
+                    <div class="elem elem_cp">
+                            <label>Cod. Postal:</label>
+                            <div class="indent formtext">
+                                <input type="text" class="tip-right" title="Ingrese Valor" id="postal" data-prompt-position="centerRight" value="<?php echo ( isset($entidad['COD_POSTAL'])?$entidad['COD_POSTAL']:"") ?>"> 
+                            </div>
+                    </div>
                     
                     
                     <div class="elem elem_med">

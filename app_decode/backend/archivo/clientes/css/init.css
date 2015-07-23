@@ -23,6 +23,10 @@
 .elem_med input{
     width: 235px;
 }
+.elem_dir input{width:340px;}
+.elem_cp input{width:115px;}
+.elem_dir{width:490px;clear:none !important;float:left}
+.elem_cp{width:170px;clear:none !important;float:left}
 .indent{
     margin-left: 106px!important;
 }

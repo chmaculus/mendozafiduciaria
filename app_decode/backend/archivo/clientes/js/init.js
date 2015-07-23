@@ -163,6 +163,7 @@ $(document).ready(function(){
                             var falta = $("#falta").val();
                             var raz = $("#raz").val();
                             var dir = $("#dir").val();
+                            var postal = $("#postal").val();
                             var tel = $("#tel").val();
                             var tel2 = $("#tel2").val();
                             var tel3 = $("#tel3").val();
@@ -218,6 +219,7 @@ $(document).ready(function(){
                                             ID_INV:insinv,
                                             FECHA_ALTA:falta,
                                             DIRECCION:dir,
+                                            COD_POSTAL:postal,
                                             RAZON_SOCIAL:raz,
                                             TELEFONO:tel,
                                             TEL_CEL:tel2,
@@ -488,6 +490,7 @@ $(document).ready(function(){
                             var falta = $("#falta").val();
                             var raz = $("#raz").val();
                             var dir = $("#dir").val();
+                            var postal = $("#postal").val();
                             var tel = $("#tel").val();
                             var tel2 = $("#tel2").val();
                             var tel3 = $("#tel3").val();
@@ -522,6 +525,7 @@ $(document).ready(function(){
                                 ID_TIPO:tipobeneficiario,
                                 FECHA_ALTA:falta,
                                 DIRECCION:dir,
+                                COD_POSTAL:postal,
                                 RAZON_SOCIAL:raz,
                                 TELEFONO:tel,
                                 TEL_CEL:tel2,
