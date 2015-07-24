@@ -131,7 +131,7 @@ class clientes_model extends main_model{
     }
     
     function get_info_grid(){
-        $rtn = $this->_db->select("c.id,razon_social,DIRECCION,PROVINCIA,LOCALIDAD,TELEFONO,TEL_CEL,TEL_TRAB,CONTACTO,CUIT,CBU,CORREO,ID_INV,INSCRIPCION_IIBB");
+        $rtn = $this->_db->select("c.id,razon_social,DIRECCION,COD_POSTAL,PROVINCIA,LOCALIDAD,TELEFONO,TEL_CEL,TEL_TRAB,CONTACTO,CUIT,CBU,CORREO,ID_INV,INSCRIPCION_IIBB");
         $rtn = $this->_db->join("fid_provincias p","p.id=c.id_provincia");
         $rtn = $this->_db->join("fid_localidades l","l.id=c.id_departamento");
         $rtn = $this->_db->get_tabla("fid_clientes c");
