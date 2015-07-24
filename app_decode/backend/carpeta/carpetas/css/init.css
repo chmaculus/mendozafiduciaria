@@ -957,3 +957,6 @@ iframe{
     font-size: 22px;
     cursor: pointer;
 }
+
+#garante,#gar-dom{width:476px;}
+#gar-tel,#gar-cuit{width:160px;}

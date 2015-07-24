@@ -215,6 +215,36 @@
             </div>
         </div>
         
+        <div class="elem"></div>
+        
+        <div class="elem">
+            <label>Garante:</label>
+            <div class="indent formtext">
+                <input type="text" class="" title="Ingrese" id="garante" value="<?php echo isset($datos_gar["0"]["GARANTE"])?$datos_gar["0"]["GARANTE"]:'' ?>" />
+            </div>
+        </div>
+        
+        <div class="elem">
+            <label>Domicilio:</label>
+            <div class="indent formtext">
+                <input type="text" class="" title="Ingrese" id="gar-dom" value="<?php echo isset($datos_gar["0"]["GARANTE_DOM"])?$datos_gar["0"]["GARANTE_DOM"]:'' ?>" />
+            </div>
+        </div>
+        
+        <div class="elem elem_med_gar" style="width:300px">
+            <label>CUIT:</label>
+            <div class="indent formtext">
+                <input type="text" class="" title="Ingrese" id="gar-cuit" value="<?php echo isset($datos_gar["0"]["GARANTE_CUIT"])?$datos_gar["0"]["GARANTE_CUIT"]:'' ?>" />
+            </div>
+        </div>
+        
+        <div class="elem elem_med_gar">
+            <label>Teléfono:</label>
+            <div class="indent formtext">
+                <input type="text" class="" title="Ingrese" id="gar-tel" value="<?php echo isset($datos_gar["0"]["GARANTE_TEL"])?$datos_gar["0"]["GARANTE_TEL"]:'' ?>" />
+            </div>
+        </div>
+        
         <div class="grid-1 grid_adjuntos_gar">
             <div class="title-grid">Adjuntos</div>
             <div class="content-gird" style="display: block;">
