@@ -2941,10 +2941,14 @@ ORDER BY T1.lvl DESC');
     }
     
     function get_creditos_moratorios() {
-        $this->_db->select('ID, MONTO_CREDITO, INTERES_VTO');
-        $this->_db->where("T_MORATORIO > 0");
+        $this->_db->select('c.ID, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
+        //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
         $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
-        return $this->_db->get_tabla("fid_creditos");
+        $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
+        $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
+        $this->_db->join("fid_provincias pr", "pr.ID = cl.ID_PROVINCIA", "left");
+        $this->_db->order_by("ID", "DESC");
+        return $this->_db->get_tabla("fid_creditos c");
     }
     
     function obtener_ultimo_pago() {
@@ -2981,6 +2985,50 @@ ORDER BY T1.lvl DESC');
         
     }
     
+    function get_moratorias() {
+        $this->_db->select('*');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);// . " AND ID_TIPO IN (". PAGO_MORATORIO . "," . PAGO_IVA_MORATORIO . "," . PAGO_CAPITAL . ")");
+        $this->_db->order_by("FECHA", "DESC");
+        $pagos = $this->_db->get_tabla("fid_creditos_pagos");
+        
+        if($pagos) {
+            
+            return $pagos;
+        } else {
+            return FALSE;
+        }
+    }
+    
+    public function _get_desembolso() {
+        $this->_db->select('FECHA, MONTO, CUOTAS_RESTANTES');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+        $this->_db->order_by("FECHA", "ASC");
+        $desembolsos = $this->_db->get_tabla("fid_creditos_desembolsos");
+        
+        //echo $this->_db->last_query();
+        
+        if($desembolsos) {
+            return $desembolsos;
+        } else {
+            return FALSE;
+        }
+        
+    }
+    
+    public function get_cuotas() {
+        $this->_db->select('INT_COMPENSATORIO, INT_COMPENSATORIO_IVA');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+        $this->_db->order_by("FECHA_INICIO", "ASC");
+        $cuotas = $this->_db->get_tabla("fid_creditos_cuotas");
+        
+        //echo $this->_db->last_query();
+        
+        if($cuotas) {
+            return $cuotas;
+        } else {
+            return FALSE;
+        }
+    }
 }
 
 ?>
