@@ -241,41 +241,90 @@ class creditos extends main_controller{
         
     }
     
-    function resumen_moratorias() {
-        set_time_limit(0);
-        $this->constructor();
-        if ( !isset($_SESSION["USERADM"]))
-            header("Location: " . '/'.URL_PATH);
+    function fn_resumen_moratorias() {
+        $reporte = $this->mod->getReporteCreditos();
         
-        $this->setCss( array("init.css","resumen_cuenta.css") );
-        $this->setJs( array( "creditos.js") );
-        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid"));
-        
-        $arr_permiso_mod = $this->_init();
-        $datax = array();
-        $datax['main'] = $this->_resumen_moratorias($arr_permiso_mod);
-        $datax['titulo']= "Administracion";
-        $datax['etiqueta_modulo'] = "Créditos - Moratorias";
-        $datax['name_modulo'] = $this->get_controller_name();
-        $this->_js_var['_etiqueta_modulo'] = $datax['etiqueta_modulo'];
-        $this->_js_var['_USUARIO_SESION_ACTUAL'] = $_SESSION["USERADM"];
-        $this->_js_var['_USER_AREA'] = $_SESSION["USER_AREA"];
-        $this->_js_var['_USER_PUESTO'] = $_SESSION["USER_PUESTO"];
-        $this->_js_var['_USER_ROL'] = $_SESSION["USER_ROL"];
+        $arr_reporte = array();
+        if ($reporte) {
+            $arr = array();
+            foreach ($reporte as $item) {
+                if (!$item['DESEMBOLSO'] && !$item['CUOTAS']) {
+                    continue;
+                }
+                
+                $_moratoria = 0;
+                $total_moratoria = 0;
+                $total_punitorio = 0;
+                $total_iva = 0;
+                $cuotas_mora = 0;
+                $capital_pagado = 0;
+                $total_credito = $item['MONTO_CREDITO'];
+                
+                if ($item['CUOTAS']) {
+                    $cant_cuotas = count($item['CUOTAS']);
+                } else {
+                    $cant_cuotas = $item['DESEMBOLSO'][0]['CUOTAS_RESTANTES'];
+                }
+                $cobranzas = 0;
 
-        $this->_js_var['FECHA'] = time();
+                if ($item['PAGOS']) {
+
+                    foreach ($item['PAGOS'] as $v) {
+                        $cobranzas += $v['MONTO'];
+                        switch ($v['ID_TIPO']) {
+                            case PAGO_IVA_MORATORIO:
+                                $total_iva += $v['MONTO'];
+                                $total_moratoria += $v['MONTO'];
+                                break;
+                            case PAGO_MORATORIO:
+                                $_moratoria += $v['MONTO'];
+                                $total_moratoria += $v['MONTO'];
+                                ++$cuotas_mora;
+                                break;
+                            case PAGO_IVA_PUNITORIO:
+                            case PAGO_PUNITORIO:
+                                $total_punitorio += $v['MONTO'];
+                                break;
+                            case 7:
+                                $capital_pagado += $v['MONTO'];
+                                break;
+                        }
+                    }
+                }
+                
+
+                if ($item['CUOTAS']) {
+
+                    foreach ($item['CUOTAS'] as $v) {
+                        $total_credito += $v['INT_COMPENSATORIO'] + $v['INT_COMPENSATORIO_IVA'];
+                    }
+                    
+                }
+                
+                $arr['DEUDOR'] = $item['RAZON_SOCIAL'];
+                $arr['ID'] = $item['ID'];
+                $arr['DIRECCION'] = $item['DIRECCION'];
+                $arr['PROVINCIA'] = $item['PROVINCIA'];
+                $arr['LOCALIDAD'] = $item['LOCALIDAD'];
+                $arr['FECHA_DESEMB'] = $item['DESEMBOLSO'] ? date('d/m/Y', $item['DESEMBOLSO'][0]['FECHA']) : '';
+                $arr['MONTO_CREDITO'] = $item['MONTO_CREDITO'];
+                $arr['SALDO_CAPITAL'] = $_moratoria ? 'Mora' : 'Al Día';
+                $arr['SITUACION'] = $_moratoria ? 'Mora' : 'Al Día';
+                $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ",", ".");
+                $arr['COBRANZAS'] = number_format($cobranzas, 2, ",", ".");
+                $arr['CANTIDAD_CUOTAS_MORAS'] = $cuotas_mora;
+                $arr['MONTO_MORA'] = number_format($total_credito + $total_moratoria + $total_punitorio, 2, ",", ".");
+                $arr['PORCENTAJE_MORA'] = number_format($total_moratoria, 2, ",", ".");
+                $arr['ESTADO'] = '?';
+                
+                
+                $arr_reporte[] = $arr;
+            }
+            
+        }
         
-        $this->render($datax);
-    }
-    
-    function _resumen_moratorias($arr_permiso_mod) {
-        $creditos_moratorias = $this->mod->getCreditosMoratorios();
-        
-        if($_SESSION["USER_ROL"]==1 || $arr_permiso_mod['MOSTRAR'] == 1)
-            return $this->view("resumen_moratorias", array("creditos_moratorias" => $creditos_moratorias));
-        else
-            return $this->view("error404",array(),"backend/dashboard");
-        
+        echo trim(json_encode($arr_reporte));
+        die();
     }
 
 }

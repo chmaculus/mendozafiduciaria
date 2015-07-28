@@ -2940,7 +2940,7 @@ ORDER BY T1.lvl DESC');
         return FALSE;
     }
     
-    function get_creditos_moratorios() {
+    function get_creditos_reporte() {
         $this->_db->select('c.ID, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
         $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
@@ -2948,6 +2948,7 @@ ORDER BY T1.lvl DESC');
         $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
         $this->_db->join("fid_provincias pr", "pr.ID = cl.ID_PROVINCIA", "left");
         $this->_db->order_by("ID", "DESC");
+        $this->_db->limit(0,10);
         return $this->_db->get_tabla("fid_creditos c");
     }
     

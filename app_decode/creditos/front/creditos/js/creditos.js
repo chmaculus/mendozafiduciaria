@@ -121,7 +121,11 @@ $(document).ready(function(){
             }
     });
 
-    init_grid();
+    if ($("#jqxgrid2").length > 0) {
+        init_grid2();
+    } else {
+        init_grid();
+    }
    
     //$(".tb_todas").addClass("menu_sel");
     
@@ -317,6 +321,117 @@ function init_grid(id_usuario,tipo){
             { text: 'FIDEICOMISO', datafield: 'FIDEICOMISO', width: '20%', hidden : false, filterable : true },
             { text: 'CARPETA', datafield: 'CARPETA', width: '10%', hidden : false, filterable : true },
             { text: 'ESTADO', datafield: 'ESTADO', width: '10%', hidden : false, filterable : true }
+        ]
+    });
+    
+    
+}
+
+function init_grid2() {
+    
+    var sourceope ={
+        datatype: "json",
+        datafields: [
+            { name: 'DEUDOR', type: 'string' },
+            { name: 'ID', type: 'string' },
+            { name: 'DIRECCION', type: 'string' },
+            { name: 'PROVINCIA', type: 'string' },
+            { name: 'LOCALIDAD', type: 'string' },
+            { name: 'FECHA_DESEMB', type: 'string' },
+            { name: 'MONTO_CREDITO', type: 'string' },
+            { name: 'SITUACION', type: 'string' },
+            { name: 'SALDO_CAPITAL', type: 'string' },
+            { name: 'COBRANZAS', type: 'string' },
+            { name: 'CANTIDAD_CUOTAS_MORAS', type: 'string' },
+            { name: 'MONTO_VENCIDO', type: 'string' },
+            { name: 'MONTO_MORA', type: 'string' },
+            { name: 'PORCENTAJE_MORA', type: 'string' },
+            { name: 'ESTADO', type: 'string' }
+        ],
+        url: 'creditos/front/creditos/fn_resumen_moratorias/',
+        data:{
+            accion  :   "getCreditos"
+        },
+        async:false,
+        deleterow: function (rowid, commit) {
+            commit(true);
+        }
+    };
+    
+    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+        {
+            loadComplete: function (data) { 
+                console.log("data");
+                console.log(data);
+                _creditos_lista = data;
+            },            
+            formatData: function (data) {
+                console.log("aca1");
+                
+
+                data.name_startsWith = $("#searchField").val();
+                return data;
+            }
+        }
+    );
+			
+    $("#jqxgrid").jqxGrid(
+    {
+        width: '98%',
+        groupable:true,
+        //source: source,
+        source: dataAdapterope,
+        theme: 'energyblue',
+        ready: function (data) {
+    
+       //     $("#jqxgrid").jqxGrid('hidecolumn', 'ID');
+            //$("#jqxgrid").jqxGrid('autoresizecolumns');
+        },
+        selectionmode: "multiplerows",
+        columnsresize: true,
+        showtoolbar: true,
+        localization: getLocalization(),
+        sortable: true,
+        filterable: true,
+        showfilterrow: true,
+        rendertoolbar: function (toolbar) {
+            var me = this;
+            var container = $("<div style='margin: 5px;'></div>");
+            var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
+            var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
+            //toolbar.append(container);
+            //container.append(span);
+            //container.append(input);
+            if (theme != "") {
+                input.addClass('jqx-widget-content-' + theme);
+                input.addClass('jqx-rc-all-' + theme);
+            }
+
+            input.on('keydown', function (event) {
+                if (input.val().length >= 2) {
+                    if (me.timer) clearTimeout(me.timer);
+                    me.timer = setTimeout(function () {
+                        dataAdapterope.dataBind();
+                    }, 300);
+                }
+            });
+        },
+        columns: [
+            { text: 'DEUDOR', datafield: 'DEUDOR', width: '10%', groupable:false, filterable: false },
+            { text: 'CREDITO', datafield: 'ID', width: '5%', hidden : false, filterable : false },
+            { text: 'DIRECCION', datafield: 'DIRECCION', width: '10%', hidden : false, filterable : false },
+            { text: 'PROVINCIA', datafield: 'PROVINCIA', width: '10%', hidden : false, filterable : false },
+            { text: 'LOCALIDAD', datafield: 'LOCALIDAD', width: '10%', hidden : false, filterable : false },
+            { text: 'FECHA DEL CONT. Y DESEMB.', datafield: 'FECHA_DESEMB', width: '10%', hidden : false, filterable : false },
+            { text: 'MONTO DEL CREDITO', datafield: 'MONTO_CREDITO', width: '10%', hidden : false, filterable : false },
+            { text: 'SITUACION', datafield: 'SITUACION', width: '5%', hidden : false, filterable : false },
+            { text: 'SALDO CAPITAL', datafield: 'SALDO_CAPITAL', width: '8%', hidden : false, filterable : false },
+            { text: 'COBRANZAS', datafield: 'COBRANZAS', width: '10%', hidden : false, filterable : false },
+            { text: 'CANTIDAD DE CUOTAS EN MORAS', datafield: 'CANTIDAD_CUOTAS_MORAS', width: '5%', hidden : false, filterable : false },
+            { text: 'MONTO VENCIDO', datafield: 'MONTO_VENCIDO', width: '10%', hidden : false, filterable : false },
+            { text: 'MONTO MORA', datafield: 'MONTO_MORA', width: '10%', hidden : false, filterable : false },
+            { text: 'PORCENTAJE DE MORA', datafield: 'PORCENTAJE_MORA', width: '10%', hidden : false, filterable : false },
+            { text: 'ESTADO', datafield: 'ESTADO', width: '5%', hidden : false, filterable : false }
         ]
     });
     
@@ -560,10 +675,9 @@ function exportar() {
 
 
 function get_moratorias() {
-    var urlbase = $("#liVer").data("loc");
-    
-    var url = urlbase+"s/resumen_moratorias/";
-    location.href=url;
+    $('#liModificacion,#liOpcion,.tb_todas,.tb_del').hide();
+    $('.tb_exportar').show();
+    init_grid2();
 }
 
 function volver_creditos() {

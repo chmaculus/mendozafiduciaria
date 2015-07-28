@@ -389,8 +389,8 @@ class credito_informes_model extends credito_model {
         return $tasas;
     }
     
-    public function getCreditosMoratorios() {
-        $_creditos = $this->get_creditos_moratorios();
+    public function getReporteCreditos() {
+        $_creditos = $this->get_creditos_reporte();
         
         if ($_creditos) {
             $creditos_moratorios = array();
