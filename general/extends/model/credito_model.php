@@ -515,6 +515,7 @@ class credito_model extends main_model {
                     "CAPITAL" => $arr_capital,
                     "ID" => $cuota['ID'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
+                    "DIAS_MORAS" => $cuota['DIAS_MORAS'],
                     "_INFO" =>
                     array(
                         "IVA_COMPENSATORIO_SUBSIDIO" => $arr_iva_compensatorio_subsidio,
@@ -550,6 +551,7 @@ class credito_model extends main_model {
                     "CAPITAL" => $arr_capital,
                     "ID" => $cuota['ID'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
+                    "DIAS_MORAS" => $cuota['DIAS_MORAS'],
                     "_INFO" =>
                     array(
                         "IVA_COMPENSATORIO_SUBSIDIO" => $arr_iva_compensatorio_subsidio,
@@ -874,6 +876,8 @@ class credito_model extends main_model {
             $fecha_get0 = strtotime(date('Y-m-d', $fecha_get). ' 00:00:00');
             $ultimos_pagos = $this->get_ultimo_pago($cuota['CUOTAS_RESTANTES'], $fecha_get0);
             
+            $dias_moras = 0;
+            
             if ($subcuotas) {
 
                 $INTERES_COMPENSATORIO = 0;
@@ -1164,6 +1168,8 @@ class credito_model extends main_model {
                     $tmp['INT_MORATORIO'] = $INT_MORATORIO;
                     $tmp['INT_PUNITORIO'] = $INT_PUNITORIO;
                     
+                    $dias_moras += $rango_int_mor;
+                    
                     $tmp['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $tmp['INT_COMPENSATORIO_SUBSIDIO'] * $this->_iva_operatoria;
                     $tmp['INT_COMPENSATORIO_IVA'] = $tmp['INT_COMPENSATORIO'] * $this->_iva_operatoria;
 
@@ -1231,12 +1237,13 @@ class credito_model extends main_model {
                 $ARR_CHLD[] = $CH_TMP;
             }
             $this->_cuotas[$cuota_id]['CHILDREN'] = $ARR_CHLD;
-
+            $this->_cuotas[$cuota_id]['DIAS_MORAS'] = $dias_moras;
+            
             $this->_cuotas[$cuota_id]['FECHA_INICIO'] = $cuota['FECHA_INICIO'];
             $cuota['CHILDREN'] = $segmentos;
         }
+        
        
-
 
         return $cuota;
     }
@@ -2728,6 +2735,7 @@ ORDER BY T1.lvl DESC');
                     "NUMERO" => $i++,
                     "MONTO" => $total_monto,
                     "FECHA" => date("d/m/Y", $variacion['FECHA']),
+                    "FECHA2" => $variacion['FECHA'],
                     "ID_PAGO" => $variacion['ID']
                 );
             }
@@ -2941,14 +2949,15 @@ ORDER BY T1.lvl DESC');
     }
     
     function get_creditos_reporte() {
-        $this->_db->select('c.ID, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
+        $this->_db->select('c.ID, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
         $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
+        $this->_db->join("fid_fideicomiso f", "f.ID=c.ID_FIDEICOMISO", "left");
         $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
         $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
         $this->_db->join("fid_provincias pr", "pr.ID = cl.ID_PROVINCIA", "left");
         $this->_db->order_by("ID", "DESC");
-        $this->_db->limit(0,10);
+        //$this->_db->limit(0,10);
         return $this->_db->get_tabla("fid_creditos c");
     }
     
@@ -2989,7 +2998,7 @@ ORDER BY T1.lvl DESC');
     function get_moratorias() {
         $this->_db->select('*');
         $this->_db->where("ID_CREDITO = " . $this->_id_credito);// . " AND ID_TIPO IN (". PAGO_MORATORIO . "," . PAGO_IVA_MORATORIO . "," . PAGO_CAPITAL . ")");
-        $this->_db->order_by("FECHA", "DESC");
+        $this->_db->order_by("FECHA", "ASC");
         $pagos = $this->_db->get_tabla("fid_creditos_pagos");
         
         if($pagos) {
@@ -3017,7 +3026,7 @@ ORDER BY T1.lvl DESC');
     }
     
     public function get_cuotas() {
-        $this->_db->select('INT_COMPENSATORIO, INT_COMPENSATORIO_IVA');
+        $this->_db->select('CAPITAL_CUOTA, INT_COMPENSATORIO, INT_COMPENSATORIO_IVA, FECHA_VENCIMIENTO, CUOTAS_RESTANTES');
         $this->_db->where("ID_CREDITO = " . $this->_id_credito);
         $this->_db->order_by("FECHA_INICIO", "ASC");
         $cuotas = $this->_db->get_tabla("fid_creditos_cuotas");

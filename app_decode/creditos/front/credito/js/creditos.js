@@ -222,6 +222,9 @@ function select_option_informe(informe_index, fecha){
         case 4:
             _credito.get_tasas(_credito.ID, fecha, chequera);
             break;
+        case 5:
+            _credito.get_reporte(_credito.ID);
+            break;
     }
 }
 
@@ -469,3 +472,153 @@ _credito.get_tasas = function(credito_id, fecha, chequera){
         }
     });
 };
+
+_credito.get_reporte = function(credito_id, fecha) {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+     $.ajax({
+        url : _credito.URL + "/x_reporte_credito",
+        data : {
+            credito_id : credito_id,
+            fecha : fecha
+        },
+        type : "post",
+        async : false,
+        success : function (rtn){
+            $(".vtabinfo").hide().eq(3).show().html(rtn);
+            $(".detalle-pago").show();
+        }
+    });
+}
+
+_credito.get_reporte2 = function(credito_id, fecha) {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    
+    $.ajax({
+        url : _credito.URL + "/x_reporte_credito",
+        data : {
+            credito_id : credito_id
+        },
+        type : "post",
+        async : false,
+        success : function (rtn){
+            $(".vtabinfo").hide().eq(3).show().html(rtn);
+            $(".detalle-pago").show();
+            
+             var sourceope = {
+                datatype: "json",
+                datafields: [
+                    { name: 'CONCEPTO', type: 'string' },
+                    { name: 'FECHA', type: 'date' },
+                    { name: 'VENCIDA', type: 'string' },
+                    { name: 'INT_COMPENSATORIO', type: 'number' },
+                    { name: 'INT_COMPENSATORIO_IVA', type: 'number' },
+                    { name: 'CUOTA', type: 'number' },
+                    { name: 'PAGO_MONTO', type: 'number' },
+                    { name: 'PAGO_FECHA', type: 'date' }
+                ],
+                url: _credito.URL + "/x_obtener_reporte",
+                type: 'post',
+                data:{
+                    credito_id : credito_id,
+                    fecha : fecha
+                },
+                async:false,
+                deleterow: function (rowid, commit) {
+                    commit(true);
+                }
+            };
+
+            var dataAdapterope = new $.jqx.dataAdapter(sourceope, {
+                    loadComplete: function (data) { 
+                        _creditos_lista = data;
+                    },            
+                    formatData: function (data) {
+                        data.name_startsWith = $("#searchField").val();
+                        return data;
+                    }
+                });
+
+            $("#jqxgrid-reporte").jqxGrid({
+                width: '98%',
+                groupable:false,
+                //source: source,
+                source: dataAdapterope,
+                theme: 'energyblue',
+                ready: function () {},
+                selectionmode: "multiplerows",
+                columnsresize: true,
+                showtoolbar: false,
+                localization: getLocalization(),
+                sortable: true,
+                filterable: true,
+                showfilterrow: false,
+                columns: [
+                    { text: 'CONCEPTO', datafield: 'CONCEPTO', width: '10%', groupable:false, filterable: false },
+                    { text: 'FECHA', datafield: 'FECHA', cellsformat: 'dd/MM/yyyy', width: '10%', hidden : false, filterable : false },
+                    { text: 'VENCIDA', datafield: 'VENCIDA', width: '10%', groupable:false, filterable: false },
+                    { text: 'INT_COMPENSATORIO', datafield: 'INT_COMPENSATORIO', width: '10%', groupable:false, filterable: false },
+                    { text: 'INT_COMPENSATORIO_IVA', datafield: 'INT_COMPENSATORIO_IVA', width: '10%', groupable:false, filterable: false },
+                    { text: 'CUOTA', datafield: 'CUOTA', width: '10%', groupable:false, filterable: false },
+                    { text: 'PAGO MONTO', datafield: 'PAGO_MONTO', width: '10%', groupable:false, filterable: false },
+                    { text: 'PAGO FECHA', datafield: 'PAGO_FECHA', cellsformat: 'dd/MM/yyyy', width: '10%', groupable:false, filterable: false }
+                ]
+            });
+        }
+    });
+};
+
+function expreport() {
+    
+    alert(_credito.URL + "s/x_getexportar");
+    $.ajax({
+        url : _credito.URL + "s/x_getexportar",
+        type : "post",
+        success : function(data){
+            $.unblockUI();
+            $.fancybox(
+                data,
+                {
+                    'padding'   :  20,
+                    'autoScale' :true,
+                    'scrolling' : 'no'
+                }
+            );
+
+            $(".div_exportar .toolbar li").hover(
+                function () {
+                    $(this).removeClass('li_sel').addClass('li_sel');
+                },
+                function () {
+                    $(this).removeClass('li_sel');
+                }
+            );
+
+            var url_e = $(".div_exportar ul").data('url_e');
+            $('.div_exportar .toolbar li').on('click', function(event){
+                event.preventDefault();
+                var tipo = $(this).data('acc');
+                switch(tipo) {
+                    case 'exc':
+                        $("#jqxgrid-reporte").jqxGrid('exportdata', 'xls', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'csv':
+                        $("#jqxgrid-reporte").jqxGrid('exportdata', 'csv', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'htm':
+                        $("#jqxgrid-reporte").jqxGrid('exportdata', 'html','ent_'+fGetNumUnico(), true, null, false, url_e);
+                        break;
+                    case 'xml':
+                        $("#jqxgrid-reporte").jqxGrid('exportdata', 'xml', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                }
+            });
+
+        }
+    });
+}
+
+function exportReporte() {
+    $("#reporteCredito table").table2excel({
+        exclude: ".noExl",
+        name: "Reporte de credito"
+      });
+}

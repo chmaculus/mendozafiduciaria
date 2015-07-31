@@ -34,6 +34,9 @@ function get_plugin(&$_plug){
     
     $_plug['jmenu']["css"] = array("css/jmenu.css");
     $_plug['jmenu']["js"] = array("js/jMenu.jquery.js");
+	
+    $_plug['table2excel']["css"] = array();
+    $_plug['table2excel']["js"] = array("jquery.table2excel.js");
     
 }
 

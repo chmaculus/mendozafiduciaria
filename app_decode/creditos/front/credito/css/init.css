@@ -699,3 +699,7 @@ input.large{
 
 table th{text-align:left}
 #ui-datepicker-div{z-index:20 !important}
+
+#reporteCredito table,#reporteCredito tr,#reporteCredito th,#reporteCredito td,#reporteCredito{border-collapse:collapse}
+#reporteCredito input{padding:5px;background-color:#4162a7;border-radius:8px;box-shadow:2px 2px 5px #222;font-weight:bold;color:#fff;width:70px}
+#reporteCredito td{border:1px solid #000 !important}

@@ -9,11 +9,18 @@
     
     <div class=" tb_sep"></div>
     <li class="tb_exportar" data-top='exportar'><div>Exportar</div></li>
-    <li class="tb_mora" data-top='moratorias'><div>Moratorias</div></li>
+    <li class="tb_mora" data-top='moratorias'><div>Reportes</div></li>
     <li class="tb_todas" data-top='cobros'><div>Cobros</div></li>
     <li class="tb_todas" data-top='eventos'><div>Eventos Multiples</div></li>
     <li class="tb_imp"><div>Importar</div></li>
     <li class="tb_lis" data-top='listado'><div>Listado</div></li>
+</ul>
+
+<ul id="btn-reportes">
+    <li onclick="reporte1()">Estadística de mora</li>
+    <li onclick="reporte2()">Notificaciones</li>
+    <li onclick="reporte3()">Detalle de deuda</li>
+    <li onclick="reporte4()">Proyección de cobranzas</li>
 </ul>
 
 <div id="msgs">

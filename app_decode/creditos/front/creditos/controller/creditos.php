@@ -241,16 +241,25 @@ class creditos extends main_controller{
         
     }
     
-    function fn_resumen_moratorias() {
+    function resumen_moratorias() {
         $reporte = $this->mod->getReporteCreditos();
         
+        $_cantidad_creditos = 0;
+        $_cantidad_creditos_mora = 0;
+        $_total_creditos = 0;
+        $_montos_vencidos = 0;
+        $_monto_mora = 0;
+        
         $arr_reporte = array();
+        
         if ($reporte) {
-            $arr = array();
             foreach ($reporte as $item) {
+                $arr = array();
                 if (!$item['DESEMBOLSO'] && !$item['CUOTAS']) {
                     continue;
                 }
+                
+                ++$_cantidad_creditos;
                 
                 $_moratoria = 0;
                 $total_moratoria = 0;
@@ -259,6 +268,8 @@ class creditos extends main_controller{
                 $cuotas_mora = 0;
                 $capital_pagado = 0;
                 $total_credito = $item['MONTO_CREDITO'];
+                $_total_creditos += $total_credito;
+                $monto_mora = 0;
                 
                 if ($item['CUOTAS']) {
                     $cant_cuotas = count($item['CUOTAS']);
@@ -268,8 +279,18 @@ class creditos extends main_controller{
                 $cobranzas = 0;
 
                 if ($item['PAGOS']) {
-
+                    $arr_pagos = array();
+                    
                     foreach ($item['PAGOS'] as $v) {
+                        if (!isset($arr_pagos[$v['CUOTAS_RESTANTES']])) {
+                            $arr_pagos[$v['CUOTAS_RESTANTES']] = array(
+                                'MONTO' => 0,
+                                'TIENE_MORA' => 0
+                            );
+                        }
+                        
+                        $arr_pagos[$v['CUOTAS_RESTANTES']]['MONTO'] += $v['MONTO'];
+                        
                         $cobranzas += $v['MONTO'];
                         switch ($v['ID_TIPO']) {
                             case PAGO_IVA_MORATORIO:
@@ -279,15 +300,23 @@ class creditos extends main_controller{
                             case PAGO_MORATORIO:
                                 $_moratoria += $v['MONTO'];
                                 $total_moratoria += $v['MONTO'];
-                                ++$cuotas_mora;
+                                $arr_pagos[$v['CUOTAS_RESTANTES']]['TIENE_MORA'] = 1;
+                                //++$cuotas_mora;
                                 break;
                             case PAGO_IVA_PUNITORIO:
                             case PAGO_PUNITORIO:
                                 $total_punitorio += $v['MONTO'];
                                 break;
-                            case 7:
+                            case PAGO_CAPITAL:
                                 $capital_pagado += $v['MONTO'];
                                 break;
+                        }
+                    }
+                    
+                    foreach ($arr_pagos as $arr_pg) {
+                        if ($arr_pg['TIENE_MORA']) {
+                            ++$cuotas_mora;
+                            $monto_mora += $arr_pg['MONTO'];
                         }
                     }
                 }
@@ -301,21 +330,127 @@ class creditos extends main_controller{
                     
                 }
                 
+                if ($_moratoria) {
+                    ++$_cantidad_creditos_mora;
+                }
+                
                 $arr['DEUDOR'] = $item['RAZON_SOCIAL'];
+                $arr['CUIT'] = $item['CUIT'];
                 $arr['ID'] = $item['ID'];
                 $arr['DIRECCION'] = $item['DIRECCION'];
                 $arr['PROVINCIA'] = $item['PROVINCIA'];
                 $arr['LOCALIDAD'] = $item['LOCALIDAD'];
-                $arr['FECHA_DESEMB'] = $item['DESEMBOLSO'] ? date('d/m/Y', $item['DESEMBOLSO'][0]['FECHA']) : '';
+                $arr['FECHA_DESEMB'] = $item['DESEMBOLSO'] ? date('Y-m-d', $item['DESEMBOLSO'][0]['FECHA']) : '';
                 $arr['MONTO_CREDITO'] = $item['MONTO_CREDITO'];
                 $arr['SALDO_CAPITAL'] = $_moratoria ? 'Mora' : 'Al Día';
                 $arr['SITUACION'] = $_moratoria ? 'Mora' : 'Al Día';
-                $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ",", ".");
-                $arr['COBRANZAS'] = number_format($cobranzas, 2, ",", ".");
+                $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
+                $arr['COBRANZAS'] = number_format($cobranzas, 2, ".", "");
                 $arr['CANTIDAD_CUOTAS_MORAS'] = $cuotas_mora;
-                $arr['MONTO_MORA'] = number_format($total_credito + $total_moratoria + $total_punitorio, 2, ",", ".");
-                $arr['PORCENTAJE_MORA'] = number_format($total_moratoria, 2, ",", ".");
+                $arr['MONTO_VENCIDO'] = number_format($total_credito + $total_moratoria + $total_punitorio, 2, ".", "");
+                $arr['MONTO_MORA'] = number_format($total_credito + $total_moratoria + $total_punitorio - $cobranzas, 2, ".", "");
+                $arr['PORCENTAJE_MORA'] = number_format($cuotas_mora * 100 / $cant_cuotas, 2, ",", ".") . "%";
                 $arr['ESTADO'] = '?';
+                
+                $arr_reporte[] = $arr;
+                
+                $_monto_mora += $monto_mora;
+                $_montos_vencidos += $total_credito + $total_moratoria + $total_punitorio;
+            }
+            
+        }
+        
+        $_SESSION['cantidad_creditos'] = $_cantidad_creditos;
+        $_SESSION['cantidad_creditos_mora'] = $_cantidad_creditos_mora;
+        $_SESSION['total_creditos'] = $_total_creditos;
+        $_SESSION['montos_vencidos'] = $_montos_vencidos;
+        $_SESSION['montos_mora'] = $_monto_mora;
+        
+        echo trim(json_encode($arr_reporte));
+        die();
+    }
+    
+    function fn_resumen_moratorias() {
+        $res_mor = array();
+        $res_mor[] = array(
+            'TOTAL_CREDITOS' => $_SESSION['cantidad_creditos'],
+            'MONTOS_VENCIDOS' => "",
+            'TOTAL_CREDITOS_MORA' => $_SESSION['cantidad_creditos_mora'],
+            'CREDITOS_EFICIENCIA' => number_format($_SESSION['cantidad_creditos_mora'] / $_SESSION['cantidad_creditos'] * 100, 2) . "%"
+                );
+        
+        $res_mor[] = array(
+            'TOTAL_CREDITOS' => number_format($_SESSION['total_creditos'], 2, ",", "."),
+            'MONTOS_VENCIDOS' => number_format($_SESSION['montos_vencidos'], 2, ",", "."),
+            'TOTAL_CREDITOS_MORA' => number_format($_SESSION['montos_mora'], 2, ",", "."),
+            'CREDITOS_EFICIENCIA' => number_format($_SESSION['montos_mora']  / $_SESSION['total_creditos'] * 100, 2) . "%"
+                );
+        
+        echo trim(json_encode($res_mor));
+        die();
+    }
+    
+    function resumen_moratorias2() {
+        $reporte = $this->mod->getReporteCreditos();
+        
+        $arr_reporte = array();
+        
+        if ($reporte) {
+            foreach ($reporte as $item) {
+                $arr = array();
+                
+                $hoy = strtotime(date('Y-m-d'));
+                $nro_cuota_venc = 0;
+                $fecha_venc = 0;
+                $monto_cuota;
+                $capital_pagado = 0;
+                $fecha_ult_pago = 0;
+                
+                
+                
+                if ($item['PAGOS']) {
+                    foreach ($item['PAGOS'] as $v) {
+                        if ($v['ID_TIPO'] == PAGO_CAPITAL) {
+                            $capital_pagado += $v['MONTO'];
+                        }
+                    }
+                    
+                    $fecha_ult_pago = $item['PAGOS'][count($item['PAGOS'])-1]['FECHA'];
+                    $cuotas_restantes = $item['PAGOS'][count($item['PAGOS'])-1]['CUOTAS_RESTANTES'] - 1;
+                    
+                    
+                    if ($item['CUOTAS']) {
+                        foreach ($item['CUOTAS'] as $ct) {
+                            if ($ct['CUOTAS_RESTANTES'] >= $cuotas_restantes) {
+                                $fecha_venc = $ct['FECHA_VENCIMIENTO'];
+                                ++$nro_cuota_venc;
+                                $monto_cuota = $ct['INT_COMPENSATORIO'] + $ct['INT_COMPENSATORIO_IVA'] + $ct['CAPITAL_CUOTA'];
+                            }
+                        }
+                    }
+                }
+                
+                if ($item['CUOTAS'] && $fecha_venc == 0 && $nro_cuota_venc == 0) { //si no hay pagos
+                    $ct = $item['CUOTAS'][0];
+                    $fecha_venc = $ct['FECHA_VENCIMIENTO'];
+                    ++$nro_cuota_venc;
+                    $monto_cuota = $ct['INT_COMPENSATORIO'] + $ct['INT_COMPENSATORIO_IVA'] + $ct['CAPITAL_CUOTA'];
+                }
+                
+                $arr['DEUDOR'] = $item['RAZON_SOCIAL'];
+                $arr['CUIT'] = $item['CUIT'];
+                $arr['ID'] = $item['ID'];
+                $arr['FIDEICOMISO'] = $item['FIDEICOMISO'];
+                $arr['CUOTA_VENCE'] = $nro_cuota_venc;
+                $arr['FECHA_VENCE'] = $fecha_venc ? date('Y-m-d', $fecha_venc) : '';
+                $arr['MONTO_CUOTA'] = number_format($monto_cuota, 2, ".", "");
+                $arr['SALDO_CAPITAL_MORA'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
+                $arr['ESTADO'] = '';
+                $arr['FECHA_PAGO'] = $fecha_ult_pago ? date('Y-m-d', $fecha_ult_pago) : '';
+                        
+                $arr['DIRECCION'] = $item['DIRECCION'];
+                $arr['PROVINCIA'] = $item['PROVINCIA'];
+                $arr['LOCALIDAD'] = $item['LOCALIDAD'];
                 
                 
                 $arr_reporte[] = $arr;

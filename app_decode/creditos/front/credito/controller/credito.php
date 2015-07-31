@@ -14,7 +14,7 @@ class credito extends main_controller{
         $this->setCss( array("init.css","informes.css","informes_cuota.css") );
         //$this->setJs( array( "init.js",'forms.js') );
         $this->setJs( array( "creditos.js") );
-        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid","jmenu"));
+        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid","jmenu","table2excel"));
         
         $id_permiso = 12;
         $arr_permiso_mod = isset($_SESSION["USER_PERMISOS"][$id_permiso])?$_SESSION["USER_PERMISOS"][$id_permiso]:0;
@@ -268,6 +268,114 @@ class credito extends main_controller{
         $this->mod->set_credito_active($credito_id);
         $this->mod->set_version_active();
         $this->mod->borrar_credito();
+    }
+    
+    function x_reporte_credito() {
+        $this->setJs( array( "excelexport.js") );
+        
+        $credito_id = $_POST['credito_id'];
+        $fecha = isset($_POST['fecha']) ? $_POST['fecha'] : time();
+        
+        $this->mod->set_credito_active($credito_id);
+        $version = $this->mod->set_version_active();
+
+        $info = $this->mod->get_datos_credito();
+        
+        resetlog();
+        
+        $this->mod->set_fecha_actual($fecha);
+        $this->mod->set_fecha_calculo();
+        $this->mod->renew_datos();
+        $this->mod->save_last_state(false);
+            
+        $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+        
+        $this->mod->generar_evento( array(), true, $fecha);
+        
+        $ret_deuda= $this->mod->get_deuda($fecha, true );
+        
+        $arra_res = array();
+        
+        $total_comp = 0;
+        $total_iva_comp = 0;
+        $capital_cuota = 0;
+        $total_cuota = 0;
+        $pago_total = 0;
+        $saldo_cuota = 0;
+        $total_int_mor_pun = 0;
+        $total_int_mor_pun_iva = 0;
+        $total_saldo_mora = 0;
+        $total_saldo = 0;
+        
+        $desembolsos = $this->mod->get_desembolsos();
+        
+        if (isset($ret_deuda['cuotas']) && $ret_deuda['cuotas']) {
+            $arr_pagos = $this->mod->get_pagos();
+            
+            foreach ($ret_deuda['cuotas'] as $k => $item) {
+                $cuota = array();
+                $fecha_comp = isset($arr_pagos[$k]['FECHA2']) ? $arr_pagos[$k]['FECHA2'] : strtotime(date('Y-m-d'));
+                
+                $cuota['CONCEPTO'] = ($k+1) . "º cuota";
+                $cuota['SALDO'] = number_format($item['_INFO']['SALDO_CAPITAL'], 2, ",", "");
+                $cuota['FECHA'] = date('d/m/Y', $item['_INFO']['HASTA']);
+                $cuota['VENCIDA'] = ($item['_INFO']['HASTA'] < $fecha_comp) ? 'SI' : 'NO';
+                $cuota['INT_COMPENSATORIO'] = number_format($item['COMPENSATORIO']['TOTAL'], 2, ",", "");
+                $total_comp += $item['COMPENSATORIO']['TOTAL'];
+                $cuota['INT_COMPENSATORIO_IVA'] = number_format($item['IVA_COMPENSATORIO']['TOTAL'], 2, ",", "");
+                $total_iva_comp += $item['IVA_COMPENSATORIO']['TOTAL'];
+                $pagos = $item['CAPITAL']['TOTAL'] + $item['COMPENSATORIO']['TOTAL'] + $item['IVA_COMPENSATORIO']['TOTAL'];
+                $total_cuota += $pagos;
+                $cuota['CUOTA'] = number_format($pagos, 2, ",", "");
+                
+                $pagos += $item['PUNITORIO']['TOTAL'] + $item['IVA_PUNITORIO']['TOTAL'] + $item['MORATORIO']['TOTAL'] + $item['IVA_MORATORIO']['TOTAL'];
+                $cuota['SALDO_MORA'] = number_format($pagos, 2, ",", "");
+                $total_saldo_mora += $pagos;
+                
+                $_saldo = $item['CAPITAL']['SALDO'] + $item['COMPENSATORIO']['SALDO'] + $item['IVA_COMPENSATORIO']['SALDO'];
+                $_saldo += $item['PUNITORIO']['SALDO'] + $item['IVA_PUNITORIO']['SALDO'] + $item['MORATORIO']['SALDO'] + $item['IVA_MORATORIO']['SALDO'];
+                $_saldo = $_saldo < 0.01 ? 0 : $_saldo;
+                $total_saldo += $_saldo;
+                $cuota['SALDO_CUOTA'] = number_format($_saldo, 2, ",", "");
+                
+                
+                
+                if (isset($arr_pagos[$k])) {
+                    $cuota['PAGO_MONTO'] = number_format($arr_pagos[$k]['MONTO'], 2, ",", "");
+                    $cuota['PAGO_FECHA'] = date('d/m/Y', $arr_pagos[$k]['FECHA2']);
+                    $pago_total += $arr_pagos[$k]['MONTO'];
+                }
+                
+                $cuota['INT_MORA_PUN'] = $item['PUNITORIO']['TOTAL'] + $item['MORATORIO']['TOTAL'];
+                $total_int_mor_pun += $cuota['INT_MORA_PUN'];
+                $cuota['DIAS_MORAS'] = $cuota['INT_MORA_PUN'] > 0.01 ? (int) $item['DIAS_MORAS'] : '';
+                $cuota['INT_MORA_PUN'] = number_format($cuota['INT_MORA_PUN'], 2, ",", "");
+                
+                $cuota['INT_MORA_PUN_IVA'] = $item['IVA_PUNITORIO']['TOTAL'] + $item['IVA_MORATORIO']['TOTAL'];
+                $total_int_mor_pun_iva += $cuota['INT_MORA_PUN_IVA'];
+                $cuota['INT_MORA_PUN_IVA'] = number_format($cuota['INT_MORA_PUN_IVA'], 2, ",", "");
+                
+                $arra_res[] = $cuota;
+            }
+            
+            $capital_cuota = $ret_deuda['cuotas'][0]['_INFO']['SALDO_CAPITAL'];
+        }
+        
+        $totales = array();
+        $totales['INT_COMPENSATORIO'] = number_format($total_comp, 2, ",", "");
+        $totales['INT_COMPENSATORIO_IVA'] = number_format($total_iva_comp, 2, ",", "");
+        $totales['CUOTA'] = number_format($total_cuota, 2, ",", "");
+        $totales['PAGO_MONTO'] = number_format($pago_total, 2, ",", "");
+        $totales['SALDO_CUOTA'] = number_format($saldo_cuota, 2, ",", "");
+        $totales['INT_MORA_PUN'] = number_format($total_int_mor_pun, 2, ",", "");
+        $totales['INT_MORA_PUN_IVA'] = number_format($total_int_mor_pun_iva, 2, ",", "");
+        $totales['SALDO_MORA'] = number_format($total_saldo_mora, 2, ",", "");
+        $totales['SALDO_CUOTA'] = number_format($total_saldo, 2, ",", "");
+        
+
+        $ret_deuda['fecha_actual'] = $fecha;
+        
+        echo $this->view("informes/reporte_credito", array('info' => $info, 'array_credito' => $arra_res, 'totales_credito' => $totales, "desembolsos" => $desembolsos));
     }
 
 }

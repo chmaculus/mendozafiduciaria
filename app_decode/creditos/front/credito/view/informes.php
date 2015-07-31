@@ -32,6 +32,7 @@
             <li class="garantia etapa_ready"><span>Cobranzas</span></li>
             <li class="gastos etapa_ready"><span>Gastos</span></li>
             <li class="tasas etapa_ready"><span>Tasas</span></li>
+            <li class="reporte etapa_ready"><span>Reporte</span></li>
         </ul>
 
         <div class="vtabinfo" >

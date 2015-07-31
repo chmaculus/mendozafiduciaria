@@ -767,4 +767,7 @@ iframe{
 .tb_mora{
     background: url('../../../../../general/css/images/32x32/moratorias.jpg') no-repeat 50% 6px !important;
 }
-#jqxgrid2{margin-left:10px}
+#jqxgrid2{margin-left:15px;height:76px !important}
+#btn-reportes{display:none;list-style:none;clear:both;margin:0 0 15px 15px}
+#btn-reportes li{display:inline-block;margin-right:10px;padding:3px 8px;background-color:#4162a7;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;box-shadow:2px 2px 5px #222;position:relative;}
+#btn-reportes li:active{top:2px;left:2px;opacity:0.8}
