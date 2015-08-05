@@ -389,8 +389,8 @@ class credito_informes_model extends credito_model {
         return $tasas;
     }
     
-    public function getReporteCreditos() {
-        $_creditos = $this->get_creditos_reporte();
+    public function getReporteCreditos($ffid, $fdesde, $fhasta) {
+        $_creditos = $this->get_creditos_reporte($ffid, $fdesde, $fhasta);
         
         if ($_creditos) {
             $creditos_moratorios = array();
@@ -407,6 +407,11 @@ class credito_informes_model extends credito_model {
         }
         
         return FALSE;
+    }
+    
+    public function get_fideicomisos() {
+        $this->_db->select('ID, NOMBRE');
+        return $this->_db->get_tabla("fid_fideicomiso", "estado=1");
     }
     /*
     public function getCreditosMoratorios() {

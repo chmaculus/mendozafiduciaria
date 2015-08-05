@@ -38,7 +38,8 @@ $(document).ready(function(){
     semmilla = fGetNumUnico();
     mydata = '';
     
-
+    $("#ffid").chosen();
+    
     if (_creditos._permiso_modificacion==="1"){
         console.log("lleg1");
         $("#liModificacion").show();
@@ -227,9 +228,7 @@ function get_nuevo_credito(){
 
 
 function init_grid(id_usuario,tipo){
-    if ($("#jqxgrid2").length > 0) {
-        $("#jqxgrid2").remove();
-    }
+    remJGrid2();
     id_usuario = id_usuario || '';
     tipo = tipo || '';
         
@@ -328,6 +327,7 @@ function init_grid(id_usuario,tipo){
 }
 
 function reporte1() {
+    remJGrid2();
     
     var sourceope ={
         datatype: "json",
@@ -351,8 +351,11 @@ function reporte1() {
         ],
         url: 'creditos/front/creditos/resumen_moratorias/',
         data:{
-            accion  :   "getCreditos"
+            ffid: $("#ffid").val(),
+            fdesde: $("#fdesde").val(),
+            fhasta: $("#fhasta").val()
         },
+        type:'post',
         async:false,
         deleterow: function (rowid, commit) {
             commit(true);
@@ -407,9 +410,6 @@ function reporte1() {
     });
     
     $('#jqxgrid').show();
-    if ($("#jqxgrid2").length > 0) {
-        $("#jqxgrid2").remove();
-    }
     $("#jqxgrid").before('<div id="jqxgrid2"></div>');
     reporte1b();
 }
@@ -427,8 +427,11 @@ function reporte1b() {
         ],
         url: 'creditos/front/creditos/fn_resumen_moratorias/',
         data:{
-            accion  :   "getCreditos"
+            ffid: $("#ffid").val(),
+            fdesde: $("#fdesde").val(),
+            fhasta: $("#fhasta").val()
         },
+        type:'post',
         async:false,
         deleterow: function (rowid, commit) {
             commit(true);
@@ -475,7 +478,7 @@ function reporte1b() {
 
 
 function reporte2() {
-    
+    remJGrid2();
     var sourceope ={
         datatype: "json",
         datafields: [
@@ -495,8 +498,11 @@ function reporte2() {
         ],
         url: 'creditos/front/creditos/resumen_moratorias2/',
         data:{
-            accion  :   "getCreditos"
+            ffid: $("#ffid").val(),
+            fdesde: $("#fdesde").val(),
+            fhasta: $("#fhasta").val()
         },
+        type:'post',
         async:false,
         deleterow: function (rowid, commit) {
             commit(true);
@@ -551,59 +557,20 @@ function reporte2() {
 }
 
 function reporte3() {
-    
-    var sourceope ={
-        datatype: "json",
-        datafields: [
-            { name: 'DEUDOR', type: 'string' },
-            { name: 'CUIT', type: 'string' },
-            { name: 'ID', type: 'number' }
-        ],
-        url: 'creditos/front/creditos/resumen_moratorias3/',
-        data:{
-            accion  :   "getCreditos"
+    remJGrid2();
+    $.ajax({
+        url : _creditos.URL + "/resumen_moratorias3/",
+        data : {
+            ffid: $("#ffid").val(),
+            fdesde: $("#fdesde").val(),
+            fhasta: $("#fhasta").val()
         },
-        async:false,
-        deleterow: function (rowid, commit) {
-            commit(true);
+        type : "post",
+        success : function(rtn){
+            $("#jqxgrid").hide();
+            $("#wpopup").html(rtn).show();
         }
-    };
-    
-    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-        {
-            loadComplete: function (data) { 
-                _creditos_lista = data;
-            },            
-            formatData: function (data) {
-                data.name_startsWith = $("#searchField").val();
-                return data;
-            }
-        }
-    );
-			
-    $("#jqxgrid").jqxGrid(
-    {
-        width: '98%',
-        groupable:false,
-        //source: source,
-        source: dataAdapterope,
-        theme: 'energyblue',
-        ready: function (data) {},
-        selectionmode: "multiplerows",
-        columnsresize: true,
-        showtoolbar: false,
-        localization: getLocalization(),
-        sortable: true,
-        filterable: true,
-        showfilterrow: false,
-        columns: [
-            { text: 'DEUDOR', datafield: 'DEUDOR', width: '10%', groupable:false, filterable: false },
-            { text: 'CUIT', datafield: 'CUIT', width: '10%', groupable:false, filterable: false },
-            { text: 'CREDITO', datafield: 'ID', width: '5%', hidden : false, filterable : false }
-        ]
     });
-    
-    $('#jqxgrid').show();
 }
 
 function get_eventos(){
@@ -825,6 +792,11 @@ function exportar() {
                 switch(tipo) {
                     case 'exc':
                         $("#jqxgrid").jqxGrid('exportdata', 'xls', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                        if ($("#jqxgrid2").length>0) {
+                            setTimeout(function () {
+                                $("#jqxgrid2").jqxGrid('exportdata', 'xls', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                            }, 1500);
+                        }
                         break;
                     case 'csv':
                         $("#jqxgrid").jqxGrid('exportdata', 'csv', 'ent_'+fGetNumUnico(), true, null, false, url_e);
@@ -843,12 +815,26 @@ function exportar() {
 
 
 function get_moratorias() {
-    $('#jqxgrid').hide();
+    $('#wpopup').hide();
     $('#liModificacion,#liOpcion,.tb_todas,.tb_del').hide();
-    $('.tb_exportar,#btn-reportes').show();
+    $('.tb_exportar,#mn-reportes').show();
+    
+    $("#fdesde,#fhasta").datepicker({
+        changeMonth: true,
+        changeYear: true
+    });
+    $("#fdesde,#fhasta").datepicker("option", "dateFormat", 'dd-mm-yy');
+
     $.unblockUI();
 }
 
 function volver_creditos() {
     location.href=$(".tb_lis").data("loc");
+}
+
+function remJGrid2() {
+    $("#wpopup").html('');
+    if ($("#jqxgrid2").length > 0) {
+        $("#jqxgrid2").remove();
+    }
 }

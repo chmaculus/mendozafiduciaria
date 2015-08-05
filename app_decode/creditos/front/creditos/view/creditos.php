@@ -15,13 +15,28 @@
     <li class="tb_imp"><div>Importar</div></li>
     <li class="tb_lis" data-top='listado'><div>Listado</div></li>
 </ul>
-
-<ul id="btn-reportes">
-    <li onclick="reporte1()">Estadística de mora</li>
-    <li onclick="reporte2()">Notificaciones</li>
-    <li onclick="reporte3()">Detalle de deuda</li>
-    <li onclick="reporte4()">Proyección de cobranzas</li>
-</ul>
+<div id="mn-reportes">
+    <table style="width:100%;z-index:1999;position:relative">
+        <tr>
+            <td><label>Fideicomisos: </label>
+                <select id="ffid" multiple="multiple" size="1">
+                    <option value="">Seleccione</option>
+                    <?php foreach($fideicomisos as $it) { ?>
+                    <option value="<?=$it['ID'];?>"><?=$it['NOMBRE'];?></option>
+                    <?php } ?>
+                </select>
+            </td>
+            <td><label>Fecha desde: </label><input type="text" class="fecha" id="fdesde" /></td>
+            <td><label>Fecha hasta: </label><input type="text" class="fecha" id="fhasta" /></td>
+            <td></td>
+        </tr>
+    </table>
+    <ul id="btn-reportes">
+        <li onclick="reporte1()">Estadística de mora</li>
+        <li onclick="reporte2()">Notificaciones</li>
+        <li onclick="reporte3()">Proyección de cobranzas</li>
+    </ul>
+</div>
 
 <div id="msgs">
     <?php

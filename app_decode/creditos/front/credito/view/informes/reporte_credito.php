@@ -12,7 +12,7 @@
             <td style="border:0 !important"></td>
             <td colspan="3" style="border:0.1pt solid #000;background-color:#fece2f"><?=$info['post_str']?></td>
             <td style="border:0 !important"></td><td style="border:0 !important"></td><td style="border:0 !important"></td>
-            <td style="border:0 !important"><?=$info['INTERES_VTO']?></td>
+            <td style="border:0 !important"><?=date('d/m/Y', strtotime($info['INTERES_VTO']))?></td>
             <td style="border:0 !important"></td>
             <td style="border:0.1pt solid #000;">Tasa Moratoria:</td>
             <td style="border:0.1pt solid #000;"><?=str_replace(".", ",", $info['T_MORATORIO']) . "%"?></td>
@@ -30,13 +30,13 @@
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Saldo</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Fecha</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Vencida</th>
-            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int. Compensatorios</th>
+            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int. Compens.</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">IVA</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Cuota</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Pago Monto</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Pago Fecha</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Días Mora</th>
-            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int.Moratorios y Punitorios</th>
+            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int.Morat. y Pun.</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">IVA</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Saldo Mora</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Saldo Cancelación</th>

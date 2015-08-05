@@ -78,6 +78,7 @@ class creditos extends main_controller{
         $data['hora_mostrar'] = current(explode(' ',$data['hora_actual']));
         $data['hora_bd'] = $data['hora_actual'];
         $data['permisos'] = $arr_permiso_mod;
+        $data['fideicomisos'] = $this->mod->get_fideicomisos();
         
         $arr_campos = array("DENOMINACION");
         $this->_js_array['_campos'] = array();
@@ -242,7 +243,8 @@ class creditos extends main_controller{
     }
     
     function resumen_moratorias() {
-        $reporte = $this->mod->getReporteCreditos();
+        $filtros = $this->_getFiltrosReporte();
+        $reporte = $this->mod->getReporteCreditos($filtros[0], $filtros[1], $filtros[2]);
         
         $_cantidad_creditos = 0;
         $_cantidad_creditos_mora = 0;
@@ -391,7 +393,8 @@ class creditos extends main_controller{
     }
     
     function resumen_moratorias2() {
-        $reporte = $this->mod->getReporteCreditos();
+        $filtros = $this->_getFiltrosReporte();
+        $reporte = $this->mod->getReporteCreditos($filtros[0], $filtros[1], $filtros[2]);
         
         $arr_reporte = array();
         
@@ -460,6 +463,124 @@ class creditos extends main_controller{
         
         echo trim(json_encode($arr_reporte));
         die();
+    }
+    
+    function resumen_moratorias3() {
+        $filtros = $this->_getFiltrosReporte();
+        $reporte = $this->mod->getReporteCreditos($filtros[0], $filtros[1], $filtros[2]);
+        
+        $arr_reporte = array();
+        
+        if ($reporte) {
+            foreach ($reporte as $item) {
+                $monto_mora = 0;
+                $cuotas_mora = 0;
+                $cant_cuotas = 0;
+                $cuotas_cobradas = 0;
+                $cobrado = 0;
+                
+                if (isset($item['DESEMBOLSO'][0]['CUOTAS_RESTANTES'])) {
+                    $cant_cuotas = $item['DESEMBOLSO'][0]['CUOTAS_RESTANTES'];
+                } elseif ($item['CUOTAS'][0]['CUOTAS_RESTANTES']) {
+                    $cant_cuotas = $item['PAGOS'][0]['CUOTAS_RESTANTES'];
+                } elseif ($item['PAGOS'][0]['CUOTAS_RESTANTES']) {
+                    $cant_cuotas = $item['PAGOS'][0]['CUOTAS_RESTANTES'];
+                }
+                
+                if ($item['PAGOS']) {
+                    $cuotas_cobradas = $cant_cuotas - $item['PAGOS'][count($item['PAGOS'])-1]['CUOTAS_RESTANTES'] - 1;
+                    
+                    $arr_pagos = array();
+                    
+                    foreach ($item['PAGOS'] as $v) {
+                        $cobrado += $v['MONTO'];
+                        if (!isset($arr_pagos[$v['CUOTAS_RESTANTES']])) {
+                            $arr_pagos[$v['CUOTAS_RESTANTES']] = array(
+                                'MONTO' => 0,
+                                'TIENE_MORA' => 0
+                            );
+                        }
+
+                        $arr_pagos[$v['CUOTAS_RESTANTES']]['MONTO'] += $v['MONTO'];
+
+                        
+                        switch ($v['ID_TIPO']) {
+                            case PAGO_MORATORIO:
+                                $arr_pagos[$v['CUOTAS_RESTANTES']]['TIENE_MORA'] = 1;
+                                //++$cuotas_mora;
+                                break;
+                        }
+                    }
+
+                    foreach ($arr_pagos as $arr_pg) {
+                        if ($arr_pg['TIENE_MORA']) {
+                            ++$cuotas_mora;
+                            $monto_mora += $arr_pg['MONTO'];
+                        }
+                    }
+
+                    foreach ($arr_pagos as $arr_pg) {
+                        if ($arr_pg['TIENE_MORA']) {
+                            ++$cuotas_mora;
+                            $monto_mora += $arr_pg['MONTO'];
+                        }
+                    }
+                }
+
+                if (isset($arr_reporte[$item['ID_FIDEICOMISO']])) {
+                    $arr = $arr_reporte[$item['ID_FIDEICOMISO']];
+                    $arr['MONTO_A_COBRAR'] += $item['MONTO_CREDITO'];
+                    $arr['CANT_CUOTAS'] += $cant_cuotas;
+                    $arr['COBRADO'] += $cobrado;
+                    $arr['CANT_CUOTAS_COBRADAS'] += $cuotas_cobradas;
+                    $arr['MONTO_EN_MORA'] += $monto_mora;
+                    $arr['CUOTAS_EN_MORA'] += $cuotas_mora;
+                } else {
+                    $arr = array();
+                    $arr['NOMBRE'] = $item['FIDEICOMISO'];
+                    $arr['MONTO_A_COBRAR'] = $item['MONTO_CREDITO'];
+                    $arr['COBRADO'] = $cobrado;
+                    $arr['CANT_CUOTAS_COBRADAS'] = $cuotas_cobradas;
+                    $arr['CANT_CUOTAS'] = $cant_cuotas;
+                    $arr['MONTO_EN_MORA'] = $monto_mora;
+                    $arr['CUOTAS_EN_MORA'] = $cuotas_mora;
+                }
+                
+                $arr_reporte[$item['ID_FIDEICOMISO']] = $arr;
+            }
+            
+        }
+        
+        echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte));
+    }
+    
+    
+    public function _getFiltrosReporte() {
+        $ffid = $fdesde = $fhasta = FALSE;
+        
+        if(isset($_POST['ffid'])) {
+            $ffid = $_POST['ffid'];
+        }
+        
+        if(isset($_POST['fdesde']) && $_POST['fdesde']) {
+            $fdesde = $_POST['fdesde'];
+            list($d, $m, $y) = explode("-", $fdesde);
+            $fdesde = mktime(0, 0, 0, $m, $d, $y);
+        }
+        
+        if(isset($_POST['fhasta']) && $_POST['fhasta']) {
+            $fhasta = $_POST['fhasta'];
+            list($d, $m, $y) = explode("-", $fhasta);
+            $fhasta = mktime(0, 0, 0, $m, $d, $y);
+        }
+        
+        if ($fdesde && $fhasta && $fdesde>$fhasta) {
+            $aux = $fdesde;
+            $fdesde = $fhasta;
+            $fhasta = $aux;
+        }
+        
+        return array($ffid, $fdesde, $fhasta);
     }
 
 }

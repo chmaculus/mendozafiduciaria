@@ -2948,10 +2948,24 @@ ORDER BY T1.lvl DESC');
         return FALSE;
     }
     
-    function get_creditos_reporte() {
-        $this->_db->select('c.ID, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
+    function get_creditos_reporte($ffid=FALSE, $fdesde=FALSE, $fhasta=FALSE) {
+        $sql = "";
+        if ($ffid && is_array($ffid) && count($ffid)) {
+            $sql .= " AND ID_FIDEICOMISO  IN (" . implode(",", $ffid) . ")";
+        }
+        
+        if ($fdesde || $fhasta) {
+            if ($fdesde) {
+                $sql .= " AND CAPITAL_VTO >= '" . date('Y-m-d', $fdesde) . "'";
+            }
+            if ($fhasta) {
+                $sql .= " AND CAPITAL_VTO <= '" . date('Y-m-d', $fhasta) ." 23:59:59'";
+            }
+        }
+        
+        $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
-        $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
+        $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO . $sql);
         $this->_db->join("fid_fideicomiso f", "f.ID=c.ID_FIDEICOMISO", "left");
         $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
         $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
