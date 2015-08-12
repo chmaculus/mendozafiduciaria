@@ -19,8 +19,7 @@
     <table style="width:100%;z-index:1999;position:relative">
         <tr>
             <td><label>Fideicomisos: </label>
-                <select id="ffid" multiple="multiple" size="1">
-                    <option value="">Seleccione</option>
+                <select id="ffid" multiple="multiple" size="1" data-placeholder="Seleccione una opción">
                     <?php foreach($fideicomisos as $it) { ?>
                     <option value="<?=$it['ID'];?>"><?=$it['NOMBRE'];?></option>
                     <?php } ?>

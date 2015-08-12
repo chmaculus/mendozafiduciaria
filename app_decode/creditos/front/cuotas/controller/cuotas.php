@@ -305,7 +305,9 @@ class cuotas extends main_controller{
         $ret = $this->mod->generar_evento( $data, true, $fecha);
         
         //agrego el registro desembolso a la db 
-        $cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
+        //$cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
+        $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
+        
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
         
@@ -1169,18 +1171,29 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     if (!$credito_id) {
                         
                         //voy a buscar si anteriormente se habían cargado créditos y buscar por cuit del postulante
-                        $cuit = trim(str_replace("-", "", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue()));
+                        $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
+                        
                         if (!$cuit) {
                             break;
                         }
-                        if (isset($_SESSION['creditos_importados'][$cuit]) && $_SESSION['creditos_importados'][$cuit]) {
-                            $credito_id = $_SESSION['creditos_importados'][$cuit];
-                            $cuit_creditos[$credito_id] = $cuit;
+                        
+                        $cuit = explode("\n", $cuit);
+                        
+                        $_cuits = array();
+                        foreach ($cuit as $c) {
+                            $_cuits[] = trim(str_replace("-", "", trim($c)));
+                        }
+                        
+                        $_cuits = implode("/", $_cuits);
+                        
+                        if (isset($_SESSION['creditos_importados'][$_cuits]) && $_SESSION['creditos_importados'][$_cuits]) {
+                            $credito_id = $_SESSION['creditos_importados'][$_cuits];
+                            $cuit_creditos[$credito_id] = $_cuits;
                         } else {
                             //busco el cliente por el cuit, luego busco 
-                            $credito_id = $this->mod->buscarCreditoPorCuit($cuit);
+                            $credito_id = $this->mod->buscarCreditoPorCuit($_cuits);
                         }
-                    }                    
+                    }
                     
                     if ($credito_id) {
                         $fpago = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400;

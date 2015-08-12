@@ -431,7 +431,7 @@ class credito_model extends main_model {
                     "TIPO" => 6,
                     "SALDO" => round($total - $pago[PAGO_COMPENSATORIO] - $COMPENSATORIO_SUBSIDIO, 2));
                 
-                if($arr_compensatorio['SALDO'] < 0.01) $arr_compensatorio['SALDO'] = 0;
+                if($arr_compensatorio['SALDO'] < 0.5) $arr_compensatorio['SALDO'] = 0;
                 
                 $arr_compensatorio_subsidio = array(
                     "TOTAL" => $COMPENSATORIO_SUBSIDIO, //$subsidio
@@ -515,7 +515,7 @@ class credito_model extends main_model {
                     "CAPITAL" => $arr_capital,
                     "ID" => $cuota['ID'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
-                    "DIAS_MORAS" => $cuota['DIAS_MORAS'],
+                    "DIAS_MORAS" => isset($cuota['DIAS_MORAS']) ? $cuota['DIAS_MORAS'] : '',
                     "_INFO" =>
                     array(
                         "IVA_COMPENSATORIO_SUBSIDIO" => $arr_iva_compensatorio_subsidio,
@@ -551,7 +551,7 @@ class credito_model extends main_model {
                     "CAPITAL" => $arr_capital,
                     "ID" => $cuota['ID'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
-                    "DIAS_MORAS" => $cuota['DIAS_MORAS'],
+                    "DIAS_MORAS" => isset($cuota['DIAS_MORAS']) ? $cuota['DIAS_MORAS'] : '',
                     "_INFO" =>
                     array(
                         "IVA_COMPENSATORIO_SUBSIDIO" => $arr_iva_compensatorio_subsidio,
@@ -613,7 +613,7 @@ class credito_model extends main_model {
 
         //se recorren todos las variaciones
         foreach ($this->_variaciones as $variacion) {
-
+            
             //los eventos siguientes al cambio de tasa
             if ($variacion['FECHA'] > $fecha) {
 
@@ -879,7 +879,12 @@ class credito_model extends main_model {
             $dias_moras = 0;
             
             if ($subcuotas) {
-
+                
+                $tasa_compensatoria_pagos = 0;
+                for ($i = 1; $i <= 7; $i++) {
+                    $tasa_compensatoria_pagos += $this->_pagos[$cuota['CUOTAS_RESTANTES']][$i];
+                }
+                
                 $INTERES_COMPENSATORIO = 0;
                 $IVA_INTERES_COMPENSATORIO = 0;
                 $bfin_segmento = false;
@@ -1023,7 +1028,7 @@ class credito_model extends main_model {
                     
                     $INT_MORATORIO = 0;
                     $INT_PUNITORIO = 0;
-
+                    
                     //si activa = -2 no se calculan los intereses compensatorios
                     //sucede cuando los segmentos se encuentran dentro de la cuota pero 
                     //a futuro de del vencimiento, cuando la cuota no esta cancelada y suceden eventos
@@ -1493,10 +1498,12 @@ class credito_model extends main_model {
         unset($cuota['TIPO']);
         unset($cuota['FECHA']);
         unset($cuota['CHILDREN']);
-
+        
+        if (isset($cuota['DIAS_MORAS'])) {
+            unset($cuota['DIAS_MORAS']);
+        }
         
 
-        
         if ($this->_bsave) {
             $this->_db->update("fid_creditos_cuotas", $cuota, "ID = " . $cuota_id);
         }
@@ -1649,6 +1656,23 @@ class credito_model extends main_model {
         $this->_db->where("c.FECHA_INICIO <=   " . $fecha);
         $cuota = $this->get_row_cuotas();
 
+        return $cuota ? $cuota['CUOTAS_RESTANTES'] : 0;
+    }
+    
+    function get_cuotas_restantes_pago() {
+        $this->_db->select('p.CUOTAS_RESTANTES');
+        $this->_db->order_by("p.CUOTAS_RESTANTES", "asc");
+        $this->_db->limit(0, 1);
+        $pago = $this->get_row_pagos();
+        
+        if ($pago) {
+            return $pago['CUOTAS_RESTANTES'];
+        }
+        
+        $this->_db->select('c.CUOTAS_RESTANTES');
+        $this->_db->order_by("c.FECHA_INICIO", "asc");
+        $cuota = $this->get_row_cuotas();
+        
         return $cuota ? $cuota['CUOTAS_RESTANTES'] : 0;
     }
 
@@ -2929,16 +2953,25 @@ ORDER BY T1.lvl DESC');
     }
     
     function buscarCreditoPorCuit($cuit) {
+        $arr_cliente = array();
         $cuit =  str_replace(" ", "", str_replace("-", "", $cuit));
         
-        $this->_db->select("ID");
-        $this->_db->where("REPLACE(CUIT, '-', '')  LIKE '$cuit'");
+        $cuit = explode("/", $cuit);
+        foreach ($cuit as $c) {
+            $this->_db->select("ID");
+            $this->_db->where("REPLACE(CUIT, '-', '')  LIKE '$c'");
+
+            if ($result = $this->_db->get_row("fid_clientes")) {
+                $arr_cliente[] = $result['ID'];
+            }
+        }
         
-        if ($result = $this->_db->get_row("fid_clientes")) {
-            $id_cliente = $result['ID'];
+        
+        if(count($arr_cliente)>0) {
+            $id_cliente = implode("|", $arr_cliente);
             
             $this->_db->select("ID");
-            $this->_db->where("POSTULANTES  = $id_cliente");
+            $this->_db->where("POSTULANTES  = '$id_cliente'");
             if ($result = $this->_db->get_row("fid_creditos")) {
                 return $result['ID'];
             }

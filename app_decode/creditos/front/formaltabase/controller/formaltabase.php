@@ -147,25 +147,40 @@ class formaltabase extends main_controller {
 
                 for ($j = 7; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
 
-                    $cuit = $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue();
+                    $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
+                    $_postulantes = str_replace(array(" Y ", " y ", "\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue());
                     if (!$cuit) {
-                        break;
+                        continue;
                     }
-                    //falta poner para mas de un postulante
-
-                    if (!($postulante = $this->mod->getClienteIdCUIT($cuit))) {
-                        $cliente = array(
-                            'RAZON_SOCIAL' => trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue())),
-                            'CUIT' => $cuit
-                        );
-                        $postulante = $this->mod->guardar_postulante($cliente);
+                    
+                    $cuit = explode("\n", $cuit);
+                    $_postulantes = explode("\n", $_postulantes);
+                    
+                    if (count($cuit) != count($_postulantes)) {
+                        continue;
+                    }
+                    
+                    
+                    $postulantes = array();
+                    $_cuits = array();
+                    foreach ($cuit as $cj=>$c) {
+                        $c = trim($c);
+                        if (!($postulante = $this->mod->getClienteIdCUIT($c))) {
+                            $cliente = array(
+                                'RAZON_SOCIAL' => trim(strip_tags($_postulantes[$cj])),
+                                'CUIT' => $c
+                            );
+                            $postulante = $this->mod->guardar_postulante($cliente);
+                        }
+                        $postulantes[] = $postulante;
+                        $_cuits[] = trim(str_replace("-", "", $c));
                     }
 
                     $credito_id = trim($objPHPExcel->getActiveSheet()->getCell("C" . $j)->getCalculatedValue());
+                    
 
                     if ($credito_id) {
                         $credito = $this->mod->get_credito_from_id($credito_id);
-                        $credito = TRUE;
 
                         if (!isset($credito['ID'])) {
                             $this->mod->clear();
@@ -217,9 +232,7 @@ class formaltabase extends main_controller {
                                 $_POST['int_subsidio'] = 0;
 
                                 $_POST['total_credito'] = 0;
-                                $_POST['clientes'] = array(
-                                    $postulante
-                                );
+                                $_POST['clientes'] = $postulantes;
                                 $_POST['fideicomiso'] = $fideicomiso;
                                 $_POST['operatoria'] = $operatoria;
 
@@ -258,7 +271,7 @@ class formaltabase extends main_controller {
                                 }
 
                                 if (count($_POST['desembolsos']) > 0) {
-                                    $cuit = trim(str_replace("-", "", $cuit));
+                                    $cuit = implode('/', $_cuits);
                                     $_SESSION['creditos_importados'][$cuit] = $credito_id;
 
                                     $this->x_generar_cuotas(FALSE);
@@ -301,7 +314,7 @@ class formaltabase extends main_controller {
                         }
                     }
                 }
-
+                
                 if ($err) {
                     $_SESSION['msg_err'] = $err;
                 }

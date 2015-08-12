@@ -81,7 +81,9 @@ class credito extends main_controller{
         $arr_campos = array("DENOMINACION");
             
         
-        $this->mod->set_credito_active($id_credito);
+        if (!$this->mod->set_credito_active($id_credito)) {
+            header("Location: " . '/'.URL_PATH.'/creditos/front/creditos');
+        }
         
         $this->mod->set_version_active();
         $this->mod->renew_datos();

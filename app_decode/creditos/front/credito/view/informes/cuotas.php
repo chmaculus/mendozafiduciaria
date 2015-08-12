@@ -38,7 +38,7 @@ $cuotas_pendientes = 0;
 
 $total_cuota_gastos = 0;
 //print_array($cuotas);
-foreach($cuotas as $cuota){
+foreach($cuotas as $kk=>$cuota){
     $bpunitorio = isset($cuota['PUNITORIO']['TOTAL']) ; 
     $bmoratorio= isset($cuota['MORATORIO']['TOTAL']) ; 
     
@@ -238,7 +238,7 @@ foreach($cuotas as $cuota){
                     <td class="dato-esp total" colspan="2"><?=number_format($total_total + $iva_total,2,",",".")  ?></td>
                     <td class="dato-esp total" colspan="2"><?=number_format($total_subsidio + $iva_subsidiado,2,",",".")  ?></td>
                     <td class="dato-esp total" colspan="2"><?=number_format($total_pagado + $iva_pagado,2,",",".")  ?></td>
-                    <td class="dato-esp total" colspan="2"><?=number_format($total_a_pagar,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format(str_replace(",", "", $total_a_pagar),2,",",".")  ?></td>
                 </tr>
             </table>
             
