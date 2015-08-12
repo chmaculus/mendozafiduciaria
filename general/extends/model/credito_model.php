@@ -403,7 +403,7 @@ class credito_model extends main_model {
                 $IVA_COMPENSATORIO_SUBSIDIO = $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'];
                 $COMPENSATORIO_SUBSIDIO = $cuota['INT_COMPENSATORIO_SUBSIDIO'];
                 
-                if ($cuota['ESTADO'] == PLAZO_SUBSIDIO_VENCIDO) {
+                if ($cuota['ESTADO'] == PLAZO_SUBSIDIO_VENCIDO && $arr_capital['SALDO']) {
                     $IVA_COMPENSATORIO_SUBSIDIO = 0;
                     $COMPENSATORIO_SUBSIDIO = 0;
                 }
@@ -1043,13 +1043,13 @@ class credito_model extends main_model {
 
                             $tmp['POR_INT_COMPENSATORIO'] = $rango / $PERIODICIDAD_TASA_VARIACION;
                             $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-                            $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                            $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                             
                             
-                            $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                             //if (!$INTERES_COMPENSATORIO || ($INTERES_COMPENSATORIO && !(abs($int_compensatorio_pago-$INTERES_COMPENSATORIO) < 0.01))) { //verifico si tiene pagos, cuando tenga una míniam diferencia dejo de calcular y agregar intereses compensatorios a la cuota
                             if (!$INTERES_COMPENSATORIO) {
                                 $tmp['INT_COMPENSATORIO'] = $interes;
+                                $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                             }
                             
                            
@@ -1091,7 +1091,7 @@ class credito_model extends main_model {
                     if ($fecha_vencimiento == $cuota['FECHA_VENCIMIENTO'] && $tmp['_ACTIVA'] != -2) {
                         $not_enter = true;
                     }
-
+                    
 
                     $SALDO_CUOTA =0;
                     if (!$not_enter && ($tmp['_ACTIVA'] == -2 || ($fecha_vencimiento == $cuota['FECHA_VENCIMIENTO'] && $fecha_get > $fecha_vencimiento) )) {
@@ -1110,9 +1110,9 @@ class credito_model extends main_model {
 
                         $tmp['ESTADO'] = 0;
                         if ($fecha_get > $FIN_PLAZO_PAGO_SUBSIDIO && ($IVA_INT_SUBSIDIO_ACUMULADO + $INT_SUBSIDIO_ACUMULADO > 0)) {
-                            $tmp['ESTADO'] = PLAZO_SUBSIDIO_VENCIDO;
+                            //$tmp['ESTADO'] = PLAZO_SUBSIDIO_VENCIDO;
                         }
-
+                        
                         //SE HACE LA ACTUALIZACION DE LOS VALORES DE LA BONFIICACION.
                         $INTERES_COMPENSATORIO2 = $INTERES_COMPENSATORIO - $INT_SUBSIDIO_ACUMULADO;
                         $IVA_INTERES_COMPENSATORIO2 = $IVA_INTERES_COMPENSATORIO - $IVA_INT_SUBSIDIO_ACUMULADO;
@@ -1247,8 +1247,8 @@ class credito_model extends main_model {
             $this->_cuotas[$cuota_id]['FECHA_INICIO'] = $cuota['FECHA_INICIO'];
             $cuota['CHILDREN'] = $segmentos;
         }
-        
        
+
 
         return $cuota;
     }

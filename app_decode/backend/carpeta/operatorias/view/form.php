@@ -196,6 +196,14 @@
                       </div>
                   </div>
 
+
+                  <div class="elem elem_med">
+                      <label>Impactar tasas créditos:</label>
+                      <div class="indent formtext">
+                          <input type="checkbox" class="" title="Ingrese Tasa Subsidiada" id="imp_tasas"> 
+                      </div>
+                  </div>
+
               </div>
           </div>
 
