@@ -198,6 +198,9 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivapope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
+                            var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
+                            var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
+                            var act_compens = $("#act_compens:checked").val();
                             
 
                             
@@ -239,7 +242,10 @@ $(document).ready(function(){
                                 adjuntos:_array_uploads,
                                 ID_PROCESO:id_proceso,
                                 IVA:ivaope,
-                                BANCO:bancoope
+                                BANCO:bancoope,
+                                IMP_TASAS:imp_tasas,
+                                IMP_FTASAS:imp_ftasas,
+                                ACT_COMPENS:act_compens
                             }
                           
                             $.ajax({
@@ -252,7 +258,7 @@ $(document).ready(function(){
                                 success : function(data){
                                     
                                     if(data.result>0){
-                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
+                                        jAlert('Operacion Exitosa1.', $.ucwords(_etiqueta_modulo),function(){
                                             $('#btnClear').trigger('click');
                                             $("#jqxgrid").jqxGrid('updatebounddata');
                                             _array_entidades = {};
@@ -354,7 +360,17 @@ $(document).ready(function(){
                                 }
                             }
                         });
-
+                        
+                        
+                        
+                        
+                        $("#fec_imp_tasas").datepicker({
+                            changeMonth: true,
+                            changeYear: true
+                        });
+                        $("#fec_imp_tasas").datepicker("option", "dateFormat", 'dd-mm-yy');
+                        
+                        $("#fec_imp_tasas").datepicker("setDate" , _fecha_tasa);
                         
                         
                         $("#nombre").focus();
@@ -585,6 +601,9 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
+                            var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
+                            var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
+                            var act_compens = $("#act_compens:checked").val();
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');
                             var checkedItems = [];
@@ -624,9 +643,12 @@ $(document).ready(function(){
                                 JEFEOP:jefeope,
                                 COORDOPE:cordope,
                                 IVA:ivaope,
-                                BANCO:bancoope
+                                BANCO:bancoope,
+                                IMP_TASAS:imp_tasas,
+                                IMP_FTASAS:imp_ftasas,
+                                ACT_COMPENS:act_compens
                             }
-                                                        
+                            
                             $.ajax({
                                 url : _operatorias.URL + "/x_sendobj",
                                 data : {
@@ -1096,7 +1118,7 @@ $(document).ready(function(){
     });
     
 });
-
+    
 
 function loadChild(val){
     if(working==false){

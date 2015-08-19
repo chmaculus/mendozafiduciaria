@@ -63,6 +63,7 @@ class operatorias extends main_controller{
             $this->_js_var['_permiso_ver'] = 0;
         /* permiso ver */
         
+        $this->_js_var['_fecha_tasa'] = date('d-m-Y');
                 
         $datax = array();
         $datax['main'] = $this->_obtener_main($arr_permiso_mod);
@@ -137,7 +138,29 @@ class operatorias extends main_controller{
           */
         //$obj_tipo_entidades = $_POST['tipo_entidades'];
         
+        $impactar_tasas = FALSE;
+        if (isset($obj['IMP_TASAS'])) {
+            $impactar_tasas = $obj['IMP_TASAS'];
+            unset($obj['IMP_TASAS']);
+            $fecha_imp_tasas = $obj['IMP_FTASAS'];
+        }
+        
+        if (isset($obj['IMP_FTASAS'])) {
+            unset($obj['IMP_FTASAS']);
+        }
+        
         $rtn = $this->mod->sendobj($obj, $checklist, $adjuntos );
+        
+        if ($impactar_tasas) {
+            $_SESSION['CAMBIO_TASAS'] = array(
+                'OPERATORIA' => $obj,
+                'FECHA' => $fecha_imp_tasas,
+                'RESULTADO' => $rtn
+            );
+            
+            header("Location: " . '/' . URL_PATH . '/creditos/front/cuotas/impactar_tasas');
+            exit();
+        }
         
         echo trim(json_encode($rtn?$rtn:array()));
     }
@@ -280,11 +303,13 @@ class operatorias extends main_controller{
             $data['cad'] = $cad;
             $chk_array = json_encode($data['cad']);
             $data['lst_uploads'] = $this->x_get_uploads( $tmp[0]['ID'] );
+            $data['imputacion_tasas'] = TRUE;
         }
         else{
             $data['entidad'] = array("ORGANISMO"=>"","TELEFONO"=>"","CUIT"=>"","DESCRIPCION"=>"","NOMBRE"=>"");
             $data['lst_entidades'] = array('');
             $data['lst_uploads'] = '';
+            $data['imputacion_tasas'] = FALSE;
         }
         
         //$data['lst_provincias'] = $this->x_getprovincias();

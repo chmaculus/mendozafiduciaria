@@ -281,14 +281,14 @@ class cuotas extends main_controller{
         }
     }
     
-    function x_agregar_cambiotasa(){
+    function x_agregar_cambiotasa($retornar = FALSE){
         $credito_id = $_POST['credito_id'];
         
         $this->mod->set_credito_active($credito_id);
         $version = $_POST['version_id'];
         $this->mod->set_version_active($version);
 
-        if (!$this->_verificar_desembolsos_teoricos( false)){
+        if (!$this->_verificar_desembolsos_teoricos( false) && !$retornar){
             echo "-1";
             return;
         }        
@@ -311,6 +311,8 @@ class cuotas extends main_controller{
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
         
+        if ($retornar) return;
+        
         //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
         //y recalcula los pagos desde esa fecha
         if ( ($fecha_planchado = $this->mod->modificar_planchado($fecha)) > 0 ){
@@ -322,6 +324,34 @@ class cuotas extends main_controller{
         $this->mod->get_segmentos_cuota();
             
         echo $this->_get_cuotas();
+    }
+    
+    function impactar_tasas() {
+        set_time_limit(0);
+        if(!isset($_SESSION['CAMBIO_TASAS'])) {
+            header('Location:/' . URL_PATH);
+        }
+        
+        $creditos = $this->mod->get_creditos_by_operatoria($_SESSION['CAMBIO_TASAS']['OPERATORIA']['id']);
+        
+        if ($creditos) {
+            $_POST['tasa'] = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_COMPENSATORIA']; 
+            $_POST['subsidio'] = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_SUBSIDIADA'];
+            $_POST['moratorio'] = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_MORATORIA'];
+            $_POST['punitorio'] = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_POR_PUNITORIOS'];
+            
+            $_POST['fecha'] = $_SESSION['CAMBIO_TASAS']['FECHA'];
+            
+            foreach ($creditos as $credito) {
+                $_POST['credito_id'] = $credito['ID'];
+                $_POST['version_id'] = $credito['ID_VERSION'];
+                $this->x_agregar_cambiotasa(TRUE);
+            }
+        }
+        
+        echo trim(json_encode($_SESSION['CAMBIO_TASAS']['RESULTADO']));
+        unset($_SESSION['CAMBIO_TASAS']);
+        die();
     }
 
     

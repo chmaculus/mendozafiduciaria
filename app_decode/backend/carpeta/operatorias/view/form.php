@@ -195,15 +195,38 @@
                           <div id='periodicidad'></div>
                       </div>
                   </div>
-
-
+                  
+                  <div class="cb" /><hr />
+                  
+                  <div class="elem">
+                      <label style="float:none">CONDICIONES DE CRÉDITOS:</label>
+                  </div>
+                  
                   <div class="elem elem_med">
-                      <label>Impactar tasas créditos:</label>
+                      <label>Actualización de compensatorios:</label>
                       <div class="indent formtext">
-                          <input type="checkbox" class="" title="Ingrese Tasa Subsidiada" id="imp_tasas"> 
+                          <input type="checkbox" id="act_compens" value="1" <?=isset($entidad["ACT_COMPENS"]) && $entidad["ACT_COMPENS"] ? 'checked="checked"' : '' ?> /> 
                       </div>
                   </div>
 
+                  
+                  <?php if ($imputacion_tasas) { ?>
+                  <div class="cb" /><hr />
+
+                  <div class="elem elem_med">
+                      <label>Impactar cambio de tasas en créditos:</label>
+                      <div class="indent formtext">
+                          <input type="checkbox" id="imp_tasas"> 
+                      </div>
+                  </div>
+
+                  <div class="elem elem_med">
+                      <label>Fecha cambio de tasas créditos:</label>
+                      <div class="indent formtext">
+                          <input type="text" class="fecha" title="Ingrese fecha de cambio de tasas" id="fec_imp_tasas" value="<?=date('d-m-Y')?>"> 
+                      </div>
+                  </div>
+                  <?php } ?>
               </div>
           </div>
 
