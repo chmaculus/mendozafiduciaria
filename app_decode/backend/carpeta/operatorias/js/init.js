@@ -200,7 +200,7 @@ $(document).ready(function(){
                             var bancoope = $("#bancoope").val();
                             var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
                             var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
-                            var act_compens = $("#act_compens:checked").val();
+                            var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
 
                             
@@ -603,7 +603,7 @@ $(document).ready(function(){
                             var bancoope = $("#bancoope").val();
                             var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
                             var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
-                            var act_compens = $("#act_compens:checked").val();
+                            var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');
                             var checkedItems = [];

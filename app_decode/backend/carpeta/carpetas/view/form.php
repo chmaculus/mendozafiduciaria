@@ -982,7 +982,8 @@
     </div>
     
     <div class="grid-1 grid_reqs">
-        <div class="title-grid">Requerimientos <?php if ( $_SESSION["USER_ROL"]=='10' || $_SESSION["USER_ROL"]=='11'): ?><div class="agregar_req">Agregar Requerimientos</div><?php endif; ?><span></span></div>
+        <?php $_pp = (isset($_SESSION["USER_PERMISOS"][10]['ALTA']) && $_SESSION["USER_PERMISOS"][10]['ALTA']) || (isset($_SESSION["USER_PERMISOS"][11]['ALTA']) && $_SESSION["USER_PERMISOS"][11]['ALTA']); ?>
+        <div class="title-grid">Requerimientos <?php if ($_pp): ?><div class="agregar_req">Agregar Requerimientos</div><?php endif; ?><span></span></div>
         <div class="content-gird" style="display: block;">
             <ul class="lista_reqs">
             <?php

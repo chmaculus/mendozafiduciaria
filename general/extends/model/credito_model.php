@@ -36,6 +36,8 @@ class credito_model extends main_model {
     var $_iva_operatoria = IMP_IVA;
     var $_banco = 0;
     var $_actualizacion_compensatorios = false;
+    var $_suma_act_compens = 0;
+    var $_flag_pago_cuota_anterior = false;
     
     function clear() {
         $this->_i = 0;
@@ -800,7 +802,7 @@ class credito_model extends main_model {
             reset($this->_variaciones);
             foreach ($this->_variaciones as $variacion) {
 
-                if ($variacion['FECHA'] >= $FECHA_INICIO_VARIACION && $variacion['ESTADO'] > -1 && $variacion['FECHA'] <= $fecha_get) {
+                if ($variacion['FECHA'] >= $FECHA_INICIO_VARIACION && $variacion['ESTADO'] > -1 && ($variacion['FECHA'] <= $fecha_get || $variacion['TIPO'] == EVENTO_DESEMBOLSO)) {
 
                     $variaciones[] = $variacion;
                 }
@@ -897,7 +899,13 @@ class credito_model extends main_model {
                 
                 $_rango_tmp = 0;
                 $_rango_moratoria = 0;
+                $actualizacion_compensatorio = $this->_suma_act_compens;
+                $AMORTIZACION_REAL = 0;
+                $this->_suma_act_compens = 0;
+                
                 for ($i = 0; $i < count($subcuotas) && !$bfin_segmento; $i++) {
+                    $PAGO_SALDO = isset($subcuotas[$i]['TMP']['VARIACION']['ASOC'][6]['MONTO']) ? $subcuotas[$i]['TMP']['VARIACION']['ASOC'][6]['MONTO'] : 0;
+                    
                     unset($subcuotas[$i]['CHILDREN']);
                     unset($subcuotas[$i]['TMP']['VARIACION']['ASOC']);
                     $tmp = $subcuotas[$i];
@@ -1042,6 +1050,11 @@ class credito_model extends main_model {
                                     $flag_compens = TRUE;
                                 }
                             }
+                            
+                            if (!$rango_comp && isset($desembolsos[$jd])) { //desembolsos fuera de fecha de inicio
+                                $rango_comp = ($desembolsos[$jd]['FECHA'] - $cuota['FECHA_INICIO']) / (24 * 60 * 60);
+                                $saldo_desembolso = $SALDO_CAPITAL;
+                            }
 
                             $SALDO_CAPITAL = $saldo_desembolso;
                         }
@@ -1072,6 +1085,7 @@ class credito_model extends main_model {
                             $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                             $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                             
+                            //echo "saldo_cap:$SALDO_CAPITAL<br />";
                             
                             //if (!$INTERES_COMPENSATORIO || ($INTERES_COMPENSATORIO && !(abs($int_compensatorio_pago-$INTERES_COMPENSATORIO) < 0.01))) { //verifico si tiene pagos, cuando tenga una míniam diferencia dejo de calcular y agregar intereses compensatorios a la cuota
                             if (!$INTERES_COMPENSATORIO || $flag_compens) {
@@ -1082,9 +1096,11 @@ class credito_model extends main_model {
                            
                         }
                     
-                    /*echo "r:$rango_comp<br />";
-                    echo "r:$interes<br />";
-                    echo "r:$SALDO_CAPITAL<br />";*/
+                        /*if($cuota['CUOTAS_RESTANTES']==10) {
+                            echo "r:$rango_comp<br />";
+                            echo "r:$interes<br />";
+                            echo "r:$SALDO_CAPITAL<br />";
+                        }*/
                     } else { //interes simple
                         $tmp['POR_INT_COMPENSATORIO'] = ($INTERES_COMPENSATORIO_VARIACION / $this->_interese_compensatorio_plazo) * $rango_comp;
                         //if (!$INTERES_COMPENSATORIO || ($INTERES_COMPENSATORIO && !(abs($int_compensatorio_pago-$INTERES_COMPENSATORIO) < 0.01))) {
@@ -1093,6 +1109,10 @@ class credito_model extends main_model {
                         }
                     }
                     
+                    
+                    if ($i==0 && $this->_actualizacion_compensatorios) {
+                        $tmp['INT_COMPENSATORIO']  += $actualizacion_compensatorio;
+                    }
                     
                     $INT_SUBSIDIO_ACUMULADO += $interes_subsidio;
                     $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $tmp['TMP']['VARIACION']['IVA']);
@@ -1198,6 +1218,25 @@ class credito_model extends main_model {
                                 $INT_MORATORIO = $SALDO_CUOTA * (1 + ($cuota['POR_INT_MORATORIO'] / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
                                 $INT_PUNITORIO = $SALDO_CUOTA * (1 + ($cuota['POR_INT_PUNITORIO'] / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
                             }
+                            
+                            if ($this->_actualizacion_compensatorios && $this->_flag_pago_cuota_anterior) {
+                                if (!$AMORTIZACION_REAL) {
+                                    $AMORTIZACION_REAL = $SALDO_CAPITAL;
+                                }
+                                
+                                $int = $this->_calcular_interes($AMORTIZACION_REAL, $rango_int_mor, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                                $this->_suma_act_compens += $int;
+                                
+                                /*echo "saldo:$AMORTIZACION_REAL<br />";
+                                echo "rang:$rango_int_mor<br />";
+                                echo "int:$int<br />";
+                                echo "act_comp  suma: {$this->_suma_act_compens} <br />";*/
+                                
+                                //calcular la amortizacion real
+                                $AMORTIZACION_REAL = $SALDO_CAPITAL - $PAGO_SALDO;
+                            }
+                            
+                            $this->_flag_pago_cuota_anterior = $PAGO_SALDO;
                         }
                     }
                     
@@ -1285,7 +1324,7 @@ class credito_model extends main_model {
             $cuota['CHILDREN'] = $segmentos;
         }
         
-        
+
 
         return $cuota;
     }
@@ -1306,11 +1345,11 @@ class credito_model extends main_model {
         
         
         foreach ($cuota['CHILDREN'] as $cuota_item) {
-            if ($cuota_item['FECHA_VENCIMIENTO'] <= $fecha) {
+            if ($cuota_item['FECHA_VENCIMIENTO'] <= $fecha || $cuota_item['TIPO'] == EVENTO_DESEMBOLSO) { //también incluimos eventos desembolsos
                 $segmentos[] = $cuota_item;
             }
         }
-
+            
         if (!$cuota)
             return false;
 
@@ -1331,8 +1370,8 @@ class credito_model extends main_model {
                 }
             }
         }
-
-
+ 
+            
         $cuotas_anteriores = array();
         foreach ($this->_cuotas as $cuota_item) {
             if ($cuota_item['CUOTAS_RESTANTES'] == $cuota['CUOTAS_RESTANTES'])
@@ -1374,7 +1413,7 @@ class credito_model extends main_model {
             $cuota['INT_COMPENSATORIO_IVA'] = 0;
             $cuota['INT_COMPENSATORIO_SUBSIDIO'] = 0;
             $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'] = 0;
-
+            
             foreach ($segmentos as $segmento) {
 
                 //se suman los intereses de los segmentos de la cuota y se actualiza en la cuota
@@ -1506,8 +1545,8 @@ class credito_model extends main_model {
                 }
 
             } else {
-                $int_compensatorio = $this->_calcular_interes($SALDO_CAPITAL, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog);
-                $int_compensatorio_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog);
+                $int_compensatorio = $variacion ? $this->_calcular_interes($SALDO_CAPITAL, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog) : 0;
+                $int_compensatorio_subsidio = $variacion ? $this->_calcular_interes($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                 /*
                 echo "S:$SALDO_CAPITAL<br />";
                 echo "r:$rango<br />";
@@ -1558,6 +1597,7 @@ class credito_model extends main_model {
 
         $this->_cuotas[$cuota_id]['INT_COMPENSATORIO'] = $cuota['INT_COMPENSATORIO'];
         $this->_cuotas[$cuota_id]['INT_COMPENSATORIO_IVA'] = $cuota['INT_COMPENSATORIO_IVA'];
+        
 
         $this->_cuotas[$cuota_id]['INT_COMPENSATORIO_SUBSIDIO'] = $cuota['INT_COMPENSATORIO_SUBSIDIO'];
         $this->_cuotas[$cuota_id]['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'];
