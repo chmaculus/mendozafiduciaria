@@ -174,6 +174,9 @@ function crypt_blowfish($password, $digito = 7){
 
 function convertirFecha($fecha) {
     //convierte de 1985-12-28 15:33:45 a 28/12/1985
+    if (!strtotime($fecha)) {
+        return '';
+    }
     $arr = explode(" ", $fecha);
     $fec = $arr[0];
     $arr = explode('-', $fec);

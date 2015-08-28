@@ -494,7 +494,7 @@ class carpetas extends main_controller{
     function x_getform_agregar_requerimiento(){
         $data['datos'] = "";
         $data['_semilla'] = time();
-        $idr = isset( $_POST['obj'] )?$_POST['obj']:'';
+        $idr = isset( $_POST['idr'] )?$_POST['idr']:'';
         $data['_dir_sitio'] = URL_SITIO;
         $data['_no_save'] = isset( $_POST['no_save'] )?$_POST['no_save']:'';
         $data['obj_req'] = array();
@@ -508,7 +508,6 @@ class carpetas extends main_controller{
             //log_this('xxxxx.log', print_r($data['lst_uploads_req'],1) );
         }
         
-        print_r($obj_req);die();
         $data['ahora'] = date("d/m/Y");
         echo $this->view("form_requerimiento", $data);
     }

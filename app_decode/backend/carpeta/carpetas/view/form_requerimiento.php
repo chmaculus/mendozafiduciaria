@@ -1,5 +1,5 @@
 <div id="frm_reqs" class="tab_b">
-        
+
     <input type="hidden" id="idreqh" value="<?php echo isset($obj_req["ID"])?$obj_req["ID"]:""?>" />
     <input type="hidden" id="estadoh" value="<?php echo isset($obj_req["ESTADO"])?$obj_req["ESTADO"]:""?>" />
     <input type="hidden" id="femish" value="<?php echo isset($obj_req["FCREA"])?convertirFecha($obj_req["FCREA"]):""?>" />
@@ -28,7 +28,7 @@
                 <option value="3">Respondido</option>
                 <option value="4">Aceptado</option>
                 <option value="5">Respondido Rechazado</option>
-                <option value="5">Rechazado por el Jefe de Op.</option>
+                <option value="6">Rechazado por el Jefe de Op.</option>
         </select>   
         </div>
     </div>
@@ -111,7 +111,7 @@
     <?php //mostrar solo cuando esta logueado el jefe o el cordinador de OP ?>
     
     <?php if ($_no_save!='no_save'): ?>
-    <?php if ( $_SESSION["USER_ROL"]=='10' || $_SESSION["USER_ROL"]=='11' || $_SESSION["USER_ROL"]=='9'): ?>
+    <?php if ((isset($_SESSION["USER_PERMISOS"][10]['OTROS']) && $_SESSION["USER_PERMISOS"][10]['OTROS']) || (isset($_SESSION["USER_PERMISOS"][11]['OTROS']) && $_SESSION["USER_PERMISOS"][11]['OTROS'])): ?>
     <?php if ( isset($obj_req["ESTADO"]) && ( $obj_req["ESTADO"]!='4' && $obj_req["ESTADO"]!='6')  ): ?>
     <div class="elem elempie">
         <div class="indent">

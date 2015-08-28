@@ -4979,7 +4979,7 @@ function agregar_requerimiento(){
        $.ajax({
             url : _carpetas.URL + "/x_getform_agregar_requerimiento",
             data : {
-                obj:2
+                obj:mydata.IDOPE
             },
             type : "post",
             success : function(datareq){
@@ -5260,9 +5260,6 @@ function addEventsRequerimientos(idr){
                             }
                         });
                         $.fancybox.close();
-                        $("#jqxgrid").show();
-                        $("#jqxgrid").jqxGrid('updatebounddata');
-                        $("#wpopup").html('');
                         
                         
                         /*
@@ -6284,7 +6281,7 @@ function evento_lista_req(no_save){
                 });
                 
                 var femish = $("#femish").val();
-                //$('#femis').val(femish);
+                $('#femis').val(femish);
                 
                 var fresph = $("#fresph").val();
                 $('#fresp').val(fresph);
