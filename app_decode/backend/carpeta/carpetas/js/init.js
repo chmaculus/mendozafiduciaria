@@ -5129,7 +5129,7 @@ function addEventsRequerimientos(idr){
         var req_fresp = $("#fresp").val();
         
         var id_ope_req = mydata.IDOPE;
-        var estado = 0;
+        var estado = 2;
         //var autor_req=24;
         var autor_req = $("#jefeope_h").val();
         
@@ -5189,6 +5189,7 @@ function addEventsRequerimientos(idr){
         
         
 
+        $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
         $.ajax({
             url : _carpetas.URL + "/x_sendreq",
             data : {
@@ -5200,7 +5201,9 @@ function addEventsRequerimientos(idr){
                 data = resp.result;
                 if (resp.accion=='add'){
                     if(data){
-                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
+                        var msg = (data.email == 1) ? 'Operacion Exitosa' : 'Guardado - No se pudo enviar correo';
+                        jAlert(msg, $.ucwords(_etiqueta_modulo),function(){
+                            $.unblockUI();
                             //agregar req con jquery
                             //echo '<li class="li_cabezera">Asunto<span class="fem">'. "F. Emisión" .'</span><span class="fer">'. "F. Recepción" .'</span><span class="fet">'. "F. Tratamiento" .'</span></li>';
                             //echo '<li>xxxxxxx<span>('. "15/15/15" .')</span><span>('. "15/15/15" .')</span><span>('. "15/15/15" .')</span></li>';

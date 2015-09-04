@@ -179,7 +179,41 @@ class carpetas extends main_controller{
         $autor_req = isset($obj['autor_req'])?$obj['autor_req']:0;
         $notif_ope = isset($_POST['notif_ope'])&&$_POST['notif_ope']==1?$_POST['notif_ope']:0;
         unset($obj['adjuntos'],$obj['autor_req']);
-        $rtn = $this->mod->sendreq($obj,$adjuntos,$autor_req,$notif_ope);
+        print_r($obj);
+        die();
+        
+        if ($rtn = $this->mod->sendreq($obj,$adjuntos,$autor_req,$notif_ope)) {
+            include("general/plugin/phpmailer/class.phpmailer.php");
+            $mail = new PHPMailer();
+            $mail->IsSMTP();
+            $mail->SMTPDebug = 0;
+            $mail->SMTPAuth = TRUE;
+            $mail->SMTPSecure = "ssl";
+            $mail->Host = SMTP_HOST; // SMTP a utilizar. Por ej. smtp.elserver.com
+            $mail->Username = SMTP_LOGIN; // Correo completo a utilizar
+            $mail->Password = SMTP_PASS; // Contraseña
+            $mail->Port = 465; // Puerto a utilizar
+
+            //Con estas pocas líneas iniciamos una conexión con el SMTP. Lo que ahora deberíamos hacer, es configurar el mensaje a enviar, el //From, etc.
+            $mail->From = CORREO_ADMINISTRADOR_FROM; // Desde donde enviamos (Para mostrar)
+            $mail->FromName = CORREO_ADMINISTRADOR_FROMNAME;
+
+            //Estas dos líneas, cumplirían la función de encabezado (En mail() usado de esta forma: “From: Nombre <correo@dominio.com>”) de //correo.
+            $mail->AddAddress(CORREO_DESTINO_REQUERIMIENTOS); // Esta es la dirección a donde enviamos
+            $mail->IsHTML(true); // El correo se envía como HTML
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject = "Se ha cargado un nuevo requerimiento en la carpeta Nº" . $obj['ID_OPERACION']; // Este es el titulo del email.
+            $mail->Body = "Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
+                    . "Usuario: " . $_SESSION['USER_NA'] . "<br />\n"
+                    . "Descripción del requerimiento: " . $obj['DESCRIPCION'];
+            
+            if ($mail->Send()) {
+                $rtn['result']['email'] = 1;
+            } else {
+                $rtn['result']['email'] = 0;
+            }
+        }
+        
         echo trim(json_encode($rtn?$rtn:array()));
     }
     

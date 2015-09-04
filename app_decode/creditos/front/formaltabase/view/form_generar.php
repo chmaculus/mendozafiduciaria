@@ -1,3 +1,5 @@
+<input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
+<input type="hidden" id="fecha_caduca" value="<?=$credito['FECHA_CADUCA']?>" />
 <div class="form-content">
     <div class="form_generar">
             <div class="row c12 grupo">
@@ -212,8 +214,8 @@
                     <div class="c7">
                         <select id="comboFideicomiso">
                             <option value="0">Seleccione Fideicomiso</option>
-<?php foreach ($credito['FIDEICOMISOS'] as $fid) { ?>
-                                <option value="<?= $fid['ID'] ?>"><?= $fid['NOMBRE'] ?></option>
+                            <?php foreach ($credito['FIDEICOMISOS'] as $fid) { ?>
+                                <option value="<?= $fid['ID'] ?>" <?=(isset($credito['ID_FIDEICOMISO']) && $credito['ID_FIDEICOMISO']==$fid['ID'])?'selected="selected"':''?>><?= $fid['NOMBRE'] ?></option>
                             <?php } ?>
                         </select>
                     </div>
@@ -236,8 +238,8 @@
 
                     <div class="c7">
                         <select id="comboClientes" multiple>
-<?php foreach ($credito['POSTULANTES'] as $cliente) { ?>
-                                <option value="<?= $cliente['ID'] ?>"><?= $cliente['RAZON_SOCIAL']." -  ".$cliente['CUIT'] ?></option>
+                            <?php foreach ($credito['LPOSTULANTES'] as $cliente) { ?>
+                            <option value="<?= $cliente['ID'] ?>" <?=(isset($credito['POSTULANTES']) && $credito['POSTULANTES'] && $credito['POSTULANTES']==$cliente['ID'])?'selected="selected"':''?>><?= $cliente['RAZON_SOCIAL']." -  ".$cliente['CUIT'] ?></option>
                             <?php } ?>
                         </select>
                     </div>

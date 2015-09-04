@@ -271,6 +271,8 @@ _cuotas.mostrar_estado = function(id_credito, fecha) {
 _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, confirm) {
     
     confirm = confirm || false;
+    
+    alert(fecha);return false;
 
     if (existEventosPosteriores() && !confirm){
         jConfirm("¿Desea generar una nueva version a partir de la fecha del evento ? ","MENDOZA FIDUCIARIA", function(e){
@@ -648,32 +650,31 @@ function enviar_cuotas(id_credito, fecha) {
 function cambiar_accion() {
     var selected = parseInt($("#txtEvento option:selected").val());
     _desembolso_selected = {};
-    $("#div-monto").show();
     $("#eventos-pendientes").hide().html("");
     $("#spMonto").text("Monto");
     $("#div-descripcion").hide();
     $(".field_tasas").hide();
-    
+    $("#div-monto").hide();
     switch (selected) {
-        case 5:
-        case 8:        
-        case 6:
-        case 0:
-            $("#div-monto").hide();
-            break;
-
         case 1:
+            $("#div-monto").show();
             leer_desembolsos();
             break;
         case 2:
+            $("#div-monto").show();
             $("#div-descripcion").show();
             break;
         case 3:
+            $("#div-monto").show();
             $("#spMonto").text("Tasa %");
             get_tasas_fecha();
             $(".field_tasas").show();
             break;
         case 4:
+            $("#div-monto").show();
+            break;
+        case 9:
+            $("#btn-caducar").show();
             break;
     }
 }
@@ -983,4 +984,27 @@ function imprimirEventos(){
         
         
     });
+}
+
+
+function caducar() {
+    //$("#frmagregar .content-gird").hide();
+    
+    var datos = [
+        0,//caducar
+        _cuotas.ID_CREDITO,
+        $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000
+    ];
+    $(".listado-credito").hide();
+    load_app("creditos/front/formaltabase","#wpopup",datos, 
+    function(){
+        $('#jqxgrid').hide();
+        $.unblockUI();
+    },
+    function(){
+
+    },
+    function(){
+
+    }); 
 }
