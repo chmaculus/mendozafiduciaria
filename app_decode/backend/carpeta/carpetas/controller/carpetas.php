@@ -179,9 +179,7 @@ class carpetas extends main_controller{
         $autor_req = isset($obj['autor_req'])?$obj['autor_req']:0;
         $notif_ope = isset($_POST['notif_ope'])&&$_POST['notif_ope']==1?$_POST['notif_ope']:0;
         unset($obj['adjuntos'],$obj['autor_req']);
-        print_r($obj);
-        die();
-        
+    
         if ($rtn = $this->mod->sendreq($obj,$adjuntos,$autor_req,$notif_ope)) {
             include("general/plugin/phpmailer/class.phpmailer.php");
             $mail = new PHPMailer();
