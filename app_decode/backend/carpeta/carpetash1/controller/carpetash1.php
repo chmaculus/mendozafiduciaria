@@ -85,7 +85,7 @@ class carpetash1 extends main_controller{
         $this->_js_var['_USER_SU_2'] = $_SESSION["USER_SU_2"];
         $this->_js_var['_USER_SU_3'] = $_SESSION["USER_SU_3"];
         $this->_js_var['_USER_SU_4'] = $_SESSION["USER_SU_4"];
-        
+     
         $this->render($datax);
         //etapas
     }

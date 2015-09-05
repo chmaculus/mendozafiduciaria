@@ -113,7 +113,6 @@ class permisos extends main_controller{
         $tmp = $this->mod->get_obj($obj);
         $data['cad'] = "";
         $chk_array = array();
-        
         if ($tmp){
             $data['entidad'] = $tmp[0];
             $data['obj_js'] = json_encode(  $tmp );

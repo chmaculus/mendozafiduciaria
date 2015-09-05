@@ -418,7 +418,7 @@ $(document).ready(function(){
                     async:false,
                     type : "post",
                     success : function(data){
-                        
+                      
                         $.unblockUI();
                         $("#jqxgrid").hide();
                         $("#wpopup").html(data);
@@ -909,3 +909,278 @@ $(document).ready(function(){
    
     
 });
+
+//Es el mismo ajax que cuando llama al editar 
+//nada mas que esta puesto dentra de una funcion para que refresque 
+function actualiza_ss(valu) {
+    $.ajax({
+        url : _permisos.URL + "/x_getform_addentidad_new",
+        data : {
+            obj:valu
+        },
+        async:false,
+        type : "post",
+        success : function(data){
+
+            $.unblockUI();
+            $("#jqxgrid").hide();
+            $("#wpopup").html(data);
+
+            $(".chzn-select").chosen(); 
+            $("#btnBorrar").hide();
+
+            $("#label_action").html('Editar');
+            var _arr_obj_n = jQuery.parseJSON($("#_arr_obj_n").val());
+
+            $("#id_rol").val(_arr_obj_n[0].ID_ROL).trigger("chosen:updated");
+            //$("#id_permiso").val(_array_obj.ID_PERMISO).trigger("chosen:updated");
+
+            //eventos
+
+            $(".CSSTableGenerator input").click(function(e){
+                stopBubble(e);
+            });
+
+            $(".CSSTableGenerator table tr td").first().click(function(e){
+               stopBubble(e);
+
+               if ($(this).parent().parent().find('td input').first().is(":checked")){
+                   $(this).parent().parent().find('td input').removeAttr("checked");
+               }else{
+                   $(this).parent().parent().find('td input').attr("checked","checked");
+               }
+
+            });
+
+            $(".CSSTableGenerator table tr td").click(function(e){
+                var ind_tmp = $(this).index();
+                if (ind_tmp==0){
+                    //seleccionar todos
+
+                    if ( $(this).parent().find('input').first().is(":checked")){
+                        $(this).parent().find('input').removeAttr("checked");
+                    }else{
+                        $(this).parent().find('input').attr("checked","checked");
+                    }
+                    return false;
+                }
+                if ($(this).find('input').is(":checked")){
+                    $(this).find('input').removeAttr("checked");
+                }else{
+                    $(this).find('input').attr("checked","checked");
+                }
+            });
+
+            $(".CSSTableGenerator table tr").first().find('td').click(function(e){
+                var indextr = $(this).index();
+               $(".CSSTableGenerator table tr:gt(0)").each(function( index1 ) {
+                   if ($(this).find('td').eq(indextr).find('input').first().is(":checked")){
+                       $(this).find('td').eq(indextr).find('input').removeAttr("checked");
+                   }else{
+                       $(this).find('td').eq(indextr).find('input').attr("checked","checked");
+                   }
+               });
+            });
+
+            //cargar valoresss
+
+
+            $.each(_arr_obj_n, function (index, value){
+
+
+                $(".CSSTableGenerator table tr:gt(0)").eq(index).find('input').each(function(index1){
+                    //$(this).eq(0).attr("checked","checked");
+
+                    if (index1=='0'){
+                        if (value.MOSTRAR==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='1'){
+                        if (value.ALTA==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='2'){
+                        if (value.BAJA==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='3'){
+                        if (value.MODIFICACION==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='4'){
+                        if (value.VER==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='5'){
+                        if (value.EXPORTAR==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                    if (index1=='6'){
+                        if (value.OTROS==1){
+                            $(this).attr("checked","checked");
+                        }
+                    }
+                   });
+            });
+
+            $("#jqxButton").jqxToggleButton({ width: '200', toggled: true, theme: theme });
+            $("#jqxButton").on('click', function () {
+                var toggled = $("#jqxButton").jqxToggleButton('toggled');
+                if (toggled){
+                    $("#jqxButton")[0].value = 'Quitar selección';
+                    $("#listbox").jqxListBox('checkAll');
+                }else{
+                    $("#jqxButton")[0].value = 'Seleccionar Todos';
+                    $("#listbox").jqxListBox('uncheckAll');
+                }
+            });
+
+            $('#btnClear').on('click', function(event) {
+                $("#customForm").validationEngine('hideAll');
+                event.preventDefault();
+                $("#frmagregar :text").val("");
+                $("#frmagregar :text").first().focus();
+                $("#idh").val("");
+                $("#provincia").val(0).trigger("chosen:updated");
+
+                if($("#label_action").html()=='Editar'){
+                  $("#label_action").html("Agregar");
+                }
+                $("#frmagregar :text").removeClass('error');
+                $("#nom").select();
+            });
+
+            $('#send').on('click', function(event) {
+
+                event.preventDefault();
+
+                var id_rol = $("#id_rol").val();
+                var id_permiso = $("#id_permiso").val();
+
+
+                if (id_rol<=0){
+                    jAlert('Elija un Rol.', $.ucwords(_etiqueta_modulo),function(){
+
+                    });
+                    return false;
+                }
+
+                //recorrer matriz
+                var obj_fin =[];
+                $(".CSSTableGenerator table tr:gt(0)").each(function(index){
+                    //console.log( index + ": " + $( this ).text() );
+
+                    var id_permiso = $(this).data("idp");
+                    var_ins = {
+                        "ID_ROL":id_rol,
+                        "ID_PERMISO":id_permiso,
+                        "MOSTRAR":"0",
+                        "ALTA":"0",
+                        "BAJA":"0",
+                        "MODIFICACION":"0",
+                        "VER":"0",
+                        "EXPORTAR":"0",
+                        "OTROS":"0"
+                    }
+
+                    $(this).find('td input').each(function( index1 ) {
+                        if ($(this).is(":checked")){
+                            //console.log( 'permiso: ' + id_permiso + ' - ' + index1 + ' index1: si');
+                            if (index1==0){
+                                var_ins['MOSTRAR'] = 1;
+                            }else if (index1==1){
+                                var_ins['ALTA'] = 1;
+                            }else if (index1==2){
+                                var_ins['BAJA'] = 1;
+                            }else if (index1==3){
+                                var_ins['MODIFICACION'] = 1;
+                            }else if (index1==4){
+                                var_ins['VER'] = 1;
+                            }else if (index1==5){
+                                var_ins['EXPORTAR'] = 1;
+                            }else if (index1==6){
+                                var_ins['OTROS'] = 1;
+                            }
+                        }else{
+                            //console.log( 'permiso: ' + id_permiso + ' - ' + index1 + ' index1: no');
+                            if (index1==0){
+                                var_ins['MOSTRAR'] = 0;
+                            }else if (index1==1){
+                                var_ins['ALTA'] = 0;
+                            }else if (index1==2){
+                                var_ins['BAJA'] = 0;
+                            }else if (index1==3){
+                                var_ins['MODIFICACION'] = 0;
+                            }else if (index1==4){
+                                var_ins['VER'] = 0;
+                            }else if (index1==5){
+                                var_ins['EXPORTAR'] = 0;
+                            }else if (index1==6){
+                                var_ins['OTROS'] = 0;
+                            }
+                        }
+                    });
+                    obj_fin.push(var_ins);
+
+                });
+
+                var id = $("#idh").val();
+
+                if ( !$("#customForm").validationEngine('validate') )
+                    return false;
+
+
+                iid = id ? id:0;
+                obj = {
+                    id:iid,
+                    obj_fin:obj_fin
+                }
+
+                $.ajax({
+                    url : _permisos.URL + "/x_sendobj",
+                    data : {
+                        obj:obj
+                    },
+                    dataType : "json",
+                    type : "post",
+                    success : function(data){
+                        if(data.result==-1){
+                            jAlert('Este Permiso ya existe para este Rol. No se puede agregar.', $.ucwords(_etiqueta_modulo),function(){
+                            });
+                        }else if(data.result>0){
+                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
+                                $('#btnClear').trigger('click');
+                                $(".contenedor_entidades p input").first().trigger('click');
+                                $("#jqxgrid").show();
+                                $("#wpopup").html('');
+                                $("#jqxgrid").jqxGrid('updatebounddata');
+                            });
+                        }
+                        else{
+                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo),function(){
+                                $.unblockUI();
+                            });
+                        }
+                    }
+                });
+            });
+
+            $('#id_rol,#id_permiso').change(function(){
+                $(this).validationEngine('validate');
+            });
+
+
+            if (ver!=-1){
+                $(".elempie").html('').hide();
+            }
+
+        }
+    });  
+                
+}

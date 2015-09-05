@@ -341,9 +341,10 @@ $(document).ready(function(){
                                         });
                                         if (tmpfancy==1)
                                             myfancy=1;
-
+                                        alert("Poner Regresar");
 
                                         $(".regresar_ar").click(function(e){
+                                            alert("Deberia regresar");
                                             e.preventDefault();
                                             $.fancybox.close();
                                             //$(".asignar").trigger('click');
@@ -5133,7 +5134,8 @@ function addEventsRequerimientos(idr){
         //var autor_req=24;
         var autor_req = $("#jefeope_h").val();
         
-                        
+console.log("si rol es jefe de op, estado = 2");
+console.log(_USER_ROL);
         // si rol es jefe de op, estado = 2
         if (_USER_ROL==10){
             estado = 2;
@@ -5377,7 +5379,8 @@ function addEventsRequerimientos(idr){
         }
         
         
-        
+
+        console.log(arr_up);
         $.ajax({
             url : _carpetas.URL + "/x_update_req",
             data : {
@@ -6249,7 +6252,7 @@ function evento_lista_req(no_save){
         e.preventDefault();
         var idr = $(this).data("idr");
         var remitente = $(this).data("remitente");
-        
+
         if (remitente==_USUARIO_SESION_ACTUAL){
             no_save = 0;
         }

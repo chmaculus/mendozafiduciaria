@@ -37,7 +37,7 @@ class permisos_model extends main_model{
         
         if ($iid==0)://agregar
             $acc = "add";
-            
+
             if ($obj['obj_fin']):
                 $this->_db->delete($this->_tablamod,"ID_ROL='".$obj['obj_fin'][0]['ID_ROL']."'");
                 foreach( $obj['obj_fin'] as $rsp):

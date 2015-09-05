@@ -10,6 +10,7 @@ class carpetas_model extends main_model{
             $obj_operatoria = $this->_db->get_tabla( 'fid_operatorias', "ID='".$rtn[0]["ID_OPERATORIA"]."'" );
             $rtn[0]["obj_operatoria"] = $obj_operatoria[0];
         }
+//        print_r($rtn);
         return $rtn;
     }
     
@@ -71,18 +72,21 @@ class carpetas_model extends main_model{
     function get_carterade($id){
         $this->_db->select(" CONCAT(NOMBRE,' ', APELLIDO) as nombrecarterade ");
         $rtn = $this->_db->get_tabla('fid_usuarios',"ID='".$id."'");
+        log_this('get_carterade.log', $this->_db->last_query());
         return $rtn;
     }
     
     function get_etapaactual($id){
         $this->_db->select(" NOMBRE ");
         $rtn = $this->_db->get_tabla('fid_etapas',"ID='".$id."'");
+        log_this('get_etapaactual.log', $this->_db->last_query());
         return $rtn;
     }
     
     function get_proceso($id){
         $this->_db->select(" NOMBRE ");
         $rtn = $this->_db->get_tabla('fid_procesos',"ID='".$id."'");
+        log_this('get_proceso.log', $this->_db->last_query());
         return $rtn;
     }
     
@@ -322,7 +326,8 @@ class carpetas_model extends main_model{
     }
     
     function actualizar_operacion_desistir($idope,$estado){
-        $resp = $this->_db->update( 'fid_operaciones', array("ID_ESTADO"=>$estado), "ID='".$idope."'" );
+        $etapa_desistir = 16;
+        $resp = $this->_db->update( 'fid_operaciones', array("ID_ESTADO"=>$estado,"ID_ETAPA_ACTUAL"=>$etapa_desistir), "ID='".$idope."'" );
         return $resp;
     }
     
@@ -1384,7 +1389,8 @@ class carpetas_model extends main_model{
         //obtener etapa origen
         $this->_db->select('ETAPA_ORIGEN');
         $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$idope."' AND ACTIVO='1'");
-        $etapa_origen = 99;
+        log_this('xxxxx2.log', $this->_db->last_query() );
+        $etapa_origen = 15;
         if ($regt){
             $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
         }
@@ -1408,8 +1414,9 @@ class carpetas_model extends main_model{
             "LEIDO"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza );
-        
+
         //actualizar la operacion (carterade y etapa actual )
+        $etapa_origen = 15;
         $obj_edo= array(
             "ID_ETAPA_ACTUAL"=>$etapa_origen,
             "ENVIADOA"=>'0'

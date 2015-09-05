@@ -562,10 +562,13 @@ class carpetas extends main_controller{
             
             $carterade = $this->mod->get_carterade( $tmp[0]['CARTERADE'] );
             $data['carterade'] = isset($carterade[0]['nombrecarterade'])?$carterade[0]['nombrecarterade']:'';
-            
             $etapaactual = $this->mod->get_etapaactual( $tmp[0]['ID_ETAPA_ACTUAL'] );
-            $data['etapaactual'] = $etapaactual[0]['NOMBRE'];
-            
+            if($etapaactual){
+                $data['etapaactual'] = $etapaactual[0]['NOMBRE'];
+            }else{
+                $data['etapaactual'] = 'Recuperada';
+            }
+           
             $id_proceso = $this->mod->get_proceso( $tmp[0]['ID_PROCESO'] );
             $data['id_proceso'] = $id_proceso[0]['NOMBRE'];
             

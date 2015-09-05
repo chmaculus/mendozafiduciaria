@@ -26,7 +26,7 @@
             <div class="elem elem_med" style="margin-left: 21px;">
                 <label>Rol:</label>
                 <div class="indent">
-                    <select class="validate[required] chzn-select medium-select select" id="id_rol" data-prompt-position="topLeft">
+                    <select class="validate[required] chzn-select medium-select select" id="id_rol" onchange="actualiza_ss(this.value)" data-prompt-position="topLeft">
                         <option value="">Elegir Rol</option>
                         <?php foreach($lst_roles as $rs_rol): ?>
                         <option value="<?php echo $rs_rol["ID"] ?>"><?php echo $rs_rol["DENOMINACION"] ?></option>
@@ -59,7 +59,19 @@
                             <td><input type="checkbox" value="1"></td>
                             <td><input type="checkbox" value="1"></td>
                             <td><input type="checkbox" value="1"></td>
-                            <td><input type="checkbox" value="1"></td>
+                            <td>
+                                <input type="checkbox" value="1">
+                                <?php 
+                                    if($rs_per["ID"]==10){?>
+                                <div class="activo-letras" style="font-size: 10px;">(Encargado OP)</div>
+                                <?php         
+                                    }else{
+                                ?>   
+                                <div class="activo-letras" style="font-size: 10px;"></div>
+                                 <?php
+                                    }
+                                ?>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                         <?php endif;  ?>
