@@ -6,7 +6,7 @@ class formaltabase extends main_controller {
         $this->mod = $this->model("formalta_model");
     }
 
-    function init($id = 0) {
+    function init($id = 0, $credito_caduca=0, $fecha_caduca=0) {
 
         if (!isset($_SESSION["USERADM"]))
             header("Location: " . '/' . URL_PATH);
@@ -29,7 +29,7 @@ class formaltabase extends main_controller {
         );
 
         $datax = array();
-        $datax['main'] = $this->_obtener_main( $id);
+        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca);
         $datax['titulo'] = "Administracion";
         $datax['etiqueta_modulo'] = "Carpetas";
         $datax['name_modulo'] = $this->get_controller_name();
@@ -43,46 +43,71 @@ class formaltabase extends main_controller {
         //etapas
     }
 
-    function _obtener_main( $id) {
-
+    function _obtener_main($id, $credito_caduca, $fecha_caduca) {
+        
         $ultimo = $this->mod->get_next_id();
+        
+        if ($credito_caduca && $this->mod->set_credito_active($credito_caduca)) {
+            $this->mod->set_version_active();
+            $this->mod->renew_datos();
+            $credito = $this->mod->get_credito_from_id($credito_caduca);
+            $credito_pago = 0;
+            $pagos = $this->mod->get_capital_pagos();
+            $cuotas_restantes = 0;
+            if($pagos) {
+                foreach ($pagos as $it) {
+                    $credito_pago += round($it['MONTO'], 2);
+                    //$cuotas_restantes = $it['CUOTAS_RESTANTES'];
+                }
+            }
+            
+            $credito["ID"] = $ultimo;
+            $credito["MONTO_CREDITO"] -= $credito_pago;
+            $credito["INTERES_CUOTAS"] = $credito["CAPITAL_CUOTAS"] = $cuotas_restantes;
+            
+            
+        } else {
 
-        $credito = array("ID" => $ultimo,
-            "ID_OPERACION" => 0,
-            "ACTIVIDAD" => "",
-            "MONTO_CREDITO" => 10000,
-            "MONTO_APORTE" => 0,
-            "MONTO_OTRO" => 0,
-            "MONTO_TOTAL" => 0,
-            "MONTO_CREDITO_POR" => 0,
-            "MONTO_APORTE_POR" => 0,
-            "MONTO_OTRO_POR" => 0,
-            "MONTO_TOTAL_POR" => 0,
-            "PLAZO_COMPENSATORIO" => 365,
-            "PLAZO_PUNITORIO" => 365,
-            "PLAZO_MORATORIO" => 365,
-            "T_COMPENSATORIO" => 12,
-            "T_PUNITORIO" => 24,
-            "T_BONIFICACION" => 0,
-            "T_MORATORIO" => 12,
-            "INTERES_CUOTAS" => 6,
-            "INTERES_VTO" => date("Y-m-d"),
-            "INTERES_PERIODO" => 09,
-            "CAPITAL_CUOTAS" => 6,
-            "CAPITAL_VTO" => date("Y-m-d"),
-            "CAPITAL_PERIODO" => 0,
-            "DESEMBOLSOS" => array(),
-            "POSTULANTES" => 0,
-            "ID_OPERATORIO" => 0,
-            "ID_FIDEICOMISO" => 0,
-        );
+            $credito = array("ID" => $ultimo,
+                "ID_OPERACION" => 0,
+                "ACTIVIDAD" => "",
+                "MONTO_CREDITO" => 10000,
+                "MONTO_APORTE" => 0,
+                "MONTO_OTRO" => 0,
+                "MONTO_TOTAL" => 0,
+                "MONTO_CREDITO_POR" => 0,
+                "MONTO_APORTE_POR" => 0,
+                "MONTO_OTRO_POR" => 0,
+                "MONTO_TOTAL_POR" => 0,
+                "PLAZO_COMPENSATORIO" => 365,
+                "PLAZO_PUNITORIO" => 365,
+                "PLAZO_MORATORIO" => 365,
+                "T_COMPENSATORIO" => 12,
+                "T_PUNITORIO" => 24,
+                "T_BONIFICACION" => 0,
+                "T_MORATORIO" => 12,
+                "INTERES_CUOTAS" => 6,
+                "INTERES_VTO" => date("Y-m-d"),
+                "INTERES_PERIODO" => 09,
+                "CAPITAL_CUOTAS" => 6,
+                "CAPITAL_VTO" => date("Y-m-d"),
+                "CAPITAL_PERIODO" => 0,
+                "DESEMBOLSOS" => array(),
+                "POSTULANTES" => 0,
+                "ID_OPERATORIO" => 0,
+                "ID_FIDEICOMISO" => 0
+            );
+        }
 
         if ($id > 0){
             $credito = $this->mod->get_credito_from_id($id);
         }
+        
+        $credito["CREDITO_CADUCA"] = $credito_caduca;
+        $credito["FECHA_CADUCA"] = $fecha_caduca;
 
 
-        $credito['POSTULANTES'] = $this->mod->get_clientes();
+        $credito['LPOSTULANTES'] = $this->mod->get_clientes();
         $this->_js_array['FIDEICOMISOS'] = $credito['FIDEICOMISOS'] = $this->mod->get_fideicomisos();
         //print_array($credito );
         $this->_js_array['DESEMBOLSOS'] = $credito['DESEMBOLSOS'];
@@ -348,7 +373,7 @@ class formaltabase extends main_controller {
     }
 
     function x_generar_cuotas($retorno = TRUE) {
-
+        
         $data['fecha'] = $_POST['fecha'];
 
         //se calcula la fecha de inicio de la primera cuota sobre la fecha del primer vencimiento y la periodicidad
@@ -383,7 +408,7 @@ class formaltabase extends main_controller {
         $plazo_punitorio = $_POST['plazo_punitorio'];
 
         $credito_id = key_exists('credito_id', $_POST) ? $_POST['credito_id'] : 1;
-
+        
         $this->mod->set_tipo_credito($micro);
         $this->mod->set_credito_active($credito_id);
         $this->mod->borrar_credito();
@@ -428,7 +453,7 @@ class formaltabase extends main_controller {
 
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
         $this->mod->generar_cuotas($ret, 0, $retorno);
-
+        
       /*  $i = 0;
 
             //incluimos  todos los desembolsos
@@ -457,6 +482,7 @@ class formaltabase extends main_controller {
         $this->mod->set_fecha_calculo();
 
         $this->mod->save_operacion_credito();
+        $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
     }
     
     function x_agregar_desembolso(){

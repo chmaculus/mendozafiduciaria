@@ -964,3 +964,6 @@ iframe{
 .activo-letras{
     font-size: 5px;
 }
+
+.fancybox-overlay{z-index:1000 !important}
+

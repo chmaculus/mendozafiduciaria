@@ -15,7 +15,7 @@
         $time = mktime(0,0,0,$m,$d,$y);
         
         $cnn->where("t.CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
-        $cnn->select("t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES, ID_OPERACION, ifnull(e.CREDITO_ESTADO,0) as CR_ESTADO");
+        $cnn->select("t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES, ID_OPERACION, ifnull(e.CREDITO_ESTADO,0) as CR_ESTADO, t.CREDITO_ESTADO");
         $cnn->order_by("t.ID","DESC");
         $cnn->join("fid_fideicomiso f","f.ID = t.ID_FIDEICOMISO", "left");
         $cnn->join("fid_operatorias o","o.ID = t.ID_OPERATORIA", "left");
@@ -45,6 +45,7 @@
                 $estado = 'AL DIA';
                 if ($credito['CR_ESTADO']==-1) $estado = 'DEUDA';
                 if ($credito['CR_ESTADO']==0) $estado = 'SIN VERIFICAR';
+                if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_CADUCADO) $estado = 'CADUCADO';
                 
                 $rtn[]=array(
                     "ID_CREDITO" =>$credito['ID_CREDITO'],

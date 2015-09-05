@@ -54,6 +54,12 @@ define('SQL_USER', 'sa');
 define('SQL_PASS', 'Xxzz@2014');
 define('SQL_DATABASE', 'MENDOZA_FID');
 
+define('SMTP_HOST', "smtp.gmail.com");
+define('SMTP_LOGIN', "mcattafi.focasoftware@gmail.com");
+define('SMTP_PASS', "cata4517");
+define('CORREO_ADMINISTRADOR_FROMNAME', "Mendoza Fiduciaria");
+define('CORREO_ADMINISTRADOR_FROM', "no-reply@mendozafiduciaria.com");
+define('CORREO_DESTINO_REQUERIMIENTOS', "mauriciocattafi@yahoo.com.ar");
 
 /*
 define('SQL_SERVER', 'MZADB\SQL2008');

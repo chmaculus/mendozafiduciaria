@@ -3232,6 +3232,32 @@ ORDER BY T1.lvl DESC');
             return FALSE;
         }
     }
+    
+    public function get_capital_pagos() {
+        $this->_db->select('MONTO, CUOTAS_RESTANTES');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito . " AND ID_TIPO = ". PAGO_CAPITAL);
+        $this->_db->order_by("FECHA", "ASC");
+        $pagos = $this->_db->get_tabla("fid_creditos_pagos");
+        
+        if($pagos) {
+            return $pagos;
+        } else {
+            return FALSE;
+        }
+        
+    }
+    
+    public function caducar_credito($creditoId, $nuevoCreditoId, $fecha) {
+        //por el momento no se guarda fecha
+        if (!$creditoId) {
+            return;
+        }
+        
+        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_CADUCADO), "ID = " . $creditoId);
+        $this->_db->update("fid_creditos", array("ID_CADUCADO" => $creditoId), "ID = " . $nuevoCreditoId);
+        
+        echo $this->_db->last_query();
+    }
 }
 
 ?>

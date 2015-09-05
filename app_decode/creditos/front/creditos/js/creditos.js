@@ -270,7 +270,17 @@ function init_grid(id_usuario,tipo){
             }
         }
     );
-			
+                        
+    var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
+
+        if (value == 'CADUCADO') {
+            return '<div style="margin:4px;color:#ff0000;font-weight:bold;">' + value + '</div>';
+        }
+        else {
+            return '<div style=margin:4px;>' + value + '</div>';
+        }
+    }
+
     $("#jqxgrid").jqxGrid(
     {
         width: '98%',
@@ -319,7 +329,7 @@ function init_grid(id_usuario,tipo){
             { text: 'OPERATORIA', datafield: 'OPERATORIA', width: '20%', hidden : false, filterable : true },
             { text: 'FIDEICOMISO', datafield: 'FIDEICOMISO', width: '20%', hidden : false, filterable : true },
             { text: 'CARPETA', datafield: 'CARPETA', width: '10%', hidden : false, filterable : true },
-            { text: 'ESTADO', datafield: 'ESTADO', width: '10%', hidden : false, filterable : true }
+            { text: 'ESTADO', datafield: 'ESTADO', width: '10%', hidden : false, filterable : true, cellsrenderer: cellsrenderer, cellclassname: 'credEst' }
         ]
     });
     
@@ -726,14 +736,19 @@ function get_inicio(){
 
 function get_credito(edit){
     $.unblockUI();
-    var urlbase = $("#liVer").data("loc");
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     
     if (selectedrowindexes.length === 1){
-        var credito_selected = $('.jqx-grid-cell-selected :first').html();
-        var url = urlbase+"/init/"+credito_selected+"/"+edit;
-        location.href=url;
-        return false;
+        var estado = $('.jqx-grid-cell-selected.credEst').text();
+        if (estado == 'CADUCADO') {
+            jConfirm("Desea continuar?","Crédito Caducado", function(r){
+                if (r) {
+                    _get_credito(edit);
+                }
+            });
+        } else {
+            _get_credito(edit);
+        }
         
     } else {
         jAlert("Debe seleccionar solo un crédito","Editar Créditos", function(){
@@ -742,6 +757,14 @@ function get_credito(edit){
         });
     }
      
+}
+
+function _get_credito(edit) {
+    var urlbase = $("#liVer").data("loc");
+    var credito_selected = $('.jqx-grid-cell-selected :first').html();
+    var url = urlbase+"/init/"+credito_selected+"/"+edit;
+    location.href=url;
+    return false;
 }
 
 function get_formalta(){

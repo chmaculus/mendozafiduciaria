@@ -294,3 +294,5 @@ ul.ul-titulo-segmento li{
     border:none;
     height:430px;
 }
+
+#btn-caducar input{width:110px;padding:5px;position:relative;top:14px}

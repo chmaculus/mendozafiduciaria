@@ -24,7 +24,11 @@ _formaltabase.start = function(){
     
     $("#comboClientes").chosen();
     $("#comboOperatorias").chosen();
-
+    
+    if ($("#comboFideicomiso").val() > 0) {
+        get_operatorios_from_fideicomiso($("#comboFideicomiso").val());
+    }
+    
     $("#comboFideicomiso").chosen().change(function() {
         get_operatorios_from_fideicomiso($(this).val());
         //$('#' + $(this).val()).show();
@@ -273,7 +277,9 @@ function generar_cuotas(){
             desembolsos : _desembolsos,
             clientes : clientes || 0,
             operatoria : operatoria || 0,
-            fideicomiso : fideicomiso || 0
+            fideicomiso : fideicomiso || 0,
+            credito_caduca: $("#credito_caduca").val(),
+            fecha_caduca: $("#fecha_caduca").val()
         },
         type : "post",
         success : function(data){
