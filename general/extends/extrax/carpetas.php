@@ -145,7 +145,7 @@
     
     
     if (isset($_GET["accion"]) && $_GET["accion"]=='getRequerimientos' ){
-        
+       
         $word = isset($_GET["name_startsWith"])?$_GET["name_startsWith"]:"";
         $cad_campos = "nr.ID, nr.ASUNTO, o.BENEF, nr.DESCRIPCION, nr.DESTINATARIO, ID_OPERACION, u.NOMBRE, u.APELLIDO, FCREA, IF( nr.ESTADO = '0','Pendiente','Respondido')";
         $arr_campos = explode(', ', $cad_campos);

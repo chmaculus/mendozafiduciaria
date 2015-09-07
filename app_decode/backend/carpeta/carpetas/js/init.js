@@ -5117,6 +5117,7 @@ function addEventsRequerimientos(idr){
     
                         
     $(".send_req").on('click', function(e){
+        alert("guardar req");
         e.preventDefault();
 
         // edit/new
@@ -5130,7 +5131,7 @@ function addEventsRequerimientos(idr){
         var req_fresp = $("#fresp").val();
         
         var id_ope_req = mydata.IDOPE;
-        var estado = 2;
+        var estado = 1;
         //var autor_req=24;
         var autor_req = $("#jefeope_h").val();
         
@@ -5141,7 +5142,7 @@ console.log(_USER_ROL);
             estado = 2;
             autor_req=0;
         }
-
+alert(_USER_ROL);
         //adjuntos
         var _array_uploads_adj = [];
         $( ".lista_reqs_adj li" ).each(function(index){
