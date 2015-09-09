@@ -5117,7 +5117,7 @@ function addEventsRequerimientos(idr){
     
                         
     $(".send_req").on('click', function(e){
-        alert("guardar req");
+//        alert("guardar req");
         e.preventDefault();
 
         // edit/new
@@ -5142,7 +5142,7 @@ console.log(_USER_ROL);
             estado = 2;
             autor_req=0;
         }
-alert(_USER_ROL);
+//alert(_USER_ROL);
         //adjuntos
         var _array_uploads_adj = [];
         $( ".lista_reqs_adj li" ).each(function(index){
