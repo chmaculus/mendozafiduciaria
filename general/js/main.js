@@ -485,9 +485,26 @@ function notifMain( iid ){
                         }
                     });
                 } else if ( (idnr && idnr>0) ){
+                var idNotificacion = $('#idNoti').text();
                     jConfirm('Esta seguro de rechazar esta Nota??.', 'Carpetas',function(r){
                         if(r==true){
-                            $.ajax({
+           var metodo = "<div style='width:350px; height:200px;'>\n\
+            <h2 style='font-size: 18px;margin-left: 3px;font-weight: bold; width:300px; '>Ingrese el motivo de rechazo</h2>\n\
+            <input id='inputmotivo' style='width:300px; height:50px; margin-top:25px'/>\n\
+            <input id='traermotivo' type='button' style='width:300px; padding:20px; margin-top:25px' value='Guardar'/> </div>";
+                $.fancybox({
+                "content": metodo,
+                'padding'   :  40,
+                'autoScale' :true,
+                'scrolling' : 'no',
+//                'beforeClose': function() {
+//                    location.reload();
+//                }
+            });
+                
+            $("#traermotivo").on('click',function(){
+                var contMotivo = $('#inputmotivo').val();
+                $.ajax({
                                 url : 'backend/carpeta/carpetas/x_cancelar_nota',
                                 type : "post",
                                 data : {
@@ -495,6 +512,7 @@ function notifMain( iid ){
                                 },
                                 async:false,
                                 success : function(data){
+                                    cargarMotivo(contMotivo,idNotificacion);
                                     jAlert('Nota Rechazada.', 'Carpetas',function(){
                                         actualizaNotif();
                                         regresar_a_listado();
@@ -502,6 +520,7 @@ function notifMain( iid ){
                                     });
                                 }
                             });
+            })
                         }
                     });
                     
@@ -543,6 +562,32 @@ function actualizaNotif(p_auto){
         type : "post",
         async:false,
         success : function(data){
+            if(data>0){
+                $(".notif").html('('+data+')');
+                $(".notif").attr("data-notificaciones",data);
+                if (p_auto==1){
+                    $.fancybox.close();
+                    $(".notif").trigger('click');
+                }
+            }
+            else if(data==-1){
+                $(".notif").html('');
+            }
+        }
+    });
+}
+
+function cargarMotivo(contMotivo, idNotificacion){
+    $.ajax({
+        url : 'backend/notificaciones/x_cargar_motivo_rechazo',
+        type : "post",
+        data : {
+        contMotivo: contMotivo,
+        idNot: idNotificacion
+                        },
+        async:false,
+        success : function(data){
+//lo siguiente no lo saque de la copia del ajax, capas q no sirve
             if(data>0){
                 $(".notif").html('('+data+')');
                 $(".notif").attr("data-notificaciones",data);

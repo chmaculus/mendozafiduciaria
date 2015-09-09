@@ -6427,7 +6427,7 @@ function event_grid_traza(idope){
         
 			
     $("#jqxgrid_traza").jqxGrid({
-        width: '98%',
+        width: '900px',
         source: dataAdaptertraza,
         theme: 'energyblue',
         ready: function () {
@@ -6436,10 +6436,10 @@ function event_grid_traza(idope){
         columnsresize: true,
         localization: getLocalization(),
         columns: [
-            { text: 'ETAPA', datafield: 'ETAPA', width: '25%', hidden : false },
-            { text: 'USUARIO', datafield: 'USUARIO', width: '25%', hidden : false },
-            { text: 'FECHA', datafield: 'FECHA', width: '25%', hidden : false },
-            { text: 'DESCRIPCION', datafield: 'DESCRIPCION', width: '70%', hidden : false },
+            { text: 'ETAPA', datafield: 'ETAPA', width: '15%', hidden : false },
+            { text: 'USUARIO', datafield: 'USUARIO', width: '15%', hidden : false },
+            { text: 'FECHA', datafield: 'FECHA', width: '20%', hidden : false },
+            { text: 'DESCRIPCION', datafield: 'DESCRIPCION', width: '60%', hidden : false },
             { text: 'AUTORIZACION 1', datafield: 'AUTOR_NOMBRE', width: '20%', hidden : false },
             { text: 'AUTORIZACION 2', datafield: 'AUTOR1_NOMBRE', width: '20%', hidden : false }
             
@@ -7514,7 +7514,7 @@ function initNotas( id_oper ){
     
 			
     $("#jqxgrid_notas").jqxGrid({
-        width: '98%',
+        width: '900px',
         source: dataAdapterope,
         theme: 'energyblue',
         ready: function () {

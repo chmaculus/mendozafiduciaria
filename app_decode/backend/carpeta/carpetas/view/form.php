@@ -989,7 +989,12 @@
             <?php
                 if( isset($lst_reqs) && is_array($lst_reqs) ):
                     if (count($lst_reqs)>0)
-                        echo '<li class="li_cabezera">Id<span class="fet">'. "F. Tratamiento" .'</span><span class="fer">'. "F. Recepción" .'</span><span class="fem">'. "F. Emisión" .'</span><span class="reqest">Estado</span><span class="reqiid">Asunto</span></li>';
+//                        echo '<li class="li_cabezera">Id<span class="fet">'. "F. Tratamiento" .'</span><span class="fer">'. "F. Recepción" .'</span><span class="fem">'. "F. Emisión" .'</span><span class="reqest">Estado</span><span class="reqiid">Asunto</span></li>';
+echo '<li class="li_cabezera"><span class="fet" style="margin-right:85px;">'. 
+                            "F. Tratamiento" .'</span><span class="fer">'. 
+                            "F. Recepción" .'</span><span class="fem">'. 
+                            "F. Emisión" .'</span><span class="reqest">Estado</span>'
+                            . '<span class="reqiid">Asunto</span></li>';
                     
                     foreach($lst_reqs as $rs_up):
                         //$fcrea = strtotime( $rs_up["FCREA"])==false?'-':date( "d/m/Y", strtotime($rs_up["FCREA"]) ) . " _ ";
@@ -1015,9 +1020,11 @@
                             $estado = "No autorizado" ;
                         
                         if ($estado=='Enviado')
-                            echo '<li class="ya_enviado" data-idr="'.$rs_up["ID"].'"><span class="filr_iid">'. $rs_up["ID"] .'</span><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
+//                            echo '<li class="ya_enviado" data-idr="'.$rs_up["ID"].'"><span class="filr_iid">'. $rs_up["ID"] .'</span><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
+                        echo '<li class="ya_enviado" data-idr="'.$rs_up["ID"].'"><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
                         else
-                            echo '<li data-remitente="'.$rs_up["REMITENTE"].'" data-idr="'.$rs_up["ID"].'"><span class="filr_iid">'. $rs_up["ID"] .'</span><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
+//                            echo '<li data-remitente="'.$rs_up["REMITENTE"].'" data-idr="'.$rs_up["ID"].'"><span class="filr_iid">'. $rs_up["ID"] .'</span><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
+                            echo '<li data-remitente="'.$rs_up["REMITENTE"].'" data-idr="'.$rs_up["ID"].'"><span class="filr_asunto">'.$rs_up["ASUNTO"].'</span><span class="filr_estado">'. $estado .'</span><span>'. $fcrea .'</span><span>'. $frec .'</span><span>'. $ftra .'</span></li>';
                     endforeach;
                 endif;
                 

@@ -1,3 +1,9 @@
+<style type="text/css">
+    div#line1 span#a {display:inline;}
+    div#line1:hover span#a {display:none;}
+    div#line1 span#b {display:none;}
+    div#line1:hover span#b {display:inline;}
+</style>
 <?php if($carpetas_pendientes){ ?>
 <?php 
     $para_aux1 = 0;
@@ -5,7 +11,7 @@
         $para_aux1 = 1;
     }
 ?>
-<div class="notif_titulo">Nuevas notificaciones:</div>
+<div class="notif_titulo" style="width:500px;">Nuevas notificaciones:</div>
 <?php       foreach ($carpetas_pendientes as $c){ ?>
 <?php 
         $clase = "link_aceptar_carpeta";
@@ -47,23 +53,22 @@
                     <div data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_no"></div>
                     <?php endif; ?>
                 <?php elseif($c["TNOTA"]>0): //Nota ?>
-                    
                     <?php if ( $c["TESTADO"]!=4 ):?>
-                            <div class="<?php echo $clase ?>" >Te enviaron una nota.<span> Nota ID:<?php echo $c["TNOTA"]?></span> </div>
+                    <div id="line1" class="<?php echo $clase ?>" >Te enviaron una nota.<span id="a"> Nota ID: <span id="idNoti"><?php echo $c["TNOTA"]?></span></span>
+                    <span id="b"> Asunto: <span id="idNoti"><?php echo $c["ASUNTO"]?></span></span></div>
                             <div data-iid="<?php echo $c["TNOTA"]?>" data-tid="<?php echo $c["TID"]?>" data-actual="<?php echo $_SESSION["USERADM"] ?>" data-notifnota="1" class="link_aceptar tb_si"></div>
                             <div data-iid_nr="<?php echo $c["TNOTA"]?>" data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_no"></div>
                     <?php else:?>
-                            <div class="<?php echo $clase ?>" >Rechazaron la nota que enviaste.<span> Nota ID:<?php echo $c["TNOTA"]?></span> </div>
+                            <div id="line1" class="<?php echo $clase ?>" >Rechazaron la nota que enviaste.<span id="a"> Nota ID: <?php echo $c["TNOTA"]?></span> 
+                            <span id="b"> Asunto: <?php echo $c["ASUNTO"]?></span></div>
                             <div data-iid="<?php echo $c["TID"]?>" data-tid="<?php echo $c["TID"]?>" data-actual="<?php echo $_SESSION["USERADM"] ?>" data-notif="1" class="link_aceptar tb_si"></div>
-                    <?php endif; ?>
+                             <?php endif; ?>
                     
                     
                 <?php elseif($c["TOBSERVACION"]=='NOTIFICACION' && $c["TDESCRIPCION"]=='PETICION DE CONFIRMACION DE COPIA DE CONTRATO EN LEGALES'): //Notificacion de envio de copia de contrato a legales ?>
                     <div class="<?php echo $clase ?>" ><?php echo $c["TDESCRIPCION"] ?>.<span> Carpeta ID:<?php echo $c["ID"]?></span> </div>
                     <div data-iid="<?php echo $c["TID"]?>" data-tid="<?php echo $c["TID"]?>" data-notif="2" class="link_aceptar tb_si"></div>
                     <div data-iid="<?php echo $c["ID"]?>"  data-tid="<?php echo $c["TID"]?>" data-notif="2" class="link_aceptar tb_no"></div>
-                    
-                    
                 <?php elseif($c["TOBSERVACION"]=='NOTIFICACION'): //Notificacion de envio de analisis a coord. de operaciones ?>
                     <div class="<?php echo $clase ?>" ><?php echo $c["TDESCRIPCION"] ?>.<span> Carpeta ID:<?php echo $c["ID"]?></span> </div>
                     <div data-iid="<?php echo $c["TID"]?>" data-tid="<?php echo $c["TID"]?>" data-notif="1" class="link_aceptar tb_si"></div>
