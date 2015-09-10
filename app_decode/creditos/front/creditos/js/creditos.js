@@ -108,6 +108,8 @@ $(document).ready(function(){
                     break;
                 case "cobros":
                     get_cobros();
+                    alert("aca");
+                    return false;
                     break;
                 case "eventos-multiples":
                     get_multiple_eventos();

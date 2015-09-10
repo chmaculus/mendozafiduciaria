@@ -258,7 +258,7 @@ $(document).ready(function(){
                                 success : function(data){
                                     
                                     if(data.result>0){
-                                        jAlert('Operacion Exitosa1.', $.ucwords(_etiqueta_modulo),function(){
+                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
                                             $('#btnClear').trigger('click');
                                             $("#jqxgrid").jqxGrid('updatebounddata');
                                             _array_entidades = {};
@@ -649,6 +649,7 @@ $(document).ready(function(){
                                 ACT_COMPENS:act_compens
                             }
                             
+                            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
                             $.ajax({
                                 url : _operatorias.URL + "/x_sendobj",
                                 data : {

@@ -646,7 +646,6 @@ class credito_model_test extends credito_model {
         $this->_db->select("c.ID, cv.ID_VERSION");
         $this->_db->where("ID_OPERATORIA = '" . $id_operatoria . "'");
         $this->_db->join("fid_creditos_version cv", "cv.ID_CREDITO_VERSION = c.ID");
-        $this->_db->limit(0, 2);
         $rtn = $this->_db->get_tabla("fid_creditos c");
         
         return $rtn;
