@@ -409,6 +409,47 @@ class credito_informes_model extends credito_model {
         return FALSE;
     }
     
+    public function get_reporte_caducidad($ffid=FALSE, $fdesde=FALSE, $fhasta=FALSE) {
+        $sql = "";
+        if ($ffid && is_array($ffid) && count($ffid)) {
+            $sql .= " AND ID_FIDEICOMISO  IN (" . implode(",", $ffid) . ")";
+        }
+        
+        if ($fdesde || $fhasta) {
+            if ($fdesde) {
+                $sql .= " AND CAPITAL_VTO >= '" . date('Y-m-d', $fdesde) . "'";
+            }
+            if ($fhasta) {
+                $sql .= " AND CAPITAL_VTO <= '" . date('Y-m-d', $fhasta) ." 23:59:59'";
+            }
+        }
+        
+        $fecha = strtotime(date('Y-m-d'));
+        
+        $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD, '
+                . 'cc.CUOTAS_RESTANTES, cc.FECHA_VENCIMIENTO');
+        //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
+        $this->_db->where("CREDITO_ESTADO NOT IN (".ESTADO_CREDITO_ELIMINADO . ", " . ESTADO_CREDITO_CADUCADO .")" . $sql);
+        $this->_db->join("fid_creditos_cuotas cc", "c.ID=cc.ID_CREDITO AND cc.FECHA_PAGO=0 AND FECHA_VENCIMIENTO<$fecha", "inner");
+        $this->_db->join("fid_fideicomiso f", "f.ID=c.ID_FIDEICOMISO", "left");
+        $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
+        $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
+        $this->_db->join("fid_provincias pr", "pr.ID = cl.ID_PROVINCIA", "left");
+        $this->_db->group_by("c.ID");
+        $this->_db->order_by("cc.FECHA_VENCIMIENTO", "ASC");
+        //$this->_db->limit(0, 20);
+        $creditos = $this->_db->get_tabla("fid_creditos c");
+        
+        if ($creditos) {
+            foreach ($creditos as $k => $item) {
+                $this->set_credito_active($item['ID']);
+                $creditos[$k]['PAGOS'] = $this->get_moratorias();
+            }
+        }
+        
+        return $creditos;
+    }
+    
     public function get_fideicomisos() {
         $this->_db->select('ID, NOMBRE');
         return $this->_db->get_tabla("fid_fideicomiso", "estado=1");

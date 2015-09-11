@@ -272,8 +272,6 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
     
     confirm = confirm || false;
     
-    alert(fecha);return false;
-
     if (existEventosPosteriores() && !confirm){
         jConfirm("¿Desea generar una nueva version a partir de la fecha del evento ? ","MENDOZA FIDUCIARIA", function(e){
             if (e){

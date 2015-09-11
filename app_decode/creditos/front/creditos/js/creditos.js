@@ -338,6 +338,7 @@ function init_grid(id_usuario,tipo){
 
 function reporte1() {
     remJGrid2();
+    $("#wpopup").html('');
     
     var sourceope ={
         datatype: "json",
@@ -482,6 +483,7 @@ function reporte1b() {
             { text: 'Eficiencia por caso', datafield: 'CREDITOS_EFICIENCIA', width: '25%', groupable:false, filterable: false }
         ]
     });
+    $("#jqxgrid2").show();
     
 }
 
@@ -489,6 +491,7 @@ function reporte1b() {
 
 function reporte2() {
     remJGrid2();
+    $("#wpopup").html('');
     var sourceope ={
         datatype: "json",
         datafields: [
@@ -568,6 +571,7 @@ function reporte2() {
 
 function reporte3() {
     remJGrid2();
+    $("#wpopup").html('');
     $.ajax({
         url : _creditos.URL + "/resumen_moratorias3/",
         data : {
@@ -616,6 +620,84 @@ function get_eventos(){
     }
 }
 
+function reporte4() {
+    remJGrid2();
+    $("#wpopup").html('');
+    
+    var sourceope ={
+        datatype: "json",
+        datafields: [
+            { name: 'DEUDOR', type: 'string' },
+            { name: 'CUIT', type: 'string' },
+            { name: 'ID', type: 'number' },
+            { name: 'DIRECCION', type: 'string' },
+            { name: 'PROVINCIA', type: 'string' },
+            { name: 'LOCALIDAD', type: 'string' },
+            { name: 'FIDEICOMISO', type: 'string' },
+            { name: 'MONTO_CREDITO', type: 'number' },
+            { name: 'SALDO_CAPITAL', type: 'number' },
+            { name: 'FECHA_1VENC_IMP', type: 'date' },
+            { name: 'DIAS_MORAS', type: 'number' },
+            { name: 'CUOTAS_IMPAGAS', type: 'number' }
+        ],
+        url: 'creditos/front/creditos/reporte4/',
+        data:{
+            ffid: $("#ffid").val(),
+            fdesde: $("#fdesde").val(),
+            fhasta: $("#fhasta").val()
+        },
+        type:'post',
+        async:false,
+        deleterow: function (rowid, commit) {
+            commit(true);
+        }
+    };
+    
+    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+        {
+            loadComplete: function (data) { 
+                _creditos_lista = data;
+            },            
+            formatData: function (data) {
+                data.name_startsWith = $("#searchField").val();
+                return data;
+            }
+        }
+    );
+			
+    $("#jqxgrid").jqxGrid(
+    {
+        width: '98%',
+        groupable:false,
+        //source: source,
+        source: dataAdapterope,
+        theme: 'energyblue',
+        ready: function (data) {},
+        selectionmode: "multiplerows",
+        columnsresize: true,
+        showtoolbar: false,
+        localization: getLocalization(),
+        sortable: true,
+        filterable: true,
+        showfilterrow: false,
+        columns: [
+            { text: 'DEUDOR', datafield: 'DEUDOR', width: '10%', groupable:false, filterable: false },
+            { text: 'CUIT', datafield: 'CUIT', width: '10%', groupable:false, filterable: false },
+            { text: 'CREDITO', datafield: 'ID', width: '5%', hidden : false, filterable : false },
+            { text: 'DIRECCION', datafield: 'DIRECCION', width: '10%', hidden : false, filterable : false },
+            { text: 'PROVINCIA', datafield: 'PROVINCIA', width: '10%', hidden : false, filterable : false },
+            { text: 'LOCALIDAD', datafield: 'LOCALIDAD', width: '10%', hidden : false, filterable : false },
+            { text: 'FIDEICOMISO', datafield: 'FIDEICOMISO', width: '10%', hidden : false, filterable : false },
+            { text: 'MONTO DEL CREDITO', datafield: 'MONTO_CREDITO', width: '10%', hidden : false, filterable : false },
+            { text: 'SALDO CAPITAL', datafield: 'SALDO_CAPITAL', width: '8%', hidden : false, filterable : false },
+            { text: 'FECHA VENC. 1ER CUOTA IMPAGA', datafield: 'FECHA_1VENC_IMP', cellsformat: 'dd/MM/yyyy', width: '10%', hidden : false, filterable : false },
+            { text: 'DIAS MORAS', datafield: 'DIAS_MORAS', width: '10%', hidden : false, filterable : false },
+            { text: 'CUOTAS IMPAGAS', datafield: 'CUOTAS_IMPAGAS', width: '10%', hidden : false, filterable : false }
+        ]
+    });
+    
+    $('#jqxgrid').show();
+}
 
 function get_eliminar(){
     
@@ -818,6 +900,7 @@ function exportar() {
                         if ($("#jqxgrid2").length>0) {
                             setTimeout(function () {
                                 $("#jqxgrid2").jqxGrid('exportdata', 'xls', 'ent_'+fGetNumUnico(), true, null, false, url_e);
+                                $("#jqxgrid2").show();
                             }, 1500);
                         }
                         break;
@@ -856,7 +939,6 @@ function volver_creditos() {
 }
 
 function remJGrid2() {
-    $("#wpopup").html('');
     if ($("#jqxgrid2").length > 0) {
         $("#jqxgrid2").remove();
     }
