@@ -554,6 +554,102 @@ class creditos extends main_controller{
         echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte));
     }
     
+    function reporte4() {
+        $filtros = $this->_getFiltrosReporte();
+        $reporte = $this->mod->get_reporte_caducidad($filtros[0], $filtros[1], $filtros[2]);
+        
+        $_cantidad_creditos = 0;
+        $_cantidad_creditos_mora = 0;
+        $_total_creditos = 0;
+        $_montos_vencidos = 0;
+        $_monto_mora = 0;
+        
+        $arr_reporte = array();
+        
+        if ($reporte) {
+            foreach ($reporte as $item) {
+                $arr = array();
+                
+                $_moratoria = 0;
+                $total_moratoria = 0;
+                $total_punitorio = 0;
+                $total_iva = 0;
+                $cuotas_mora = 0;
+                $capital_pagado = 0;
+                $total_credito = $item['MONTO_CREDITO'];
+                $_total_creditos += $total_credito;
+                $monto_mora = 0;
+                $cobranzas = 0;
+                
+                if ($item['PAGOS']) {
+                    $arr_pagos = array();
+                    
+                    foreach ($item['PAGOS'] as $v) {
+                        /*if (!isset($arr_pagos[$v['CUOTAS_RESTANTES']])) {
+                            $arr_pagos[$v['CUOTAS_RESTANTES']] = array(
+                                'MONTO' => 0,
+                                'TIENE_MORA' => 0
+                            );
+                        }
+                        
+                        $arr_pagos[$v['CUOTAS_RESTANTES']]['MONTO'] += $v['MONTO'];
+                        
+                        $cobranzas += $v['MONTO'];*/
+                        switch ($v['ID_TIPO']) {
+                            /*case PAGO_IVA_MORATORIO:
+                                $total_iva += $v['MONTO'];
+                                $total_moratoria += $v['MONTO'];
+                                break;
+                            case PAGO_MORATORIO:
+                                $_moratoria += $v['MONTO'];
+                                $total_moratoria += $v['MONTO'];
+                                $arr_pagos[$v['CUOTAS_RESTANTES']]['TIENE_MORA'] = 1;
+                                //++$cuotas_mora;
+                                break;
+                            case PAGO_IVA_PUNITORIO:
+                            case PAGO_PUNITORIO:
+                                $total_punitorio += $v['MONTO'];
+                                break;*/
+                            case PAGO_CAPITAL:
+                                $capital_pagado += $v['MONTO'];
+                                break;
+                        }
+                    }
+                    /*
+                    foreach ($arr_pagos as $arr_pg) {
+                        if ($arr_pg['TIENE_MORA']) {
+                            ++$cuotas_mora;
+                            $monto_mora += $arr_pg['MONTO'];
+                        }
+                    } */
+                }
+                
+                
+                if ($_moratoria) {
+                    ++$_cantidad_creditos_mora;
+                }
+                
+                $arr['DEUDOR'] = $item['RAZON_SOCIAL'];
+                $arr['CUIT'] = $item['CUIT'];
+                $arr['ID'] = $item['ID'];
+                $arr['DIRECCION'] = $item['DIRECCION'];
+                $arr['PROVINCIA'] = $item['PROVINCIA'];
+                $arr['LOCALIDAD'] = $item['LOCALIDAD'];
+                $arr['FIDEICOMISO'] = $item['FIDEICOMISO'];
+                $arr['MONTO_CREDITO'] = $item['MONTO_CREDITO'];
+                $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
+                $arr['CUOTAS_IMPAGAS'] = $item['CUOTAS_RESTANTES'];
+                $arr['DIAS_MORAS'] = (strtotime(date('Y-m-d')) - $item['FECHA_VENCIMIENTO']) / (3600 * 24) ;
+                $arr['FECHA_1VENC_IMP'] = date('Y-m-d', $item['FECHA_VENCIMIENTO']);
+                
+                $arr_reporte[] = $arr;
+            }
+            
+        }
+        
+        echo trim(json_encode($arr_reporte));
+        die();
+    }
     
     public function _getFiltrosReporte() {
         $ffid = $fdesde = $fhasta = FALSE;

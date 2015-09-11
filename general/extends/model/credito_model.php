@@ -3144,7 +3144,7 @@ ORDER BY T1.lvl DESC');
         
         $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
-        $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO . $sql);
+        $this->_db->where("CREDITO_ESTADO NOT IN (".ESTADO_CREDITO_ELIMINADO . ", " . ESTADO_CREDITO_CADUCADO .")" . $sql);
         $this->_db->join("fid_fideicomiso f", "f.ID=c.ID_FIDEICOMISO", "left");
         $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
         $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
@@ -3258,6 +3258,49 @@ ORDER BY T1.lvl DESC');
         
         echo $this->_db->last_query();
     }
+    
+    public function get_creditos() {
+        $this->_db->select('ID');
+        $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
+        $this->_db->order_by("ID", "ASC");
+        return $this->_db->get_tabla("fid_creditos");
+    }
+    
+    public function updateFechaPago() {
+        if ($creditos = $this->get_creditos()) {
+            foreach ($creditos as $credito) {
+                $this->_db->select('ID_TIPO, CUOTAS_RESTANTES, MONTO, FECHA');
+                $this->_db->where("ID_CREDITO=" . $credito['ID']);
+                $this->_db->order_by("FECHA", "ASC");
+                $_pagos = $this->_db->get_tabla("fid_creditos_pagos");
+                
+                if ($_pagos) {
+                    $pagos = array();
+                    foreach ($_pagos as $pg) {
+                        if (isset($pagos[$pg['CUOTAS_RESTANTES']])) {
+                            $pagos[$pg['CUOTAS_RESTANTES']]['MONTO'] += ($pg['ID_TIPO'] == PAGO_CAPITAL) ? $pg['MONTO'] : 0;
+                            $pagos[$pg['CUOTAS_RESTANTES']]['FECHA'] = $pg['FECHA'];
+                        } else {
+                            $pagos[$pg['CUOTAS_RESTANTES']]['MONTO'] = ($pg['ID_TIPO'] == PAGO_CAPITAL) ? $pg['MONTO'] : 0;
+                            $pagos[$pg['CUOTAS_RESTANTES']]['FECHA'] = $pg['FECHA'];
+                            $pagos[$pg['CUOTAS_RESTANTES']]['CUOTAS_RESTANTES'] = $pg['CUOTAS_RESTANTES'];
+                        }
+                    }
+                    
+                    foreach ($pagos as $pg) {
+                        $this->_db->update(
+                                "fid_creditos_cuotas",
+                                array("FECHA_PAGO" => $pg['FECHA']),
+                                "ID_CREDITO=" . $credito['ID'] . " AND CUOTAS_RESTANTES=" . $pg['CUOTAS_RESTANTES'] . " AND (CAPITAL_CUOTA-" . $pg['MONTO'].")<1"
+                                );
+                    }
+                }
+            }
+        }
+        die("FIN-ACTUALIZADO!");
+        
+    }
+    
 }
 
 ?>

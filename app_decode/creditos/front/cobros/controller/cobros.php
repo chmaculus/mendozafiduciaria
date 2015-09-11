@@ -109,7 +109,7 @@ class cobros extends main_controller {
                     $arr_result = $this->extract_file_supervielle(basename($_FILES['txtArchivo']['name']));
                     break;
                 case 'Rapipago':
-                    $arr_result = $this->extract_file_rapipago(basename($_FILES['txtArchivo']['name']));
+                    $arr_result = $this->extract_file_nacion(basename($_FILES['txtArchivo']['name']));
                     break;
             }
 
@@ -161,11 +161,15 @@ class cobros extends main_controller {
             $item = trim(strip_tags($item));
             $item = trim(str_replace(array("\r", "\n"), "", $item));
             if (strlen($item)>54) {
-                $result[] = $this->extract_file_nacion1($item);
+                if ($item = $this->extract_file_nacion1($item)) {
+                    $result[] = $item;
+                }
             } elseif(strlen($item)==36) {
                 $fec_rec = substr($item, 28, 8);
             } elseif(strlen($item)==54) {
-                $result[] = $this->extract_file_nacion2($item, $fec_rec);
+                if ($item = $this->extract_file_nacion2($item, $fec_rec)) {
+                    $result[] = $item;
+                }
             }
         }
 
@@ -217,7 +221,11 @@ class cobros extends main_controller {
         $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($recaudacion, 35, 8);
         $tmp['barcode']['IMPORTE'] = substr($recaudacion, 44, 10);
         
-        return $tmp;
+        if ($tmp['recaudacion']['FECHA_REN'] != '00000000') {
+            return $tmp;
+        }
+        
+        return FALSE;
     }
     
     
@@ -291,15 +299,15 @@ class cobros extends main_controller {
             $tmp['recaudacion']['CODENT'] = "";
             $tmp['recaudacion']['SUC_ORIGEN'] = "";
             $tmp['recaudacion']['SUC_BCRA'] = "";
-            $tmp['recaudacion']['FECHA_REC'] = substr($tmp[0], 28, 36);
-            $tmp['recaudacion']['FECHA_REN'] = substr($tmp[1], 0, 8);
+            $tmp['recaudacion']['FECHA_REC'] = substr($item[0], 28, 36);
+            $tmp['recaudacion']['FECHA_REN'] = substr($item[1], 0, 8);
             $tmp['recaudacion']['COD_MOV'] = "";
             $tmp['recaudacion']['NRO_MOV'] = "";
-            $tmp['recaudacion']['IMPORTE'] = substr($tmp[1], 8, 23);
+            $tmp['recaudacion']['IMPORTE'] = substr($item[1], 8, 23);
             $tmp['recaudacion']['MONEDA'] = 1;
-            $tmp['barcode']['ID_CREDITO'] = substr($tmp[0], 0, 8);
-            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($tmp, 35, 8);
-            $tmp['barcode']['IMPORTE'] = substr($tmp[], 44, 10);
+            $tmp['barcode']['ID_CREDITO'] = substr($item[0], 0, 8);
+            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($item, 35, 8);
+            $tmp['barcode']['IMPORTE'] = substr($item, 44, 10);
             
             $result[] = $tmp;
         }

@@ -34,6 +34,7 @@
         <li onclick="reporte1()">Estadística de mora</li>
         <li onclick="reporte2()">Notificaciones</li>
         <li onclick="reporte3()">Proyección de cobranzas</li>
+        <li onclick="reporte4()">Caducidad</li>
     </ul>
 </div>
 
