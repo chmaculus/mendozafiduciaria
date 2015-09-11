@@ -52,7 +52,7 @@ class notificaciones_model extends main_model{
         $this->_db->join("fid_operaciones o","o.id=t.ID_OPERACION",'left');
         $this->_db->join("fid_operatorias ot","ot.id=o.ID_OPERATORIA",'left');
         $this->_db->join("fid_usuarios u","t.CARTERADE=u.ID");
-        $this->_db->join("fid_nota_req n","t.NOTA = n.ID");
+        $this->_db->join("fid_nota_req n","t.NOTA = n.ID",'left');
         //$this->_db->join("fid_usuarios u1","t.CARTERADE=u1.ID");
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
         $items = $this->_db->get_tabla("fid_traza t","t.DESTINO='".$id."' AND AUTOR=''  AND AUTOR_REQ='' AND (  (ACTIVO=1 AND LEIDO='1') OR (NOTIF=1 AND LEIDO='1') ) or (t.AUTOR='" . $id . "' and t.LEIDO='1' ) or (AUTOR_REQ='" . $id . "' AND LEIDO='1')");
