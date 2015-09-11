@@ -56,8 +56,11 @@ class notificaciones_model extends main_model{
         //$this->_db->join("fid_usuarios u1","t.CARTERADE=u1.ID");
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
         $items = $this->_db->get_tabla("fid_traza t","t.DESTINO='".$id."' AND AUTOR=''  AND AUTOR_REQ='' AND (  (ACTIVO=1 AND LEIDO='1') OR (NOTIF=1 AND LEIDO='1') ) or (t.AUTOR='" . $id . "' and t.LEIDO='1' ) or (AUTOR_REQ='" . $id . "' AND LEIDO='1')");
-//        log_this('ooiiioooo.log',$this->_db->last_query() );
-        
+        log_this('ooiiioooo.log',$this->_db->last_query() );
+//        
+//        echo "MEGADIE";
+//        var_dump($items);
+//        die();
         $ret = array();
         $c=0;
         if($items){
@@ -137,13 +140,6 @@ class notificaciones_model extends main_model{
     }
     
     function cargar_motivo_rechazo($idNot, $contMotivo){
-//        if (count($obj_opt)>0){
-//            $upd = $this->_db->update("fid_traza", $obj_opt, "ID='".$idt."'");
-//        }else{
-//            $upd = $this->_db->update("fid_traza", array("LEIDO"=>"0"), "ID='".$idt."'");
-//        }
-//        //log_this( 'zzzzz.log', $this->_db->last_query() );
-//        return $upd;
         $objNoti = array(
                         "MOTIVO"=>$contMotivo
                     );    

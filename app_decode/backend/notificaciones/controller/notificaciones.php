@@ -80,7 +80,7 @@ class notificaciones extends main_controller{
     }
     
     function x_cargar_motivo_rechazo(){
-         $contMotivo = $_POST["contMotivo"];
+        $contMotivo = $_POST["contMotivo"];
         $idNot = $_POST["idNot"];
        
   $rtn = $this->mod->cargar_motivo_rechazo($idNot, $contMotivo);
