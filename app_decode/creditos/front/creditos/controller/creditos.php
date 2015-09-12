@@ -515,17 +515,20 @@ class creditos extends main_controller{
                     foreach ($arr_pagos as $arr_pg) {
                         if ($arr_pg['TIENE_MORA']) {
                             ++$cuotas_mora;
-                            $monto_mora += $arr_pg['MONTO'];
+                            //$monto_mora += $arr_pg['MONTO'];
                         }
                     }
 
                     foreach ($arr_pagos as $arr_pg) {
                         if ($arr_pg['TIENE_MORA']) {
                             ++$cuotas_mora;
-                            $monto_mora += $arr_pg['MONTO'];
+                            //$monto_mora += $arr_pg['MONTO'];
                         }
                     }
                 }
+                
+                print_r($item);
+                die();
 
                 if (isset($arr_reporte[$item['ID_FIDEICOMISO']])) {
                     $arr = $arr_reporte[$item['ID_FIDEICOMISO']];
@@ -551,7 +554,7 @@ class creditos extends main_controller{
             
         }
         
-        echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte));
+        echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte, 'fecha_desde'=>$filtros[1], 'fecha_hasta'=>$filtros[2]));
     }
     
     function reporte4() {
