@@ -67,6 +67,11 @@ class credito_model extends main_model {
         $this->_estado_credito = ESTADO_CREDITO_NORMAL;
         $this->_blog = false;
         $this->_periodicidad = 60;
+        $this->_iva_operatoria = IMP_IVA;
+        $this->_banco = 0;
+        $this->_actualizacion_compensatorios = false;
+        $this->_suma_act_compens = 0;
+        $this->_flag_pago_cuota_anterior = false;
     }
 
     function set_log($log = true) {
@@ -3219,7 +3224,7 @@ ORDER BY T1.lvl DESC');
     }
     
     public function get_cuotas() {
-        $this->_db->select('CAPITAL_CUOTA, INT_COMPENSATORIO, INT_COMPENSATORIO_IVA, FECHA_VENCIMIENTO, CUOTAS_RESTANTES');
+        $this->_db->select('CAPITAL_CUOTA, INT_COMPENSATORIO, INT_COMPENSATORIO_IVA, FECHA_VENCIMIENTO, CUOTAS_RESTANTES, CUOTA_AL_DIA, FECHA_PAGO, CUOTA_TOTAL');
         $this->_db->where("ID_CREDITO = " . $this->_id_credito);
         $this->_db->order_by("FECHA_INICIO", "ASC");
         $cuotas = $this->_db->get_tabla("fid_creditos_cuotas");
@@ -3268,12 +3273,45 @@ ORDER BY T1.lvl DESC');
     
     public function updateFechaPago() {
         if ($creditos = $this->get_creditos()) {
+            $fecha = strtotime(date('Y-m-d'));
             foreach ($creditos as $credito) {
+                $this->clear();
+                $this->set_credito_active($credito['ID']);
+                $version = $this->set_version_active();
+                $this->renew_datos();
+
+                $this->set_fecha_actual($fecha);
+                $this->set_fecha_calculo();
+                $this->renew_datos($fecha);
+                $this->save_last_state(false);
+
+                $this->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);//proyeccion teorica
+
+                $this->generar_evento(array(), true, $fecha);
+
+                $ret_deuda = $this->get_deuda($fecha, true);
+                
+                $intereses = 0;
+                if (isset($ret_deuda['cuotas'])) {
+                    foreach($ret_deuda['cuotas'] as $c) {
+                        $_intereses = $c['IVA_PUNITORIO']['SALDO'] + $c['IVA_MORATORIO']['SALDO'] + $c['IVA_COMPENSATORIO']['SALDO'] + $c['PUNITORIO']['SALDO'] + $c['MORATORIO']['SALDO'] + $c['COMPENSATORIO']['SALDO'];
+                        $total_a_pagar = (isset($c['GASTOS']['SALDO']) ? $c['GASTOS']['SALDO'] : 0) + $c['CAPITAL']['SALDO'] + $_intereses;
+                        $_intereses = $c['IVA_PUNITORIO']['TOTAL'] + $c['IVA_MORATORIO']['TOTAL'] + $c['IVA_COMPENSATORIO']['TOTAL'] + $c['PUNITORIO']['TOTAL'] + $c['MORATORIO']['TOTAL'] + $c['COMPENSATORIO']['TOTAL'];
+                        $total_cuota = (isset($c['GASTOS']['TOTAL']) ? $c['GASTOS']['TOTAL'] : 0) + $c['CAPITAL']['TOTAL'] + $_intereses;
+                        $intereses += $_intereses;
+                        $this->_db->update('fid_creditos_cuotas', array('CUOTA_AL_DIA' => $total_a_pagar, 'CUOTA_TOTAL'=>$total_cuota), "ID_CREDITO={$credito['ID']} AND CUOTAS_RESTANTES={$c['CUOTAS_RESTANTES']}");
+                    }
+                }
+                
+                if ($intereses==0) { //si no tiene intereses debe ser porque no tiene cargado desembolsos
+                    $this->_db->update('fid_creditos_cuotas', array('CUOTA_AL_DIA' => -1), "ID_CREDITO={$credito['ID']}");
+                }
+                
                 $this->_db->select('ID_TIPO, CUOTAS_RESTANTES, MONTO, FECHA');
                 $this->_db->where("ID_CREDITO=" . $credito['ID']);
                 $this->_db->order_by("FECHA", "ASC");
                 $_pagos = $this->_db->get_tabla("fid_creditos_pagos");
-                
+
                 if ($_pagos) {
                     $pagos = array();
                     foreach ($_pagos as $pg) {
@@ -3286,7 +3324,7 @@ ORDER BY T1.lvl DESC');
                             $pagos[$pg['CUOTAS_RESTANTES']]['CUOTAS_RESTANTES'] = $pg['CUOTAS_RESTANTES'];
                         }
                     }
-                    
+
                     foreach ($pagos as $pg) {
                         $this->_db->update(
                                 "fid_creditos_cuotas",

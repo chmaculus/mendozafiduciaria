@@ -1297,11 +1297,10 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
     }
     
     function update_pagos() {
+        set_time_limit(0);
         $this->mod->updateFechaPago();
     }
 }
-
-
 
 
 

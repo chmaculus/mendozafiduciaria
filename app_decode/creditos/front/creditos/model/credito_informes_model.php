@@ -443,7 +443,8 @@ class credito_informes_model extends credito_model {
         if ($creditos) {
             foreach ($creditos as $k => $item) {
                 $this->set_credito_active($item['ID']);
-                $creditos[$k]['PAGOS'] = $this->get_moratorias();
+                //$creditos[$k]['PAGOS'] = $this->get_moratorias();
+                $creditos[$k]['CUOTAS'] = $this->get_cuotas();
             }
         }
         

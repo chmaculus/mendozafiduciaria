@@ -511,7 +511,7 @@ class creditos extends main_controller{
                                 break;
                         }
                     }
-
+/*
                     foreach ($arr_pagos as $arr_pg) {
                         if ($arr_pg['TIENE_MORA']) {
                             ++$cuotas_mora;
@@ -523,12 +523,18 @@ class creditos extends main_controller{
                         if ($arr_pg['TIENE_MORA']) {
                             ++$cuotas_mora;
                             //$monto_mora += $arr_pg['MONTO'];
+                        }
+                    }*/
+                }
+                
+                if ($item['CUOTAS']) {
+                    foreach ($item['CUOTAS'] as $cc) {
+                        $monto_mora += $cc['CUOTA_TOTAL'];
+                        if ($cc['FECHA_PAGO'] == 0 || $cc['FECHA_PAGO'] > $cc['FECHA_VENCIMIENTO']) {
+                            ++$cuotas_mora;
                         }
                     }
                 }
-                
-                print_r($item);
-                die();
 
                 if (isset($arr_reporte[$item['ID_FIDEICOMISO']])) {
                     $arr = $arr_reporte[$item['ID_FIDEICOMISO']];
@@ -584,9 +590,9 @@ class creditos extends main_controller{
                 $monto_mora = 0;
                 $cobranzas = 0;
                 
-                if ($item['PAGOS']) {
+                /*if ($item['PAGOS']) {
                     $arr_pagos = array();
-                    
+                
                     foreach ($item['PAGOS'] as $v) {
                         /*if (!isset($arr_pagos[$v['CUOTAS_RESTANTES']])) {
                             $arr_pagos[$v['CUOTAS_RESTANTES']] = array(
@@ -597,7 +603,7 @@ class creditos extends main_controller{
                         
                         $arr_pagos[$v['CUOTAS_RESTANTES']]['MONTO'] += $v['MONTO'];
                         
-                        $cobranzas += $v['MONTO'];*/
+                        $cobranzas += $v['MONTO'];* /
                         switch ($v['ID_TIPO']) {
                             /*case PAGO_IVA_MORATORIO:
                                 $total_iva += $v['MONTO'];
@@ -612,7 +618,7 @@ class creditos extends main_controller{
                             case PAGO_IVA_PUNITORIO:
                             case PAGO_PUNITORIO:
                                 $total_punitorio += $v['MONTO'];
-                                break;*/
+                                break;* /
                             case PAGO_CAPITAL:
                                 $capital_pagado += $v['MONTO'];
                                 break;
@@ -624,7 +630,15 @@ class creditos extends main_controller{
                             ++$cuotas_mora;
                             $monto_mora += $arr_pg['MONTO'];
                         }
-                    } */
+                    } * /
+                }*/
+                
+                if ($item['CUOTAS']) {
+                    foreach($item['CUOTAS'] as $cc) {
+                        if ($cc['FECHA_PAGO'] > 0) {
+                            $capital_pagado += $cc['CAPITAL_CUOTA'];
+                        }
+                    }
                 }
                 
                 
@@ -644,7 +658,6 @@ class creditos extends main_controller{
                 $arr['CUOTAS_IMPAGAS'] = $item['CUOTAS_RESTANTES'];
                 $arr['DIAS_MORAS'] = (strtotime(date('Y-m-d')) - $item['FECHA_VENCIMIENTO']) / (3600 * 24) ;
                 $arr['FECHA_1VENC_IMP'] = date('Y-m-d', $item['FECHA_VENCIMIENTO']);
-                
                 $arr_reporte[] = $arr;
             }
             
