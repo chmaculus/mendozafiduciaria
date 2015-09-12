@@ -99,10 +99,10 @@ class comprauva extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
-        $data['lst_formulas'] = $this->x_getformulas();
+//        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
 
-        $data['clientes_sql'] = $this->x_getclientessql();
+//        $data['clientes_sql'] = $this->x_getclientessql();
 
 
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
@@ -152,11 +152,11 @@ class comprauva extends main_controller {
         return $tmp;
     }
     
-    function x_getformulas(){
-        $obj = $this->mod->getformulassql();
-        $tmp = $obj ? $obj : array();
-        return $tmp;
-    }
+//    function x_getformulas(){
+//        $obj = $this->mod->getformulassql();
+//        $tmp = $obj ? $obj : array();
+//        return $tmp;
+//    }
 
     function x_getbodegas() {
         $obj = $this->mod->get_bodegas();

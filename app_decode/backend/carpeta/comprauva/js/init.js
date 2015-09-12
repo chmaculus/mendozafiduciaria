@@ -344,7 +344,6 @@ function llenar_form(cliente) {
 $(document).ready(function() {
     
     
-    
     //alert(_permiso_exportar+'-'+_permiso_ver+'-'+_permiso_modificacion+'-'+_permiso_baja+'-'+_permiso_alta);
     
     
