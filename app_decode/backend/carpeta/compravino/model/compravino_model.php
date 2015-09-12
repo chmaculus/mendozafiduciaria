@@ -21,11 +21,11 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function getclientessql() {
-        //$rtn = $this->_db->get_tabla('fid_usuarios');
-        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
-        return $rtn;
-    }
+//    function getclientessql() {
+//        //$rtn = $this->_db->get_tabla('fid_usuarios');
+//        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
+//        return $rtn;
+//    }
 
     function guardarlote($arr_obj) {
 
@@ -663,11 +663,11 @@ class compravino_model extends main_model {
         return $rtn;
     }
     
-    function getformulassql(){
-        $this->_dbsql->order_by('idFormula');
-        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
-        return $rtn;
-    }
+//    function getformulassql(){
+//        $this->_dbsql->order_by('idFormula');
+//        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
+//        return $rtn;
+//    }
 
     function getenviar_a1($arr_area, $puesto_in) {
         //$rtn = $this->_db->get_tabla("fid_xareas ", "ID NOT IN('11','12')");

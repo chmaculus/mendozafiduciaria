@@ -350,7 +350,8 @@ class carpetas extends main_controller{
     
     function x_cancelar_nota(){
         $idnr = $_POST['idnr'];
-        $obj = $this->mod->cancelar_nota( $idnr );
+        $contMotivo =$_POST['motivotext'];
+        $obj = $this->mod->cancelar_nota( $idnr, $contMotivo );
         $tmp = $obj?$obj:array();
         return $tmp;
     }

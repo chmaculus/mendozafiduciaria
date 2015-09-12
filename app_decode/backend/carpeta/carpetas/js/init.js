@@ -5216,7 +5216,8 @@ console.log(_USER_ROL);
                             var fcrea = data.FCREA?data.FCREA:'          ' ;
                             var tmp1_h =  '<li class="li_cabezera">Id<span class="fet">'+ "F. Tratamiento" +'</span><span class="fer">'+ "F. Recepción" +'</span><span class="fem">'+ "F. Emisión" +'</span><span class="reqest">Estado</span><span class="reqiid">Asunto</span></li>';
                             
-                            var tmp_li = '<li data-idr="'+data.ID+'"><span class="filr_iid">'+ '33' +'</span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Envío</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
+//                            var tmp_li = '<li data-idr="'+data.ID+'"><span class="filr_iid">'+ '33' +'</span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Envío</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
+/*este va sin el id*/       var tmp_li = '<li data-idr="'+data.ID+'"></span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Envío</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
                             if (_USER_ROL=='11')
                                 var tmp_li = '<li data-idr="'+data.ID+'"><span class="filr_iid">'+ '33' +'</span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Autorizacion</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
                             

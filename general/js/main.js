@@ -497,18 +497,20 @@ function notifMain( iid ){
                 'padding'   :  40,
                 'autoScale' :true,
                 'scrolling' : 'no',
+                close  : [27], // escape key
 //                'beforeClose': function() {
 //                    location.reload();
 //                }
             });
-                
+               
             $("#traermotivo").on('click',function(){
                 var contMotivo = $('#inputmotivo').val();
                 $.ajax({
                                 url : 'backend/carpeta/carpetas/x_cancelar_nota',
                                 type : "post",
                                 data : {
-                                    idnr:idnr
+                                    idnr:idnr,
+                                    motivotext: contMotivo,
                                 },
                                 async:false,
                                 success : function(data){

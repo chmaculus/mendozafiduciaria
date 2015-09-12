@@ -535,7 +535,7 @@ function process_vincular(iid_nr, carpeta){
                     'padding'   :  35,
                     'autoScale' :true,
                     'height' : 900,
-                    'scrolling' : 'no',
+                    'scrolling' : 'yes',
                     'beforeClose': function() {
                         /*
                         if (myfancy==1)

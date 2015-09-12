@@ -613,7 +613,7 @@ class carpetas_model extends main_model{
     }
     
     function sendobj($obj, $checklist, $checklist_sel, $postulantes, $arr_obs, $arr_chk, $id_etapa_actual, $carterade, $adjuntos, $arr_infoadd, $arr_itemscom, $checkedItems_deudas ){
-        
+//        echo "MEGATRON DIE";die();
         $fecha_actual = date("Y-m-d H:i:s");
         
         if ($arr_obs) $arr_obs=$arr_obs[0];
@@ -1426,17 +1426,22 @@ class carpetas_model extends main_model{
         //return $rtn;
     }
     
-    function cancelar_nota($idnr){
+    function cancelar_nota($idnr,$contMotivo){
         $fecha_actual = date("Y-m-d H:i:s");
-        
+        $enviadoa = 0;
         //obtener cartera de
-        $this->_db->select('PROPIETARIO,ID');
+        $this->_db->select('PROPIETARIO,ID, ENVIADOA');
         $reg = $this->_db->get_tabla('fid_nota_req',"ID='".$idnr."'");
         if ($reg){
             $carterade = $reg[0]["PROPIETARIO"];
             $this->_db->update( 'fid_traza', array("LEIDO"=>"0"), "NOTA='".$reg[0]["ID"]."'" );
             $this->_db->update( 'fid_nota_req', array("ENVIADOA"=>"0"), "ID='".$idnr."'" );
         }
+        
+        $enviadoa = $reg[0]["ENVIADOA"];
+        $this->_db->select('NOMBRE,APELLIDO');
+        $ususend = $this->_db->get_tabla('fid_usuarios',"ID='".$enviadoa."'");
+        
         
         $obj_ed= array(
             "ACTIVO"=>"0"
@@ -1449,7 +1454,7 @@ class carpetas_model extends main_model{
             "CARTERADE"=> $carterade,
             "DESTINO"=> $carterade,
             "OBSERVACION"=>'RECHAZADA',
-            "DESCRIPCION"=>'NOTA RECHAZADA',
+            "DESCRIPCION"=>'NOTA RECHAZADA POR '.$ususend[0]['NOMBRE'].' '.$ususend[0]['APELLIDO']. ': '.$contMotivo,
             "ETAPA"=>0,
             "ETAPA_ORIGEN"=>0,
             "FECHA"=>$fecha_actual,
@@ -1502,7 +1507,8 @@ class carpetas_model extends main_model{
         //log_this('xxxxx.log', $this->_db->last_query() );
         //traza
         $obj_ed= array(
-            "ACTIVO"=>"0"
+            "ACTIVO"=>"0",
+//            "DESTINO"=>$arr['ENVIADOA'],	
         );
         $this->_db->update("fid_traza",$obj_ed,"ID_OPERACION='".$id."'");
         //log_this('xxxxx.log', $this->_db->last_query() );
