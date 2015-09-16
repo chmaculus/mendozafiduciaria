@@ -162,7 +162,7 @@ function get_informes(){
             });
 
             var fecha = new Date(_credito.FECHA * 1000);
-
+            
             $("#txtFechaInformes").datepicker("option", "dateFormat", 'dd-mm-yy');
             $("#txtFechaInformes").datepicker("setDate", fecha);
 

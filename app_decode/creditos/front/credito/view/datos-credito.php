@@ -1,5 +1,5 @@
 <div class="grid-1" id="frmagregar">
-    <div class="title-grid"><div id="label_action">Credito</div><div class="right less selected">-</div></div>
+    <div class="title-grid"><div id="label_action">Credito</div> <?php echo ($vars['CREDITO_ESTADO'] == ESTADO_CREDITO_CADUCADO) ? '<strong>(CADUCADO)</strong>' : ''; ?><div class="right less selected">-</div></div>
     <div class="content-gird">
         <div class="form">
 

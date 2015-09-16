@@ -367,3 +367,5 @@ select, #txtFecha2{
     width:100%;
     color: red;
 }
+
+#btn-caducar{float:right}

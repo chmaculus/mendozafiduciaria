@@ -109,7 +109,7 @@ class cobros extends main_controller {
                     $arr_result = $this->extract_file_supervielle(basename($_FILES['txtArchivo']['name']));
                     break;
                 case 'Rapipago':
-                    $arr_result = $this->extract_file_nacion(basename($_FILES['txtArchivo']['name']));
+                    $arr_result = $this->extract_file_rapipago(basename($_FILES['txtArchivo']['name']));
                     break;
             }
 
@@ -288,28 +288,31 @@ class cobros extends main_controller {
             $item = trim(strip_tags($item));
             $item = trim(str_replace(array("\r", "\n"), "", $item));
             
-            $kp = (int) ($k/3);
-            $array[$kp][] = $item;
+            $array[] = $item;
         }
         
         foreach ($array as $item) {
-            $tmp = array();
-            $tmp['recaudacion'] = array();
+            $fecha = substr($item, 0, 8);
+            if ($fecha != '00000000' && strlen($item)==54) {
+                $tmp = array();
+                $tmp['recaudacion'] = array();
 
-            $tmp['recaudacion']['CODENT'] = "";
-            $tmp['recaudacion']['SUC_ORIGEN'] = "";
-            $tmp['recaudacion']['SUC_BCRA'] = "";
-            $tmp['recaudacion']['FECHA_REC'] = substr($item[0], 28, 36);
-            $tmp['recaudacion']['FECHA_REN'] = substr($item[1], 0, 8);
-            $tmp['recaudacion']['COD_MOV'] = "";
-            $tmp['recaudacion']['NRO_MOV'] = "";
-            $tmp['recaudacion']['IMPORTE'] = substr($item[1], 8, 23);
-            $tmp['recaudacion']['MONEDA'] = 1;
-            $tmp['barcode']['ID_CREDITO'] = substr($item[0], 0, 8);
-            $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($item, 35, 8);
-            $tmp['barcode']['IMPORTE'] = substr($item, 44, 10);
-            
-            $result[] = $tmp;
+                $tmp['recaudacion']['CODENT'] = "";
+                $tmp['recaudacion']['SUC_ORIGEN'] = "";
+                $tmp['recaudacion']['SUC_BCRA'] = "";
+                $tmp['recaudacion']['FECHA_REN'] = "";
+                $tmp['recaudacion']['FECHA_REC'] = $fecha;
+                $tmp['recaudacion']['COD_MOV'] = "";
+                $tmp['recaudacion']['NRO_MOV'] = "";
+                $tmp['recaudacion']['IMPORTE'] = substr($item[1], 8, 15);
+                $tmp['recaudacion']['MONEDA'] = 1;
+                $item = substr($item, 27, 31);
+                $tmp['barcode']['ID_CREDITO'] = substr($item, 0, 8);
+                $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($item, 8, 8);
+                $tmp['barcode']['IMPORTE'] = substr($item, 16, 10);
+
+                $result[] = $tmp;
+            }
         }
 
         return $result;

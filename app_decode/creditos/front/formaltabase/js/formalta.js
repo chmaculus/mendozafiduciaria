@@ -3,7 +3,7 @@ var _desembolsos = [];
 
 
 $(document).ready(function() {
-
+    
     
 });
 
@@ -184,8 +184,11 @@ function cambiar_accion() {
     }
 }
 
-
 function generar_cuotas(){
+    _generar_cuotas(0);
+}
+
+function _generar_cuotas(simulacion){
     $("#txtMonto").removeClass("error");
     $("#txtCantidadCuotasGracia").removeClass("error");
     $("#txtCreditoID-opc").removeClass("error");
@@ -254,7 +257,7 @@ function generar_cuotas(){
     
     
     $.ajax({
-        url : _formaltabase.URL + "/x_generar_cuotas",
+        url : _formaltabase.URL + (simulacion ? "/x_simular_cuotas" : "/x_generar_cuotas"),
         data : {
             fecha : fecha_actual,
             micro : micro,
@@ -279,19 +282,30 @@ function generar_cuotas(){
             operatoria : operatoria || 0,
             fideicomiso : fideicomiso || 0,
             credito_caduca: $("#credito_caduca").val(),
-            fecha_caduca: $("#fecha_caduca").val()
+            fecha_caduca: $("#fecha_caduca").val(),
+            simulacion: simulacion
         },
         type : "post",
         success : function(data){
-            $(".div-result").html(data);
-            jConfirm("Desea generar otro credito?","Proceso Terminado con éxito", function(e){
-                if (e){
-                    _formaltabase.restart();
+            if (simulacion) {
+                
+            } else {
+                $(".div-result").html(data);
+                if ($("#credito_caduca").val()) {
+                    jAlert("El credito ha sido caducado y emitido uno nuevo correctamente","Error en generacion de Credito", function(){
+                        location.href="creditos/front/credito/init/" + $("#txtCreditoID-opc").val() + "/1";
+                    });
+                } else {
+                    jConfirm("Desea generar otro credito?","Proceso Terminado con éxito", function(e){
+                        if (e){
+                            _formaltabase.restart();
+                        }
+                        else{
+                            location.href="creditos/front/creditos";
+                        }
+                    });
                 }
-                else{
-                    location.href="creditos/front/creditos";
-                }
-            });
+            }
         }
     });
 }
@@ -312,12 +326,23 @@ function get_operatorios_from_fideicomiso(id){
         dataType : "json",
         success : function(rtn){
             $("#comboOperatorias").html("");
+            $("#comboOperatorias").append('<option value="0">Seleccione un fideicomiso</option>');
+            var ope = $("#credito_operatoria").val();
             for(var i = 0 ; i < rtn.length ; i++){
-                $("#comboOperatorias").append("<option value='"+rtn[i]['ID']+"'>"+rtn[i]['NOMBRE']+"</option>");
+                if (ope == rtn[i]['ID']) {
+                    $("#comboOperatorias").append("<option value='"+rtn[i]['ID']+"' selected='selected'>"+rtn[i]['NOMBRE']+"</option>");
+                } else {
+                    $("#comboOperatorias").append("<option value='"+rtn[i]['ID']+"'>"+rtn[i]['NOMBRE']+"</option>");
+                }
             }
             
             $("#comboOperatorias").trigger("chosen:updated");
             console.log(rtn);
         }
     });
+}
+
+
+function simular_cuotas() {
+    _generar_cuotas(1);
 }

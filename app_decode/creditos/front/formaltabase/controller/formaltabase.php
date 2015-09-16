@@ -6,7 +6,7 @@ class formaltabase extends main_controller {
         $this->mod = $this->model("formalta_model");
     }
 
-    function init($id = 0, $credito_caduca=0, $fecha_caduca=0) {
+    function init($id = 0, $credito_caduca=0, $fecha_caduca=0, $caducidad=FALSE) {
 
         if (!isset($_SESSION["USERADM"]))
             header("Location: " . '/' . URL_PATH);
@@ -29,7 +29,7 @@ class formaltabase extends main_controller {
         );
 
         $datax = array();
-        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca);
+        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad);
         $datax['titulo'] = "Administracion";
         $datax['etiqueta_modulo'] = "Carpetas";
         $datax['name_modulo'] = $this->get_controller_name();
@@ -43,7 +43,7 @@ class formaltabase extends main_controller {
         //etapas
     }
 
-    function _obtener_main($id, $credito_caduca, $fecha_caduca) {
+    function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad) {
         
         $ultimo = $this->mod->get_next_id();
         
@@ -51,20 +51,35 @@ class formaltabase extends main_controller {
             $this->mod->set_version_active();
             $this->mod->renew_datos();
             $credito = $this->mod->get_credito_from_id($credito_caduca);
-            $credito_pago = 0;
-            $pagos = $this->mod->get_capital_pagos();
+            
+            $this->mod->set_fecha_actual($fecha_caduca);
+            $this->mod->set_fecha_calculo();
+            $this->mod->renew_datos();
+            $this->mod->emitir_una_cuota($fecha_caduca);
+            $this->mod->save_last_state(false);
+            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+            $this->mod->generar_evento(array(), true, $fecha_caduca);
+            $ret_reuda = $this->mod->get_deuda($fecha_caduca, true);
+            
             $cuotas_restantes = 0;
-            if($pagos) {
-                foreach ($pagos as $it) {
-                    $credito_pago += round($it['MONTO'], 2);
-                    //$cuotas_restantes = $it['CUOTAS_RESTANTES'];
-                }
-            }
             
             $credito["ID"] = $ultimo;
-            $credito["MONTO_CREDITO"] -= $credito_pago;
-            $credito["INTERES_CUOTAS"] = $credito["CAPITAL_CUOTAS"] = $cuotas_restantes;
+            $credito["MONTO_CREDITO"] = $ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'];
+            $credito['INTERES_VTO'] = date('Y-m-d', strtotime(date('Y-m-d'))+(30*3600*24));
             
+            if ($caducidad) {
+                $cuotas_restantes = 1;
+                $credito['INTERES_VTO'] = date('Y-m-d',$ret_reuda['cuotas'][0]['_INFO']['HASTA']);
+                $credito['DESEMBOLSOS'] = array(
+                    array(
+                        'MONTO' => $credito['MONTO_CREDITO'],
+                        'FECHA' => $ret_reuda['cuotas'][0]['_INFO']['HASTA']
+                    )
+                );
+            }
+            
+            $credito["INTERES_CUOTAS"] = $credito["CAPITAL_CUOTAS"] = $cuotas_restantes;
+            $credito["ID_CADUCADO"] = $credito_caduca;
             
         } else {
 
@@ -112,7 +127,7 @@ class formaltabase extends main_controller {
         //print_array($credito );
         $this->_js_array['DESEMBOLSOS'] = $credito['DESEMBOLSOS'];
         $fecha_arr = explode("-", $credito['CAPITAL_VTO']);
-
+        
         list($y, $m, $d) = $fecha_arr;
         $credito['CAPITAL_VTO'] = $d . "-" . $m . "-" . $y;
         $credito['MICRO'] = 0;
@@ -482,7 +497,23 @@ class formaltabase extends main_controller {
         $this->mod->set_fecha_calculo();
 
         $this->mod->save_operacion_credito();
-        $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+        if ($_POST['credito_caduca']) {
+            $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            $versiones = $this->mod->get_versiones();
+            $version = $versiones[0]['value'];
+            
+            foreach ($desembolsos as $desembolso) {
+                $_POST = array();
+                $_POST['credito_id'] = $credito_id;
+                $_POST['fecha'] = strtotime($desembolso['fecha']);
+                $_POST['tipo'] = 1;
+                $_POST['reset'] = 0;
+                $_POST['version_id'] = $version;
+                $_POST['monto'] = $desembolso['monto'];
+
+                $this->x_agregar_desembolso();
+            }
+        }
     }
     
     function x_agregar_desembolso(){

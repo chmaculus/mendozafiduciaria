@@ -1,5 +1,6 @@
 <input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
 <input type="hidden" id="fecha_caduca" value="<?=$credito['FECHA_CADUCA']?>" />
+<input type="hidden" id="credito_operatoria" value="<?=(isset($credito['ID_OPERATORIA']) && $credito['ID_OPERATORIA']) ? $credito['ID_OPERATORIA'] : ''?>" />
 <div class="form-content">
     <div class="form_generar">
             <div class="row c12 grupo">
@@ -298,6 +299,7 @@
 
     </div>
     <div class="c12 row">
+        <div class="button-a blue send_generar_credito" onclick="simular_cuotas();"><span>Simular crédito</span></div>
         <div class="button-a blue send_generar_credito" onclick="generar_cuotas();"><span>Generar</span></div>
     </div>
 

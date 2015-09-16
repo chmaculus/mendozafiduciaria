@@ -355,6 +355,7 @@ class credito_model_test extends credito_model {
         $res['RESULT'] = $arr_result;
         $res['VARIACIONES'] = $variaciones;
         $res['PRIMER_DESEMBOLSO'] = $primer_desembolso;
+        $res['DE_CADUCADO'] = $this->es_caducado();
         return $res;
     }
 

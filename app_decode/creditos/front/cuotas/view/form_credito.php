@@ -29,7 +29,11 @@
                     <option value="6" class="editar">Enviar Cuotas</option>
                     <option value="7" class="editar">Saldo traspaso</option>
                     <option value="8" class="editar">Generar Chequeras</option>
+                    <?php if (isset($vars['DE_CADUCADO']) && !$vars['DE_CADUCADO']) { ?>
                     <option value="9" class="editar">Caducar</option>
+                    <?php } else { ?>
+                    <option value="10" class="editar">Eliminar caducidad</option>
+                    <?php } ?>
                 </select>
             </div>
 
@@ -48,9 +52,6 @@
             <div class="field-monto field_tasas" id="div-monto">
                 <span class="" id="spMonto">Punitorio</span><br/>
                 <input type="text"  id="txtPunitorio">        
-            </div>
-            <div class="field-monto field_tasas" id="btn-caducar">
-                <input type="button"  onclick="caducar()" value="Caducar crédito">
             </div>
             
 

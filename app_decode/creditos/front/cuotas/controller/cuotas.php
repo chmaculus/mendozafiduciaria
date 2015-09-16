@@ -1296,6 +1296,47 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         return FALSE;
     }
     
+    
+    function x_emitir_una_cuota() {
+        $credito_id = $_POST['credito_id'];
+        $fecha = $_POST['fecha'];
+        $ret_reuda = FALSE;
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->set_version_active();        
+
+            $this->mod->set_fecha_actual($fecha);
+            $this->mod->set_fecha_calculo();
+
+
+            $this->mod->renew_datos();
+            $this->mod->emitir_una_cuota($fecha);
+
+            $this->mod->save_last_state(false);
+
+
+            //chequera = proyeccion teorica
+            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);    
+
+            $this->mod->generar_evento(array(), true, $fecha);
+
+
+            //segundo parametro: recalcular datos
+            //tercer parametro true para forzar la deuda con el compensatorio total
+
+            $ret_reuda = $this->mod->get_deuda($fecha, true);
+            $ret_reuda['fecha_actual'] = $fecha;
+            echo $this->view("cuota",$ret_reuda);
+        
+        } else {
+            echo '-1';
+        }
+        die();
+    }
+    
+    function x_eliminar_caducidad() {
+        
+    }
+    
     function update_pagos() {
         set_time_limit(0);
         $this->mod->updateFechaPago();
@@ -1341,5 +1382,5 @@ class MYPDF extends TCPDF {
         $this->setPage(max($page_end_1,$page_end_2));
         $this->SetXY($this->GetX(),$ynew);
     }
-
+    
 }

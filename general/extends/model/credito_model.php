@@ -508,7 +508,7 @@ class credito_model extends main_model {
                     "TIPO" => 5,
                     "SALDO" => ($tmp) - $pago[PAGO_MORATORIO]);
             }
-
+            
             //dependiendo si la cuota esta vencida o no es el orden de los items
             if ($cuota['FECHA_VENCIMIENTO'] < $fecha) {
 
@@ -655,6 +655,10 @@ class credito_model extends main_model {
     }
 
     function borrar_credito() {
+        if ($credito_caducado = $this->es_caducado()) {
+            $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => 0), "ID = " . $credito_caducado);
+        }
+        
         $cred = $this->_id_credito;
         $this->_db->delete("fid_creditos", "ID = " . $cred);
         $this->_db->delete("fid_creditos_cuotas", "ID_CREDITO = " . $cred);
@@ -1109,7 +1113,7 @@ class credito_model extends main_model {
                     } else { //interes simple
                         $tmp['POR_INT_COMPENSATORIO'] = ($INTERES_COMPENSATORIO_VARIACION / $this->_interese_compensatorio_plazo) * $rango_comp;
                         //if (!$INTERES_COMPENSATORIO || ($INTERES_COMPENSATORIO && !(abs($int_compensatorio_pago-$INTERES_COMPENSATORIO) < 0.01))) {
-                        if (!$INTERES_COMPENSATORIO) {
+                        if (!$INTERES_COMPENSATORIO && $rango_comp) {
                             $tmp['INT_COMPENSATORIO'] = $INTERES_COMPENSATORIO_VARIACION * $tmp['CAPITAL_CUOTA'] / 100;
                         }
                     }
@@ -1882,8 +1886,8 @@ class credito_model extends main_model {
                 break;
             }
         }
-
-        $fecha = $fecha ? $fecha : NO_FECHA;
+        
+        $fecha = $fecha ? ($fecha + 1) : NO_FECHA; //parche error
 
 
         //MODIFICADO 15-08-2013
@@ -1917,7 +1921,7 @@ class credito_model extends main_model {
                 $desembolsos[] = $variacion;
             }
         }
-
+        
         //Si el capital inicial esta definido mayor a 0 (es decir todavia no se realiza ningun desembolso), se toma el capital inicial como unico
         //desembolso, para poder continuar los calculos normalmente en simulacion, de lo contrario se ignora.
         if ($capital_inicial > 0) {
@@ -1972,7 +1976,7 @@ class credito_model extends main_model {
             } else {
                 $AMORTIZACION_CUOTA = 0;
             }
-
+            
             $ultima_cuota = $cuotas[$c];
             $AMORTIZACION_CUOTA_ACTUAL = $cuotas[$c]['AMORTIZACION_CUOTA'];
 
@@ -3271,6 +3275,102 @@ ORDER BY T1.lvl DESC');
         return $this->_db->get_tabla("fid_creditos");
     }
     
+    public function emitir_una_cuota($fecha = FALSE) {
+        //hay que tomar el saldo del crédito, dejar una sola cuota con este valor, y fecha de vencimiento de cuota siguiente a la última cuota paga
+        $SALDO_CAPITAL = $this->_total_credito;
+        $__cuota = FALSE;
+        
+        foreach ($this->_cuotas as $id => $cuota) {
+            if (isset($this->_pagos[$cuota['CUOTAS_RESTANTES']])) {
+                $SALDO_CAPITAL -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL];
+                
+                if (!$__cuota && ($cuota['CAPITAL_CUOTA'] - $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL]) > 1) {
+                    $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL];
+                    $cuota_vencimiento = $cuota;
+                    $__cuota = $id;
+                    break;
+                }
+            }
+        }
+        
+        if (!isset($cuota_vencimiento)) {
+            $cuota_vencimiento = end($this->_cuotas);
+        }
+        
+        $SALDO_CAPITAL = round($SALDO_CAPITAL, 1);
+        
+        $cuota_vencimiento['SALDO_CAPITAL'] = $SALDO_CAPITAL;
+        $cuota_vencimiento['CUOTAS_RESTANTES'] = 1;
+        $cuota_vencimiento['POR_INT_COMPENSATORIO'] = 1;
+        
+        $evento_inicial = false;
+        $evento_desembolso = false;
+        
+        foreach ($this->_variaciones as $variacion) {
+            switch ($variacion['TIPO']) {
+                case EVENTO_INICIAL:
+                    $evento_inicial = $variacion;
+                    break;
+                case EVENTO_DESEMBOLSO:
+                    $evento_desembolso = $variacion;
+                    break;
+            }
+            
+            if ($evento_inicial && $evento_desembolso) {
+                break;
+            }
+        }
+        
+        $evento_inicial['FECHA'] =  $cuota_vencimiento['FECHA_VENCIMIENTO'];
+        $evento_inicial['CAPITAL'] =  $SALDO_CAPITAL;
+        $evento_inicial['CUOTAS_GRACIA'] =  0;
+        $evento_inicial['CANTIDAD_CUOTAS'] =  1;
+        
+        $this->_variaciones = array();
+        $variacion = $evento_inicial;
+        $variacion['POR_INT_COMPENSATORIO'] = 0;
+        $this->_variaciones[$variacion['ID']] = $variacion;
+        
+        if ($evento_desembolso) {
+            $variacion['ID'] = $evento_desembolso['ID'];
+            $variacion['TIPO'] = $evento_desembolso['TIPO'];
+            $variacion['ID_VERSION'] = $evento_desembolso['ID_VERSION'];
+            $evento_desembolso['ASOC']['CUOTAS_RESTANTES'] = 1;
+            $evento_desembolso['ASOC']['FECHA'] = $cuota_vencimiento['FECHA_VENCIMIENTO'];
+            $evento_desembolso['ASOC']['MONTO'] = $SALDO_CAPITAL;
+            $variacion['ASOC'] = $evento_desembolso['ASOC'];
+            $this->_variaciones[$variacion['ID']] = $variacion;
+        }
+        
+        //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
+        
+        $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;
+        //EVENTO_DESEMBOLSO
+                
+        $this->_cuotas = array();
+        $this->_cuotas[$__cuota] = $cuota_vencimiento;
+        
+        
+        $this->_pagos = array(
+            array(
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+                9 => 0,
+                10 => 0,
+                11 => 0,
+                12 => 0
+                )
+            );
+        
+        
+    }
+    
     public function updateFechaPago() {
         if ($creditos = $this->get_creditos()) {
             $fecha = strtotime(date('Y-m-d'));
@@ -3337,6 +3437,12 @@ ORDER BY T1.lvl DESC');
         }
         die("FIN-ACTUALIZADO!");
         
+    }
+    
+    function es_caducado(){
+        $this->_db->select("ID_CADUCADO");
+        $cad = $this->_db->get_tabla("fid_creditos", "ID=" . $this->_id_credito);
+        return isset($cad[0]['ID_CADUCADO']) ? $cad[0]['ID_CADUCADO'] : 0;
     }
     
 }

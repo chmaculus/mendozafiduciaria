@@ -229,6 +229,12 @@ function agregar_variacion() {
         case 8:
             generar_chequeras();
             break;            
+        case 9:
+            caducidad();
+            break;
+        case 9:
+            eliminar_caducidad();
+            break;
     }
 
     $("#txtMonto").val("");
@@ -650,9 +656,8 @@ function cambiar_accion() {
     _desembolso_selected = {};
     $("#eventos-pendientes").hide().html("");
     $("#spMonto").text("Monto");
-    $("#div-descripcion").hide();
-    $(".field_tasas").hide();
-    $("#div-monto").hide();
+    $("#div-monto,#div-descripcion,.field_tasas").hide();
+    $("#txtMonto").val('');
     switch (selected) {
         case 1:
             $("#div-monto").show();
@@ -670,9 +675,6 @@ function cambiar_accion() {
             break;
         case 4:
             $("#div-monto").show();
-            break;
-        case 9:
-            $("#btn-caducar").show();
             break;
     }
 }
@@ -984,6 +986,25 @@ function imprimirEventos(){
     });
 }
 
+function caducidad() {
+    $.ajax({
+        url: _cuotas.URL + "/x_emitir_una_cuota",
+        data: {
+            fecha: $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+            credito_id: _cuotas.ID_CREDITO
+        },
+        type: "post",
+        async : false,
+        success: function(result) {
+            if (result=='-1') {
+                ret = true;
+                return;
+            } else {
+                $(".div-result").html(result);
+            }
+        }
+    });
+}
 
 function caducar() {
     //$("#frmagregar .content-gird").hide();
@@ -1005,4 +1026,45 @@ function caducar() {
     function(){
 
     }); 
+}
+
+function caducarCuota() {
+    var datos = [
+        0,//caducar
+        _cuotas.ID_CREDITO,
+        $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+        1//1 cuota
+    ];
+    $(".listado-credito").hide();
+    load_app("creditos/front/formaltabase","#wpopup",datos, 
+    function(){
+        $('#jqxgrid').hide();
+        $.unblockUI();
+    },
+    function(){
+
+    },
+    function(){
+
+    }); 
+}
+
+function eliminar_caducidad() {
+    jConfirm("¿Esta seguro de eliminar este crédito y volver al anterior?","Caducidad", function(i){
+        if(i){
+            $.ajax({
+                url: _cuotas.URL + "/x_eliminar_caducidad",
+                data: {
+                    credito_id: _cuotas.ID_CREDITO
+                },
+                type: "post",
+                async : false,
+                success: function(result) {
+                    if (result) {
+                        
+                    }
+                }
+            });
+        }
+    });
 }
