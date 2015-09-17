@@ -105,7 +105,7 @@ class sqldata {
     }
 
     public function get_tabla($tab, $where = false, $order = false) {
-
+        
         if ($order)
             $order = "ORDER BY " . $order;
         else if ($this->_orderby)
@@ -168,6 +168,7 @@ class sqldata {
     }
 
     public function query($sql, $ret = true) {
+        $this->log_this("query", $sql);
         $this->_sql = $sql;
         $_SESSION ['ParSQL'] = $this->_sql;
         if ($this->_show)
@@ -209,6 +210,7 @@ class sqldata {
 
         timequery();
         $res = mysqli_query($this->_conn, $sql);
+        $this->log_this("delete", $sql);
         $this->_stack_transaction($res);
     }
 
@@ -243,6 +245,7 @@ class sqldata {
         $edits = trim($edits, ", ");
 
         $this->_sql = "UPDATE " . $tabla . " SET " . $edits . " WHERE " . $this->_where;
+        $this->log_this("insert", $this->_sql);
         if ($this->_show)
             echo $this->_sql;
 
@@ -312,11 +315,8 @@ class sqldata {
             //echo $sql;                
         }
 
-            
-
-
-
         $this->_sql = $sql;
+        $this->log_this("insert", $sql);
 
         if ($this->_show)
             echo $this->_sql;
@@ -373,6 +373,26 @@ class sqldata {
         $result = mysqli_real_escape_string($this->_conn, $val);
 
         return $result;
+    }
+    
+    function log_this($accion, $var) {
+        $dir = dirname(__FILE__) . "/logs/";
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        $file = $dir . $accion . '_' . date('Y-m-d') . ".log";
+        if ($pfile = fopen($file,'a+')) {
+            if (is_array($var)) {
+                fwrite($pfile, print_r($var, TRUE) . "\n");
+            } else {
+                fwrite($pfile, $var . "\n");
+            }
+        } else {
+            die("ERROR EN EL SISTEMA, contactar con soporte");
+        }
+
+        fclose($pfile);
+
     }
 
 }

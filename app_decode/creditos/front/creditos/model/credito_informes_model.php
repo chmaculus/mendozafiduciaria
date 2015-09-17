@@ -399,7 +399,7 @@ class credito_informes_model extends credito_model {
                 $this->set_credito_active($credito['ID']);
                 $creditos_moratorios[$credito['ID']] = $credito;
                 $creditos_moratorios[$credito['ID']]['DESEMBOLSO'] = $this->_get_desembolso();
-                $creditos_moratorios[$credito['ID']]['PAGOS'] = $this->get_moratorias();
+                $creditos_moratorios[$credito['ID']]['PAGOS'] = $this->get_todos_pagos();
                 $creditos_moratorios[$credito['ID']]['CUOTAS'] = $this->get_cuotas();
             }
             
@@ -443,7 +443,7 @@ class credito_informes_model extends credito_model {
         if ($creditos) {
             foreach ($creditos as $k => $item) {
                 $this->set_credito_active($item['ID']);
-                //$creditos[$k]['PAGOS'] = $this->get_moratorias();
+                //$creditos[$k]['PAGOS'] = $this->get_todos_pagos();
                 $creditos[$k]['CUOTAS'] = $this->get_cuotas();
             }
         }

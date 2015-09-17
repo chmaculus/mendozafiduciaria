@@ -230,10 +230,10 @@ function agregar_variacion() {
             generar_chequeras();
             break;            
         case 9:
-            caducidad();
+            //caducidad();
             break;
-        case 9:
-            eliminar_caducidad();
+        case 10:
+            refinanciacion_caida();
             break;
     }
 
@@ -1049,11 +1049,11 @@ function caducarCuota() {
     }); 
 }
 
-function eliminar_caducidad() {
+function refinanciacion_caida() {
     jConfirm("¿Esta seguro de eliminar este crédito y volver al anterior?","Caducidad", function(i){
         if(i){
             $.ajax({
-                url: _cuotas.URL + "/x_eliminar_caducidad",
+                url: _cuotas.URL + "/x_refinanciacion_caida",
                 data: {
                     credito_id: _cuotas.ID_CREDITO
                 },

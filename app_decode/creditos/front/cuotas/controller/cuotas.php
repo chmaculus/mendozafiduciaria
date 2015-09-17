@@ -1333,8 +1333,14 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         die();
     }
     
-    function x_eliminar_caducidad() {
+    function x_refinanciacion_caida() {
+        $credito_id = $_POST['credito_id'];
+        $fecha = strtotime(date('Y-m-d'));
         
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->refinanciacion_caida();
+        }
+        die();
     }
     
     function update_pagos() {

@@ -32,7 +32,7 @@
                     <?php if (isset($vars['DE_CADUCADO']) && !$vars['DE_CADUCADO']) { ?>
                     <option value="9" class="editar">Caducar</option>
                     <?php } else { ?>
-                    <option value="10" class="editar">Eliminar caducidad</option>
+                    <option value="10" class="editar">Refinanciacion caida</option>
                     <?php } ?>
                 </select>
             </div>

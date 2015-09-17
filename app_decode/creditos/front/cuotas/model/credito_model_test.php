@@ -651,6 +651,68 @@ class credito_model_test extends credito_model {
         
         return $rtn;
     }
+    
+    function refinanciacion_caida() {
+        //eliminamos el credito actual, antes buscamos las cobranzas y gastos, y volvemos a insertar
+        $id_credito_padre = $this->es_caducado();
+        if (!$id_credito_padre) {
+            return FALSE;
+        }
+        $_pagos = $this->get_todos_pagos();
+        $pagos = array();
+        if ($_pagos) {
+            foreach ($_pagos as $pg) {
+                if (!isset($pagos[$pg['FECHA']])) {
+                    $pagos[$pg['FECHA']] = 0;
+                }
+                $pagos[$pg['FECHA']] += $pg['MONTO'];
+            }
+        }
+        
+        $_gastos = $this->get_tabla_gastos();
+        $gastos = array();
+        if ($_gastos) {
+            foreach ($_gastos as $gs) {
+                if (!isset($gastos[$gs['FECHA']])) {
+                    $gastos[$gs['FECHA']] = 0;
+                }
+                $gastos[$gs['FECHA']] += $gs['MONTO'];
+            }
+        }
+        
+        echo $this->_id_credito;
+        
+        print_r($pagos);die();
+        
+        
+        if ($pagos) {
+            foreach ($pagos as $fecha => $monto) {
+                $this->clear();
+                if ($this->set_credito_active($id_credito_padre)) {
+                    $this->set_version_active();
+                    $this->elimina_eventos_temporales();
+                    $this->renew_datos();
+                    
+                    //$this->save_last_state(false);
+                    //$this->set_fecha_actual($fecha);
+                    
+                    
+                    $this->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+            
+                    //$ret_evento = $this->generar_evento( array(), true, $fecha, true);
+
+                    $ret_deuda = $this->get_deuda($fecha);
+                    echo $monto;
+                    $obj_pago = $this->pagar_deuda($ret_deuda, $monto, $fecha);
+                    print_r($obj_pago);
+                    die();
+                }
+            }
+            
+        }
+        
+        
+    }
 
 }
 

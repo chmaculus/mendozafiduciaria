@@ -56,6 +56,20 @@ class formalta_model extends credito_model {
 
 
     function save_operacion_credito(){
+        
+        if (!isset($_SESSION['USERADM']) || !$_SESSION['USERADM']) {
+            return FALSE;
+        }
+        
+        /* GUARDAMOS AUDITORIA */
+        $array = array(
+            'ID_USUARIO' => $_SESSION['USERADM'],
+            'TABLA' => "creditos",
+            'ACCION' => "A",
+            'Registro' => $this->_id_credito
+        );
+        $this->_db->insert("fid_auditoria", $array);
+        
         $this->renew_datos();
         
         $operacion = $this->_db->get_tabla("fid_creditos","ID = ".$this->_id_credito);

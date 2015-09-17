@@ -655,11 +655,25 @@ class credito_model extends main_model {
     }
 
     function borrar_credito() {
+        
+        if (!isset($_SESSION['USERADM']) || !$_SESSION['USERADM']) {
+            return FALSE;
+        }
+        
+        
+        
         if ($credito_caducado = $this->es_caducado()) {
             $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => 0), "ID = " . $credito_caducado);
         }
         
         $cred = $this->_id_credito;
+        $array = array(
+            'ID_USUARIO' => $_SESSION['USERADM'],
+            'TABLA' => "creditos",
+            'ACCION' => "B",
+            'Registro' => $cred
+        );
+        $this->_db->insert("fid_auditoria", $array);
         $this->_db->delete("fid_creditos", "ID = " . $cred);
         $this->_db->delete("fid_creditos_cuotas", "ID_CREDITO = " . $cred);
         $this->_db->delete("fid_creditos_desembolsos", "ID_CREDITO = " . $cred);
@@ -3197,14 +3211,13 @@ ORDER BY T1.lvl DESC');
         
     }
     
-    function get_moratorias() {
+    function get_todos_pagos() {
         $this->_db->select('*');
         $this->_db->where("ID_CREDITO = " . $this->_id_credito);// . " AND ID_TIPO IN (". PAGO_MORATORIO . "," . PAGO_IVA_MORATORIO . "," . PAGO_CAPITAL . ")");
         $this->_db->order_by("FECHA", "ASC");
         $pagos = $this->_db->get_tabla("fid_creditos_pagos");
         
         if($pagos) {
-            
             return $pagos;
         } else {
             return FALSE;
