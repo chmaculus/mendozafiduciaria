@@ -1,4 +1,4 @@
-
+//ESTA CLASE NOSE Q HACE; NO SE MODIFICA
 var mydata;
 var id_edit;
 var working = false;

@@ -4,6 +4,8 @@
     table tr td{padding:2px 4px;}
     #wpopup{padding:0 15px}
 </style>
+<div id="reporteCobranza">
+<input type="button" onclick="exportReporteCobranza()" value="Exportar">
 <table style="width:100%">
     <tr>
         <td>Fecha desde</td>
@@ -73,4 +75,5 @@
 <?php } ?>
     </tr>
 </table>
+</div>
 <?php } ?>

@@ -1,4 +1,4 @@
-
+//ESTA CLASE NOSE Q HACE; NO SE MODIFICA
 var mydata;
 var id_edit;
 var working = false;
@@ -1418,7 +1418,7 @@ function addEventsRequerimientos(idnr) {
             dataType: "json",
             type: "post",
             success: function(resp) {
-
+alert("SIIIIIII");
                 data = resp.result;
                 if (resp.accion == 'add') {
                     if (data) {

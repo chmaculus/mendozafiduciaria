@@ -78,7 +78,6 @@ $(document).ready(function(){
             statusbar.append(container);
             responderButton.jqxButton({ theme: theme, width: 210, height: 20 });
             responderButton.click(function (event) {
-                
                 if (_permiso_modificacion==0){
                     jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
                         $.unblockUI();
@@ -161,6 +160,7 @@ $(document).ready(function(){
                                             var nom = $(this).prev().data('nom');
                                             var yo = $(this);
                                             var el = $(this).prev();
+                alert("ANDA");
 
                                             $.ajax({
                                                 url : "backend/carpeta/carpetas/x_delupload_req",

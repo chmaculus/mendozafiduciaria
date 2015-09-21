@@ -404,12 +404,11 @@ function addEventsRequerimientos(idnr){
             dataType : "json",
             type : "post",
             success : function(resp){
-                
                 data = resp.result;
+                console.log(data);
                 if (resp.accion=='add'){
                     if(data){
                         jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
-                            
                             $.fancybox.close();
                             $("#jqxgrid").show();
                             $("#jqxgrid").jqxGrid('updatebounddata');

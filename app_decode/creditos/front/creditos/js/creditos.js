@@ -943,3 +943,11 @@ function remJGrid2() {
         $("#jqxgrid2").remove();
     }
 }
+
+function exportReporteCobranza() {
+
+    $("#reporteCobranza table").table2excel({
+        exclude: ".noExl",
+        name: "Reporte Cobranza"
+      });
+}

@@ -5142,7 +5142,6 @@ console.log(_USER_ROL);
             estado = 2;
             autor_req=0;
         }
-//alert(_USER_ROL);
         //adjuntos
         var _array_uploads_adj = [];
         $( ".lista_reqs_adj li" ).each(function(index){
@@ -5207,15 +5206,13 @@ console.log(_USER_ROL);
                         var msg = (data.email == 1) ? 'Operacion Exitosa' : 'Guardado - No se pudo enviar correo';
                         jAlert(msg, $.ucwords(_etiqueta_modulo),function(){
                             $.unblockUI();
-                            //agregar req con jquery
-                            //echo '<li class="li_cabezera">Asunto<span class="fem">'. "F. Emisión" .'</span><span class="fer">'. "F. Recepción" .'</span><span class="fet">'. "F. Tratamiento" .'</span></li>';
+//agregar req con jquery
+    //echo '<li class="li_cabezera">Asunto<span class="fem">'. "F. Emisión" .'</span><span class="fer">'. "F. Recepción" .'</span><span class="fet">'. "F. Tratamiento" .'</span></li>';
                             //echo '<li>xxxxxxx<span>('. "15/15/15" .')</span><span>('. "15/15/15" .')</span><span>('. "15/15/15" .')</span></li>';
-                            
                             var ftra = data.FTRA?data.FTRA:'          ' ;
                             var frec = data.FREC?data.FREC:'           ' ;
                             var fcrea = data.FCREA?data.FCREA:'          ' ;
                             var tmp1_h =  '<li class="li_cabezera">Id<span class="fet">'+ "F. Tratamiento" +'</span><span class="fer">'+ "F. Recepción" +'</span><span class="fem">'+ "F. Emisión" +'</span><span class="reqest">Estado</span><span class="reqiid">Asunto</span></li>';
-                            
 //                            var tmp_li = '<li data-idr="'+data.ID+'"><span class="filr_iid">'+ '33' +'</span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Envío</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
 /*este va sin el id*/       var tmp_li = '<li data-idr="'+data.ID+'"></span><span class="filr_asunto">'+ data.ASUNTO +'</span><span class="filr_estado">Pendiente Envío</span><span>'+ fcrea +'</span><span>'+ frec +'</span><span>'+ ftra +'</span></li>';
                             if (_USER_ROL=='11')
@@ -5267,8 +5264,6 @@ console.log(_USER_ROL);
                             }
                         });
                         $.fancybox.close();
-                        
-                        
                         /*
                         if (_array_obj.CARTERADE == _USUARIO_SESION_ACTUAL ){
                             //eventos
@@ -5284,7 +5279,16 @@ console.log(_USER_ROL);
                     });
                 }
             }
-        });
+            });
+            /*Aqui lo agrega al requerimirnto, pero hay problemas con el tema mail*/
+          
+        $.fancybox.close();
+        /*ASIGNARLA A UN CORDINADOR*/
+        
+        /*FIN DE ASIGNARLA A UN CORDINADOR*/
+        
+        
+
     });
 
     $(".clear_req").on('click', function(e){
