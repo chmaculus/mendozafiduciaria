@@ -120,13 +120,13 @@ class credito_model extends main_model {
     //obtiene la lista de versiones en un array en arbol
     function get_versiones() {
         $items = $this->_get_versiones_recursive($this->_id_credito, 0);
-        log_this("sql.txt", "aca\n");
         return $items;
     }
 
     function _get_versiones_recursive($credito = 0, $parent = 0) {
         $this->_db->where("ID_CREDITO_VERSION = " . $credito);
         $this->_db->where("PARENT_ID = " . $parent);
+        $this->_db->order_by("ID_CREDITO_VERSION", "DESC");
         $items = $this->_db->get_tabla("fid_creditos_version");
         
         $arr_rtn = array();
@@ -1901,7 +1901,7 @@ class credito_model extends main_model {
             }
         }
         
-        $fecha = $fecha ? ($fecha + 1) : NO_FECHA; //parche error
+        $fecha = $fecha ? $fecha : NO_FECHA; //parche error
 
 
         //MODIFICADO 15-08-2013
@@ -3219,6 +3219,19 @@ ORDER BY T1.lvl DESC');
         
         if($pagos) {
             return $pagos;
+        } else {
+            return FALSE;
+        }
+    }
+    
+    function get_todos_gastos() {
+        $this->_db->select('*');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+        $this->_db->order_by("FECHA", "ASC");
+        $gastos = $this->_db->get_tabla("fid_creditos_gastos");
+        
+        if($gastos) {
+            return $gastos;
         } else {
             return FALSE;
         }

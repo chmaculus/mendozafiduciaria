@@ -51,7 +51,7 @@ function _agregar_item_html(item){
     
     var fecha = new Date(item.FECHA_REC * 1000);    
     
-    var fecha_txt = fecha.getDate() + "-"+(fecha.getMonth() + 1) + "-"+fecha.getYear();
+    var fecha_txt = ("0" + fecha.getDate()).slice(-2) + "-" + ("0" + (fecha.getUTCMonth() + 1)).slice(-2) + "-"+fecha.getFullYear();
     
     $li.find(".archivo-fecha").text(fecha_txt );
     $li.find(".archivo-nombre").text(item.ARCHIVO );
@@ -186,4 +186,37 @@ function seleccionar_todos(){
     else{
         $(".datos .opciones_chk input[type=checkbox]").removeAttr("checked");
     }
+}
+
+function borrar_archivo() {
+    var $over = $(".lista_archivos ul li.over");
+    jConfirm("¿Esta seguro de eliminar el archivo?", "Eliminar archivo de cobro", function (i) {
+        if (i) {
+            
+            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" />Procesando</h4>'});
+            if ($over.length == 1) {
+                var id = $over.data("id");
+                $.ajax({
+                    url: _cobros.URL + "/x_del_cobros",
+                    data: {
+                        id: id
+                    },
+                    type: "post",
+                    success: function (rtn) {
+                        if (rtn == '-2') {
+                            jAlert('No se puede eliminar el archivo, tiene imputaciones de pagos realizadas', "Eliminar archivo", function(){});
+                        } else if (rtn != '1') {
+                            jAlert('Hubo un problema, vuelva a intentar', "Eliminar archivo", function(){});
+                        } 
+
+                        $.unblockUI();
+                        if (rtn == '1') {
+                            abrir_archivos_lista();
+                        }
+                    }
+                });
+
+            }
+        }
+    });
 }

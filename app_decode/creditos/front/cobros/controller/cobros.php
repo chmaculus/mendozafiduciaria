@@ -291,30 +291,36 @@ class cobros extends main_controller {
             $array[] = $item;
         }
         
+        $fecha_r = FALSE;
         foreach ($array as $item) {
             $fecha = substr($item, 0, 8);
-            if ($fecha != '00000000' && strlen($item)==54) {
+            if ($fecha_r && $fecha != '00000000' && strlen($item) == 54) {
                 $tmp = array();
                 $tmp['recaudacion'] = array();
 
                 $tmp['recaudacion']['CODENT'] = "";
                 $tmp['recaudacion']['SUC_ORIGEN'] = "";
                 $tmp['recaudacion']['SUC_BCRA'] = "";
-                $tmp['recaudacion']['FECHA_REN'] = "";
-                $tmp['recaudacion']['FECHA_REC'] = $fecha;
+                $tmp['recaudacion']['FECHA_REN'] = $fecha_r;
+                $tmp['recaudacion']['FECHA_REC'] = $fecha_r;
                 $tmp['recaudacion']['COD_MOV'] = "";
                 $tmp['recaudacion']['NRO_MOV'] = "";
-                $tmp['recaudacion']['IMPORTE'] = substr($item[1], 8, 15);
+                $tmp['recaudacion']['IMPORTE'] = substr($item, 8, 15);
                 $tmp['recaudacion']['MONEDA'] = 1;
                 $item = substr($item, 27, 31);
                 $tmp['barcode']['ID_CREDITO'] = substr($item, 0, 8);
                 $tmp['barcode']['FECHA_VENCIMIENTO'] = substr($item, 8, 8);
                 $tmp['barcode']['IMPORTE'] = substr($item, 16, 10);
-
+                
                 $result[] = $tmp;
+            } elseif ($fecha == '00000000') {
+                
+                $fecha_r = explode("COBRANZAS RAPIPAGO", $item);
+                $fecha_r = $fecha_r[0];
+                $fecha_r = substr($item, strlen($fecha_r)-8, 8);
             }
         }
-
+        
         return $result;
     }
 
@@ -366,6 +372,18 @@ class cobros extends main_controller {
             
         }
 
+    }
+    
+    function x_del_cobros() {
+        $id = $_POST['id'];
+        if ($this->mod->tiene_pagos_imputados($id)) {
+            echo -2;
+        } elseif ($this->mod->del_cobro($id)) {
+            echo 1;
+        } else {
+            echo -1;
+        }
+        die();
     }
 
 }

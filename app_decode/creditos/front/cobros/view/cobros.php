@@ -36,7 +36,7 @@
             <li>
                 <span class='archivo-nombre'></span>
                 <span class='archivo-fecha'></span>
-                <span class='mostrar-archivo'><button onclick="mostrar_archivo();">Mostrar</button></span>
+                <span class='mostrar-archivo'><button onclick="mostrar_archivo();">Mostrar</button> - <button onclick="borrar_archivo();">Eliminar</button></span>
             </li>
         </ul>
     </div>

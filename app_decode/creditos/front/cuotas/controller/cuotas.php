@@ -75,120 +75,19 @@ class cuotas extends main_controller{
         $fecha = $_POST['fecha'];
         $credito_id = $_POST['credito_id'];
         
-        $this->mod->set_credito_active($credito_id);
-        $version = $_POST['version_id'];
-        $this->mod->set_version_active($version);
-        
-        $monto = $_POST['monto'];
-        
-        $this->realizar_pago($fecha,  $monto);
+        if ($this->mod->set_credito_active($credito_id)) {
+            $version = $_POST['version_id'];
+            $this->mod->set_version_active($version);
+
+            $monto = $_POST['monto'];
+
+            $this->mod->realizar_pago($fecha,  $monto);
+        }
         
         $this->mod->renew_datos();
         echo $this->_get_cuotas();
     }
     
-    function realizar_pago($fecha, $monto){
-        
-        
-        $this->mod->elimina_eventos_temporales();        
-
-        
-        //se genera evento para definir el dia de corte
-        $this->mod->renew_datos();
-        $this->mod->save_last_state(false);
-        $this->mod->set_fecha_actual($fecha);
-        
-        //no adelanta capital.. cancela exclusivamente intereses y luego capital
-        $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
-        
-        $ret_evento = $this->mod->generar_evento( array(), true, $fecha, true);
-        
-        $this->mod->set_log(true);
-        $ret_evento_id = $ret_evento['ID'];
-        
-        $ret_reduda = $this->mod->get_deuda($fecha);
-
-        
-        
-        //se elimina el evento
-        $this->mod->elimina_evento($ret_evento_id );        
-        $this->mod->set_log(false);
-        
-        //si el monto es 0 solo se mostrara la deuda
-        $obj_pago = $this->mod->pagar_deuda($ret_reduda, $monto, $fecha);
-        $pagos = $obj_pago['pagos'];
-        
-        
-        //en las cuotas canceladas tenemos las cuotas que han sido canceladas en el ultimo pago y la fecha de dicho pago
-        //de esta forma podemos adelantar las fechas de vencimiento segun algun criterio a especificar o alguna otra
-        //tarea que se necesite
-
-        //$cuotas_canceladas = $obj_pago['cuotas_canceladas'];
-        
-
-        
-        
-        $data = array();
-        
-        
-        $this->mod->save_last_state(true);
-        $pago_total = 0;
-        
-        //recorremos los pagos para verificar anteriormente a la asignacion
-        //el pago de adelantos
-        $badelanta = false;
-        $cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
-        foreach($pagos as $pago){
-            //se puede cargar un tipo de pago para reasignar (lo cual indica cuota cancelada)
-            if ($pago['ID_TIPO']==PAGO_ADELANTADO){
-                $badelanta = true;
-                break;
-            }
-            
-            
-            //o si existe un pago de capital de una cuota siguiente a la cuota correspondiente en la fecha dada
-            //es decir, se paga un 5/5 correspondiente a la fecha de la cuota 5, 
-            //si se paga capital de  la cuota 4 significa que se ha adelantado capital
-            if ($pago['ID_TIPO']==PAGO_CAPITAL && $cuotas_restantes > $pago['CUOTAS_RESTANTES'] ){
-                $badelanta = true;
-                break;
-            }
-        }
-        
-        if ($badelanta){
-            //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
-            //y recalcula los pagos desde esa fecha
-            if ( ($fecha_planchado = $this->mod->modificar_planchado($fecha)) > 0 ){
-                //se debe reimputar los pagos desde la fecha de planchado
-     //           $this->_recalcular_pagos($fecha_planchado);
-     //           return;
-
-            }
-        }
-        
-        //recorremos los pagos para asignar los adelantos de pago
-        foreach($pagos as $pago){
-            if ($pago['ID_TIPO']==PAGO_CAPITAL){
-                $pago_total += $pago['MONTO'];
-                break;
-            }
-            if ($pago['ID_TIPO']==PAGO_ADELANTADO){
-                $this->mod->renew_datos();
-                
-                $adelanto_pago = $this->mod->adelantar_pagos( $fecha);
-                $pago_total += $adelanto_pago;
-                break;
-            }
-        }
-        $data['monto'] = $pago_total;
-        $data['TIPO'] = EVENTO_RECUPERO;
-        $ret = $this->mod->generar_evento( $data, true, $fecha);  
-
-        $this->mod->assign_id_evento($ret['ID'],EVENTO_RECUPERO);
-
-        $this->mod->get_segmentos_cuota();
-        
-    }
     
     function x_agregar_desembolso(){
         $credito_id = $_POST['credito_id'];
@@ -719,7 +618,7 @@ class cuotas extends main_controller{
         $pagos = $this->mod->desimputar_pago();
         
         foreach($pagos as $pago){
-            $this->realizar_pago($pago['fecha'], $pago['monto']);
+            $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
         }
     }
     
@@ -1263,7 +1162,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $pagos_no = 0;
                         foreach ($creditos as $pago) {
                             if (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
-                                $this->realizar_pago($pago['FP'], $pago['PAGO']);
+                                $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
                             } else {
                                 ++$pagos_no;
                             }

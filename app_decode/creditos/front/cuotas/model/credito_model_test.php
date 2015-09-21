@@ -669,27 +669,27 @@ class credito_model_test extends credito_model {
             }
         }
         
-        $_gastos = $this->get_tabla_gastos();
-        $gastos = array();
-        if ($_gastos) {
-            foreach ($_gastos as $gs) {
-                if (!isset($gastos[$gs['FECHA']])) {
-                    $gastos[$gs['FECHA']] = 0;
+        $gastos = $this->get_todos_gastos();
+        $this->clear();
+        if ($gastos) {
+            if ($this->set_credito_active($id_credito_padre)) {
+                foreach ($gastos as $fecha => $gasto) {
+                    $this->agregar_gasto($gasto['MONTO'], $gasto['FECHA'], $gasto['CONCEPTO']);
                 }
-                $gastos[$gs['FECHA']] += $gs['MONTO'];
             }
         }
         
-        echo $this->_id_credito;
-        
-        print_r($pagos);die();
-        
-        
         if ($pagos) {
             foreach ($pagos as $fecha => $monto) {
-                $this->clear();
                 if ($this->set_credito_active($id_credito_padre)) {
-                    $this->set_version_active();
+                    $version = $this->get_versiones();
+                    $version = $version[0]['value'];
+                    $this->clear();
+                    $this->set_credito_active($id_credito_padre);
+                    $this->set_version_active($version);
+                    /* 
+                    $this->set_version_active($version);
+                    
                     $this->elimina_eventos_temporales();
                     $this->renew_datos();
                     
@@ -699,19 +699,126 @@ class credito_model_test extends credito_model {
                     
                     $this->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
             
-                    //$ret_evento = $this->generar_evento( array(), true, $fecha, true);
+                    
+                    $ret_evento = $this->generar_evento( array(), true, $fecha, true);
 
                     $ret_deuda = $this->get_deuda($fecha);
-                    echo $monto;
                     $obj_pago = $this->pagar_deuda($ret_deuda, $monto, $fecha);
+                    
                     print_r($obj_pago);
-                    die();
+                    
+                    
+                    $ret = $this->generar_evento( $data, true, $fecha);
+
+                    $this->assign_id_evento($ret['ID'],EVENTO_RECUPERO);
+                    
+                    print_r($obj_pago);
+                    * 
+                    */
+                    $this->realizar_pago($fecha, $monto);
                 }
             }
             
         }
         
         
+    }
+    
+    function realizar_pago($fecha, $monto) {
+
+
+        $this->elimina_eventos_temporales();
+
+
+        //se genera evento para definir el dia de corte
+        $this->renew_datos();
+        $this->save_last_state(false);
+        $this->set_fecha_actual($fecha);
+
+        //no adelanta capital.. cancela exclusivamente intereses y luego capital
+        $this->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
+
+        $ret_evento = $this->generar_evento(array(), true, $fecha, true);
+
+        $this->set_log(true);
+        $ret_evento_id = $ret_evento['ID'];
+        $ret_reduda = $this->get_deuda($fecha);
+
+        //se elimina el evento
+        $this->elimina_evento($ret_evento_id);
+        $this->set_log(false);
+
+        //si el monto es 0 solo se mostrara la deuda
+        $obj_pago = $this->pagar_deuda($ret_reduda, $monto, $fecha);
+        
+        $pagos = $obj_pago['pagos'];
+        
+
+
+        //en las cuotas canceladas tenemos las cuotas que han sido canceladas en el ultimo pago y la fecha de dicho pago
+        //de esta forma podemos adelantar las fechas de vencimiento segun algun criterio a especificar o alguna otra
+        //tarea que se necesite
+        //$cuotas_canceladas = $obj_pago['cuotas_canceladas'];
+
+        $data = array();
+
+
+        $this->save_last_state(true);
+        $pago_total = 0;
+
+        //recorremos los pagos para verificar anteriormente a la asignacion
+        //el pago de adelantos
+        $badelanta = false;
+        
+        $cuotas_restantes = $this->get_cuotas_restantes($fecha);
+        foreach ($pagos as $pago) {
+            //se puede cargar un tipo de pago para reasignar (lo cual indica cuota cancelada)
+            if ($pago['ID_TIPO'] == PAGO_ADELANTADO) {
+                $badelanta = true;
+                break;
+            }
+
+
+            //o si existe un pago de capital de una cuota siguiente a la cuota correspondiente en la fecha dada
+            //es decir, se paga un 5/5 correspondiente a la fecha de la cuota 5, 
+            //si se paga capital de  la cuota 4 significa que se ha adelantado capital
+            if ($pago['ID_TIPO'] == PAGO_CAPITAL && $cuotas_restantes > $pago['CUOTAS_RESTANTES']) {
+                $badelanta = true;
+                break;
+            }
+        }
+
+        if ($badelanta) {
+            //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
+            //y recalcula los pagos desde esa fecha
+            if (($fecha_planchado = $this->modificar_planchado($fecha)) > 0) {
+                //se debe reimputar los pagos desde la fecha de planchado
+                //           $this->_recalcular_pagos($fecha_planchado);
+                //           return;
+            }
+        }
+
+        //recorremos los pagos para asignar los adelantos de pago
+        foreach ($pagos as $pago) {
+            if ($pago['ID_TIPO'] == PAGO_CAPITAL) {
+                $pago_total += $pago['MONTO'];
+                break;
+            }
+            if ($pago['ID_TIPO'] == PAGO_ADELANTADO) {
+                $this->renew_datos();
+
+                $adelanto_pago = $this->adelantar_pagos($fecha);
+                $pago_total += $adelanto_pago;
+                break;
+            }
+        }
+        $data['monto'] = $pago_total;
+        $data['TIPO'] = EVENTO_RECUPERO;
+        $ret = $this->generar_evento($data, true, $fecha);
+
+        $this->assign_id_evento($ret['ID'], EVENTO_RECUPERO);
+
+        $this->get_segmentos_cuota();
     }
 
 }

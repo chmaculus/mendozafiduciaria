@@ -230,7 +230,7 @@ function agregar_variacion() {
             generar_chequeras();
             break;            
         case 9:
-            //caducidad();
+            refinanciar();
             break;
         case 10:
             refinanciacion_caida();
@@ -986,7 +986,7 @@ function imprimirEventos(){
     });
 }
 
-function caducidad() {
+function refinanciar() {
     $.ajax({
         url: _cuotas.URL + "/x_emitir_una_cuota",
         data: {
