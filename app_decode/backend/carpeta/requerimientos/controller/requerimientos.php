@@ -100,6 +100,13 @@ class requerimientos extends main_controller{
         echo $obj;
     }
     
+     function x_cargar_motivo_rechazo_req(){
+        $contMotivoReq = $_POST["contMotivoReq"];
+        $idNotReq = $_POST["idNotReq"];
+        $rtn = $this->mod->cargar_motivo_rechazo_req($idNotReq, $contMotivoReq);
+       return $rtn;
+    }
+    
     /*
      
     function x_get_datatable(){

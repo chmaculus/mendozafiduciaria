@@ -5114,12 +5114,11 @@ function addEventsRequerimientos(idr){
         
     });
     
-    
-                        
-    $(".send_req").on('click', function(e){
-//        alert("guardar req");
-        e.preventDefault();
-
+ /* En este sector agrega los requerimientos que se cargan desde 
+ * la seccion carpetas. El inconveniente es que no entra al ajax,
+ * pero guarda correctamente los datos.*/
+    $(".send_req").on('click', function(){
+//        e.preventDefault();
         // edit/new
         var idreqh = $("#idreqh").val();
         var req_asu = $("#req_asunto").val();
@@ -5134,9 +5133,7 @@ function addEventsRequerimientos(idr){
         var estado = 1;
         //var autor_req=24;
         var autor_req = $("#jefeope_h").val();
-        
-console.log("si rol es jefe de op, estado = 2");
-console.log(_USER_ROL);
+
         // si rol es jefe de op, estado = 2
         if (_USER_ROL==10){
             estado = 2;
@@ -5149,7 +5146,6 @@ console.log(_USER_ROL);
             var nombre_tmp = $(this).data('tmp');
             _array_uploads_adj.push({nombre:nombre,nombre_tmp:nombre_tmp});
         });   
-        
         obj_req = {
             ID_OPERACION:id_ope_req,
             ASUNTO:req_asu,
@@ -5162,8 +5158,6 @@ console.log(_USER_ROL);
             adjuntos:_array_uploads_adj,
             autor_req: autor_req
         }
-        
-        
         if ($("#femis").val()==''){
             jAlert('Ingrese una fecha.', $.ucwords(_etiqueta_modulo),function(){
                 $("#femis").datepicker("show");
@@ -5181,21 +5175,19 @@ console.log(_USER_ROL);
             }
             
         }
-        
         if ($("#req_asunto").val()==''){
             jAlert('Ingrese un asunto.', $.ucwords(_etiqueta_modulo),function(){
                 $("#req_asunto").focus().select();
             });
             return false;
         }
-        
-        
 
         $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
         $.ajax({
             url : _carpetas.URL + "/x_sendreq",
             data : {
-                obj:obj_req
+                obj:obj_req,
+                valorSeteado:1,
             },
             dataType : "json",
             type : "post",
@@ -5230,6 +5222,9 @@ console.log(_USER_ROL);
                             //eventos
                             evento_lista_req();
                             $.fancybox.close();
+//                          $("#jqxgrid").show();
+//                            $("#jqxgrid").jqxGrid('updatebounddata');
+//                            $("#wpopup").html('');
                             
                         });
                     }else{
@@ -5281,14 +5276,7 @@ console.log(_USER_ROL);
             }
             });
             /*Aqui lo agrega al requerimirnto, pero hay problemas con el tema mail*/
-          
         $.fancybox.close();
-        /*ASIGNARLA A UN CORDINADOR*/
-        
-        /*FIN DE ASIGNARLA A UN CORDINADOR*/
-        
-        
-
     });
 
     $(".clear_req").on('click', function(e){

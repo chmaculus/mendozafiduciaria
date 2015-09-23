@@ -23,7 +23,6 @@
         if ($c["TNOTIF"]==1)
             //$clase="es_notif";
         //log_this('aaaaaaa.log',print_r($carpetas_pendientes,1));
-            
 ?>
         <div>
             <?php if ($c["TAUTOR_REQ"]>0):?>
@@ -78,7 +77,7 @@
                 <?php elseif($c["TOBSERVACION"]=='AUTORIZACION DE REQUERIMIENTO' && $c["TETAPA_ORIGEN"]=='1' && $c["TESTADO"]=='9'): // ?>
                     <div class="<?php echo $clase ?>" >Autorizaron tu requerimiento.<span> Requerimiento ID:<?php echo $c["TETAPA"]?></span> </div>
                     <div data-iid="<?php echo $c["TID"]?>" data-tid="<?php echo $c["TID"]?>" data-notif="1" class="link_aceptar tb_si"></div>
-                <?php elseif($c["TOBSERVACION"]=='AUTORIZACION DE REQUERIMIENTO' && $c["TETAPA_ORIGEN"]=='0' && $c["TESTADO"]=='9'): // ?>
+                <?php elseif($c["TOBSERVACION"]=='RECHAZO DE REQUERIMIENTO' && $c["TETAPA_ORIGEN"]=='0' && $c["TESTADO"]=='9'): // ?>
                     <div class="link_aceptar_carpeta rechazado" >No autorizaron tu requerimiento.<span> Requerimiento ID:<?php echo $c["TETAPA"]?></span> </div>
                     <div data-iid="<?php echo $c["TID"]?>" data-tid="<?php echo $c["TID"]?>" data-notif="1" class="link_aceptar tb_si"></div>
                 <?php else: //Respuesta a Requerimiento ?>

@@ -4514,9 +4514,9 @@ function addEventsRequerimientos(idr){
     
     
                         
-    $(".send_req").on('click', function(e){
-        e.preventDefault();
-
+    $(".send_req").on('click', function(){
+//        e.preventDefault();
+ alert("AQUI 2");
         // edit/new
         var idreqh = $("#idreqh").val();
         var req_asu = $("#req_asunto").val();

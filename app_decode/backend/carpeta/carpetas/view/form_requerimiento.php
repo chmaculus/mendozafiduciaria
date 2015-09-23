@@ -119,25 +119,31 @@
             <div class="button-a red btn_insuf"><span>Insuficiente</span></div>
             <div class="button-a blue btn_suf"><span class="">Suficiente</span></div>
             <?php endif; ?>
-            
-            <?php if ( isset($obj_req["ESTADO"]) && isset($obj_req["REMITENTE"]) && $obj_req["ESTADO"]=='2' && $obj_req["REMITENTE"]==$_SESSION["USERADM"]): ?>
-            <div class="button-a blue btn_env_user"><span class="">Enviar al usuario</span></div>
-            <?php endif; ?>
 
-            <?php if ( isset($obj_req["ESTADO"]) && $obj_req["ESTADO"]!='2' ): ?>
-            <div class="button-a blue send_req"><span>Guardar Requerimiento</span></div>
-            <?php endif; ?>
+            <?php // print_r($obj_req);die();
+//            if ( isset($obj_req["ESTADO"]) && isset($obj_req["REMITENTE"]) && $obj_req["ESTADO"]=='1' && $obj_req["REMITENTE"]==$_SESSION["USERADM"]): ?>
+            <!--<div class="button-a blue btn_env_user"><span class="">Enviar al usuario</span></div>-->
+            <?php // endif; ?>
+
+            <?php // if ( isset($obj_req["ESTADO"])): ?>
+            <!--<div class="button-a blue send_req"><span>Guardar Requerimiento 1</span></div>-->
+            <?php // endif; ?>
+            
+            <?php if ( isset($obj_req["ESTADO"]) && $obj_req["ESTADO"]=='1' ){ ?>
+            <div class="button-a blue send_req_acept"><span>Aceptar</span></div>
+            <div class="button-a blue send_req_rechaz" style="margin-right: 50px;"><span>Rechazar</span></div>
+            <?php } ?>
         </div>
     </div>
     <?php endif; ?>
     
-    <?php if ( !isset($obj_req["ESTADO"]) ): ?>
+    <?php if ( !isset($obj_req["ESTADO"]) ){ ?>
     <div class="elem elempie">
         <div class="indent">
             <div class="button-a blue send_req"><span>Guardar Requerimiento</span></div>
         </div>
     </div>
-    <?php endif; ?>
+    <?php } ?>
     <?php endif; ?>
     
     <?php endif; ?>

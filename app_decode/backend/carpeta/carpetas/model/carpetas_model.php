@@ -354,10 +354,7 @@ class carpetas_model extends main_model{
     }
     
     function sendreq($obj, $adjuntos, $autor_req, $notificar_operaciones_carpeta_respondida = 0){
-        
-        //$notificar_operaciones_carpeta_respondida
-        //log_this('zzzzz00.log',print_r($obj,1));
-        
+       
         $iid = $obj["idreqh"];
         unset( $obj["idreqh"] );
         //IDOPE, ASUNTO, DESC
@@ -424,7 +421,7 @@ class carpetas_model extends main_model{
             
             $resp = $this->_db->update( 'fid_nota_req', $obj, "ID='".$iid."'" );
             $obj_na = $obj;
-            
+//            var_dump($obj_na);die();
             if($notificar_operaciones_carpeta_respondida==1){
                 $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
                 $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
@@ -484,7 +481,7 @@ class carpetas_model extends main_model{
                 $estado = "Rechazado" ;
             $obj[0]["ESTADO"]=$estado;
         }
-        
+//       die();
         if (isset($obj['FCREA']))
             $fcrea = strtotime( $obj['FCREA'] )==false?'-':date( "d/m/Y", strtotime($obj['FCREA']) );
         else
@@ -571,9 +568,444 @@ class carpetas_model extends main_model{
             "accion"=>$acc,
             "result"=>$obj
         );
+//        print_r($rtn);die();
         return $rtn;
     }
+    /********************************************************************/
+    /**********************ESTADO ACEPTADO*********************************/
+    /********************************************************************/
+    function sendreq_acep($obj, $adjuntos, $autor_req, $notificar_operaciones_carpeta_respondida = 0){
+
+        $iid = $obj["idreqh"];
+        unset( $obj["idreqh"] );
+        //IDOPE, ASUNTO, DESC
+        $fecha_actual="";
+        if (isset($obj['FCREA']) && $obj['FCREA'])
+            $fecha_actual = deFecha_a_base ($obj['FCREA']);
+        $fecha_resp="";
+        if (isset($obj['FREC']) && $obj['FREC'])
+            $fecha_resp = deFecha_a_base ($obj['FREC']);
+
+        $id_new = $iid;
+        if ($iid==0){ //agregar
+            $obj_na = array();
+            $obj['FOJAS'] = "";
+            $obj['REMITENTE'] = $_SESSION["USERADM"];
+            $obj['DESTINATARIO'] = "BENEFICIARIO";
+            $obj['PROPIETARIO'] = "BENEFICIARIO";
+            $obj['FCREA'] = $fecha_actual;
+            $obj['FREC'] = $fecha_resp;
+            $obj['FTRA'] = "";
+            $obj['TIPO'] = "0";
+            
+            $resp = $this->_db->insert( 'fid_nota_req', $obj );
+            $id_new = $resp;
+            $obj['ID'] = $id_new;
+            $acc="add";
+            
+            if ($autor_req>0){
+                $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
+                $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
+                if ($reg){
+                    $carterade = $reg[0]["CARTERADE"];
+                }
+                //obtener etapa origen
+                $this->_db->select('ETAPA_ORIGEN');
+                $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$obj['ID_OPERACION']."' AND ACTIVO='1'");
+                $etapa_origen = 99;
+                if ($regt){
+                    $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
+                }
+                //insertar traza que servira para notificacion al jefe de op
+                $arr_traza = array(
+                    "ID_OPERACION"=>$obj['ID_OPERACION'],
+                    "ESTADO"=>9, //autorizacion de req
+                    "CARTERADE"=> $carterade,
+                    "DESTINO"=> $carterade,
+                    "OBSERVACION"=>'AUTORIZACION DE REQUERIMIENTO',
+                    "DESCRIPCION"=>'SE PIDE AUTORIZACION PARA REQUERIMIENTO',
+                    "ETAPA"=>$id_new,//aca uso este campo para guardar el id del req
+                    "ETAPA_ORIGEN"=>$etapa_origen,
+                    "FECHA"=>$fecha_actual,
+                    "LEIDO"=>1,
+                    "NOTIF"=>1,
+                    "AUTOR_REQ"=>$autor_req
+                );
+                $this->_db->insert( 'fid_traza', $arr_traza );
+            }
+            
+        }else{
+            $obj['FREC'] = $fecha_resp;
+            unset($obj['FCREA']);            
+            
+            $resp = $this->_db->update( 'fid_nota_req', $obj, "ID='".$iid."'" );
+            $obj_na = $obj;
+            if($notificar_operaciones_carpeta_respondida==1){
+                $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
+                $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
+                if ($reg){
+                    $carterade = $reg[0]["CARTERADE"];
+                }
+                //obtener etapa origen
+                $this->_db->select('ETAPA_ORIGEN');
+                $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$obj['ID_OPERACION']."' AND ACTIVO='1'");
+                $etapa_origen = 99;
+                if ($regt){
+                    $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
+                }
+                //insertar traza que servira para notificacion al jefe de op
+                $arr_traza = array(
+                    "ID_OPERACION"=>$obj['ID_OPERACION'],
+                    "ESTADO"=>10, //notificar al jefe de operaciones que se respondio su req
+                    "CARTERADE"=> $carterade,
+                    "DESTINO"=> $carterade,
+                    "OBSERVACION"=>'AUTORIZACION DE REQUERIMIENTO', // usaremos el mismo asunto, pero en realidad no es autorizacion, sino una noftificacion al jefe de op
+                    "DESCRIPCION"=>'SE NOTIFICA AL JEFE DE OPERACIONES QUE RESPONDIERON A SU REQUERIMIENTO',
+                    "ETAPA"=>$id_new,//aca uso este campo para guardar el id del req
+                    "ETAPA_ORIGEN"=>$etapa_origen,
+                    "FECHA"=>$fecha_actual,
+                    "LEIDO"=>1,
+                    "NOTIF"=>1,
+                    "ACTIVO"=>0,
+                    "AUTOR_REQ"=>'0'
+                );
+                $this->_db->insert( 'fid_traza', $arr_traza );
+        }
+            
+            $obj = $this->_db->get_tabla("fid_nota_req", "ID='".$iid."'");
+            if ($obj){
+                $obj['FREC'] = $fecha_resp;
+                $obj[0]['FREC'] = $fecha_resp;
+            }
+            $acc="edit";
+            //estado
+            if ( $obj[0]["ESTADO"]==0 )
+                $estado = "Emitido" ;
+            if ( $obj[0]["ESTADO"]==1 )
+                $estado = "Pendiente" ;
+            elseif($obj[0]["ESTADO"]==2)
+                $estado = "Enviado" ;
+            elseif($obj[0]["ESTADO"]==3)
+                $estado = "Respondido" ;
+            elseif($obj[0]["ESTADO"]==4)
+                $estado = "Aceptado" ;
+            elseif($obj[0]["ESTADO"]==5)
+                $estado = "Rechazado" ;
+                $obj[0]["ESTADO"]=$estado;
+        }
+        
+        if (isset($obj['FCREA']))
+            $fcrea = strtotime( $obj['FCREA'] )==false?'-':date( "d/m/Y", strtotime($obj['FCREA']) );
+        else
+            $fcrea = "";
+        
+        if (isset($obj['FREC']))
+            $frec = strtotime( $obj['FREC'] )==false?'-':date( "d/m/Y", strtotime($obj['FREC']) );
+        else
+            $frec = "";
+        
+        if (isset($obj['FTRA']))
+            $ftra = strtotime( $obj['FTRA'] )==false?'-':date( "d/m/Y", strtotime($obj['FTRA']) );
+        else
+            $ftra = "";
+        $obj['FCREA'] = $fcrea;
+        $obj['FREC'] = $frec;
+        $obj['FTRA'] = $ftra;
+        
+        if ($adjuntos):
+            foreach ($adjuntos as $key=>$value):
+                if (isset($value['nombre_tmp'])):
+                    //obtener la semilla
+                    $sem = isset($value['nombre_tmp'])?$value['nombre_tmp']:"";
+                    //consultamos la semilla de la tabla fid_upload_etiqueta,
+                    $etiq = $this->_db->get_tabla('fid_upload_etiqueta', "SEMILLA='".$sem."'");
+                    $etiketa="";
+                    if ($etiq):
+                        $etiketa = $etiq[0]["ETIQUETA"];
+                    endif;
+
+                    $arr_ins = array(
+                            "ID_NOTA_REQ"=>$id_new,
+                            "NOMBRE"=>  PATH_REQUERIMIENTOS . $id_new . "/" . $value['nombre'], 
+                            "ID_USUARIO"=>$_SESSION["USERADM"], 
+                            "DESCRIPCION"=>$etiketa,
+                            "CREATEDON"=>"[NOW()]"
+                    );
+                    $this->_db->insert('fid_nota_req_adjunto', $arr_ins);
+                    //borrar etiketa
+                    $this->_db->delete('fid_upload_etiqueta', "SEMILLA='".$sem."'");
+
+                    //mover archivo
+                    $origen = isset($value['nombre_tmp'])?$value['nombre_tmp']:"";
+                    $destino = PATH_REQUERIMIENTOS . $id_new . "/" . $value['nombre'];
+
+                    if ($origen):
+                        mover( $origen, $destino );
+                    endif;
+                endif;
+            endforeach;
+        endif;
+        
+        if(count($obj_na)>0 && $obj_na["estado"]==3):
+            $reg = $this->_db->get_tabla('fid_nota_req', "ID='".$id_new."'");
+            
+            $remitente = 0;
+            if ($reg):
+                $remitente = $reg[0]["REMITENTE"];
+                $id_op = $reg[0]["ID_OPERACION"];
+            endif;
+            
+            $obj_na["ASUNTO"] = "Respuesta a Requerimiento ".$id_new;
+            $obj_na["PROPIETARIO"] = $_SESSION["USERADM"];
+            $obj_na["ID_OPERACION"] = "0";
+            $obj_na["REMITENTE"] = $_SESSION["USER_NA"];
+            $obj_na["ENVIADOA"] = $remitente;
+            
+            $obj_na["FOJAS"] = $id_op; // AQUI GUARDAMOS EL ID OPERACION
+            //Preguntar si existe Nota Automatica
+            //Insertar Nota Automatica Respuesta a un Requerimiento
+            $obj_na["TIPO"] = 1; // notas
+            $resp = $this->_db->insert( 'fid_nota_req', $obj_na );
+            //log_this( 'wwwwww.log', $this->_db->last_query() );
+            
+            //insertar notificacion de envio de nota
+            $this->guardar_traza_nota_carp($resp,'REQUERIMIENTO ACEPTADO','ENVIO DE REQUERIMIENTO',$remitente);
+            
+        endif;
+        var_dump($rtn);die();        
+        $rtn = array(
+            "accion"=>$acc,
+            "result"=>$obj
+        );
+//        print_r($rtn);die();
+        return $rtn;
+    }
+    /********************************************************************/
+    /**********************FIN ESTADO ACEPTADO***************************/
+    /********************************************************************/
     
+    /********************************************************************/
+    /**********************ESTADO RECHAZADO*********************************/
+    /********************************************************************/
+    function sendreq_rechaz($obj, $adjuntos, $autor_req, $notificar_operaciones_carpeta_respondida = 0){
+
+        $iid = $obj["idreqh"];
+        unset( $obj["idreqh"] );
+        //IDOPE, ASUNTO, DESC
+        $fecha_actual="";
+        if (isset($obj['FCREA']) && $obj['FCREA'])
+            $fecha_actual = deFecha_a_base ($obj['FCREA']);
+        $fecha_resp="";
+        if (isset($obj['FREC']) && $obj['FREC'])
+            $fecha_resp = deFecha_a_base ($obj['FREC']);
+
+        $id_new = $iid;
+        if ($iid==0){ //agregar
+            $obj_na = array();
+            $obj['FOJAS'] = "";
+            $obj['REMITENTE'] = $_SESSION["USERADM"];
+            $obj['DESTINATARIO'] = "BENEFICIARIO";
+            $obj['PROPIETARIO'] = "BENEFICIARIO";
+            $obj['FCREA'] = $fecha_actual;
+            $obj['FREC'] = $fecha_resp;
+            $obj['FTRA'] = "";
+            $obj['TIPO'] = "0";
+            
+            $resp = $this->_db->insert( 'fid_nota_req', $obj );
+            $id_new = $resp;
+            $obj['ID'] = $id_new;
+            $acc="add";
+            
+            
+            if ($autor_req>0){
+                $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
+                $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
+                if ($reg){
+                    $carterade = $reg[0]["CARTERADE"];
+                }
+                //obtener etapa origen
+                $this->_db->select('ETAPA_ORIGEN');
+                $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$obj['ID_OPERACION']."' AND ACTIVO='1'");
+                $etapa_origen = 99;
+                if ($regt){
+                    $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
+                }
+                //insertar traza que servira para notificacion al jefe de op
+                $arr_traza = array(
+                    "ID_OPERACION"=>$obj['ID_OPERACION'],
+                    "ESTADO"=>9, //autorizacion de req
+                    "CARTERADE"=> $carterade,
+                    "DESTINO"=> $carterade,
+                    "OBSERVACION"=>'AUTORIZACION DE REQUERIMIENTO',
+                    "DESCRIPCION"=>'SE PIDE AUTORIZACION PARA REQUERIMIENTO',
+                    "ETAPA"=>$id_new,//aca uso este campo para guardar el id del req
+                    "ETAPA_ORIGEN"=>$etapa_origen,
+                    "FECHA"=>$fecha_actual,
+                    "LEIDO"=>1,
+                    "NOTIF"=>1,
+                    "AUTOR_REQ"=>$autor_req
+                );
+           
+                $this->_db->insert( 'fid_traza', $arr_traza );
+            }
+            
+        }else{
+            $obj['FREC'] = $fecha_resp;
+            unset($obj['FCREA']);            
+            
+            $resp = $this->_db->update( 'fid_nota_req', $obj, "ID='".$iid."'" );
+            $obj_na = $obj;
+//          var_dump($obj_na);die();
+            if($notificar_operaciones_carpeta_respondida==1){
+                $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
+                $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
+                if ($reg){
+                    $carterade = $reg[0]["CARTERADE"];
+                }
+                //obtener etapa origen
+                $this->_db->select('ETAPA_ORIGEN');
+                $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$obj['ID_OPERACION']."' AND ACTIVO='1'");
+                $etapa_origen = 99;
+                if ($regt){
+                    $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
+                }
+                
+                //insertar traza que servira para notificacion al jefe de op
+                $arr_traza = array(
+                    "ID_OPERACION"=>$obj['ID_OPERACION'],
+                    "ESTADO"=>9, //notificar al jefe de operaciones que se respondio su req
+                    "CARTERADE"=> $carterade,
+                    "DESTINO"=> $carterade,
+                    "OBSERVACION"=>'RECHAZO DE REQUERIMIENTO', // usaremos el mismo asunto, pero en realidad no es autorizacion, sino una noftificacion al jefe de op
+                    "DESCRIPCION"=>'SE NOTIFICA AL COORDINADOR DE OPERACIONES QUE RECHAZARON A SU REQUERIMIENTO',
+                    "ETAPA"=>$id_new,//aca uso este campo para guardar el id del req
+                    "ETAPA_ORIGEN"=>$etapa_origen,
+                    "FECHA"=>$fecha_actual,
+                    "LEIDO"=>1,
+                    "NOTIF"=>1,
+                    "ACTIVO"=>0,
+                    "AUTOR_REQ"=>'0'
+                );
+                $this->_db->insert( 'fid_traza', $arr_traza );
+                
+            }
+            
+            $obj = $this->_db->get_tabla("fid_nota_req", "ID='".$iid."'");
+            if ($obj){
+                $obj['FREC'] = $fecha_resp;
+                $obj[0]['FREC'] = $fecha_resp;
+            }
+            
+            $acc="edit";
+            //estado
+            if ( $obj[0]["ESTADO"]==0 )
+                $estado = "Emitido" ;
+            if ( $obj[0]["ESTADO"]==1 )
+                $estado = "Pendiente" ;
+            elseif($obj[0]["ESTADO"]==2)
+                $estado = "Enviado" ;
+            elseif($obj[0]["ESTADO"]==3)
+                $estado = "Respondido" ;
+            elseif($obj[0]["ESTADO"]==4)
+                $estado = "Aceptado" ;
+            elseif($obj[0]["ESTADO"]==5)
+                $estado = "Rechazado" ;
+                $obj[0]["ESTADO"]=$estado;
+        }
+        
+        
+//        var_dump($obj);
+//        echo "GOKUUUUUU";die();
+        
+        if (isset($obj['FCREA']))
+            $fcrea = strtotime( $obj['FCREA'] )==false?'-':date( "d/m/Y", strtotime($obj['FCREA']) );
+        else
+            $fcrea = "";
+        
+        if (isset($obj['FREC']))
+            $frec = strtotime( $obj['FREC'] )==false?'-':date( "d/m/Y", strtotime($obj['FREC']) );
+        else
+            $frec = "";
+        
+        if (isset($obj['FTRA']))
+            $ftra = strtotime( $obj['FTRA'] )==false?'-':date( "d/m/Y", strtotime($obj['FTRA']) );
+        else
+            $ftra = "";
+        $obj['FCREA'] = $fcrea;
+        $obj['FREC'] = $frec;
+        $obj['FTRA'] = $ftra;
+        
+        if ($adjuntos):
+            foreach ($adjuntos as $key=>$value):
+                if (isset($value['nombre_tmp'])):
+                    //obtener la semilla
+                    $sem = isset($value['nombre_tmp'])?$value['nombre_tmp']:"";
+                    //consultamos la semilla de la tabla fid_upload_etiqueta,
+                    $etiq = $this->_db->get_tabla('fid_upload_etiqueta', "SEMILLA='".$sem."'");
+                    $etiketa="";
+                    if ($etiq):
+                        $etiketa = $etiq[0]["ETIQUETA"];
+                    endif;
+
+                    $arr_ins = array(
+                            "ID_NOTA_REQ"=>$id_new,
+                            "NOMBRE"=>  PATH_REQUERIMIENTOS . $id_new . "/" . $value['nombre'], 
+                            "ID_USUARIO"=>$_SESSION["USERADM"], 
+                            "DESCRIPCION"=>$etiketa,
+                            "CREATEDON"=>"[NOW()]"
+                    );
+                    $this->_db->insert('fid_nota_req_adjunto', $arr_ins);
+                    //borrar etiketa
+                    $this->_db->delete('fid_upload_etiqueta', "SEMILLA='".$sem."'");
+
+                    //mover archivo
+                    $origen = isset($value['nombre_tmp'])?$value['nombre_tmp']:"";
+                    $destino = PATH_REQUERIMIENTOS . $id_new . "/" . $value['nombre'];
+
+                    if ($origen):
+                        mover( $origen, $destino );
+                    endif;
+                endif;
+            endforeach;
+        endif;
+        
+        if(count($obj_na)>0 && $obj_na["estado"]==3):
+            $reg = $this->_db->get_tabla('fid_nota_req', "ID='".$id_new."'");
+            
+            $remitente = 0;
+            if ($reg):
+                $remitente = $reg[0]["REMITENTE"];
+                $id_op = $reg[0]["ID_OPERACION"];
+            endif;
+            
+            $obj_na["ASUNTO"] = "Respuesta a Requerimiento ".$id_new;
+            $obj_na["PROPIETARIO"] = $_SESSION["USERADM"];
+            $obj_na["ID_OPERACION"] = "0";
+            $obj_na["REMITENTE"] = $_SESSION["USER_NA"];
+            $obj_na["ENVIADOA"] = $remitente;
+            
+            $obj_na["FOJAS"] = $id_op; // AQUI GUARDAMOS EL ID OPERACION
+            //Preguntar si existe Nota Automatica
+            //Insertar Nota Automatica Respuesta a un Requerimiento
+            $obj_na["TIPO"] = 1; // notas
+            $resp = $this->_db->insert( 'fid_nota_req', $obj_na );
+            //log_this( 'wwwwww.log', $this->_db->last_query() );
+            
+            //insertar notificacion de envio de nota
+            $this->guardar_traza_nota_carp($resp,'ENVIAR NOTA','ENVIO DE NOTA A DESTINATARIO',$remitente);
+            
+        endif;
+        var_dump($rtn);die();        
+        $rtn = array(
+            "accion"=>$acc,
+            "result"=>$obj
+        );
+//        print_r($rtn);die();
+        return $rtn;
+    }
+    /********************************************************************/
+    /**********************FIN ESTADO RECHAZADO***************************/
+    /********************************************************************/
     
     function guardar_traza_nota_carp($id_req_nota,$observacion,$descripcion,$destinatario=0){
         
@@ -1465,6 +1897,47 @@ class carpetas_model extends main_model{
         $this->_db->insert('fid_traza', $arr_traza );
         //return $rtn;
     }
+    
+      function cancelar_requerimiento($idnr,$contMotivo){
+        $fecha_actual = date("Y-m-d H:i:s");
+        $enviadoa = 0;
+        //obtener cartera de
+        $this->_db->select('PROPIETARIO,ID, ENVIADOA');
+        $reg = $this->_db->get_tabla('fid_nota_req',"ID='".$idnr."'");
+        if ($reg){
+            $carterade = $reg[0]["PROPIETARIO"];
+            $this->_db->update( 'fid_traza', array("LEIDO"=>"0"), "NOTA='".$reg[0]["ID"]."'" );
+            $this->_db->update( 'fid_nota_req', array("ENVIADOA"=>"0"), "ID='".$idnr."'" );
+        }
+        
+        $enviadoa = $reg[0]["ENVIADOA"];
+        $this->_db->select('NOMBRE,APELLIDO');
+        $ususend = $this->_db->get_tabla('fid_usuarios',"ID='".$enviadoa."'");
+        
+        
+        $obj_ed= array(
+            "ACTIVO"=>"0"
+        );
+        $this->_db->update("fid_traza",$obj_ed,"NOTA='".$idnr."'");
+        //insertar en traza el registro de cancelado
+        $arr_traza = array(
+            "ID_OPERACION"=>0,
+            "ESTADO"=>4, //rechazado
+            "CARTERADE"=> $carterade,
+            "DESTINO"=> $carterade,
+            "OBSERVACION"=>'RECHAZADA',
+            "DESCRIPCION"=>'NOTA RECHAZADA POR '.$ususend[0]['NOMBRE'].' '.$ususend[0]['APELLIDO']. ': '.$contMotivo,
+            "ETAPA"=>0,
+            "ETAPA_ORIGEN"=>0,
+            "FECHA"=>$fecha_actual,
+            "NOTA"=>$idnr,
+            "NOTIF"=>1,
+            "LEIDO"=>1
+        );
+        $this->_db->insert('fid_traza', $arr_traza );
+        //return $rtn;
+    }
+    
     
     function get_arruploads($id){
         $this->_db->select("NOMBRE");
