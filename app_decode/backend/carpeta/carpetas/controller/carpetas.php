@@ -177,11 +177,11 @@ class carpetas extends main_controller{
     
     function x_sendreq(){
         $obj = $_POST['obj'];
-
         $adjuntos = isset($obj['adjuntos'])?$obj['adjuntos']:array();
         $autor_req = isset($obj['autor_req'])?$obj['autor_req']:0;
         $notif_ope = isset($_POST['notif_ope'])&&$_POST['notif_ope']==1?$_POST['notif_ope']:0;
         unset($obj['adjuntos'],$obj['autor_req']);
+        print_r($obj);die();
         if ($rtn = $this->mod->sendreq($obj,$adjuntos,$autor_req,$notif_ope)) {
             include("general/plugin/phpmailer/class.phpmailer.php");
             $mail = new PHPMailer();
@@ -206,7 +206,7 @@ class carpetas extends main_controller{
             $mail->Body = "Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
                     . "Usuario: " . $_SESSION['USER_NA'] . "<br />\n"
                     . "Descripción del requerimiento: " . $obj['DESCRIPCION'];
-            
+ 
             if ($mail->Send()) {
                 $rtn['result']['email'] = 1;
             } else {

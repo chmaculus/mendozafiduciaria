@@ -5225,7 +5225,6 @@ function addEventsRequerimientos(idr){
 //                          $("#jqxgrid").show();
 //                            $("#jqxgrid").jqxGrid('updatebounddata');
 //                            $("#wpopup").html('');
-                            
                         });
                     }else{
                         jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo),function(){
