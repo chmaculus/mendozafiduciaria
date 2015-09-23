@@ -505,7 +505,7 @@ class formaltabase extends main_controller {
             foreach ($desembolsos as $desembolso) {
                 $_POST = array();
                 $_POST['credito_id'] = $credito_id;
-                $_POST['fecha'] = strtotime($desembolso['fecha']);
+                $_POST['fecha'] = strtotime($desembolso['fecha']) - 1;
                 $_POST['tipo'] = 1;
                 $_POST['reset'] = 0;
                 $_POST['version_id'] = $version;

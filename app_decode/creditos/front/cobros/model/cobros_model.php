@@ -218,7 +218,22 @@ class cobros_model extends credito_model{
         );
         return $rtn;
     }
+    
+    function tiene_pagos_imputados($id) {
+        $rtn = $this->_db->get_tabla("fid_creditos_bancos_cobros", "ID_FILE=$id AND FECHA_INGRESADO!=0");
+        if ($rtn) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
 
+    function del_cobro($id) {
+        $this->_db->delete("fid_creditos_bancos_cobros", "ID_FILE=$id");
+        $this->_db->delete("fid_creditos_bancos_files", "ID=$id");
+        
+        return TRUE;
+    }
     
 }
 

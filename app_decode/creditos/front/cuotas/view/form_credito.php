@@ -30,7 +30,7 @@
                     <option value="7" class="editar">Saldo traspaso</option>
                     <option value="8" class="editar">Generar Chequeras</option>
                     <?php if (isset($vars['DE_CADUCADO']) && !$vars['DE_CADUCADO']) { ?>
-                    <option value="9" class="editar">Caducar</option>
+                    <option value="9" class="editar">Refinanciar</option>
                     <?php } else { ?>
                     <option value="10" class="editar">Refinanciacion caida</option>
                     <?php } ?>
