@@ -222,6 +222,13 @@ class carpetas extends main_controller{
         $autor_req = isset($obj['autor_req'])?$obj['autor_req']:0;
         $notif_ope = isset($_POST['notif_ope'])&&$_POST['notif_ope']==1?$_POST['notif_ope']:0;
         unset($obj['adjuntos'],$obj['autor_req']);
+        $valorid = $obj['idreqh'];
+        $valorOperacion = $obj['ID_OPERACION'];
+        /*Esto obtiene los datos del coordinador y del cliente por si hay que enviar un mail*/
+        $datos_mail = $this->mod->obtener_datos_mail($valorid,$valorOperacion);
+        $correoDesde = $datos_mail[0]['email'];
+//        $datos_cliente = $this->mod->obtener_datos_cliente($valorOperacion);
+//        var_dump($datos_cliente);die();
         if ($rtn = $this->mod->sendreq_acep($obj,$adjuntos,$autor_req,$notif_ope)) {
             include("general/plugin/phpmailer/class.phpmailer.php");
             $mail = new PHPMailer();
@@ -234,9 +241,11 @@ class carpetas extends main_controller{
             $mail->Password = SMTP_PASS; // Contraseña
             $mail->Port = 465; // Puerto a utilizar
 
-            //Con estas pocas líneas iniciamos una conexión con el SMTP. Lo que ahora deberíamos hacer, es configurar el mensaje a enviar, el //From, etc.
-            $mail->From = CORREO_ADMINISTRADOR_FROM; // Desde donde enviamos (Para mostrar)
-            $mail->FromName = CORREO_ADMINISTRADOR_FROMNAME;
+//            //Con estas pocas líneas iniciamos una conexión con el SMTP. Lo que ahora deberíamos hacer, es configurar el mensaje a enviar, el //From, etc.
+//            $mail->From = CORREO_ADMINISTRADOR_FROM; // Desde donde enviamos (Para mostrar)
+//            $mail->FromName = CORREO_ADMINISTRADOR_FROMNAME;
+            $mail->From = $correoDesde; // Desde donde enviamos (Para mostrar)
+            $mail->FromName = $correoDesde;
 
             //Estas dos líneas, cumplirían la función de encabezado (En mail() usado de esta forma: “From: Nombre <correo@dominio.com>”) de //correo.
             $mail->AddAddress(CORREO_DESTINO_REQUERIMIENTOS); // Esta es la dirección a donde enviamos
@@ -264,6 +273,13 @@ class carpetas extends main_controller{
         $autor_req = isset($obj['autor_req'])?$obj['autor_req']:0;
         $notif_ope = isset($_POST['notif_ope'])&&$_POST['notif_ope']==1?$_POST['notif_ope']:0;
         unset($obj['adjuntos'],$obj['autor_req']);
+        $valorid = $obj['idreqh'];
+        $valorOperacion = $obj['ID_OPERACION'];
+        /*Esto obtiene los datos del coordinador y del cliente por si hay que enviar un mail*/
+        $datos_mail = $this->mod->obtener_datos_mail($valorid,$valorOperacion);
+        $correoDesde = $datos_mail[0]['email'];
+//        $datos_cliente = $this->mod->obtener_datos_cliente($valorOperacion);
+//        var_dump($datos_cliente);die();
         if ($rtn = $this->mod->sendreq_rechaz($obj,$adjuntos,$autor_req,$notif_ope)) {
             include("general/plugin/phpmailer/class.phpmailer.php");
             $mail = new PHPMailer();
@@ -277,8 +293,11 @@ class carpetas extends main_controller{
             $mail->Port = 465; // Puerto a utilizar
 
             //Con estas pocas líneas iniciamos una conexión con el SMTP. Lo que ahora deberíamos hacer, es configurar el mensaje a enviar, el //From, etc.
-            $mail->From = CORREO_ADMINISTRADOR_FROM; // Desde donde enviamos (Para mostrar)
-            $mail->FromName = CORREO_ADMINISTRADOR_FROMNAME;
+//            $mail->From = CORREO_ADMINISTRADOR_FROM; // Desde donde enviamos (Para mostrar)
+            $mail->From = $correoDesde; // Desde donde enviamos (Para mostrar)
+//            var_dump($datos_mail);die();
+//            echo $correoDesde;die();
+            $mail->FromName = $correoDesde;
 
             //Estas dos líneas, cumplirían la función de encabezado (En mail() usado de esta forma: “From: Nombre <correo@dominio.com>”) de //correo.
             $mail->AddAddress(CORREO_DESTINO_REQUERIMIENTOS); // Esta es la dirección a donde enviamos
