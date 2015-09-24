@@ -28,7 +28,15 @@
                     <span ><?=(isset($OPERATORIAS['NOMBRE']))?$OPERATORIAS['NOMBRE']:''?>  </span>
                 </div>
             </div>
-
+            
+            <div class="elem elem_med tri">
+                <label class="der">Monto Solicitado:</label>
+                <div class="indent formtext">
+                    <span ><?=number_format($MONTO_CREDITO,2,",",".");?>  </span>
+                </div>
+            </div>
+            <div style="clear:both">
+            </div>
             <div class="elem elem_med" >
                 <label>Cantidad Cuotas </label>
                 <div class="indent">
@@ -102,19 +110,21 @@
                 <div class="indent" >
                     <span ><?=  number_format($T_BONIFICACION,3,",",".")?>%  </span>
                 </div>
-            </div>            
+            </div>
             <div class="elem elem_med tri" >
                 <label>Plazo Pago</label>
                 <div class="indent">
                     <span ><?=$PLAZO_PAGO?>  </span>
                 </div>
-            </div>        
-            <div class="elem elem_med tri">
-                <label class="der">Monto Solicitado:</label>
-                <div class="indent formtext">
-                    <span ><?=number_format($MONTO_CREDITO,2,",",".");?>  </span>
+            </div>
+            
+            <div class="elem elem_med tri" >
+                <label>Gastos</label>
+                <div class="indent">
+                    <span ><?=  number_format($T_GASTOS,3,",",".")?>%  </span>
                 </div>
-            </div>            
+            </div> 
+            
             <div class="elem elem_med tri" >
                 <label>Convenio</label>
                 <div class="indent">

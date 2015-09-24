@@ -849,9 +849,6 @@ class cuotas extends main_controller{
 
 .codbar{font-size:0;position:relative;}
 .codbar div{-webkit-print-color-adjust:exact}
-.cc1{width:55%;padding-right:15px}
-.cc1 table{border-collapse: collapse;}
-.cc2{width:45%;text-align:center;}
 
 @media print {
     .page {
@@ -893,10 +890,8 @@ class cuotas extends main_controller{
     .datos{font-weight:bold;}
     .detalle td{
         border-bottom:1px solid black;
-        font-size:9pt;
+        font-size:10pt;
     }
-    
-    .detalle td:nth-child(2){text-align:right;}
 
     .newpage{
         width: 210mm !important;
@@ -926,7 +921,7 @@ class cuotas extends main_controller{
         font-size:8pt;
     }
     .div-content-cuotas{
-        height: 254mm;
+        height: 240mm;
         width: 210mm;
         display: block;
         overflow: hidden;
@@ -957,19 +952,15 @@ class cuotas extends main_controller{
     }
 
     .div-footer{
-        height: 30mm;
+        height: 50mm;
         width: 210mm;
         display: block;
         overflow: hidden;
         font-size:8pt;
     }
-    hr.end_cuota,
+    
     .end_cuota td{
         border-top:1px dotted #888;
-    }
-    
-    .div-footer span{
-        font-size:8pt;
     }
 
     .c2{width:25%}
@@ -978,7 +969,6 @@ class cuotas extends main_controller{
     .c6{width:75%}
     .c7{width:87.5%}
     .c8{width:100%}
-    .cc1,.cc2{border-bottom:1px dotted #888;}
 
   }
 </style><table  >";
@@ -1068,11 +1058,12 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             $page = '';
             $cant_cuotas = count($cuotas);
   
-            $page .= '<tr><td colspan="8">&nbsp;</td></tr>';
         
             foreach($cuotas as $cuota){
                 
-                $page .= '<tr class="cc"><td class="cc1"><table>';
+                
+                
+                $page .= '<tr><td colspan="8">&nbsp;</td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7"><span class="datos">DETALLE - Cuota Nº'.($cant_cuotas  - $cuota['CUOTAS_RESTANTES'] + 1).'</span></td><td ><span class="datos">IMPORTE</span></td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7">Capital</td><td >$'.number_format($cuota['CAPITAL']['SALDO'],2,",",".").'</td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7">Intereses Compensatorios</td><td >$'.number_format($cuota['COMPENSATORIO']['SALDO'],2,",",".").'</td></tr>';
@@ -1082,26 +1073,25 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) ;
                 if ($iva< 0.10) $iva= 0;
                 $page .= '<tr class="detalle"><td colspan="7">IVA</td><td >$'.number_format($iva,2,",",".").'</td></tr>';
-                $total = $cuota['CAPITAL']['SALDO'] +$cuota['COMPENSATORIO']['SALDO'] + $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO']+ $iva + $cuota['GASTOS_VARIOS']['SALDO'];
-                $page .= '<tr class="detalle"><td colspan="7">Gastos Varios</td><td >$'.number_format($cuota['GASTOS_VARIOS']['SALDO'],2,",",".").'</td></tr>';
-                
+                $total = $cuota['CAPITAL']['SALDO'] +$cuota['COMPENSATORIO']['SALDO'] + $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO']+ $iva;
 
                 if ($total < 0.10) $total = 0;
-                $page .= '</table></td><td class="cc2"><table style="padding:15px 5px">';
                 
                 $code = $this->mod->_generar_codbar($cuota['ID'], $total);
                 $barcode = new TCPDFBarcode($code, "C128");
                 $html_code = $barcode->getBarcodeHTML(1.5,35,'black');
                 //echo $html_code ;
+                $page .= "<tr><td class='c8' colspan='8'>&nbsp;</td></tr>";
                 $page .= '<tr>
-                    <td colspan="4">' . $html_code . $code . '</td><td >&nbsp;</td></tr>
-                    <tr><td colspan="2" align="center" valign="top"><span class="datos"  >Vencimiento <br/>'.date("d/m/Y",$cuota['_INFO']['HASTA']).'</span></td>
-                    <td colspan="2"  align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
+                    <td colspan="4" class="c3">' . $html_code . $code . '</td><td >&nbsp;</td>
+                    <td colspan="2" class="c2" align="center" valign="top"><span class="datos"  >Vencimiento <br/>'.date("d/m/Y",$cuota['_INFO']['HASTA']).'</span></td>
+                    <td colspan="2" class="c2" align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
                     </tr>
-                    </table></td></tr>';
-                
+                    <tr class="end_cuota"><td  class="c8" colspan="8">&nbsp;</td></tr>';
+
+
                 $i++;
-                if ($i%7==0){
+                if ($i%4==0){
 
                     $html_page = '
                         <table class="newpage"  >

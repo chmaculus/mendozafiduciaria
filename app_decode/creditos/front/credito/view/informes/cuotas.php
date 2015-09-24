@@ -13,6 +13,7 @@ $total_cuota_moratorio = 0;
 $total_cuota_punitorio = 0;
 $total_cuota_iva = 0;
 $total_cuota_iva_subsidio = 0;
+$total_cuota_gastos = 0;
 
 $pagado_cuota_capital = 0;
 $pagado_cuota_compensatorio = 0;
@@ -57,10 +58,19 @@ foreach($cuotas as $cuota){
     $iva_subsidiado = $cuota['_INFO']['IVA_COMPENSATORIO_SUBSIDIO']['TOTAL'];
     $compensatorio_subsidiado = $cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'];
     
-    $iva_pagado = $iva_moratorio_pagado + $iva_punitorio_pagado + $iva_compensatorio_pagado ;
+    $total_gastos = $cuota['GASTOS_VARIOS']['TOTAL'];
+    $pagado_gastos = $cuota['GASTOS_VARIOS']['PAGOS'];
+    $saldo_gastos = $cuota['GASTOS_VARIOS']['SALDO'];
+    
+    $iva_gastos_total = $cuota['IVA_GASTOS']['TOTAL'];
+    $iva_gastos_pagado = $cuota['IVA_GASTOS']['PAGOS'];
+    //if(!isset($cuota['IVA_GASTOS']['SALDO'])) die("aca");
+    $iva_gastos_saldo = $cuota['IVA_GASTOS']['SALDO'];
+    
+    $iva_pagado = $iva_moratorio_pagado + $iva_punitorio_pagado + $iva_compensatorio_pagado + $iva_gastos_pagado;
     //echo "<br/>IVA m/p/c:".$iva_moratorio_pagado ."/". $iva_punitorio_pagado ."/". $iva_compensatorio_pagado ."-";
-    $iva_total = $iva_moratorio_total + $iva_punitorio_total + $iva_compensatorio_total ;
-    $iva_saldo = $iva_moratorio_saldo + $iva_punitorio_saldo + $iva_compensatorio_saldo;
+    $iva_total = $iva_moratorio_total + $iva_punitorio_total + $iva_compensatorio_total + $iva_gastos_total;
+    $iva_saldo = $iva_moratorio_saldo + $iva_punitorio_saldo + $iva_compensatorio_saldo + $iva_gastos_saldo;
     
     $total_moratorio = 0;
     $pagado_moratorio = 0;
@@ -72,8 +82,8 @@ foreach($cuotas as $cuota){
 
     $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'];
     $pagado_compenstorio = $cuota['COMPENSATORIO']['PAGOS'];//($cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO']['SALDO'] );
-    $saldo_compensatorio = $cuota['COMPENSATORIO']['SALDO'];                    
-     
+    $saldo_compensatorio = $cuota['COMPENSATORIO']['SALDO'];
+    
     $total_capital = $cuota['CAPITAL']['TOTAL'];
     $pagado_capital = $cuota['CAPITAL']['TOTAL'] - $cuota['CAPITAL']['SALDO'];
     $saldo_capital = $total_capital - $pagado_capital;//$cuota['CAPITAL']['SALDO'];                    
@@ -130,9 +140,9 @@ foreach($cuotas as $cuota){
         $saldo_punitorio = $cuota['PUNITORIO']['SALDO'];
     }
     
-    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $iva_total;
-    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $iva_saldo;
-    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $iva_pagado;
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $iva_total + $total_gastos;
+    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $iva_saldo + $saldo_gastos;
+    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $iva_pagado + $pagado_gastos;
     $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
 
     $total_cuota_total += $total_total;
@@ -198,6 +208,13 @@ foreach($cuotas as $cuota){
                     <span class="dato-esp res">0</span>
                     <span class="dato-esp"><?=number_format($pagado_capital,2,",",".")?></span>
                     <span class="dato-esp"><?=number_format(abs(round($saldo_capital,2)),2,",",".")?></span>
+                </li>
+                <li>
+                    <span class="titulo-esp ">Gastos Varios</span>
+                    <span class="dato-esp"><?=number_format($total_gastos,2,",",".")?></span>
+                    <span class="dato-esp res"><?=number_format($cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'],2,",",".")?></span>
+                    <span class="dato-esp"><?=number_format($pagado_gastos,2,",",".")?></span>
+                    <span class="dato-esp"><?=number_format(abs(round($saldo_gastos,2)),2,",",".") ?></span>
                 </li>
                 <li>
                     <span class="titulo-esp ">IVA</span>
