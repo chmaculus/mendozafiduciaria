@@ -281,7 +281,6 @@ function addEventsRequerimientos() {
                 $("#req_etiqueta").select();
             });
         }
-
     });
 
     $(".send_req_rechaz").on('click', function () {
@@ -400,42 +399,21 @@ function addEventsRequerimientos() {
                                         $("#jqxgrid").show();
                                         $("#jqxgrid").jqxGrid('updatebounddata');
                                         $("#wpopup").html('');
-
                                     });
+
                                 } else {
                                     jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
                                         $.unblockUI();
                                     });
                                 }
 
-                            } else {
-                                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-
-                                    $.fancybox.close();
-                                    $("#jqxgrid").show();
-                                    $("#jqxgrid").jqxGrid('updatebounddata');
-                                    $("#wpopup").html('');
-
-                                });
                             }
+                            $.fancybox.close();
                         }
-                    });
-                    /*****************************************/
-                    /*termina de lo de actualizar los datos*/
-                    /*****************************************/
-                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                        $.fancybox.close();
-                        $("#jqxgrid").show();
-                        $("#jqxgrid").jqxGrid('updatebounddata');
-                        $("#wpopup").html('');
-//                            process_asignar( resp.result.ID );
-
                     });
                 })
             }
         });
-
-
     });
 
     $(".send_req_acept").on('click', function () {
@@ -538,14 +516,14 @@ function addEventsRequerimientos() {
                 }
             }
         });
-        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-            $.fancybox.close();
-            $("#jqxgrid").show();
-            $("#jqxgrid").jqxGrid('updatebounddata');
-            $("#wpopup").html('');
-//                            process_asignar( resp.result.ID );
-
-        });
+//        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+//            $.fancybox.close();
+//            $("#jqxgrid").show();
+//            $("#jqxgrid").jqxGrid('updatebounddata');
+//            $("#wpopup").html('');
+////                            process_asignar( resp.result.ID );
+//
+//        });
     });
 
     $(".send_req").on('click', function () {

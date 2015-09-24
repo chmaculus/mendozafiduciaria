@@ -421,7 +421,7 @@ class carpetas_model extends main_model{
             
             $resp = $this->_db->update( 'fid_nota_req', $obj, "ID='".$iid."'" );
             $obj_na = $obj;
-//            var_dump($obj_na);die();
+
             if($notificar_operaciones_carpeta_respondida==1){
                 $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
                 $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
@@ -481,7 +481,7 @@ class carpetas_model extends main_model{
                 $estado = "Rechazado" ;
             $obj[0]["ESTADO"]=$estado;
         }
-//       die();
+
         if (isset($obj['FCREA']))
             $fcrea = strtotime( $obj['FCREA'] )==false?'-':date( "d/m/Y", strtotime($obj['FCREA']) );
         else
@@ -772,7 +772,7 @@ class carpetas_model extends main_model{
             $this->guardar_traza_nota_carp($resp,'REQUERIMIENTO ACEPTADO','ENVIO DE REQUERIMIENTO',$remitente);
             
         endif;
-        var_dump($rtn);die();        
+          
         $rtn = array(
             "accion"=>$acc,
             "result"=>$obj
@@ -826,7 +826,7 @@ class carpetas_model extends main_model{
                 //obtener etapa origen
                 $this->_db->select('ETAPA_ORIGEN');
                 $regt = $this->_db->get_tabla("fid_traza","ID_OPERACION='".$obj['ID_OPERACION']."' AND ACTIVO='1'");
-                $etapa_origen = 99;
+                $etapa_origen = 0;
                 if ($regt){
                     $etapa_origen = $regt[0]["ETAPA_ORIGEN"];
                 }
@@ -855,7 +855,7 @@ class carpetas_model extends main_model{
             
             $resp = $this->_db->update( 'fid_nota_req', $obj, "ID='".$iid."'" );
             $obj_na = $obj;
-//          var_dump($obj_na);die();
+
             if($notificar_operaciones_carpeta_respondida==1){
                 $this->_db->select('CARTERADE,ID_ETAPA_ACTUAL,ID');
                 $reg = $this->_db->get_tabla($this->_tablamod,"ID='".$obj['ID_OPERACION']."'");
@@ -912,11 +912,7 @@ class carpetas_model extends main_model{
                 $estado = "Rechazado" ;
                 $obj[0]["ESTADO"]=$estado;
         }
-        
-        
-//        var_dump($obj);
-//        echo "GOKUUUUUU";die();
-        
+
         if (isset($obj['FCREA']))
             $fcrea = strtotime( $obj['FCREA'] )==false?'-':date( "d/m/Y", strtotime($obj['FCREA']) );
         else
@@ -968,7 +964,6 @@ class carpetas_model extends main_model{
                 endif;
             endforeach;
         endif;
-        
         if(count($obj_na)>0 && $obj_na["estado"]==3):
             $reg = $this->_db->get_tabla('fid_nota_req', "ID='".$id_new."'");
             
@@ -984,18 +979,19 @@ class carpetas_model extends main_model{
             $obj_na["REMITENTE"] = $_SESSION["USER_NA"];
             $obj_na["ENVIADOA"] = $remitente;
             
+//        echo "HASTA LA VISTA 7";die();
             $obj_na["FOJAS"] = $id_op; // AQUI GUARDAMOS EL ID OPERACION
-            //Preguntar si existe Nota Automatica
-            //Insertar Nota Automatica Respuesta a un Requerimiento
-            $obj_na["TIPO"] = 1; // notas
+            //Preguntar si existe Requerimientos 
+            //Insertar Requerimiento
+            $obj_na["TIPO"] = 0; // requerimientos
             $resp = $this->_db->insert( 'fid_nota_req', $obj_na );
             //log_this( 'wwwwww.log', $this->_db->last_query() );
             
             //insertar notificacion de envio de nota
-            $this->guardar_traza_nota_carp($resp,'ENVIAR NOTA','ENVIO DE NOTA A DESTINATARIO',$remitente);
+            $this->guardar_traza_nota_carp($resp,'ENVIAR REQUERIMIENTO','ENVIO DE REQUERIMIENTO A DESTINATARIO',$remitente);
             
         endif;
-        var_dump($rtn);die();        
+     
         $rtn = array(
             "accion"=>$acc,
             "result"=>$obj
@@ -1045,7 +1041,7 @@ class carpetas_model extends main_model{
     }
     
     function sendobj($obj, $checklist, $checklist_sel, $postulantes, $arr_obs, $arr_chk, $id_etapa_actual, $carterade, $adjuntos, $arr_infoadd, $arr_itemscom, $checkedItems_deudas ){
-//        echo "MEGATRON DIE";die();
+
         $fecha_actual = date("Y-m-d H:i:s");
         
         if ($arr_obs) $arr_obs=$arr_obs[0];

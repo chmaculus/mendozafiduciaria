@@ -158,7 +158,6 @@ class carpetas extends main_controller{
     }
     
     function x_update_req(){
-        echo "aceptar update and die";die();
         $idr = $_POST['idr'];
         $obj = $_POST['arr_up'];
         //$obj["FTRA"] = date("Y-m-d H:i:s");
@@ -243,8 +242,9 @@ class carpetas extends main_controller{
             $mail->AddAddress(CORREO_DESTINO_REQUERIMIENTOS); // Esta es la dirección a donde enviamos
             $mail->IsHTML(true); // El correo se envía como HTML
             $mail->CharSet = 'UTF-8';
-            $mail->Subject = "Se ha cargado un nuevo requerimiento en la carpeta Nº" . $obj['ID_OPERACION']; // Este es el titulo del email.
-            $mail->Body = "Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
+            $mail->Subject = "Autorizacion requerimiento en la carpeta Nº" . $obj['ID_OPERACION']; // Este es el titulo del email.
+            $mail->Body = "Se autorizo el requerimiento solicitado.<br />\n"
+                    . "Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
                     . "Usuario: " . $_SESSION['USER_NA'] . "<br />\n"
                     . "Descripción del requerimiento: " . $obj['DESCRIPCION'];
             
@@ -284,8 +284,9 @@ class carpetas extends main_controller{
             $mail->AddAddress(CORREO_DESTINO_REQUERIMIENTOS); // Esta es la dirección a donde enviamos
             $mail->IsHTML(true); // El correo se envía como HTML
             $mail->CharSet = 'UTF-8';
-            $mail->Subject = "Se ha cargado un nuevo requerimiento en la carpeta Nº" . $obj['ID_OPERACION']; // Este es el titulo del email.
-            $mail->Body = "Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
+            $mail->Subject = "Rechazo requerimiento en la carpeta Nº" . $obj['ID_OPERACION']; // Este es el titulo del email.
+            $mail->Body = "Se rechazo el requerimiento solicitado.<br />\n"
+                    ."Asunto del requerimiento: " . $obj['ASUNTO'] . "<br />\n"
                     . "Usuario: " . $_SESSION['USER_NA'] . "<br />\n"
                     . "Descripción del requerimiento: " . $obj['DESCRIPCION'];
             
@@ -441,7 +442,6 @@ class carpetas extends main_controller{
     }
     
     function x_cancelar_requerimientos(){
-        echo "QUE DIEEEEEE";die();
         $idnr = $_POST['idnr'];
         $contMotivo =$_POST['motivotext'];
         $obj = $this->mod->cancelar_requerimiento( $idnr, $contMotivo );
