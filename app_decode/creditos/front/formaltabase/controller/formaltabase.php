@@ -390,6 +390,11 @@ class formaltabase extends main_controller {
     function x_generar_cuotas($retorno = TRUE) {
         
         $data['fecha'] = $_POST['fecha'];
+        $_SESSION['simulacion_credito'] = FALSE;
+        if (isset($_POST['simulacion']) && $_POST['simulacion']) {
+            $_POST['credito_caduca'] = FALSE;
+            $_SESSION['simulacion_credito'] = $_POST['credito_id'] = 0 - substr(time(), -6);
+        }
 
         //se calcula la fecha de inicio de la primera cuota sobre la fecha del primer vencimiento y la periodicidad
         $primer_vencimiento = $_POST['fecha_inicio'];
@@ -497,7 +502,7 @@ class formaltabase extends main_controller {
         $this->mod->set_fecha_calculo();
 
         $this->mod->save_operacion_credito();
-        if ($_POST['credito_caduca']) {
+        if ($_POST['credito_caduca'] || $_SESSION['simulacion_credito']) {
             $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
             $versiones = $this->mod->get_versiones();
             $version = $versiones[0]['value'];

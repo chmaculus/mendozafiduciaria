@@ -303,9 +303,10 @@
         <div class="button-a blue send_generar_credito" onclick="generar_cuotas();"><span>Generar</span></div>
     </div>
 
+    <div id="simulacion">
+        
+    </div>
 
     <input type="hidden" class="fecha" id="hFechaActual" value="<?= time(); ?>"/>
     <input type="hidden" value="<?= $credito['ID'] ?>" id="hCreditoID"/>
     <input type="hidden" value="<?= $credito['MICRO'] ?>" id="hMicro"/>
-
-

@@ -1061,7 +1061,7 @@ function refinanciacion_caida() {
                 async : false,
                 success: function(result) {
                     if (result) {
-                        
+                        location.href="creditos/front/creditos";
                     }
                 }
             });

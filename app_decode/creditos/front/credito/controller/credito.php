@@ -179,6 +179,14 @@ class credito extends main_controller{
     }    
     
     function x_obtener_cuotas(){
+        $simulacion_credito = FALSE;
+        if (isset($_POST['simulacion']) && $_POST['simulacion'] && isset($_SESSION['simulacion_credito'])) {
+            $simulacion_credito = $_POST;
+            $_POST['credito_id'] = $_SESSION['simulacion_credito'];
+            $_POST['chequera'] = true;
+            $_POST['planchado'] = false;
+        }
+        
         $credito_id = $_POST['credito_id'];
         $chequera = $_POST['chequera'];
         $planchado = $_POST['planchado'];
@@ -226,6 +234,7 @@ class credito extends main_controller{
         $ret_reuda['fecha_actual'] = $fecha;
         echo $this->view("informes/cuotas",$ret_reuda);
         
+        $this->mod->borrar_credito();
         //print_array($ret_reuda);
         
     }   

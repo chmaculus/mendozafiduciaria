@@ -1238,6 +1238,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         
         if ($this->mod->set_credito_active($credito_id)) {
             $this->mod->refinanciacion_caida();
+            echo "1";
         }
         die();
     }

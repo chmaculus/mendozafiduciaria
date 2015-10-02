@@ -257,7 +257,7 @@ function _generar_cuotas(simulacion){
     
     
     $.ajax({
-        url : _formaltabase.URL + (simulacion ? "/x_simular_cuotas" : "/x_generar_cuotas"),
+        url : _formaltabase.URL + "/x_generar_cuotas",
         data : {
             fecha : fecha_actual,
             micro : micro,
@@ -288,7 +288,47 @@ function _generar_cuotas(simulacion){
         type : "post",
         success : function(data){
             if (simulacion) {
-                
+                $.ajax({
+                    url: "creditos/front/credito/x_obtener_cuotas",
+                    data : {
+                        chequera: true,
+                        simulacion: true,
+                        planchado: 0
+                    },
+                    type : "post",
+                    success : function(data){
+                        $("#simulacion").html(data);
+                        $(".datos .opcion.ampliar").on({
+                            "mouseenter" : function(){
+
+                            },
+                            "mouseleave" : function(){
+
+                            },
+                            "click" : function(){
+                                console.log("enter");
+                                $this_op = $(this);
+                                if ($this_op.hasClass("selected")){
+                                    $this_op.siblings(".especificaciones").fadeOut();
+                                    $this_op.removeClass("selected");
+                                    $(this).text("( + )");
+                                }
+                                else{
+                                    if ($(".datos .opcion.ampliar.selected").length > 0 && false){
+                                        $this_op.siblings(".especificaciones").fadeIn();
+                                        $this_op.addClass("selected");
+                                    }
+                                    else{
+                                        $this_op.addClass("selected");
+                                        $this_op.siblings(".especificaciones").fadeIn();
+                                        $(this).text("( - )");
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                });
             } else {
                 $(".div-result").html(data);
                 if ($("#credito_caduca").val()) {

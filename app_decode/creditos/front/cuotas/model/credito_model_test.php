@@ -654,6 +654,7 @@ class credito_model_test extends credito_model {
     
     function refinanciacion_caida() {
         //eliminamos el credito actual, antes buscamos las cobranzas y gastos, y volvemos a insertar
+        $id_credito_caido = $this->_id_credito;
         $id_credito_padre = $this->es_caducado();
         if (!$id_credito_padre) {
             return FALSE;
@@ -721,6 +722,8 @@ class credito_model_test extends credito_model {
             
         }
         
+        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_ELIMINADO), "ID = " . $id_credito_caido);
+        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CUOTA_PENDIENTE), "ID = " . $id_credito_padre);
         
     }
     

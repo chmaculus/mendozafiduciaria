@@ -391,7 +391,7 @@ class formalta_model extends credito_model {
     function guardar_postulante($cliente) {
         return $this->_db->insert("fid_clientes", $cliente);
     }
-    
+   
     function obtener_fecha_vencimiento($dia_inicio, $fecha, $periodicidad_tasa, $periodicidad=1) {
         switch ($periodicidad_tasa) {
             case 30:
@@ -401,23 +401,23 @@ class formalta_model extends credito_model {
                     $mes-=12;
                     $anio++;
                 }
-				//echo $anio;die();
+                //echo $anio;die();
                 $fecha_vencimiento = $anio . "-" . $mes;
                 $dia_mes = date('t', strtotime($fecha_vencimiento));
-				if ($dia_inicio > $dia_mes) {
+                if ($dia_inicio > $dia_mes) {
                     $dia_inicio = $dia_mes;
                 }
-                
+
                 $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
                 break;
-            
+
             default :
                 $fecha_vencimiento = $fecha + ($periodicidad_tasa * 3600 * 24 * $periodicidad);
                 break;
         }
-        
-        
-        
+
+
+
         return $fecha_vencimiento;
     }
     

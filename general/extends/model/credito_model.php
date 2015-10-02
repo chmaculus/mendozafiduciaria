@@ -3323,11 +3323,11 @@ ORDER BY T1.lvl DESC');
             $cuota_vencimiento = end($this->_cuotas);
         }
         
-        $SALDO_CAPITAL = round($SALDO_CAPITAL, 1);
-        
+            $SALDO_CAPITAL = round($SALDO_CAPITAL, 1);
+            
         $cuota_vencimiento['SALDO_CAPITAL'] = $SALDO_CAPITAL;
         $cuota_vencimiento['CUOTAS_RESTANTES'] = 1;
-        $cuota_vencimiento['POR_INT_COMPENSATORIO'] = 1;
+            $cuota_vencimiento['POR_INT_COMPENSATORIO'] = 1;
         
         $evento_inicial = false;
         $evento_desembolso = false;
@@ -3354,7 +3354,7 @@ ORDER BY T1.lvl DESC');
         
         $this->_variaciones = array();
         $variacion = $evento_inicial;
-        $variacion['POR_INT_COMPENSATORIO'] = 0;
+            $variacion['POR_INT_COMPENSATORIO'] = 0;
         $this->_variaciones[$variacion['ID']] = $variacion;
         
         if ($evento_desembolso) {
@@ -3367,7 +3367,7 @@ ORDER BY T1.lvl DESC');
             $variacion['ASOC'] = $evento_desembolso['ASOC'];
             $this->_variaciones[$variacion['ID']] = $variacion;
         }
-        
+            
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
         
         $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;
@@ -3376,7 +3376,7 @@ ORDER BY T1.lvl DESC');
         $this->_cuotas = array();
         $this->_cuotas[$__cuota] = $cuota_vencimiento;
         
-        
+                
         $this->_pagos = array(
             array(
                 1 => 0,
@@ -3470,7 +3470,7 @@ ORDER BY T1.lvl DESC');
         $cad = $this->_db->get_tabla("fid_creditos", "ID=" . $this->_id_credito);
         return isset($cad[0]['ID_CADUCADO']) ? $cad[0]['ID_CADUCADO'] : 0;
     }
-    
+  
 }
-
+                
 ?>
