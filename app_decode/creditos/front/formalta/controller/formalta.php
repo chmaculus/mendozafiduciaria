@@ -88,6 +88,7 @@ class formalta extends main_controller {
             "T_PUNITORIO" => 24,
             "T_BONIFICACION" => 0,
             "T_MORATORIO" => 12,
+            "T_GASTOS" => 0,
             "INTERES_CUOTAS" => 6,
             "INTERES_VTO" => date("Y-m-d"),
             "INTERES_PERIODO" => 09,

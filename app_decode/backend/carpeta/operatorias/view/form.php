@@ -154,6 +154,17 @@
                   </div>
 
                   <div class="elem elem_med">
+                      <label>Tasa Gastos:</label>
+                      <div class="indent formtext">
+                          <input type="text" class="" title="Ingrese Tasa de Gastos" id="tasa_gastos" value="<?php echo isset($entidad["TASA_GASTOS"])?$entidad["TASA_GASTOS"]:"" ?>"> 
+                      </div>
+                  </div>
+                  
+                  <div class="elem elem_med">
+                      <br /><br />
+                  </div>
+
+                  <div class="elem elem_med">
                       <label>Desembolsos:</label>
                       <div class="indent formtext">
                           <div id='desembolsos'></div>

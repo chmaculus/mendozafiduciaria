@@ -190,6 +190,7 @@ $(document).ready(function(){
                             var tasa_ip = $("#tasa_ip").val();
                             var tipoope = $("#tipoope").val();
                             var tasa_is = $("#tasa_is").val();
+                            var tasa_gastos = $("#tasa_gastos").val();
                             var desembolsos = $("#desembolsos").val();
                             var devoluciones = $("#devoluciones").val();
                             var periodicidad = $("#periodicidad").val();
@@ -227,6 +228,7 @@ $(document).ready(function(){
                                 TASA_INTERES_MORATORIA:tasa_im,
                                 TASA_INTERES_POR_PUNITORIOS:tasa_ip,
                                 TASA_SUBSIDIADA:tasa_is,
+                                TASA_GASTOS:tasa_gastos,
                                 DESEMBOLSOS:desembolsos,
                                 DEVOLUCIONES:devoluciones,
                                 JEFEOP:jefeope,
@@ -573,6 +575,7 @@ $(document).ready(function(){
                             var tasa_ip = $("#tasa_ip").val();
                             var tipoope = $("#tipoope").val();
                             var tasa_is = $("#tasa_is").val();
+                            var tasa_gastos = $("#tasa_gastos").val();
                             var id_proceso = $("#id_proceso").val();
                             var desembolsos = $("#desembolsos").val();
                             var devoluciones = $("#devoluciones").val();
@@ -608,6 +611,7 @@ $(document).ready(function(){
                                 TASA_INTERES_MORATORIA:tasa_im,
                                 TASA_INTERES_POR_PUNITORIOS:tasa_ip,
                                 TASA_SUBSIDIADA:tasa_is,
+                                TASA_GASTOS:tasa_gastos,
                                 DESEMBOLSOS:desembolsos,
                                 DEVOLUCIONES:devoluciones,
                                 PERIODICIDAD:periodicidad,
