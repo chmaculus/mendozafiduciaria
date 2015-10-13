@@ -46,7 +46,7 @@ class formaltabase extends main_controller {
     function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad) {
         
         $ultimo = $this->mod->get_next_id();
-        
+
         if ($credito_caduca && $this->mod->set_credito_active($credito_caduca)) {
             $this->mod->set_version_active();
             $this->mod->renew_datos();
@@ -412,6 +412,7 @@ class formaltabase extends main_controller {
         $data['plazo_pago'] = $_POST['plazo_pago'];
         $data['por_int_punitorio'] = $_POST['int_punitorio'];
         $data['por_int_moratorio'] = $_POST['int_moratorio'];
+        $data['por_int_gastos'] = $_POST['int_gastos'];
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
         $data['TIPO'] = 0;
@@ -469,8 +470,8 @@ class formaltabase extends main_controller {
         $data['monto'] = $data['total_credito'];//cambio porque guarda mal el monto total del crédito
 
         $ret = $this->mod->generar_evento($data, false, $fecha);
-
-
+        
+        
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
         $this->mod->generar_cuotas($ret, 0, $retorno);
         

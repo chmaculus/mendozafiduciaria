@@ -95,7 +95,7 @@ class carpetas extends main_controller{
         $data['hora_actual'] = date('d/m/Y H:i:s');
         $data['hora_mostrar'] = current(explode(' ',$data['hora_actual']));
         $data['hora_bd'] = $data['hora_actual'];
-        $arr_campos = array("NOMBRE","TIPO","DESCRIPCION","TOPE_PESOS","TASA_INTERES_COMPENSATORIA","TASA_INTERES_MORATORIA","TASA_INTERES_POR_PUNITORIOS","TASA_SUBSIDIADA","DESEMBOLSOS","DEVOLUCIONES","PERIODICIDAD");
+        $arr_campos = array("NOMBRE","TIPO","DESCRIPCION","TOPE_PESOS","TASA_INTERES_COMPENSATORIA","TASA_INTERES_MORATORIA","TASA_INTERES_POR_PUNITORIOS","TASA_SUBSIDIADA","DESEMBOLSOS","DEVOLUCIONES","PERIODICIDAD","TASA_GASTOS");
         $this->_js_array['_campos'] = $arr_campos;
         
         $tmp = $this->x_getgerentes();

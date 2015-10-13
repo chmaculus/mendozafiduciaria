@@ -219,6 +219,7 @@ class credito_model extends main_model {
             $data['por_int_subsidio'] = (key_exists('por_int_subsidio', $data)) ? $data['por_int_subsidio'] : $variacion['POR_INT_SUBSIDIO'];
             $data['por_int_punitorio'] = (key_exists('por_int_punitorio', $data)) ? $data['por_int_punitorio'] : $variacion['POR_INT_PUNITORIO'];
             $data['por_int_moratorio'] = (key_exists('por_int_moratorio', $data)) ? $data['por_int_moratorio'] : $variacion['POR_INT_MORATORIO'];
+            $data['por_int_gastos'] = (key_exists('por_int_gastos', $data)) ? $data['por_int_gastos'] : $variacion['POR_INT_GASTOS'];
             $data['monto'] = (key_exists('monto', $data)) ? $variacion['CAPITAL'] + $desembolso : $variacion['CAPITAL'];
             $data['iva'] = (key_exists('iva', $data)) ? $data['iva'] : $variacion['IVA'];
             $data['periodicidad_tasa'] = (key_exists('periodicidad_tasa', $data)) ? $data['periodicidad_tasa'] : $variacion['PERIODICIDAD_TASA'];
@@ -243,6 +244,7 @@ class credito_model extends main_model {
             "POR_INT_SUBSIDIO" => $data['por_int_subsidio'],
             "POR_INT_PUNITORIO" => $data['por_int_punitorio'],
             "POR_INT_MORATORIO" => $data['por_int_moratorio'],
+            "POR_INT_GASTOS" => $data['por_int_gastos'],
             "PERIODICIDAD_TASA" => $data['periodicidad_tasa'],
             "CAPITAL" => $data['monto'],
             "IVA" => $data['iva'],
@@ -332,11 +334,12 @@ class credito_model extends main_model {
                 if ($gastos_arr[$g]['ROW']['FECHA'] >= $cuota['FECHA_INICIO'] &&
                         $gastos_arr[$g]['ROW']['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
                     unset($gastos_arr['ROW']);
-                    $arr_gastos = $gastos_arr[$g];
-
-                    break;
+                    $arr_gastos[] = $gastos_arr[$g];
+                    //break;
                 }
             }
+            
+            
             
             $arr_saldo = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] - 1, true);
             $SALDO_CAPITAL = $arr_saldo['SALDO'];
@@ -510,10 +513,76 @@ class credito_model extends main_model {
             }
             
             //dependiendo si la cuota esta vencida o no es el orden de los items
+            $total_gastos = 0;
+            $total_gastos_pagos = 0;
+            
+            if ($arr_gastos) {
+                foreach( $arr_gastos as $gasto) {
+                    $total_gastos += $gasto['TOTAL'];
+                    if ($gasto['PAGOS']) {
+                        foreach ($gasto['PAGOS'] as $pg_g) {
+                            $total_gastos_pagos += $pg_g['MONTO'];
+                        }
+                    }
+                }
+            }
+            
+            $gastos_adm = 0;
+            $pago_gasto = 0;
+            $pago_iva_gasto = 0;
+            if ($this->_credito['T_GASTOS'] > 0) {
+                $this->_db->where("ID_TIPO IN (" . PAGO_GASTOS_ADM . ", " . PAGO_IVA_GASTOS_ADM . ") AND CUOTAS_RESTANTES = " . $cuota['CUOTAS_RESTANTES']);
+                $_pago_gasto = $this->get_tabla_pagos();
+                
+                if ($_pago_gasto) {
+                    foreach ($_pago_gasto as $pg_g) {
+                        switch ($pg_g['ID_TIPO']) {
+                            case PAGO_GASTOS_ADM:
+                                $pago_gasto += $pg_g['MONTO'];
+                                break;
+                            case PAGO_IVA_GASTOS_ADM:
+                                $pago_iva_gasto += $pg_g['MONTO'];
+                                break;
+                        }
+                    }
+                }
+                
+                $total_gastos_pagos += $pago_gasto;
+                
+                $TOTAL_CUOTA = $arr_capital['TOTAL'] + $arr_iva_punitorio['TOTAL'] + $arr_iva_moratorio['TOTAL'] + $arr_punitorio['TOTAL'] + $arr_moratorio['TOTAL'] + $arr_compensatorio['TOTAL'] + $arr_iva_compensatorio['TOTAL'] + $total_gastos;
+                $gastos_adm = $TOTAL_CUOTA * (1 / (1 - $this->_credito['T_GASTOS'] /100) - 1);
+                
+                $arr_gastos[] = array(
+                    'TOTAL' => $gastos_adm,
+                    'PAGOS' => $pago_gasto,
+                    'TIPO' => PAGO_GASTOS_ADM,
+                    'SALDO' => $gastos_adm - $pago_gasto
+                );
+            }
+            
+            $total_gastos += $gastos_adm;
+            $saldo_gastos = $total_gastos - $total_gastos_pagos; // volvemos a calcular
+            
+            $arr_iva_gastos = array(
+                "TOTAL" => $gastos_adm * 0.21,
+                "PAGOS" => $pago_iva_gasto,
+                "TIPO" => PAGO_IVA_GASTOS_ADM,
+                "SALDO" => ($gastos_adm * 0.21) - $pago_iva_gasto
+                    );
+            
+            $arr_gastos_varios = array(
+                'TOTAL' => $total_gastos,
+                'PAGOS' => $total_gastos_pagos,
+                'SALDO' => $saldo_gastos 
+                );
+            
+            
             if ($cuota['FECHA_VENCIMIENTO'] < $fecha) {
 
                 $arr_deuda['cuotas'][] = array(
                     "GASTOS" => $arr_gastos,
+                    "GASTOS_VARIOS" => $arr_gastos_varios,
+                    "IVA_GASTOS" => $arr_iva_gastos,
                     "IVA_PUNITORIO" => $arr_iva_punitorio,
                     "IVA_MORATORIO" => $arr_iva_moratorio,
                     "IVA_COMPENSATORIO" => $arr_iva_compensatorio,
@@ -538,7 +607,7 @@ class credito_model extends main_model {
                         "SALDO_CUOTA" => $SALDO_CUOTA,
                         "TOT_INT_MOR_PUN" => $arr_punitorio['SALDO'] + $arr_moratorio['SALDO'],
                         "TOT_IVA_INT_MOR_PUN" => $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'],
-                        "TOTAL_PAGAR" => $SALDO_CUOTA + $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'] + $arr_punitorio['SALDO'] + $arr_moratorio['SALDO']
+                        "TOTAL_PAGAR" => $SALDO_CUOTA + $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'] + $arr_punitorio['SALDO'] + $arr_moratorio['SALDO'] + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO']
                     )
                     );
                 if ($cuota['ESTADO'] == PLAZO_SUBSIDIO_VENCIDO && $cuota['INT_COMPENSATORIO_SUBSIDIO'] > 0) {
@@ -550,6 +619,8 @@ class credito_model extends main_model {
                 
                 $arr_deuda['cuotas'][] = array(
                     "GASTOS" => $arr_gastos,
+                    "GASTOS_VARIOS" => $arr_gastos_varios,
+                    "IVA_GASTOS" => $arr_iva_gastos,
                     "IVA_PUNITORIO" => $arr_iva_punitorio,
                     "IVA_MORATORIO" => $arr_iva_moratorio,
                     "PUNITORIO" => $arr_punitorio,
@@ -574,11 +645,19 @@ class credito_model extends main_model {
                         "SALDO_CUOTA" => $SALDO_CUOTA,
                         "TOT_INT_MOR_PUN" => 0,
                         "TOT_IVA_INT_MOR_PUN" => 0,
-                        "TOTAL_PAGAR" => $SALDO_CUOTA
+                        "TOTAL_PAGAR" => $SALDO_CUOTA + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO']
                     )
                 );
+                /*
+                echo $SALDO_CUOTA;
+                print_r($arr_gastos_varios);
+                print_r($arr_iva_gastos);
+                die();*/
+                
             }
         }
+        
+        //print_r($arr_deuda);die();
 
         return $arr_deuda;
     }
@@ -2603,7 +2682,7 @@ ORDER BY T1.lvl DESC');
             }
         }
 
-        for ($i = 1; $i < 11; $i++) {
+        for ($i = 1; $i <= 12; $i++) {
             $total_pago['TOTAL'][$i] = 0;
         }
         foreach ($variaciones as $variacion) {

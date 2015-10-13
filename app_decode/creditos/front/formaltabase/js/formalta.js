@@ -202,6 +202,7 @@ function _generar_cuotas(simulacion){
     var int_subsidio = $("#txtTasaSubsidio").val();
     var int_punitorio = $("#txtInteresPunitorio").val();
     var int_moratorio= $("#txtIntereeMoratorio").val();
+    var gastos= $("#txtGastos").val();
     
     var plazo_compensatorio = $("#txtPeriodicidadCalculoCompensatorio").val();
     var plazo_moratorio = $("#txtPeriodicidadCalculoMoratorio").val();
@@ -271,6 +272,7 @@ function _generar_cuotas(simulacion){
             int_subsidio : interes_subsidiado,
             int_punitorio : int_punitorio,
             int_moratorio : int_moratorio,
+            int_gastos : gastos,
             periodicidad : periodicidad,
             periodicidad_tasa : periodicidad_tasa,
             plazo_compensatorio : plazo_compensatorio || 0,
