@@ -895,7 +895,7 @@ class cuotas extends main_controller{
         border-bottom:1px solid black;
         font-size:9pt;
     }
-    
+
     .detalle td:nth-child(2){text-align:right;}
 
     .newpage{
@@ -910,7 +910,7 @@ class cuotas extends main_controller{
     }
     .div-header{
         padding-top:10mm;
-        height:30mm;
+        height:32mm;
         width: 210mm;
         display: block;
         overflow: hidden;
@@ -967,7 +967,7 @@ class cuotas extends main_controller{
     .end_cuota td{
         border-top:1px dotted #888;
     }
-    
+
     .div-footer span{
         font-size:8pt;
     }
@@ -1091,7 +1091,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 } else {
                     $cuota['GASTOS_VARIOS']['SALDO'] = 0;
                 }
-                
+
                 
                 if ($total < 0.10) $total = 0;
                 $page .= '</table></td><td class="cc2"><table style="padding:15px 5px">';
@@ -1106,7 +1106,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     <td colspan="2"  align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
                     </tr>
                     </table></td></tr>';
-                
+
                 $i++;
                 if ($i%7==0){
 
@@ -1128,7 +1128,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         
             }
             
-            if ($i%4 > 0){
+            if ($i%7 > 0){
                     $html_page = '
                         <table class="newpage"  >
                             <tr class="header"><td class="c8" colspan="8"><div class="div-header">'.$header.'</div></td></tr>
