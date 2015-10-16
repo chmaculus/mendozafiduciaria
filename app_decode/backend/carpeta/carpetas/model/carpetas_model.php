@@ -1208,6 +1208,26 @@ class carpetas_model extends main_model {
             $this->_db->insert('fid_traza', $arr_traza);
 
 
+             /*
+             * Aqui se guarda en la tabla fid_semaforo el comienzo de la etapa
+             * con la fecha de carga y la fecha asignada para el aviso
+             */
+            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
+            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
+            $arr_semaforo = array(
+                "ID_CARPETA" => $id_new,
+                "ID_ETAPA" => 1,
+                "FECHA_CARGA" => $fecha_actual,
+                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24HS',
+                "FECHA_AVISO" => $fecha_aviso
+                );
+//                print_r($arr_semaforo);die();
+            $this->_db->insert('fid_semaforo', $arr_semaforo);
+            /*
+             * Fin de carga sobre semaforo
+             */
+            
+            
             if ($_SESSION["USER_ROL"] == 10) { //si usuario es jefe de op, actualizar etapa actual
                 $this->_db->update("fid_operaciones", array("ID_ETAPA_ACTUAL" => "2"), 'ID="' . $id_new . '"');
             }
@@ -2001,6 +2021,20 @@ class carpetas_model extends main_model {
 //            "DESTINO"=>$arr['ENVIADOA'],	
         );
         $this->_db->update("fid_traza", $obj_ed, "ID_OPERACION='" . $id . "'");
+        
+         /*
+         * Aqui se guarda en la tabla fid_semaforo el comienzo de la etapa
+         * con la fecha de carga y la fecha asignada para el aviso
+         */
+           $obj_semaforo = array(
+                "ID_NOTIFICAR"=>$arr['ENVIADOA'],
+                );
+
+           $this->_db->update('fid_semaforo', $obj_semaforo,"id_carpeta='" . $id . "' AND id_etapa=1");
+            /*
+             * Fin de carga sobre semaforo
+             */
+        
         //log_this('xxxxx.log', $this->_db->last_query() );
         $this->_db->insert('fid_traza', $arr_traza);
         //log_this('xxxxx.log', $this->_db->last_query() );
