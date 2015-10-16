@@ -46,7 +46,7 @@ define('MYSQL_SERVER', 'localhost');
 define('MYSQL_USER', 'root');
 define('MYSQL_PASS', '');
 //define('MYSQL_DATABASE', 'fiduciaria_prod');
-define('MYSQL_DATABASE', 'fiduciaria');
+define('MYSQL_DATABASE', 'fiduciaria_m2');
 
 
 define('SQL_SERVER', 'SVDESARROLLO\SQL2008R2');
@@ -59,7 +59,7 @@ define('SMTP_LOGIN', "mendoza.fiduciaria@gmail.com");
 define('SMTP_PASS', "mendozasistemas");
 define('CORREO_ADMINISTRADOR_FROMNAME', "Mendoza Fiduciaria");
 define('CORREO_ADMINISTRADOR_FROM', "no-reply@mendozafiduciaria.com");
-define('CORREO_DESTINO_REQUERIMIENTOS', "mauriciocattafi@yahoo.com.ar");
+define('CORREO_DESTINO_REQUERIMIENTOS', "mmauriciocattafi@yahoo.com.ar");
 
 /*
 define('SQL_SERVER', 'MZADB\SQL2008');
