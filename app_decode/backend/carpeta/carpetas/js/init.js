@@ -1986,7 +1986,7 @@ $(document).ready(function(){
                                 dataType : "json",
                                 type : "post",
                                 success : function(data){
-                                    
+                        
                                     if(data.result>0){
                                         jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
                                             /*
