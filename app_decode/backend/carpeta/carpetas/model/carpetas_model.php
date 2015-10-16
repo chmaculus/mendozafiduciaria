@@ -2554,4 +2554,10 @@ class carpetas_model extends main_model {
 
 }
 
+function lanzar_alertas() {
+        $fechaAct = date('Y-m-d H:i:s');
+        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-17 10:40:45' AND ID_NOTIFICAR=56 AND ID_CARPETA=256");
+//        print_r($rtn);die();
+        return $rtn;
+    }
 ?>

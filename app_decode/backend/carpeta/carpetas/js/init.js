@@ -1,3 +1,28 @@
+var inter = function(){
+             
+    setInterval(
+        function() {
+            poll()
+        }, 1000 * 10 * 1);
+ 
+}
+    
+var poll = function(){
+                       
+    $.ajax({
+       url: _carpetas.URL + "/x_consultar_fechas",
+        timeout: 10000,
+        dataType: 'html',
+        success: function(respuesta){
+//            alert(respuesta);
+console.log(respuesta);
+        }
+    });
+};
+ 
+inter();
+
+
 var mydata;
 var id_edit;
 var working = false;

@@ -1606,3 +1606,19 @@ class SelectBox_ope{
 		return json_encode($this);
 	}
 }
+
+
+
+    function x_consultar_fechas() {
+            
+        $obj = $this->mod->lanzar_alertas();
+        echo $obj;
+        if ($obj) {
+            echo 1;
+        } else {
+            echo 0;
+        }
+        die;
+    }
+
+	
