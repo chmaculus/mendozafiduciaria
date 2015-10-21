@@ -64,12 +64,12 @@ class formaltabase extends main_controller {
             $cuotas_restantes = 0;
             
             $credito["ID"] = $ultimo;
-            $credito["MONTO_CREDITO"] = $ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'];
+            $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
             $credito['INTERES_VTO'] = date('Y-m-d', strtotime(date('Y-m-d'))+(30*3600*24));
             
             if ($caducidad) {
                 $cuotas_restantes = 1;
-                $credito['INTERES_VTO'] = date('Y-m-d',$ret_reuda['cuotas'][0]['_INFO']['HASTA']);
+                $credito['INTERES_VTO'] = date('Y-m-d',$fecha_caduca);
                 $credito['DESEMBOLSOS'] = array(
                     array(
                         'MONTO' => $credito['MONTO_CREDITO'],

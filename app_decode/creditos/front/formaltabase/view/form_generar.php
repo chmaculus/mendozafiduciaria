@@ -208,7 +208,7 @@
                 </div>
             </div>
         </div>
-        <div class="row c12 grupo">
+        <div class="row c12 grupo" <?=($credito['CREDITO_CADUCA'])?'style="display:none"':''?>>
 
             <div class="c3">
                 <span class="titulo-seccion">

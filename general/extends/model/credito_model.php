@@ -1027,6 +1027,29 @@ class credito_model extends main_model {
                 $control_fecha_fin = 0;//evitamos que se recalculen intereses incorrectos
                 $fecha_variacion_moratorio = $cuota['FECHA_VENCIMIENTO'];
                 
+                $INTERES_COMPENSATORIO_VARIACION = 0;
+                $PERIODICIDAD_TASA_VARIACION = 0;
+                $POR_INT_MORATORIO = 0;
+                $POR_INT_PUNITORIO = 0;
+                $INT_SUBSIDIO = 0;
+                
+                foreach($this->_variaciones as $iv => $variacion) {
+                    if ($cuota['FECHA_INICIO'] >= $variacion['FECHA'] && $variacion['TIPO'] != EVENTO_INFORME) {
+                        
+                        $INTERES_COMPENSATORIO_VARIACION = $variacion['POR_INT_COMPENSATORIO'];
+                        $PERIODICIDAD_TASA_VARIACION = $variacion['PERIODICIDAD_TASA'];
+                        $POR_INT_MORATORIO = $variacion['POR_INT_MORATORIO'];
+                        $POR_INT_PUNITORIO = $variacion['POR_INT_PUNITORIO'];
+                        $INT_SUBSIDIO = $variacion['POR_INT_SUBSIDIO'];
+                    }
+                }
+                
+                //parchecito para eventos despues de la fecha tengan cambios
+                if (count($variaciones) == 1 && $variaciones[0]['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
+                    $variaciones[] = $variaciones[0]; 
+                    $variaciones[1]['FECHA'] = $cuota['FECHA_VENCIMIENTO'];
+                }
+                
                 foreach($variaciones as $iv => $variacion) {
                     
                     $tmp = $variacion;
@@ -1041,7 +1064,11 @@ class credito_model extends main_model {
                     $fecha_fin = $cuota['FECHA_VENCIMIENTO'];
                     $fecha_fin2 = date('Y-m-d', $fecha_fin);
                     
-                    $fecha_inicio = $variacion['FECHA'];
+                    if ($control_fecha_fin) {
+                        $fecha_inicio = $control_fecha_fin;
+                    } else {
+                        $fecha_inicio = $variacion['FECHA'];
+                    }
                     
                     if (!$INTERES_COMPENSATORIO && $fecha_inicio > $cuota['FECHA_INICIO']) {
                         $fecha_inicio = $cuota['FECHA_INICIO'];
@@ -1050,11 +1077,13 @@ class credito_model extends main_model {
                     $nv = $iv;
                     
                     $flag = TRUE;
-                    while(isset($variaciones[++$nv]) && $flag) {
+                    
+                    while(isset($variaciones[$nv]) && $flag) {
                         if ($variaciones[$nv]['TIPO'] == EVENTO_DESEMBOLSO || $variaciones[$nv]['TIPO'] == EVENTO_TASA) {
                             $fecha_fin = $variaciones[$nv]['FECHA'];
                             $flag = FALSE;
                         }
+                        $nv++;
                     }
                     
                     if ($variacion['FECHA'] < $_revision_fecha) {
@@ -1072,8 +1101,6 @@ class credito_model extends main_model {
                     
                     if ($fecha_fin > $control_fecha_fin) {
                         $control_fecha_fin = $fecha_fin;
-                    } else {
-                        $fecha_inicio = $control_fecha_fin;
                     }
                     
                     $rango_comp = ($fecha_fin - $fecha_inicio) / (24 * 3600);
@@ -1085,24 +1112,10 @@ class credito_model extends main_model {
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
                     $tmp['SALDO_CAPITAL'] = $SALDO_CAPITAL;
                     
-                    //primero definimos los valores                    
-                    $INT_SUBSIDIO = $variacion['POR_INT_SUBSIDIO'];
-                    $INTERES_COMPENSATORIO_VARIACION = $variacion['POR_INT_COMPENSATORIO'];
-                    $PERIODICIDAD_TASA_VARIACION = $variacion['PERIODICIDAD_TASA'];
-                    $POR_INT_MORATORIO = $variacion['POR_INT_MORATORIO'];
-                    $POR_INT_PUNITORIO = $variacion['POR_INT_PUNITORIO'];
+                    //primero definimos los valores
                     
                     //luego buscamos los valores más correctos a la fecha
-                    foreach ($this->_variaciones as $tv) {
-                        if($fecha_inicio >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
-                            $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
-                            $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
-                            $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
-                            $POR_INT_MORATORIO = $tv['POR_INT_MORATORIO'];
-                            $POR_INT_PUNITORIO = $tv['POR_INT_PUNITORIO'];
-                            //echo "aca COMP:$INTERES_COMPENSATORIO_VARIACION<br />";
-                        }
-                    }
+                    $tmp_tv = FALSE;
                     
                     $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                     $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
@@ -1117,6 +1130,12 @@ class credito_model extends main_model {
                     $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                     $tmp['INT_MORATORIO'] = $tmp['INT_PUNITORIO'] = 0;
                     
+                    if ($cuota['ID']==0) {
+                        echo "R{$rango_comp}<br>";
+                        echo "I:{$tmp['INT_COMPENSATORIO']}<br>";
+                        echo "IK:$INTERES_COMPENSATORIO_VARIACION<br>";
+                    }
+                    
                     $INT_SUBSIDIO_ACUMULADO += $interes_subsidio;
                     $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $tmp['IVA']);
 
@@ -1127,7 +1146,7 @@ class credito_model extends main_model {
                         echo $variacion['FECHA']."<BR />";
                         echo $fecha_get."<BR />";
                     }*/
-			
+                    
                     //analizar moratorios y punitorios-- y si es actualización de compensatorios
                     if ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && ($fecha_get >= $variacion['FECHA'] || $variacion['TIPO'] == EVENTO_INFORME)) {
                         //if ($fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) {
@@ -1179,8 +1198,27 @@ class credito_model extends main_model {
                                 echo "<br />";
                             }
                         }
+                        
+                        if ($cuota['ID']==9056) {
+                            echo "R:$rango_int_mor<br />";
+                            echo $tmp['INT_MORATORIO']."<br />";
+                            echo $POR_INT_MORATORIO."<br />";
+                            //print_r($variaciones);die();
+                        }
                     }
                     //$dias_moras += $rango_int_mor;
+                    
+                    
+                    //BUSCAMOS UN CAMBIO DE TASA
+                    foreach ($this->_variaciones as $tv) {
+                        if($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
+                            $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
+                            $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
+                            $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
+                            $POR_INT_MORATORIO = $tv['POR_INT_MORATORIO'];
+                            $POR_INT_PUNITORIO = $tv['POR_INT_PUNITORIO'];
+                        }
+                    }
                     
                     $tmp['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $tmp['INT_COMPENSATORIO_SUBSIDIO'] * $this->_iva_operatoria;
                     $tmp['INT_COMPENSATORIO_IVA'] = $tmp['INT_COMPENSATORIO'] * $this->_iva_operatoria;
@@ -1191,6 +1229,9 @@ class credito_model extends main_model {
                     $tmp['FECHA_INICIO_REAL'] = $fecha_inicio;
                     
                     $segmentos[] = $tmp;
+                    
+                    
+                    
                 }
                 
                 

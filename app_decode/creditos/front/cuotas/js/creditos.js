@@ -1001,6 +1001,7 @@ function refinanciar() {
                 return;
             } else {
                 $(".div-result").html(result);
+                $(window).scrollTop($(".div-result").offset().top);
             }
         }
     });
@@ -1017,6 +1018,7 @@ function caducar() {
     $(".listado-credito").hide();
     load_app("creditos/front/formaltabase","#wpopup",datos, 
     function(){
+        $(window).scrollTop($("#div-creidito-info").offset().top);
         $('#jqxgrid').hide();
         $.unblockUI();
     },
@@ -1038,6 +1040,7 @@ function caducarCuota() {
     $(".listado-credito").hide();
     load_app("creditos/front/formaltabase","#wpopup",datos, 
     function(){
+        $(window).scrollTop($("#div-creidito-info").offset().top);
         $('#jqxgrid').hide();
         $.unblockUI();
     },
