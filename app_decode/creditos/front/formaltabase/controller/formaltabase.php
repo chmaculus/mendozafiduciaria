@@ -6,7 +6,7 @@ class formaltabase extends main_controller {
         $this->mod = $this->model("formalta_model");
     }
 
-    function init($id = 0, $credito_caduca=0, $fecha_caduca=0, $caducidad=FALSE) {
+    function init($id = 0, $credito_caduca=0, $fecha_caduca=0, $caducidad=FALSE, $prorroga=FALSE) {
 
         if (!isset($_SESSION["USERADM"]))
             header("Location: " . '/' . URL_PATH);
@@ -29,7 +29,7 @@ class formaltabase extends main_controller {
         );
 
         $datax = array();
-        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad);
+        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad, $prorroga);
         $datax['titulo'] = "Administracion";
         $datax['etiqueta_modulo'] = "Carpetas";
         $datax['name_modulo'] = $this->get_controller_name();
@@ -43,7 +43,7 @@ class formaltabase extends main_controller {
         //etapas
     }
 
-    function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad) {
+    function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad, $prorroga) {
         
         $ultimo = $this->mod->get_next_id();
 
@@ -78,8 +78,14 @@ class formaltabase extends main_controller {
                 );
             }
             
+            if ($prorroga) {
+                $credito['T_COMPENSATORIO'] = 0;
+                $cuotas_restantes = $this->mod->cuotas_restantes_prorroga();
+            }
+            
             $credito["INTERES_CUOTAS"] = $credito["CAPITAL_CUOTAS"] = $cuotas_restantes;
             $credito["ID_CADUCADO"] = $credito_caduca;
+            $credito['PRORROGA'] = $prorroga; //para poner otro estado
             
         } else {
 
@@ -505,7 +511,12 @@ class formaltabase extends main_controller {
 
         $this->mod->save_operacion_credito();
         if ($_POST['credito_caduca'] || $_SESSION['simulacion_credito']) {
-            $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            if($_POST['prorroga']) {
+                $this->mod->prorrogar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            } else {
+                $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            }
+            
             $versiones = $this->mod->get_versiones();
             $version = $versiones[0]['value'];
             

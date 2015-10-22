@@ -285,6 +285,7 @@ function _generar_cuotas(simulacion){
             fideicomiso : fideicomiso || 0,
             credito_caduca: $("#credito_caduca").val(),
             fecha_caduca: $("#fecha_caduca").val(),
+            prorroga: $("#prorroga").val(),
             simulacion: simulacion
         },
         type : "post",

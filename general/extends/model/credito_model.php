@@ -38,6 +38,8 @@ class credito_model extends main_model {
     var $_actualizacion_compensatorios = false;
     var $_suma_act_compens = 0;
     var $_flag_pago_cuota_anterior = false;
+    var $_caducado_de = 0;
+    var $_prorroga_de = 0;
     
     function clear() {
         $this->_i = 0;
@@ -72,6 +74,8 @@ class credito_model extends main_model {
         $this->_actualizacion_compensatorios = false;
         $this->_suma_act_compens = 0;
         $this->_flag_pago_cuota_anterior = false;
+        $this->_caducado_de = 0;
+        $this->_prorroga_de = 0;
     }
 
     function set_log($log = true) {
@@ -740,9 +744,10 @@ class credito_model extends main_model {
         }
         
         
-        
-        if ($credito_caducado = $this->es_caducado()) {
-            $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => 0), "ID = " . $credito_caducado);
+        if ($this->_caducado_de) {
+            $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => 0), "ID = " . $this->_caducado_de);
+        } elseif ($this->_prorroga_de) {
+            $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => 0), "ID = " . $this->_prorroga_de);
         }
         
         $cred = $this->_id_credito;
@@ -2451,6 +2456,8 @@ class credito_model extends main_model {
             $this->_total_credito = $row_credito['MONTO_CREDITO'];
             $this->_estado_credito = $row_credito['CREDITO_ESTADO'];
             $this->_tipo_credito = $row_credito['TIPO_CREDITO'];
+            $this->_caducado_de = $row_credito['ID_CADUCADO'];
+            $this->_prorroga_de = $row_credito['ID_PRORROGA'];
             return TRUE;
         } else {
             return FALSE;
@@ -3124,7 +3131,7 @@ ORDER BY T1.lvl DESC');
         
         $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
-        $this->_db->where("CREDITO_ESTADO NOT IN (".ESTADO_CREDITO_ELIMINADO . ", " . ESTADO_CREDITO_CADUCADO .")" . $sql);
+        $this->_db->where("CREDITO_ESTADO NOT IN (".ESTADO_CREDITO_ELIMINADO . ", " . ESTADO_CREDITO_CADUCADO. ", " . ESTADO_CREDITO_PRORROGADO .")" . $sql);
         $this->_db->join("fid_fideicomiso f", "f.ID=c.ID_FIDEICOMISO", "left");
         $this->_db->join("fid_clientes cl", "cl.ID IN (c.POSTULANTES)", "left");
         $this->_db->join("fid_localidades l", "l.ID = cl.ID_DEPARTAMENTO", "left");
@@ -3247,8 +3254,16 @@ ORDER BY T1.lvl DESC');
         
         $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_CADUCADO), "ID = " . $creditoId);
         $this->_db->update("fid_creditos", array("ID_CADUCADO" => $creditoId), "ID = " . $nuevoCreditoId);
+    }
+    
+    public function prorrogar_credito($creditoId, $nuevoCreditoId, $fecha) {
+        //por el momento no se guarda fecha
+        if (!$creditoId) {
+            return;
+        }
         
-        echo $this->_db->last_query();
+        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_PRORROGADO), "ID = " . $creditoId);
+        $this->_db->update("fid_creditos", array("ID_PRORROGA" => $creditoId), "ID = " . $nuevoCreditoId);
     }
     
     public function get_creditos() {
@@ -3426,6 +3441,24 @@ ORDER BY T1.lvl DESC');
         $this->_db->select("ID_CADUCADO");
         $cad = $this->_db->get_tabla("fid_creditos", "ID=" . $this->_id_credito);
         return isset($cad[0]['ID_CADUCADO']) ? $cad[0]['ID_CADUCADO'] : 0;
+    }
+    
+    function cuotas_restantes_prorroga() {
+        $ultimo_pago =  $this->obtener_ultimo_pago(); 
+        if ($ultimo_pago) {
+            return $ultimo_pago['CUOTAS_RESTANTES'] - 1;
+        } else {
+            $this->_db->limit(0, 1);
+            $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+            $this->_db->order_by("CUOTAS_RESTANTES", "DESC");
+            $cuotas = $this->_db->get_tabla("fid_creditos_cuotas");
+            
+            if($cuotas) {
+                return $cuotas[0]['CUOTAS_RESTANTES'];
+            } else {
+                return FALSE;
+            }
+        }
     }
   
 }

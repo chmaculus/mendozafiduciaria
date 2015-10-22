@@ -1,6 +1,7 @@
 <input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
 <input type="hidden" id="fecha_caduca" value="<?=$credito['FECHA_CADUCA']?>" />
 <input type="hidden" id="credito_operatoria" value="<?=(isset($credito['ID_OPERATORIA']) && $credito['ID_OPERATORIA']) ? $credito['ID_OPERATORIA'] : ''?>" />
+<input type="hidden" id="prorroga" value="<?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 1 : 0 ?>" />
 <div class="form-content">
     <div class="form_generar">
             <div class="row c12 grupo">
@@ -116,10 +117,10 @@
                             <span >Interes Compensatorio</span>
                         </div>
                         <div class="c3">
-                            <input type="text" class="" id="txtInteresCompensatorio" value="<?= $credito['T_COMPENSATORIO'] ?>"/>
+                            <input type="text" class="" id="txtInteresCompensatorio" value="<?= $credito['T_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 'readonly="readonly"' : '' ?>/>
                         </div>
                         <div class="c3">
-                            <input type="text" class="" id="txtPeriodicidadCalculoCompensatorio" value="<?= $credito['PLAZO_COMPENSATORIO'] ?>"/>
+                            <input type="text" class="" id="txtPeriodicidadCalculoCompensatorio" value="<?= $credito['PLAZO_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 'readonly="readonly"' : '' ?>/>
                         </div>
                     </div>   
 

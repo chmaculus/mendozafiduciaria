@@ -46,6 +46,7 @@
                 if ($credito['CR_ESTADO']==-1) $estado = 'DEUDA';
                 if ($credito['CR_ESTADO']==0) $estado = 'SIN VERIFICAR';
                 if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_CADUCADO) $estado = 'CADUCADO';
+                if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_PRORROGADO) $estado = 'PRORROGADO';
                 
                 $rtn[]=array(
                     "ID_CREDITO" =>$credito['ID_CREDITO'],

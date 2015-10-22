@@ -1015,19 +1015,7 @@ function caducar() {
         _cuotas.ID_CREDITO,
         $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000
     ];
-    $(".listado-credito").hide();
-    load_app("creditos/front/formaltabase","#wpopup",datos, 
-    function(){
-        $(window).scrollTop($("#div-creidito-info").offset().top);
-        $('#jqxgrid').hide();
-        $.unblockUI();
-    },
-    function(){
-
-    },
-    function(){
-
-    }); 
+    formaltabase(datos);
 }
 
 function caducarCuota() {
@@ -1037,19 +1025,7 @@ function caducarCuota() {
         $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
         1//1 cuota
     ];
-    $(".listado-credito").hide();
-    load_app("creditos/front/formaltabase","#wpopup",datos, 
-    function(){
-        $(window).scrollTop($("#div-creidito-info").offset().top);
-        $('#jqxgrid').hide();
-        $.unblockUI();
-    },
-    function(){
-
-    },
-    function(){
-
-    }); 
+    formaltabase(datos);
 }
 
 function refinanciacion_caida() {
@@ -1070,4 +1046,32 @@ function refinanciacion_caida() {
             });
         }
     });
+}
+
+function prorroga() { 
+    var datos = [
+        0,//caducar
+        _cuotas.ID_CREDITO,
+        $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+        false,
+        1 //credito prorroga
+    ];
+    formaltabase(datos);
+}
+
+function formaltabase(datos) {
+    $(".listado-credito").hide();
+    load_app("creditos/front/formaltabase","#wpopup",datos, 
+    function(){
+        $(window).scrollTop($("#div-creidito-info").offset().top);
+        $('#jqxgrid').hide();
+        $.unblockUI();
+    },
+    function(){
+
+    },
+    function(){
+
+    }); 
+    
 }

@@ -273,7 +273,9 @@ function init_grid(id_usuario,tipo){
                         
     var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
 
-        if (value == 'CADUCADO') {
+        if (value == 'PRORROGADO') {
+            return '<div style="margin:4px;font-weight:bold;">' + value + '</div>';
+        } else if (value == 'CADUCADO') {
             return '<div style="margin:4px;color:#ff0000;font-weight:bold;">' + value + '</div>';
         }
         else {
@@ -828,6 +830,12 @@ function get_credito(edit){
         var estado = $('.jqx-grid-cell-selected.credEst').text();
         if (estado == 'CADUCADO') {
             jConfirm("Desea continuar?","Crédito Caducado", function(r){
+                if (r) {
+                    _get_credito(edit);
+                }
+            });
+        } if (estado == 'PRORROGADO') {
+            jConfirm("Desea continuar?","Crédito Prorrogado", function(r){
                 if (r) {
                     _get_credito(edit);
                 }
