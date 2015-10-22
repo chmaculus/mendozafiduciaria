@@ -1055,6 +1055,7 @@ class credito_model extends main_model {
                     $variaciones[1]['FECHA'] = $cuota['FECHA_VENCIMIENTO'];
                 }
                 
+                $dias_moras = 0;
                 foreach($variaciones as $iv => $variacion) {
                     
                     $tmp = $variacion;
@@ -1122,96 +1123,107 @@ class credito_model extends main_model {
                     //luego buscamos los valores más correctos a la fecha
                     $tmp_tv = FALSE;
                     
-                    $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-                    $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-                    
-                    if ($cuota['ID']==0 && $interes) {
-                        echo "FE".date("Y-m-d", $variacion['FECHA'])."<br />";
-                        echo "FE".date("Y-m-d", $cuota['FECHA_VENCIMIENTO'])."<br />";
-                        echo "INICIO $fecha_inicio2<br />FIN $fecha_fin2<br />RANGO $rango_comp<br />TASA:$INTERES_COMPENSATORIO_VARIACION<br />SALDO $SALDO_CAPITAL<br />INT: $interes<br />TIPO:{$variacion['TIPO']}<br /><br />";
-                    }
-                    
-                    $tmp['INT_COMPENSATORIO'] = $interes;
-                    $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
+                    $tmp['INT_COMPENSATORIO'] = 0;
+                    $tmp['INT_COMPENSATORIO_SUBSIDIO'] = 0;
                     $tmp['INT_MORATORIO'] = $tmp['INT_PUNITORIO'] = 0;
+                    /////
+                    if($fecha_get >= $cuota['FECHA_VENCIMIENTO'] || $this->_tipo_devengamiento == TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO) {
                     
-                    if ($cuota['ID']==0) {
-                        echo "R{$rango_comp}<br>";
-                        echo "I:{$tmp['INT_COMPENSATORIO']}<br>";
-                        echo "IK:$INTERES_COMPENSATORIO_VARIACION<br>";
-                    }
-                    
-                    $INT_SUBSIDIO_ACUMULADO += $interes_subsidio;
-                    $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $tmp['IVA']);
+                        $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                        $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
 
-                    $INTERES_COMPENSATORIO += $tmp['INT_COMPENSATORIO'];
-                    $IVA_INTERES_COMPENSATORIO += ($tmp['INT_COMPENSATORIO'] * $tmp['IVA']);
-                    
-                    /*if ($cuota['ID'] == 8943 && $variacion['TIPO'] == EVENTO_INFORME) {
-                        echo $variacion['FECHA']."<BR />";
-                        echo $fecha_get."<BR />";
-                    }*/
-                    
-                    //analizar moratorios y punitorios-- y si es actualización de compensatorios
-                    if ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && ($fecha_get >= $variacion['FECHA'] || $variacion['TIPO'] == EVENTO_INFORME)) {
-                        //if ($fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) {
-                        //$fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']
-                        $rango_int_mor = ($variacion['FECHA'] - $fecha_variacion_moratorio) / (24 * 3600);
-                        $fecha_variacion_moratorio = $variacion['FECHA'];
-                        //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
-
-                        $pagos_arr = $this->_get_pagos_tipo($variacion['FECHA']-1, true);
-                        $pagos = $pagos_arr[$cuota['CUOTAS_RESTANTES']];
-                        
-                        $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
-
-                        $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
-                        if ($SALDO_CUOTA < 0.2) {
-                            $SALDO_CUOTA = 0;
+                        if ($cuota['ID']==0 && $interes) {
+                            echo "FE".date("Y-m-d", $variacion['FECHA'])."<br />";
+                            echo "FE".date("Y-m-d", $cuota['FECHA_VENCIMIENTO'])."<br />";
+                            echo "INICIO $fecha_inicio2<br />FIN $fecha_fin2<br />RANGO $rango_comp<br />TASA:$INTERES_COMPENSATORIO_VARIACION<br />SALDO $SALDO_CAPITAL<br />INT: $interes<br />TIPO:{$variacion['TIPO']}<br /><br />";
                         }
+
+                        $tmp['INT_COMPENSATORIO'] = $interes;
+                        $tmp['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                         
-                        $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
-                        $tmp['INT_PUNITORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_PUNITORIO / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
-                        
-                        /*if ($cuota['ID'] == 8946) {
-                            foreach($variaciones as $vr) {
-                                //echo date('Y-m-d', $vr['FECHA'])."<BR />".$vr['TIPO']."<BR />";
-                            }
-                            echo date('Y-m-d', $variacion['FECHA'])."<br />";
-                            echo "TOTAL:$SALDO_CUOTA<br />";
-                            echo date('Y-m-d', $variacion['FECHA'])."<br />";
-                            echo "R:$rango_int_mor<br />IM:{$tmp['INT_MORATORIO']}<br />T:{$variacion['TIPO'] }<br />";
-                            echo "<br />";
+
+                        if ($cuota['ID']==0) {
+                            echo "R{$rango_comp}<br>";
+                            echo "I:{$tmp['INT_COMPENSATORIO']}<br>";
+                            echo "IK:$INTERES_COMPENSATORIO_VARIACION<br>";
+                        }
+
+                        $INT_SUBSIDIO_ACUMULADO += $interes_subsidio;
+                        $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $tmp['IVA']);
+
+                        $INTERES_COMPENSATORIO += $tmp['INT_COMPENSATORIO'];
+                        $IVA_INTERES_COMPENSATORIO += ($tmp['INT_COMPENSATORIO'] * $tmp['IVA']);
+
+                        /*if ($cuota['ID'] == 8943 && $variacion['TIPO'] == EVENTO_INFORME) {
+                            echo $variacion['FECHA']."<BR />";
+                            echo $fecha_get."<BR />";
                         }*/
-                        
-                        if ($tmp['INT_MORATORIO'] > $INT_MORATORIO) {
-                            $INT_MORATORIO = $tmp['INT_MORATORIO'];
-                        }
-                        if ($tmp['INT_PUNITORIO'] > $INT_PUNITORIO) {
-                            $INT_PUNITORIO = $tmp['INT_PUNITORIO'];
-                        }
-                        
-                        if (false) { //$this->_actualizacion_compensatorios) {
-                            //traer el saldo - los pagado del saldo de la cuota
-                            $pagos_arr = $this->_get_pagos_tipo($variacion['FECHA'], true);
+
+                        //analizar moratorios y punitorios-- y si es actualización de compensatorios
+                        if ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && ($fecha_get >= $variacion['FECHA'] || $variacion['TIPO'] == EVENTO_INFORME)) {
+                            //if ($fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) {
+                            //$fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']
+                            $rango_int_mor = ($variacion['FECHA'] - $fecha_variacion_moratorio) / (24 * 3600);
+                            $fecha_variacion_moratorio = $variacion['FECHA'];
+                            //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
+
+                            $pagos_arr = $this->_get_pagos_tipo($variacion['FECHA']-1, true);
                             $pagos = $pagos_arr[$cuota['CUOTAS_RESTANTES']];
-                            $SALDO_ACT_COMP = $SALDO_CAPITAL - $pagos[PAGO_CAPITAL];
+
+                            $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
+
+                            $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
+                            if ($SALDO_CUOTA < 0.2) {
+                                $SALDO_CUOTA = 0;
+                            }
+
+                            $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
+                            $tmp['INT_PUNITORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_PUNITORIO / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
                             
-                            $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_int_mor, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-                            if($cuota['ID']==9073) {
-                                echo $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
+                            if ($SALDO_CUOTA) {
+                                $dias_moras += $rango_int_mor;
+                            }
+
+                            /*if ($cuota['ID'] == 8946) {
+                                foreach($variaciones as $vr) {
+                                    //echo date('Y-m-d', $vr['FECHA'])."<BR />".$vr['TIPO']."<BR />";
+                                }
+                                echo date('Y-m-d', $variacion['FECHA'])."<br />";
+                                echo "TOTAL:$SALDO_CUOTA<br />";
+                                echo date('Y-m-d', $variacion['FECHA'])."<br />";
+                                echo "R:$rango_int_mor<br />IM:{$tmp['INT_MORATORIO']}<br />T:{$variacion['TIPO'] }<br />";
                                 echo "<br />";
+                            }*/
+
+                            if ($tmp['INT_MORATORIO'] > $INT_MORATORIO) {
+                                $INT_MORATORIO = $tmp['INT_MORATORIO'];
+                            }
+                            if ($tmp['INT_PUNITORIO'] > $INT_PUNITORIO) {
+                                $INT_PUNITORIO = $tmp['INT_PUNITORIO'];
+                            }
+
+                            if (false) { //$this->_actualizacion_compensatorios) {
+                                //traer el saldo - los pagado del saldo de la cuota
+                                $pagos_arr = $this->_get_pagos_tipo($variacion['FECHA'], true);
+                                $pagos = $pagos_arr[$cuota['CUOTAS_RESTANTES']];
+                                $SALDO_ACT_COMP = $SALDO_CAPITAL - $pagos[PAGO_CAPITAL];
+
+                                $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_int_mor, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                                if($cuota['ID']==9073) {
+                                    echo $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
+                                    echo "<br />";
+                                }
+                            }
+
+                            if ($cuota['ID']==9056) {
+                                echo "R:$rango_int_mor<br />";
+                                echo $tmp['INT_MORATORIO']."<br />";
+                                echo $POR_INT_MORATORIO."<br />";
+                                //print_r($variaciones);die();
                             }
                         }
-                        
-                        if ($cuota['ID']==9056) {
-                            echo "R:$rango_int_mor<br />";
-                            echo $tmp['INT_MORATORIO']."<br />";
-                            echo $POR_INT_MORATORIO."<br />";
-                            //print_r($variaciones);die();
-                        }
+                        //$dias_moras += $rango_int_mor;
                     }
-                    //$dias_moras += $rango_int_mor;
                     
                     
                     //BUSCAMOS UN CAMBIO DE TASA
