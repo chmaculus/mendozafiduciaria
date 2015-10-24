@@ -459,7 +459,7 @@ class carpetas_model extends main_model {
             }
 
 
-            //log_this('xxxxxxxx.log',$this->_db->last_query() );
+//            log_this('g.log',$this->_db->last_query() );
 
             $obj = $this->_db->get_tabla("fid_nota_req", "ID='" . $iid . "'");
             if ($obj) {
@@ -1024,6 +1024,16 @@ class carpetas_model extends main_model {
         $cliDatos = $this->_db->get_tabla($this->_tablamodcli, "id='".$valorOperacion. "'");
         return $cliDatos;
     }
+    function actualizar_valores($id_oper_sem){
+        //Se obtienen los datos del coordinador      
+        $lomismo = $id_oper_sem;
+//        $this->_db->select('*');
+//        $cli = $this->_db->get_tabla($this->_tablamodusucli, "id_operacion='".$valorOperacion. "'");
+//        $this->_db->select('*');
+//        $cliDatos = $this->_db->get_tabla($this->_tablamodcli, "id='".$valorOperacion. "'");
+        return $lomismo;
+    }
+
     /*     * ***************************************************************** */
     /*     * *******************fin obtener datos mail del coordinador******** */
     /*     * ***************************************************************** */
@@ -1083,7 +1093,6 @@ class carpetas_model extends main_model {
 
         $new_arr_obs = array();
         $new_arr_chk = array();
-
         //si usuario actual es el CARTERADE
         $new_arr_obs["obs_checlist"] = -1;
         $new_arr_obs["obs_cinicial"] = -1;
@@ -1148,7 +1157,7 @@ class carpetas_model extends main_model {
         if ($id_etapa_actual == '12' && $carterade == $_SESSION["USERADM"] && $_SESSION["USER_ROL"] == 20) {
             $new_arr_chk["chk_altacredito"] = $arr_chk["chk_altacredito"];
         }
-
+         
         if ($iid == 0)://agregar
             $obj['CREATEDON'] = $obj['UPDATEDON'];
             $obj['CARTERADE'] = $carterade;
@@ -1203,30 +1212,35 @@ class carpetas_model extends main_model {
                 "ACTIVO" => $activo_traza,
                 "ETAPA_ORIGEN" => 0
             );
-
-
+            
             $this->_db->insert('fid_traza', $arr_traza);
 
-
+             $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$arr_traza['ID_OPERACION']. "' order by id DESC LIMIT 1");
+//             $id_traza = $this->_db->select("ID");
+//             $id_traza = $this->_db->order_by(" id DESC LIMIT 1");
+//             $id_traza = $this->_db->get_tabla("fid_traza", "WHERE id_operacion='".$arr_traza['ID_OPERACION']. "'");
+//            echo $id_traza[0]['ID'];die(" NUMERO Q NECESITO");
              /*
              * Aqui se guarda en la tabla fid_semaforo el comienzo de la etapa
              * con la fecha de carga y la fecha asignada para el aviso
              */
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $id_new,
-                "ID_ETAPA" => 1,
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24HS',
-                "FECHA_AVISO" => $fecha_aviso
-                );
-//                print_r($arr_semaforo);die();
-            $this->_db->insert('fid_semaforo', $arr_semaforo);
+//            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
+//            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
+//            $arr_semaforo = array(
+//                "ID_CARPETA" => $id_new,
+//                "ID_ETAPA" => 1,
+//                "FECHA_CARGA" => $fecha_actual,
+//                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24HS',
+//                "FECHA_AVISO" => $fecha_aviso,
+//                "ID_TRAZA"=>  $id_traza[0]['ID'],
+//                "HAB"=>1
+//                );
+////                print_r($arr_semaforo);die();
+//            $this->_db->insert('fid_semaforo', $arr_semaforo);
             /*
              * Fin de carga sobre semaforo
              */
-            
+                        
             
             if ($_SESSION["USER_ROL"] == 10) { //si usuario es jefe de op, actualizar etapa actual
                 $this->_db->update("fid_operaciones", array("ID_ETAPA_ACTUAL" => "2"), 'ID="' . $id_new . '"');
@@ -1253,6 +1267,8 @@ class carpetas_model extends main_model {
             }
 
             $resp = $this->_db->update($this->_tablamod, $obj, "id='" . $iid . "'");
+             log_this('updateTablaOperaciones.log', $this->_db->last_query() );
+        
             $acc = "edit";
             $obj_rtn = array();
             //log_this('qqqqqq.log', print_r($obj,1));
@@ -1577,6 +1593,7 @@ class carpetas_model extends main_model {
             "result" => $resp,
             "obj_rtn" => $obj_rtn
         );
+        
         return $rtn;
     }
 
@@ -2000,6 +2017,9 @@ class carpetas_model extends main_model {
         return $rtn;
     }
 
+
+
+
     function actualizar_operacion($id, $arr, $arr_traza) {
         //get etapa_real
         $tmp = $this->_db->get_tabla('fid_traza', "ID_OPERACION='" . $id . "' and activo='1'");
@@ -2027,7 +2047,8 @@ class carpetas_model extends main_model {
          * con la fecha de carga y la fecha asignada para el aviso
          */
            $obj_semaforo = array(
-                "ID_NOTIFICAR"=>$arr['ENVIADOA'],
+//                "ID_NOTIFICAR"=>$arr['ENVIADOA'],
+                "ID_NOTIFICAR"=>62,
                 );
 
            $this->_db->update('fid_semaforo', $obj_semaforo,"id_carpeta='" . $id . "' AND id_etapa=1");
@@ -2037,7 +2058,7 @@ class carpetas_model extends main_model {
         
         //log_this('xxxxx.log', $this->_db->last_query() );
         $this->_db->insert('fid_traza', $arr_traza);
-        //log_this('xxxxx.log', $this->_db->last_query() );
+        log_this('actualizarOperacionTraza.log', $this->_db->last_query() );
         return $rtn;
     }
 
@@ -2136,8 +2157,46 @@ class carpetas_model extends main_model {
         //log_this('yyyyyy.log', $this->_db->last_query() );
         return $rtn;
     }
+    function lanzar_alertas($idUser) {  
+/*Busca fechas vencidas*/
+        $fechaAct = date('Y-m-d H:i:s');
+        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-25 17:30:45'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
+//        print_r($rtn); die(" VER CONTENIDO LANZAR ALERTTAS");
+        return $rtn;
+    }
+    function guardar_traza_alertas($obj) {
+/* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha*/        
+/* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion*/        
+    $valores_insert = $obj[0]['ID_NOTIFICAR'];
+//    print_r($obj[0]);die(" CARTERADEEEEE");
+        $fechaActual = date("Y-m-d H:i:s");
+    $valor_id = $obj[0]['ID'];  
+//            [CARTERADE] => 56
+            foreach ($obj as $value) {
+                $arr_datos_traza = array(
+                    "ID_OPERACION"=> $value['ID_CARPETA'],
+                    "CARTERADE"=>$value['CARTERADE'],
+                    "ETAPA"=>$value['ID_ETAPA'],
+//                    "CARTERADE"=>$value['ID_NOTIFICAR'],
+                    "DESTINO"=>$valores_insert,
+//                    "DESTINO"=>$obj['ID_NOTIFICAR'],
+                    "DESCRIPCION"=>$value['MENSAJE_ALERTA'],
+                    "FECHA"=> $fechaActual,
+                    "OBSERVACION"=> "AVISO",
+                    "ESTADO"=>22
+                 );
 
-    function getenviar_a2($arr_send, $puesto_in) {
+                $arr_datos_sem = array(
+                    "HAB"=>2
+                );
+                echo $valor_id;
+//            print_r($arr_datos_traza);die(" DATOS A INSERTAR EN TRAZA");
+            $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
+            $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$valor_id."'");
+            }
+}
+
+function getenviar_a2($arr_send, $puesto_in) {
 
         $cad_where = "";
         $sw = 0;
@@ -2554,10 +2613,5 @@ class carpetas_model extends main_model {
 
 }
 
-function lanzar_alertas() {
-        $fechaAct = date('Y-m-d H:i:s');
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-17 10:40:45' AND ID_NOTIFICAR=56 AND ID_CARPETA=256");
-//        print_r($rtn);die();
-        return $rtn;
-    }
+
 ?>

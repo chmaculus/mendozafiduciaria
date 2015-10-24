@@ -61,16 +61,25 @@ class notificaciones extends main_controller{
         $id_ope = $obj["ID_OPERACION"];
         
         $destino = $this->mod->get_destino($id_ope);
-        
-        //log_this('qqqq.log',print_r($destino,1));
-        
+
         if ($destino>0 && $destino != $_SESSION["USERADM"] ){
             $obj["CARTERADE"] = $destino;
         }else{
             $obj["CARTERADE"] = $_SESSION["USERADM"];
         }
-        
         $rtn = $this->mod->send_traza($obj);
+        echo $rtn?$rtn:'-1';
+    }
+    
+    
+    function x_actualizar_traza_sem(){
+        $obj = $_POST["obj"];
+        $id_ope = $obj['ID_OPERACION'];
+
+        $destino = $this->mod->get_destino($id_ope);
+
+        $rtn = $this->mod->send_traza_sem($obj,$destino);
+
         echo $rtn?$rtn:'-1';
     }
     

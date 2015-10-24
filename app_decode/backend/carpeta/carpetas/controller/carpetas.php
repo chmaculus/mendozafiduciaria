@@ -527,6 +527,22 @@ class carpetas extends main_controller{
         $obj = $this->mod->getenviar_a1( $send, $puesto_in );
         echo trim(json_encode($obj?$obj:array()));
     }
+    function x_consultar_fechas(){
+      /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
+         Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.
+         Si lo devuelve ingresa en guardar_traza_alertas donde ingresa una nueva traza para que se 
+         muestre como notificacion y se actualiza el campo de semaforo HAB=2 para que indique que ya se aviso
+        */
+        $idUser = $_POST['iduser'];
+        $obj = $this->mod->lanzar_alertas($idUser);
+        if ($obj) {
+//            echo "Encuentra datos";
+//          print_r($obj);
+                  $noti = $this->mod->guardar_traza_alertas($obj);
+        }else{
+            echo "NO HACE NADA";
+        }
+    }
     
     function x_getetapas_menor(){
         $etapa = $_POST['etapa'];
@@ -1566,6 +1582,13 @@ class carpetas extends main_controller{
         $rtn = $this->mod->sendobjcli($obj);
         echo trim(json_encode($rtn?$rtn:array()));
     }
+  
+    function x_actualizar_valores(){
+        $obj = $_POST['PROPIETARIO'];
+        $id_oper_sem = $_POST['idoperacion_sem'];
+        $rtn = $this->mod->actualizar_valores($id_oper_sem);
+        echo trim(json_encode($rtn?$rtn:array()));
+    }
     
 }
 
@@ -1606,19 +1629,3 @@ class SelectBox_ope{
 		return json_encode($this);
 	}
 }
-
-
-
-    function x_consultar_fechas() {
-            
-        $obj = $this->mod->lanzar_alertas();
-        echo $obj;
-        if ($obj) {
-            echo 1;
-        } else {
-            echo 0;
-        }
-        die;
-    }
-
-	

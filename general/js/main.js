@@ -222,7 +222,46 @@ function notifMain( iid ){
                     'scrolling' : 'no'
                 }
             );
+ 
+            $('.link_aceptar.tb_leida').click(function(){
+            var id_operacion_sem = $(this).data('iid');
+            var etapa = $(this).data('etapa');
+             var meobj = $(this);
+//            var etapa = $(this).data('etapa');
+            alert("id_operacion  "+id_operacion_sem);
+            alert("etapa  "+etapa);
 
+                    var obst = 'AVISADO';
+                    var dest = 'SE NOTIFICO SOBRE LA DEMORA';
+//                    registrar ingreso en traza
+                    var obj = {
+                        ID_OPERACION:id_operacion_sem,
+                        ESTADO:'3', //aceptado
+                        //CARTERADE:carterade, //setear en php
+                        DESTINO:'',
+                        OBSERVACION: obst,
+                        DESCRIPCION: dest,
+                        ETAPA:etapa,
+                        ETAPA_REAL:etapa
+                    }
+                    $.ajax({
+                        url : 'backend/notificaciones/x_actualizar_traza_sem',
+                        type : "post",
+                        data : {
+                            obj:obj
+                        },
+                        async:false,
+                        success : function(){
+//                            alert(" PASO");
+                             actualizaNotif();
+                            regresar_a_listado();
+                            jAlert('Carpeta vista.', 'Carpetas',function(){
+                                refrescarDomNotif(meobj);
+                            });
+                        }
+                    });
+
+            });
 
             $('.link_aceptar_carpeta').click(function(){
 
@@ -377,7 +416,7 @@ function notifMain( iid ){
                         obst = 'ACEPTADO CON SU';
                         dest = 'SE ACEPTO LA CARPETA CON SU';
                     }
-                    
+    
                     //registrar ingreso en traza
                     var obj = {
                         ID_OPERACION:id_operacion,
