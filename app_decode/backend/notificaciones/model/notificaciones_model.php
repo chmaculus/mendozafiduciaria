@@ -41,15 +41,16 @@ class notificaciones_model extends main_model{
         $obj_del= array(
             "ACTIVO"=>"0"
         );
-//    actualizar carterade , de operaciones
+//        print_r($obj);die();
+        //actualizar carterade , de operaciones
         if($obj["CARTERADE"]){
             $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
         }
-//        $id_traza = $this->_db->query("select ID,ETAPA_ORIGEN from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' AND ACTIVO=1 order by id DESC LIMIT 1");
     //poner el ultimo movimiento como activo
         $this->_db->update("fid_traza",$obj_del,"ID_OPERACION='".$obj['ID_OPERACION']."'");
 
-//        $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' order by id DESC LIMIT 1");
+        $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' order by id DESC LIMIT 1");
+        
         if($obj['ETAPA'] == 2){
             $fecha_aviso = strtotime ( '+48 hour' , strtotime ( $fecha_actual ) ) ;
             $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
@@ -65,58 +66,7 @@ class notificaciones_model extends main_model{
                 "HAB"=>1
                 );
             
-        }else if($obj['ETAPA'] == 3 && $id_traza[0]['ETAPA_ORIGEN']==2){
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de24HS',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => "",//Jefe de operaciones
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 3 && $id_traza[0]['ETAPA_ORIGEN']==4){
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de24HS',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => "",//Jefe de operaciones
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 3 && $id_traza[0]['ETAPA_ORIGEN']==5){
-//            echo $obj['ID_OPERACION'];
-//    $consulta_jo = $this->_db->query("SELECT CARTERADE FROM fid_traza WHERE id_operacion='".$obj['ID_OPERACION']."' AND estado=3 AND etapa=2");        
-//    print_r($consulta_jo);
-//     echo "ERA ACA ".$consulta_jo;die();            
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de24HS',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => "",//Jefe de operaciones
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 3 && $id_traza[0]['ETAPA_ORIGEN']==6){
+        }else if($obj['ETAPA'] == 3){
             
             $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
             $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
@@ -133,7 +83,8 @@ class notificaciones_model extends main_model{
                 );
             
         }else if($obj['ETAPA'] == 4){
-    $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
+            
+            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
             $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
             $arr_semaforo = array(
                 "ID_CARPETA" => $obj['ID_OPERACION'],
@@ -148,9 +99,8 @@ class notificaciones_model extends main_model{
                 );
             
         }else if($obj['ETAPA'] == 5){
-//    $consulta_jo = $this->_db->query("SELECT CARTERADE FROM fid_traza WHERE id_operacion='".$obj['ID_OPERACION']."' AND estado=3 AND etapa=2");        
-//    print_r($consulta_jo);
-    $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
+            
+            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
             $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
             $arr_semaforo = array(
                 "ID_CARPETA" => $obj['ID_OPERACION'],
