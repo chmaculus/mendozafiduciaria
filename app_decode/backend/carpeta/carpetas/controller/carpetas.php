@@ -527,6 +527,9 @@ class carpetas extends main_controller{
         $obj = $this->mod->getenviar_a1( $send, $puesto_in );
         echo trim(json_encode($obj?$obj:array()));
     }
+
+
+    
     function x_consultar_fechas(){
       /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
          Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.

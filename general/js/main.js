@@ -226,7 +226,7 @@ function notifMain( iid ){
             $('.link_aceptar.tb_leida').click(function(){
             var id_operacion_sem = $(this).data('iid');
             var etapa = $(this).data('etapa');
-             var meobj = $(this);
+            var meobj = $(this);
 //            var etapa = $(this).data('etapa');
             alert("id_operacion  "+id_operacion_sem);
             alert("etapa  "+etapa);

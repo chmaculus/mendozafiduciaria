@@ -2160,8 +2160,9 @@ class carpetas_model extends main_model {
     function lanzar_alertas($idUser) {  
 /*Busca fechas vencidas*/
         $fechaAct = date('Y-m-d H:i:s');
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-25 17:30:45'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
+        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-28 17:30:45'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
 //        print_r($rtn); die(" VER CONTENIDO LANZAR ALERTTAS");
+//        log_this('veralertaconsulta.log', $this->_db->last_query() );
         return $rtn;
     }
     function guardar_traza_alertas($obj) {
