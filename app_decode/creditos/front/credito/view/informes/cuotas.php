@@ -90,10 +90,17 @@ foreach($cuotas as $kk=>$cuota){
     $pagado_punitorio = 0;
     $saldo_punitorio = 0;                    
 
-    $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'];
+    $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO_ACT'];
     $pagado_compenstorio = $cuota['COMPENSATORIO']['PAGOS'];//($cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO']['SALDO'] );
     $saldo_compensatorio = $cuota['COMPENSATORIO']['SALDO'];
-    
+    $total_compensatorio_act = $cuota['COMPENSATORIO_ACT'] ? '<br />' . number_format($cuota['COMPENSATORIO_ACT'],2,",",".") : '';
+    $iva_compensatorio_act_total = '';
+    if ($cuota['COMPENSATORIO_ACT'] && $cuota['COMPENSATORIO']['TOTAL']) {
+        $tmp_iva = number_format($iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'],2,",",".");
+        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
+        $iva_compensatorio_total -= $tmp_iva;
+    }
+            
     $total_capital = $cuota['CAPITAL']['TOTAL'];
     $pagado_capital = $cuota['CAPITAL']['TOTAL'] - $cuota['CAPITAL']['SALDO'];
     $saldo_capital = $total_capital - $pagado_capital;//$cuota['CAPITAL']['SALDO'];                    
@@ -230,8 +237,8 @@ foreach($cuotas as $kk=>$cuota){
                 <?php }?>
                 <tr>
                     <td class="titulo-esp ">Interes Compensatorio</td>
-                    <td class="dato-esp"><?=number_format($total_compensatorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_total,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($total_compensatorio,2,",",".").$total_compensatorio_act?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_total,2,",",".").$iva_compensatorio_act_total?></td>
                     <td class="dato-esp res"><?=number_format($cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'],2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_subsidiado,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($pagado_compenstorio,2,",",".")?></td>

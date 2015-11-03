@@ -32,6 +32,8 @@
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Vencida</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int. Compens.</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">IVA</th>
+            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">I.C.A.</th>
+            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">I.C.A. IVA</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Cuota</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Pago Monto</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Pago Fecha</th>
@@ -70,6 +72,8 @@
             <td style="border:0.1pt solid #000;"><?=$item['VENCIDA'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['INT_COMPENSATORIO'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['INT_COMPENSATORIO_IVA'];?></td>
+            <td style="border:0.1pt solid #000;text-align:right"><?=$item['COMPENSATORIO_ACT'];?></td>
+            <td style="border:0.1pt solid #000;text-align:right"><?=$item['COMPENSATORIO_ACT_IVA'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['CUOTA'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=isset($item['PAGO_MONTO']) ? $item['PAGO_MONTO'] : '';?></td>
             <td style="border:0.1pt solid #000;"><?=isset($item['PAGO_FECHA']) ? $item['PAGO_FECHA'] : '';?></td>
@@ -88,6 +92,8 @@
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;background-color:#ddd"></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['INT_COMPENSATORIO'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['INT_COMPENSATORIO_IVA'];?></td>
+            <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['COMPENSATORIO_ACT'];?></td>
+            <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['COMPENSATORIO_ACT_IVA'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['CUOTA'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['PAGO_MONTO'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;background-color:#ddd"></td>

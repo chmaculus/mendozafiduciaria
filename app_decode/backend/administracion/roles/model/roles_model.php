@@ -107,6 +107,7 @@ class roles_model extends main_model{
         $this->_db->select('rm.* ');
         //$this->_db->order_by("orden","asc");
         $this->_db->join("fid_menu m","m.ID=rm.ID_MENU and m.ESPADRE='0'");
+        die();
         $rtn = $this->_db->get_tabla( 'fid_roles_menu rm', "ID_ROL='".$id_rol."'");
         return $rtn;
     }

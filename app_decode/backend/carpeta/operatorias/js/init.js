@@ -199,7 +199,10 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivapope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
-                            var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
+                            var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
+                            var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;
+                            var imp_pun = $("#imp_pun").length ? $("#imp_pun:checked").val() : 0;
+                            var imp_subs = $("#imp_subs").length ? $("#imp_subs:checked").val() : 0;
                             var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
                             var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
@@ -245,7 +248,10 @@ $(document).ready(function(){
                                 ID_PROCESO:id_proceso,
                                 IVA:ivaope,
                                 BANCO:bancoope,
-                                IMP_TASAS:imp_tasas,
+                                IMP_COMP:imp_comp,
+                                IMP_MORA:imp_mora,
+                                IMP_PUN:imp_pun,
+                                IMP_SUBS:imp_subs,
                                 IMP_FTASAS:imp_ftasas,
                                 ACT_COMPENS:act_compens
                             }
@@ -604,7 +610,10 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
-                            var imp_tasas = $("#imp_tasas").length ? $("#imp_tasas:checked").val() : 0;
+                            var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
+                            var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;
+                            var imp_pun = $("#imp_pun").length ? $("#imp_pun:checked").val() : 0;
+                            var imp_subs = $("#imp_subs").length ? $("#imp_subs:checked").val() : 0;
                             var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
                             var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
@@ -648,7 +657,10 @@ $(document).ready(function(){
                                 COORDOPE:cordope,
                                 IVA:ivaope,
                                 BANCO:bancoope,
-                                IMP_TASAS:imp_tasas,
+                                IMP_COMP:imp_comp,
+                                IMP_MORA:imp_mora,
+                                IMP_PUN:imp_pun,
+                                IMP_SUBS:imp_subs,
                                 IMP_FTASAS:imp_ftasas,
                                 ACT_COMPENS:act_compens
                             }

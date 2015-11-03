@@ -226,8 +226,11 @@
 
                   <div class="elem elem_med">
                       <label>Impactar cambio de tasas en créditos:</label>
-                      <div class="indent formtext">
-                          <input type="checkbox" id="imp_tasas"> 
+                      <div class="indent formtext impt">
+                          <input type="checkbox" id="imp_comp"> Int.Comp.<br />
+                          <input type="checkbox" id="imp_mora"> Int.Mor.<br />
+                          <input type="checkbox" id="imp_pun"> Int.Pun.<br />
+                          <input type="checkbox" id="imp_subs"> Int.Subs.
                       </div>
                   </div>
 
