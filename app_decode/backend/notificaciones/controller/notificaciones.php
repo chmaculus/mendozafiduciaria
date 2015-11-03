@@ -67,7 +67,9 @@ class notificaciones extends main_controller{
         }else{
             $obj["CARTERADE"] = $_SESSION["USERADM"];
         }
+    
         $rtn = $this->mod->send_traza($obj);
+        
         echo $rtn?$rtn:'-1';
     }
     

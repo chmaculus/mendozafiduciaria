@@ -86,8 +86,10 @@ $(document).ready(function(){
     if (_this_app.URL!='main'){
         setInterval(function(){
             actualizaNotif();
+//            inter();
         },15000);
     }
+        
     if ( _this_app.URL!='main' && _this_app.URL!='backend/cambiarpassword' )
         $("#jMenu").jMenu()
    
@@ -228,11 +230,13 @@ function notifMain( iid ){
             var etapa = $(this).data('etapa');
             var meobj = $(this);
 //            var etapa = $(this).data('etapa');
-            alert("id_operacion  "+id_operacion_sem);
-            alert("etapa  "+etapa);
-
+//            alert("id_operacion  "+id_operacion_sem);
+//            alert("etapa  "+etapa);
+//            
+//            var idope = $(this).data('idope');
+//            alert(idope);
                     var obst = 'AVISADO';
-                    var dest = 'SE NOTIFICO SOBRE LA DEMORA';
+                    var dest = 'SE NOTIFICO SOBRE LA DEMORA AL USUARIO ';
 //                    registrar ingreso en traza
                     var obj = {
                         ID_OPERACION:id_operacion_sem,

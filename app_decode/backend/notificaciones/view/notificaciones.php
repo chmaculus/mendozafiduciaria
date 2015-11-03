@@ -57,7 +57,7 @@
                    
                     <?php elseif($c["TESTADO"]==22): ?>
   
-                            <div class="<?php echo $clase ?>">Carpeta: <?php echo $c["ID"]?> (<?php echo $c["OPERATORIA"] ?>)  <span>Mas de 24 hs asignada la carpeta. </span> </div>
+                            <div class="<?php echo $clase ?>">Carpeta: <?php echo $c["ID"]?> (<?php echo $c["OPERATORIA"] ?>)  <span>La carpeta asignada supero el tiempo permitido en la etapa. </span> </div>
                             <div data-etapa="<?php echo $c["TETAPA"]?>" data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_leida"></div>
                     
 

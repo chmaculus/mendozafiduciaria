@@ -341,10 +341,10 @@ $(document).ready(function(){
                                         });
                                         if (tmpfancy==1)
                                             myfancy=1;
-                                        alert("Poner Regresar");
+//                                        alert("Poner Regresar");
 
                                         $(".regresar_ar").click(function(e){
-                                            alert("Deberia regresar");
+//                                            alert("Deberia regresar");
                                             e.preventDefault();
                                             $.fancybox.close();
                                             //$(".asignar").trigger('click');
@@ -7642,7 +7642,8 @@ var inter = function(){
         }, 1000 * 10 * 1);
  }
     
-var poll = function(){
+//var poll = function(){
+ function poll(){
     $.ajax({
        url: _carpetas.URL + "/x_consultar_fechas",
 //       url : _carpetas.URL + "/x_getenviar_a1",

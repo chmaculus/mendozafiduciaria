@@ -36,195 +36,64 @@ class notificaciones_model extends main_model{
     }
     
     function send_traza($obj){
+        
         $fecha_actual = date("Y-m-d H:i:s");
         $etapa_actual = $obj['ETAPA'];
         $obj_del= array(
             "ACTIVO"=>"0"
         );
         
-    $CARTERA_OPERADOR = $this->_db->query("SELECT CARTERADE FROM fid_traza WHERE id_operacion='".$obj['ID_OPERACION']."' AND estado=3 AND etapa=2");
+        $carterade = "";
+        if(is_array($obj['CARTERADE'])){
+            $carterade = $obj['CARTERADE'][0]['CARTERADE'];
+        }else{
+            $carterade = $obj['CARTERADE'];
+        }
+//        print_r($carterade);die();
+//    $CARTERA_OPERADOR = $this->_db->query("SELECT CARTERADE FROM fid_traza WHERE id_operacion='".$obj['ID_OPERACION']."' AND estado=3 AND etapa=2");
         //actualizar carterade , de operaciones
         if($obj["CARTERADE"]){
-            $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
+//            echo "Aqui no entra";die();
+//            $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
+            $this->_db->update("fid_operaciones",array("CARTERADE"=>$carterade,"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
+//             log_this('updateoperaciones.log',$this->_db->last_query());
         }
+//        die("MATO TRAZA");
+//            $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
+//        echo "PASO Y NO ENTRO";die();
     //poner el ultimo movimiento como activo
         $this->_db->update("fid_traza",$obj_del,"ID_OPERACION='".$obj['ID_OPERACION']."'");
-
-        $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' order by id DESC LIMIT 1");
-        
-        if($obj['ETAPA'] == 2){
-            $fecha_aviso = strtotime ( '+48 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 48hs',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => 62,// GERENTE DE OPERACIONES
-                "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 3){
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 24hs',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => $CARTERA_OPERADOR[0]['CARTERADE'],//Jefe de operaciones
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 4){
-            
-            $fecha_aviso = strtotime ( '+72 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 72hs',
-                "FECHA_AVISO" => $fecha_aviso,
+//        $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' order by id DESC LIMIT 1");
+//        if($obj['ETAPA'] == 2){
+//            $fecha_aviso = strtotime ( '+48 hour' , strtotime ( $fecha_actual ) ) ;
+//            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
+//            $arr_semaforo = array(
+//                "ID_CARPETA" => $obj['ID_OPERACION'],
+//                "ID_ETAPA" => $obj['ETAPA'],
+//                "FECHA_CARGA" => $fecha_actual,
+//                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 48hs',
+//                "FECHA_AVISO" => $fecha_aviso,
 //                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_TRAZA"=>  63,
-                "ID_NOTIFICAR" => $CARTERA_OPERADOR[0]['CARTERADE'],
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 5){
-            
-            $fecha_aviso = strtotime ( '+72 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 72hs',
-                "FECHA_AVISO" => $fecha_aviso,
-//                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_TRAZA"=>  41,
-                "ID_NOTIFICAR" => $CARTERA_OPERADOR[0]['CARTERADE'],
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 6){
-            
-            $fecha_aviso = strtotime ( '+72 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'Carpeta en cartera por mas de 72hs',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => $CARTERA_OPERADOR[0]['CARTERADE'],
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 7){
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24HS Etapa 3',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => "",
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 8){
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24hs etapa 8',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => $CARTERA_OPERADOR[0]['CARTERADE'],
-                "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-
-$AVISAR_GERENTE = $this->_db->query("SELECT ID_NOTIFICAR FROM fid_semaforo WHERE id_carpeta='".$obj['ID_OPERACION']."' AND id_etapa=2");
-            $arr_semaforo_dos = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24hs etapa 8',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => $AVISAR_GERENTE[0]['ID_NOTIFICAR'],
-                "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-                print_r($arr_semaforo_dos);
-                print_r($arr_semaforo);
-                
-            $this->_db->insert('fid_semaforo', $arr_semaforo_dos);
-             
-             
-        }else if($obj['ETAPA'] == 9){
-            
-            $fecha_aviso = strtotime ( '+72 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue asignada hace 72hs',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => $AVISAR_GERENTE[0]['ID_NOTIFICAR'],
-                "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }else if($obj['ETAPA'] == 10){
-            
-            $fecha_aviso = strtotime ( '+24 hour' , strtotime ( $fecha_actual ) ) ;
-            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
-            $arr_semaforo = array(
-                "ID_CARPETA" => $obj['ID_OPERACION'],
-                "ID_ETAPA" => $obj['ETAPA'],
-                "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" =>'La carpeta fue creada hace 24HS Etapa 3',
-                "FECHA_AVISO" => $fecha_aviso,
-                "ID_TRAZA"=>  $id_traza[0]['ID'],
-                "ID_NOTIFICAR" => "",
-                  "CARTERADE" => $obj['CARTERADE'],
-                "HAB"=>1
-                );
-            
-        }
-//        print_r($arr_semaforo);die(" notificaciones_model");
+//                "ID_NOTIFICAR" => 62,// GERENTE DE OPERACIONES
+//                "CARTERADE" => $obj['CARTERADE'],
+//                "HAB"=>1
+//                );
+//        }
+        $text_aMostrar = ">> ".$carterade." <<";
+        $obj['CARTERADE'] = $carterade;
         $iid = $this->_db->insert("fid_traza",$obj);
-
-        $this->_db->insert('fid_semaforo', $arr_semaforo);
+        log_this('insert_traza_carterade.log',$this->_db->last_query());
+    //   log_this('insert_traza_carterade_print.log',print_r($obj,1));
+//       log_this('insert_traza_carterade_text.log',print_r($text_aMostrar,1));
+    //      $this->_db->insert('fid_semaforo', $arr_semaforo);
         return $iid;
     }
     function send_traza_sem($obj,$destino){
         
-  
+        $id_usuario = $_SESSION["USERADM"];
+
+        $array_usuario = $this->_db->query("select USERNAME from fid_usuarios where id='".$id_usuario."'");
+        
         $fecha_actual = date("Y-m-d H:i:s");
         $id_op = $obj['ID_OPERACION'];
         $arr_datos_traza = array(
@@ -232,17 +101,21 @@ $AVISAR_GERENTE = $this->_db->query("SELECT ID_NOTIFICAR FROM fid_semaforo WHERE
                     "CARTERADE"=>$destino[0]['CARTERADE'],
                     "ETAPA"=>$obj['ETAPA'],
                     "DESTINO"=>"",
-                    "DESCRIPCION"=>$obj['DESCRIPCION'],
+                    "DESCRIPCION"=>$obj['DESCRIPCION'].$array_usuario['USERNAME'],
                     "FECHA"=> $fecha_actual,
                     "OBSERVACION"=> "AVISADO",
                     "ACTIVO"=> 0,
                     "ESTADO"=>3
                  );
-                  $this->_db->insert('fid_traza', $arr_datos_traza);
+//        print_r($arr_datos_traza);
+        $this->_db->insert('fid_traza', $arr_datos_traza);
                   $valor_activo=  array(
                     "ACTIVO"=> 0
                      );
-        $this->_db->update('fid_traza', $valor_activo, "ID='".$destino[0]['ID']."'");
+//                  echo $destino[0]['ID'];die("AAAAAAAAAAAA");
+//        $this->_db->update('fid_traza', $valor_activo, "ID='".$destino[0]['ID']."'");
+//        $this->_db->update('fid_traza', $valor_activo, "ACTIVO=1 AND ID='".$destino[0]['ID']."'");segundo
+        $this->_db->update('fid_traza', $valor_activo, "id_operacion='".$obj['ID_OPERACION']."' AND destino='".$id_usuario."' AND activo=1");
                   
     $iid = $this->_db->query("select ID from fid_traza order by id DESC LIMIT 1");
         return $iid;
