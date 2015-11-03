@@ -2163,13 +2163,17 @@ class carpetas_model extends main_model {
     
     
     
-    
+//    
+//    
+//    function insert_control_inicial($arr_semaforo) {  
+//        $obj_insert = $this->_db->insertar_traza_semaforo($arr_semaforo);
+//    }
     
     function lanzar_alertas() {  
 /*Busca fechas vencidas*/
         $fechaAct = date('Y-m-d H:i:s');
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1");
-//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-10-31 17:30:45'  AND HAB=1");
+//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1");
+        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-04 17:30:45'  AND HAB=1");
 //        print_r($rtn);die();
         return $rtn;
     }
@@ -2218,11 +2222,14 @@ class carpetas_model extends main_model {
         return $rtn;
     }
     function avisar_gerente($operacion){
-        $rtn = $this->_db->query("SELECT ID_NOTIFICAR FROM fid_semaforo "
-                . "WHERE id_carpeta = '".$operacion."' AND id_etapa = 2");
-        
-        
-        return $rtn;
+//        $rtn = $this->_db->query("SELECT ID_NOTIFICAR FROM fid_semaforo "
+//                . "WHERE id_carpeta = '".$operacion."' AND id_etapa = 2");
+////        print_r($rtn);die("DE ACA SACER EL ID");
+//        $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
+//                . "WHERE id= '".$rtn[0]['ID_NOTIFICAR']."'");
+        $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
+                . "WHERE id_area=2 AND id_puesto=2");
+        return $rtn_n;
     }
     function notificar_gerente(){
         $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=19 AND id_area=4");
@@ -2233,12 +2240,12 @@ class carpetas_model extends main_model {
         return $rtn;
     }
     function notificar_gerente_administracion(){
-        $rtn = $this->_db->query("SELECT * FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
         return $rtn;
     }
     
      function gerente_legales() {  
-        $rtn = $this->_db->query("SELECT ID FROM fid_usuarios WHERE id_rol=12 AND id_area=5");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=12 AND id_area=5");
         return $rtn;
     }
      function jefe_administracion() {  
