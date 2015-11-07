@@ -589,6 +589,7 @@ class creditos extends main_controller{
                 $_total_creditos += $total_credito;
                 $monto_mora = 0;
                 $cobranzas = 0;
+                $saldo_credito = 0;
                 
                 /*if ($item['PAGOS']) {
                     $arr_pagos = array();
@@ -638,6 +639,10 @@ class creditos extends main_controller{
                         if ($cc['FECHA_PAGO'] > 0) {
                             $capital_pagado += $cc['CAPITAL_CUOTA'];
                         }
+                        
+                        if ( $cc['CUOTA_AL_DIA'] > 0.1) {
+                            $saldo_credito += $cc['CUOTA_AL_DIA'];
+                        }
                     }
                 }
                 
@@ -650,14 +655,16 @@ class creditos extends main_controller{
                 $arr['CUIT'] = $item['CUIT'];
                 $arr['ID'] = $item['ID'];
                 $arr['DIRECCION'] = $item['DIRECCION'];
+                $arr['COD_POSTAL'] = $item['COD_POSTAL'];
                 $arr['PROVINCIA'] = $item['PROVINCIA'];
                 $arr['LOCALIDAD'] = $item['LOCALIDAD'];
                 $arr['FIDEICOMISO'] = $item['FIDEICOMISO'];
                 $arr['MONTO_CREDITO'] = $item['MONTO_CREDITO'];
                 $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
+                $arr['SALDO_CREDITO'] = number_format($saldo_credito, 2, ".", "");
                 $arr['CUOTAS_IMPAGAS'] = $item['CUOTAS_RESTANTES'];
                 $arr['DIAS_MORAS'] = (strtotime(date('Y-m-d')) - $item['FECHA_VENCIMIENTO']) / (3600 * 24) ;
-                $arr['FECHA_1VENC_IMP'] = date('Y-m-d', $item['FECHA_VENCIMIENTO']);
+                $arr['FECHA_1VENC_IMP'] = date('Y-m-d H:i:s', $item['FECHA_VENCIMIENTO']);
                 $arr_reporte[] = $arr;
             }
             

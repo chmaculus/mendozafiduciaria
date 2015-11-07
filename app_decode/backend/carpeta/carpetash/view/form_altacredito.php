@@ -301,6 +301,16 @@
                 <?php endif; ?>
             </div>
         </div>
+        <div class="elem elem_med_alta save">
+            <label>Tasa Gastos:</label>
+            <div class="indent formtext">
+                <?php if(isset($obj_credito["T_GASTOS"])): ?>
+                    <input data-campo="T_GASTOS" type="text" class="" title="Ingrese tasa de gastos" id="alta_t_gastos" value="<?php echo isset($obj_credito["T_GASTOS"])?$obj_credito["T_GASTOS"]:"" ?>">
+                <?php else: ?>
+                    <input data-campo="T_GASTOS" type="text" class="" title="Ingrese tasa de gastos" id="alta_t_gastos" value="<?php echo isset($cad_obj["cad_obj"][0]["TASA_GASTOS"])?$cad_obj["cad_obj"][0]["TASA_GASTOS"]:"" ?>">
+                <?php endif; ?>
+            </div>
+        </div>
         
         
         <div class="elem elem_med_alta">

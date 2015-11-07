@@ -241,6 +241,13 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp total" colspan="2"><?=number_format($total_pagado + $iva_pagado,2,",",".")  ?></td>
                     <td class="dato-esp total" colspan="2"><?=number_format(str_replace(",", "", $total_a_pagar),2,",",".")  ?></td>
                 </tr>
+                <tr class="totales-cuota-c">
+                    <td class="titulo-esp ">TOTALES PRÓRROGA</td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_compensatorio + $total_capital + $iva_compensatorio_total,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_subsidio + $iva_subsidiado,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($pagado_compenstorio + $pagado_capital + $iva_compensatorio_pagado,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format(str_replace(",", "", ($total_compensatorio + $total_capital + $iva_compensatorio_total)-($pagado_compenstorio + $pagado_capital + $iva_compensatorio_pagado)),2,",",".")  ?></td>
+                </tr>
             </table>
             
         </div>
@@ -336,4 +343,5 @@ foreach($cuotas as $kk=>$cuota){
 <div id="btn-caducar">
     <input type="button"  onclick="caducarCuota()" value="Emitir una cuota">
     <input type="button"  onclick="caducar()" value="Refinanciar" style="margin-left:10px">
+    <input type="button"  onclick="prorroga()" value="Emitir Prórroga" style="margin-left:10px">
 </div>

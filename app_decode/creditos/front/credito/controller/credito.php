@@ -320,6 +320,8 @@ class credito extends main_controller{
         $total_int_mor_pun_iva = 0;
         $total_saldo_mora = 0;
         $total_saldo = 0;
+        $total_comp_act = 0;
+        $total_comp_act_iva = 0;
         
         $desembolsos = $this->mod->get_desembolsos();
         
@@ -337,6 +339,17 @@ class credito extends main_controller{
                 $cuota['INT_COMPENSATORIO'] = number_format($item['COMPENSATORIO']['TOTAL'], 2, ",", "");
                 $total_comp += $item['COMPENSATORIO']['TOTAL'];
                 $cuota['INT_COMPENSATORIO_IVA'] = number_format($item['IVA_COMPENSATORIO']['TOTAL'], 2, ",", "");
+                if (isset($item['COMPENSATORIO_ACT'])) {
+                    $cuota['COMPENSATORIO_ACT'] = number_format($item['COMPENSATORIO_ACT'], 2, ",", "");
+                    $total_comp_act += $item['COMPENSATORIO_ACT'];
+                    
+                    $iva_comp_act = $item['COMPENSATORIO_ACT'] * $item['IVA_COMPENSATORIO']['TOTAL'] / $item['COMPENSATORIO']['TOTAL'];
+                    $total_comp_act_iva += $iva_comp_act;
+                    $cuota['COMPENSATORIO_ACT_IVA'] = number_format($iva_comp_act, 2, ",", "");
+                } else {
+                    $cuota['COMPENSATORIO_ACT'] = '';
+                    $cuota['COMPENSATORIO_ACT_IVA'] = '';
+                }
                 $total_iva_comp += $item['IVA_COMPENSATORIO']['TOTAL'];
                 $pagos = $item['CAPITAL']['TOTAL'] + $item['COMPENSATORIO']['TOTAL'] + $item['IVA_COMPENSATORIO']['TOTAL'];
                 $total_cuota += $pagos;
@@ -378,6 +391,8 @@ class credito extends main_controller{
         $totales = array();
         $totales['INT_COMPENSATORIO'] = number_format($total_comp, 2, ",", "");
         $totales['INT_COMPENSATORIO_IVA'] = number_format($total_iva_comp, 2, ",", "");
+        $totales['COMPENSATORIO_ACT'] = number_format($total_comp_act, 2, ",", "");
+        $totales['COMPENSATORIO_ACT'] = number_format($total_comp_act_iva, 2, ",", "");
         $totales['CUOTA'] = number_format($total_cuota, 2, ",", "");
         $totales['PAGO_MONTO'] = number_format($pago_total, 2, ",", "");
         $totales['SALDO_CUOTA'] = number_format($saldo_cuota, 2, ",", "");

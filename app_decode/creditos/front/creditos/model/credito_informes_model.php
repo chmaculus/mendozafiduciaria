@@ -427,7 +427,7 @@ class credito_informes_model extends credito_model {
         $fecha = strtotime(date('Y-m-d'));
         
         $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD, '
-                . 'cc.CUOTAS_RESTANTES, cc.FECHA_VENCIMIENTO');
+                . 'cc.CUOTAS_RESTANTES, cc.FECHA_VENCIMIENTO, cc.CUOTA_AL_DIA');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
         $this->_db->where("CREDITO_ESTADO NOT IN (".ESTADO_CREDITO_ELIMINADO . ", " . ESTADO_CREDITO_CADUCADO .")" . $sql);
         $this->_db->join("fid_creditos_cuotas cc", "c.ID=cc.ID_CREDITO AND cc.FECHA_PAGO=0 AND FECHA_VENCIMIENTO<$fecha", "inner");

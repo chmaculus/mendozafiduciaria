@@ -273,7 +273,9 @@ function init_grid(id_usuario,tipo){
                         
     var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
 
-        if (value == 'CADUCADO') {
+        if (value == 'PRORROGADO') {
+            return '<div style="margin:4px;font-weight:bold;">' + value + '</div>';
+        } else if (value == 'CADUCADO') {
             return '<div style="margin:4px;color:#ff0000;font-weight:bold;">' + value + '</div>';
         }
         else {
@@ -631,11 +633,13 @@ function reporte4() {
             { name: 'CUIT', type: 'string' },
             { name: 'ID', type: 'number' },
             { name: 'DIRECCION', type: 'string' },
+            { name: 'COD_POSTAL', type: 'string' },
             { name: 'PROVINCIA', type: 'string' },
             { name: 'LOCALIDAD', type: 'string' },
             { name: 'FIDEICOMISO', type: 'string' },
             { name: 'MONTO_CREDITO', type: 'number' },
             { name: 'SALDO_CAPITAL', type: 'number' },
+            { name: 'SALDO_CREDITO', type: 'number' },
             { name: 'FECHA_1VENC_IMP', type: 'date' },
             { name: 'DIAS_MORAS', type: 'number' },
             { name: 'CUOTAS_IMPAGAS', type: 'number' }
@@ -685,11 +689,13 @@ function reporte4() {
             { text: 'CUIT', datafield: 'CUIT', width: '10%', groupable:false, filterable: false },
             { text: 'CREDITO', datafield: 'ID', width: '5%', hidden : false, filterable : false },
             { text: 'DIRECCION', datafield: 'DIRECCION', width: '10%', hidden : false, filterable : false },
+            { text: 'C.P.', datafield: 'COD_POSTAL', width: '5%', hidden : false, filterable : false },
             { text: 'PROVINCIA', datafield: 'PROVINCIA', width: '10%', hidden : false, filterable : false },
             { text: 'LOCALIDAD', datafield: 'LOCALIDAD', width: '10%', hidden : false, filterable : false },
             { text: 'FIDEICOMISO', datafield: 'FIDEICOMISO', width: '10%', hidden : false, filterable : false },
             { text: 'MONTO DEL CREDITO', datafield: 'MONTO_CREDITO', width: '10%', hidden : false, filterable : false },
             { text: 'SALDO CAPITAL', datafield: 'SALDO_CAPITAL', width: '8%', hidden : false, filterable : false },
+            { text: 'SALDO CREDITO', datafield: 'SALDO_CREDITO', width: '8%', hidden : false, filterable : false },
             { text: 'FECHA VENC. 1ER CUOTA IMPAGA', datafield: 'FECHA_1VENC_IMP', cellsformat: 'dd/MM/yyyy', width: '10%', hidden : false, filterable : false },
             { text: 'DIAS MORAS', datafield: 'DIAS_MORAS', width: '10%', hidden : false, filterable : false },
             { text: 'CUOTAS IMPAGAS', datafield: 'CUOTAS_IMPAGAS', width: '10%', hidden : false, filterable : false }
@@ -824,6 +830,12 @@ function get_credito(edit){
         var estado = $('.jqx-grid-cell-selected.credEst').text();
         if (estado == 'CADUCADO') {
             jConfirm("Desea continuar?","Crédito Caducado", function(r){
+                if (r) {
+                    _get_credito(edit);
+                }
+            });
+        } if (estado == 'PRORROGADO') {
+            jConfirm("Desea continuar?","Crédito Prorrogado", function(r){
                 if (r) {
                     _get_credito(edit);
                 }

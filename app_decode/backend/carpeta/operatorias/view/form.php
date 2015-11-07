@@ -175,6 +175,17 @@
                   </div>
 
                   <div class="elem elem_med">
+                      <label>Tasa Gastos:</label>
+                      <div class="indent formtext">
+                          <input type="text" class="" title="Ingrese Tasa de Gastos" id="tasa_gastos" value="<?php echo isset($entidad["TASA_GASTOS"])?$entidad["TASA_GASTOS"]:"" ?>"> 
+                      </div>
+                  </div>
+                  
+                  <div class="elem elem_med">
+                      <br /><br />
+                  </div>
+
+                  <div class="elem elem_med">
                       <label>Desembolsos:</label>
                       <div class="indent formtext">
                           <div id='desembolsos'></div>
@@ -215,8 +226,11 @@
 
                   <div class="elem elem_med">
                       <label>Impactar cambio de tasas en créditos:</label>
-                      <div class="indent formtext">
-                          <input type="checkbox" id="imp_tasas"> 
+                      <div class="indent formtext impt">
+                          <input type="checkbox" id="imp_comp"> Int.Comp.<br />
+                          <input type="checkbox" id="imp_mora"> Int.Mor.<br />
+                          <input type="checkbox" id="imp_pun"> Int.Pun.<br />
+                          <input type="checkbox" id="imp_subs"> Int.Subs.
                       </div>
                   </div>
 

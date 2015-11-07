@@ -6,7 +6,7 @@ class formaltabase extends main_controller {
         $this->mod = $this->model("formalta_model");
     }
 
-    function init($id = 0, $credito_caduca=0, $fecha_caduca=0, $caducidad=FALSE) {
+    function init($id = 0, $credito_caduca=0, $fecha_caduca=0, $caducidad=FALSE, $prorroga=FALSE) {
 
         if (!isset($_SESSION["USERADM"]))
             header("Location: " . '/' . URL_PATH);
@@ -29,7 +29,7 @@ class formaltabase extends main_controller {
         );
 
         $datax = array();
-        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad);
+        $datax['main'] = $this->_obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad, $prorroga);
         $datax['titulo'] = "Administracion";
         $datax['etiqueta_modulo'] = "Carpetas";
         $datax['name_modulo'] = $this->get_controller_name();
@@ -43,10 +43,10 @@ class formaltabase extends main_controller {
         //etapas
     }
 
-    function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad) {
+    function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad, $prorroga) {
         
         $ultimo = $this->mod->get_next_id();
-        
+
         if ($credito_caduca && $this->mod->set_credito_active($credito_caduca)) {
             $this->mod->set_version_active();
             $this->mod->renew_datos();
@@ -64,12 +64,16 @@ class formaltabase extends main_controller {
             $cuotas_restantes = 0;
             
             $credito["ID"] = $ultimo;
-            $credito["MONTO_CREDITO"] = $ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'];
+            if ($prorroga) {
+                $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
+            } else {
+                $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
+            }
             $credito['INTERES_VTO'] = date('Y-m-d', strtotime(date('Y-m-d'))+(30*3600*24));
             
             if ($caducidad) {
                 $cuotas_restantes = 1;
-                $credito['INTERES_VTO'] = date('Y-m-d',$ret_reuda['cuotas'][0]['_INFO']['HASTA']);
+                $credito['INTERES_VTO'] = date('Y-m-d',$fecha_caduca);
                 $credito['DESEMBOLSOS'] = array(
                     array(
                         'MONTO' => $credito['MONTO_CREDITO'],
@@ -78,8 +82,14 @@ class formaltabase extends main_controller {
                 );
             }
             
+            if ($prorroga) {
+                $credito['T_COMPENSATORIO'] = 0;
+                $cuotas_restantes = $this->mod->cuotas_restantes_prorroga();
+            }
+            
             $credito["INTERES_CUOTAS"] = $credito["CAPITAL_CUOTAS"] = $cuotas_restantes;
             $credito["ID_CADUCADO"] = $credito_caduca;
+            $credito['PRORROGA'] = $prorroga; //para poner otro estado
             
         } else {
 
@@ -101,6 +111,7 @@ class formaltabase extends main_controller {
                 "T_PUNITORIO" => 24,
                 "T_BONIFICACION" => 0,
                 "T_MORATORIO" => 12,
+                "T_GASTOS" => 0,
                 "INTERES_CUOTAS" => 6,
                 "INTERES_VTO" => date("Y-m-d"),
                 "INTERES_PERIODO" => 09,
@@ -412,6 +423,7 @@ class formaltabase extends main_controller {
         $data['plazo_pago'] = $_POST['plazo_pago'];
         $data['por_int_punitorio'] = $_POST['int_punitorio'];
         $data['por_int_moratorio'] = $_POST['int_moratorio'];
+        $data['por_int_gastos'] = $_POST['int_gastos'];
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
         $data['TIPO'] = 0;
@@ -469,8 +481,8 @@ class formaltabase extends main_controller {
         $data['monto'] = $data['total_credito'];//cambio porque guarda mal el monto total del crédito
 
         $ret = $this->mod->generar_evento($data, false, $fecha);
-
-
+        
+        
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
         $this->mod->generar_cuotas($ret, 0, $retorno);
         
@@ -503,7 +515,12 @@ class formaltabase extends main_controller {
 
         $this->mod->save_operacion_credito();
         if ($_POST['credito_caduca'] || $_SESSION['simulacion_credito']) {
-            $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            if($_POST['prorroga']) {
+                $this->mod->prorrogar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            } else {
+                $this->mod->caducar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);
+            }
+            
             $versiones = $this->mod->get_versiones();
             $version = $versiones[0]['value'];
             
