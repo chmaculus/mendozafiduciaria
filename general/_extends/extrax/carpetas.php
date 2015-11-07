@@ -1,6 +1,6 @@
 <?php
     require_once('connect.php');
-    
+
     if (isset($_GET["accion"]) && $_GET["accion"]=='getFacturasCuva' ){
 
         $word = isset($_GET["name_startsWith"])?$_GET["name_startsWith"]:"";
@@ -274,8 +274,8 @@
         $cnn->where( $cad_like );
         $rtn = $cnn->get_tabla("fid_operaciones o");
         
-        //file_put_contents('qqqq.log', $cnn->last_query() );
-        
+//        file_put_contents('traeCARPETASSSS.log', $cnn->last_query() );
+//         log_this('qqqqqq.log', $rtn->last_query() );
         echo trim(json_encode($rtn?$rtn:array()));
         die();
     }

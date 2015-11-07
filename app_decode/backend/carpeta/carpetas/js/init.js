@@ -7633,32 +7633,32 @@ function agregar_nota(idobjeto, ver){
             }
         });
 }
-
-var inter = function(){
-             
-    setInterval(
-        function() {
-            poll()
-        }, 1000 * 10 * 1);
- }
-    
-//var poll = function(){
- function poll(){
-    $.ajax({
-       url: _carpetas.URL + "/x_consultar_fechas",
-//       url : _carpetas.URL + "/x_getenviar_a1",
-        type : "post",
-        data : {
-        iduser:_USUARIO_SESION_ACTUAL
-        },
-        timeout: 10000,
-        dataType: 'html',
-         
-        success: function(respuesta){
-//            alert(respuesta);
-console.log(respuesta);
-        }
-    });
-};
- 
-inter();
+//
+//var inter = function(){
+//             
+//    setInterval(
+//        function() {
+//            poll()
+//        }, 1000 * 10 * 1);
+// }
+//    
+////var poll = function(){
+// function poll(){
+//    $.ajax({
+//       url: _carpetas.URL + "/x_consultar_fechas",
+////       url : _carpetas.URL + "/x_getenviar_a1",
+//        type : "post",
+//        data : {
+//        iduser:_USUARIO_SESION_ACTUAL
+//        },
+//        timeout: 10000,
+//        dataType: 'html',
+//         
+//        success: function(respuesta){
+////            alert(respuesta);
+//console.log(respuesta);
+//        }
+//    });
+//};
+// 
+//inter();

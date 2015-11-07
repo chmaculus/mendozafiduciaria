@@ -430,7 +430,8 @@ function notifMain( iid ){
                         OBSERVACION: obst,
                         DESCRIPCION: dest,
                         ETAPA:etapa,
-                        ETAPA_REAL:etapa
+                        ETAPA_REAL:etapa,
+                        SEM:0
                     }
                     $.ajax({
                         url : 'backend/notificaciones/x_send_traza',
@@ -600,22 +601,39 @@ function notifMain( iid ){
 }
 
 
-function actualizaNotif(p_auto){
-    p_auto || ( p_auto = '0' );
+function actualizaNotif(p_auto) {
+    p_auto || (p_auto = '0');
     $.ajax({
-        url : 'backend/notificaciones/x_get_carpetas_pendientes_cont',
-        type : "post",
-        async:false,
-        success : function(data){
-            if(data>0){
-                $(".notif").html('('+data+')');
-                $(".notif").attr("data-notificaciones",data);
-                if (p_auto==1){
+        url: 'backend/notificaciones/x_get_carpetas_pendientes_cont',
+        type: "post",
+        async: false,
+        success: function (data) {
+
+            
+            $.ajax({
+                url: 'backend/carpeta/carpetas/x_consultar_fechas',
+                type: "post",
+                data: {
+                    iduser: _USUARIO_SESION_ACTUAL
+                },
+//                timeout: 10000,
+                dataType: 'html',
+                success: function (respuesta) {
+//                    alert("respuesta");
+                    console.log(respuesta);
+                }
+            });
+            
+
+            if (data > 0) {
+                $(".notif").html('(' + data + ')');
+                $(".notif").attr("data-notificaciones", data);
+                if (p_auto == 1) {
                     $.fancybox.close();
                     $(".notif").trigger('click');
                 }
             }
-            else if(data==-1){
+            else if (data == -1) {
                 $(".notif").html('');
             }
         }

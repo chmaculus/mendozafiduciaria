@@ -1210,7 +1210,8 @@ class carpetas_model extends main_model {
                 "ETAPA_REAL" => '1',
                 "FECHA" => $fecha_actual,
                 "ACTIVO" => $activo_traza,
-                "ETAPA_ORIGEN" => 0
+                "ETAPA_ORIGEN" => 0,
+                "SEM"=>0
             );
             
             $this->_db->insert('fid_traza', $arr_traza);
@@ -1797,7 +1798,8 @@ class carpetas_model extends main_model {
             "ETAPA" => $etapa_origen,
             "ETAPA_ORIGEN" => $etapa_origen,
             "FECHA" => $fecha_actual,
-            "LEIDO" => 1
+            "LEIDO" => 1,
+            "SEM"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza);
 
@@ -1850,7 +1852,8 @@ class carpetas_model extends main_model {
             "ETAPA" => $etapa_origen,
             "ETAPA_ORIGEN" => $etapa_origen,
             "FECHA" => $fecha_actual,
-            "LEIDO" => 1
+            "LEIDO" => 1,
+            "SEM"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza);
 
@@ -1898,7 +1901,8 @@ class carpetas_model extends main_model {
             "ETAPA" => $etapa_origen,
             "ETAPA_ORIGEN" => $etapa_origen,
             "FECHA" => $fecha_actual,
-            "LEIDO" => 0
+            "LEIDO" => 0,
+            "SEM"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza);
 
@@ -1947,7 +1951,8 @@ class carpetas_model extends main_model {
             "FECHA" => $fecha_actual,
             "NOTA" => $idnr,
             "NOTIF" => 1,
-            "LEIDO" => 1
+            "LEIDO" => 1,
+            "SEM"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza);
         //return $rtn;
@@ -1987,7 +1992,8 @@ class carpetas_model extends main_model {
             "FECHA" => $fecha_actual,
             "NOTA" => $idnr,
             "NOTIF" => 1,
-            "LEIDO" => 1
+            "LEIDO" => 1,
+            "SEM"=>0
         );
         $this->_db->insert('fid_traza', $arr_traza);
         //return $rtn;
@@ -2169,11 +2175,11 @@ class carpetas_model extends main_model {
 //        $obj_insert = $this->_db->insertar_traza_semaforo($arr_semaforo);
 //    }
     
-    function lanzar_alertas() {  
+    function lanzar_alertas($idUser) {  
 /*Busca fechas vencidas*/
         $fechaAct = date('Y-m-d H:i:s');
-//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1");
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-04 17:30:45'  AND HAB=1");
+        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
+//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-03 17:30:45'  AND HAB=1");
 //        print_r($rtn);die();
         return $rtn;
     }
@@ -2264,18 +2270,18 @@ class carpetas_model extends main_model {
     function guardar_traza_alertas($obj) {
 /* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha*/        
 /* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion*/     
-    $valor_id = $obj[0]['ID'];  
-    $valores_insert = $obj[0]['ID_NOTIFICAR'];
+//    $valor_id = $obj[0]['ID'];  
+//    $valores_insert = $obj[0]['ID_NOTIFICAR'];
     $fechaActual = date("Y-m-d H:i:s");
-    $contador = 0;
+//    $contador = 0;
     foreach ($obj as $value) {
-        $contador = $contador + 1;
+//    $contador = $contador + 1;
+    $valor_id = $value['ID'];  
+    $valores_insert = $value['ID_NOTIFICAR'];
     $fecha_aviso = $value['FECHA_AVISO'];
     $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fecha_aviso ) ) ;
     $fecha_repetir = date ( 'Y-m-j H:i:s' , $fecha_repetir );
-    
 //    print_r($obj);die("VIENA LA FECHAAAAAAAAA");
-    
     $arr_datos_traza = array(
                     "ID_OPERACION"=> $value['ID_CARPETA'],
                     "CARTERADE"=>$value['CARTERADE'],
@@ -2284,16 +2290,24 @@ class carpetas_model extends main_model {
                     "DESCRIPCION"=>$value['MENSAJE_ALERTA'],
                     "FECHA"=> $fechaActual,
                     "OBSERVACION"=> "AVISO",
-                    "ESTADO"=>22
+                    "ESTADO"=>22,
+                    "SEM"=>1
                  );
                 $arr_datos_sem = array(
                     "HAB"=>2,
                     "FECHA_REPETIR"=>$fecha_repetir
                 );
-            $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
+                
+//                echo " valuuuuuuuuuuueeeeeeeeee ";
+//print_r($value);
+                $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
             $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$valor_id."'");
+//                echo $valor_id." ------------ ";
+//print_r($arr_datos_traza);
+//print_r($arr_datos_sem);
             }
-            echo "CONTADOR = ".$contador;
+//die(" LPMMMMMMMMMMMMMMMMM 2aaa// ");
+//            echo "CONTADOR = ".$contador;
 }
     function guardar_traza_alertas_repetir($obj_repetir) {
     $valores_insert = $obj_repetir[0]['ID_NOTIFICAR'];
@@ -2318,7 +2332,8 @@ class carpetas_model extends main_model {
                     "DESCRIPCION"=>"Han transcurrido mas de 24hs a partir del tiempo limite.",
                     "FECHA"=> $fechaActual,
                     "OBSERVACION"=> "AVISO",
-                    "ESTADO"=>22
+                    "ESTADO"=>22,
+                    "SEM"=>1
                     );
                 $arr_datos_sem = array(
                     "FECHA_REPETIR"=>$fecha_repetir

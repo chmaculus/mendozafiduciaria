@@ -105,7 +105,8 @@ class notificaciones_model extends main_model{
                     "FECHA"=> $fecha_actual,
                     "OBSERVACION"=> "AVISADO",
                     "ACTIVO"=> 0,
-                    "ESTADO"=>3
+                    "ESTADO"=>3,
+                    "SEM"=>1
                  );
 //        print_r($arr_datos_traza);
         $this->_db->insert('fid_traza', $arr_datos_traza);
