@@ -228,3 +228,4 @@ iframe{
 #action input{height: 30px;margin-top:10px}
 #items .dd{cursor:pointer;font-weight:bold}
 #items .tit{font-weight:bold;font-size:1.1em}
+.subtot .net,.subtot .ivat,.subtot .tt{border-top:1px solid #777}

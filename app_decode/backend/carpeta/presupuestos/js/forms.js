@@ -34,7 +34,7 @@ function actualizar_total() {
     var total = 0;
     var totaln = 0;
     var totali = 0;
-    var fila;
+    
     items = [];
     var it;
     $("#items").hide();

@@ -21,17 +21,17 @@ $(document).ready(function () {
 
         switch (top) {
             case 'add':
-                form_presupuesto(0);
+                if (_permiso_alta == 0) {
+                    sin_permisos();
+                    return false;
+                }
+                form_presupuesto(0, 0);
                 break;
             case 'edi':
-                var selectedrowindex = $("#jqxgrid").jqxGrid('getselectedrowindex');
-                mydata = $('#jqxgrid').jqxGrid('getrowdata', selectedrowindex);
-                $("#wpopup").hide();
-                if (mydata && mydata.ID_PRES !== 'undefined') {
-                    form_presupuesto(mydata.ID_PRES);
-                } else {
-                    jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function () {});
-                }
+                edit_presupuesto(0);
+                break;
+            case 'view':
+                edit_presupuesto(1);
                 break;
             case 'lis':
                 $("#wpopup").hide();
@@ -86,15 +86,6 @@ function init_presupuesto() {
 function add_presupuesto() {
     $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
 
-    if (_permiso_alta == 0) {
-
-        jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
-            $.unblockUI();
-            switchBarra();
-        });
-        return false;
-    }
-
     $.ajax({
         url: _presupuestos.URL + "/x_getform",
         type: "post",
@@ -106,29 +97,8 @@ function add_presupuesto() {
     });
 }
 
-function form_presupuesto(id_pres) {
+function form_presupuesto(id_pres, ver) {
     $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
-
-    var ver = $(this).data('ver');
-    ver || (ver = '-1');
-
-    if (ver != -1) {
-        if (_permiso_ver == 0 && ver) {
-            jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
-                $.unblockUI();
-                switchBarra();
-            });
-            return false;
-        }
-    } else {
-        if (_permiso_modificacion == 0) {
-            jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
-                $.unblockUI();
-                switchBarra();
-            });
-            return false;
-        }
-    }
 
     $.ajax({
         url: _presupuestos.URL + "/x_getform",
@@ -139,17 +109,25 @@ function form_presupuesto(id_pres) {
         success: function (data) {
             $.unblockUI();
             $("#jqxgrid").hide();
-            $("#wpopup").html(data).show();
+            $("#wpopup").html(data);
+            if (id_pres) {
+                if (ver == 1) {
+                    $('#frmagregar .title-grid').html('Ver Presupuesto');
+                    $("#frmagregar hr, #item,#send,#action,#btnClear").hide();
+                } else {
+                    $('.title-grid').html('Editar Presupuesto');
+                }
+            } else {
+                $('.title-grid').html('Agregar Presupuesto');
+            }
+            $("#wpopup").show();
         }
     });
 }
 
 function del_presupuesto() {
     if (_permiso_baja == 0) {
-        jAlert('Usted no tiene Permisos para ejecutar esta acción', $.ucwords(_etiqueta_modulo), function () {
-            $.unblockUI();
-            switchBarra();
-        });
+        sin_permisos();
         return false;
     }
 
@@ -193,6 +171,11 @@ function del_presupuesto() {
 }
 
 function exp_presupuesto() {
+    if (_permiso_exportar == 0) {
+        sin_permisos();
+        return false;
+    }
+
     $.ajax({
         url: _presupuestos.URL + "/x_getexportar",
         type: "post",
@@ -236,5 +219,29 @@ function exp_presupuesto() {
             });
 
         }
+    });
+}
+
+function edit_presupuesto(ver) {
+    if ((ver && _permiso_ver == 0) || (!ver && _permiso_modificacion == 0)) {
+        sin_permisos();
+        return false;
+    }
+
+    var selectedrowindex = $("#jqxgrid").jqxGrid('getselectedrowindex');
+    mydata = $('#jqxgrid').jqxGrid('getrowdata', selectedrowindex);
+    $("#wpopup").hide();
+    if (mydata && mydata.ID_PRES !== 'undefined') {
+        form_presupuesto(mydata.ID_PRES, ver);
+    } else {
+        jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function () {
+        });
+    }
+}
+
+function sin_permisos() {
+    jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
+        $.unblockUI();
+        switchBarra();
     });
 }

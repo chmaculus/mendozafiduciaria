@@ -4,7 +4,7 @@
     <form method="post" enctype="multipart/form-data" id="customForm" onsubmit="return false;" >
         <input type="hidden" id="presupuesto_id" value="<?= (isset($presupuesto) && $presupuesto && $items) ? $id : ''; ?>" />
         <div class="grid-1" id="frmagregar">
-            <div class="title-grid"><div id="label_action">Agregar</div>Presupuesto2</div>
+            <div class="title-grid">Presupuesto</div>
             <div class="content-gird">
                 <div class="form">
                     <div id="items" <?= (isset($presupuesto) && $presupuesto && $items) ? '' : 'style="display:none"' ?>>
