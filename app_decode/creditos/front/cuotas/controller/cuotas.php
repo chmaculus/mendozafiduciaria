@@ -1121,7 +1121,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         
             }
             
-            if ($i%4 > 0){
+            if ($i%7 > 0){
                     $html_page = '
                         <table class="newpage"  >
                             <tr class="header"><td class="c8" colspan="8"><div class="div-header">'.$header.'</div></td></tr>
