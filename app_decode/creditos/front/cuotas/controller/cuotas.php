@@ -895,7 +895,7 @@ class cuotas extends main_controller{
         border-bottom:1px solid black;
         font-size:9pt;
     }
-    
+
     .detalle td:nth-child(2){text-align:right;}
 
     .newpage{
@@ -910,7 +910,7 @@ class cuotas extends main_controller{
     }
     .div-header{
         padding-top:10mm;
-        height:30mm;
+        height:32mm;
         width: 210mm;
         display: block;
         overflow: hidden;
@@ -967,7 +967,7 @@ class cuotas extends main_controller{
     .end_cuota td{
         border-top:1px dotted #888;
     }
-    
+
     .div-footer span{
         font-size:8pt;
     }
@@ -1071,7 +1071,9 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             $page .= '<tr><td colspan="8">&nbsp;</td></tr>';
         
             foreach($cuotas as $cuota){
-                
+                if (!isset($cuota['IVA_GASTOS']['SALDO'])) {
+                    $cuota['IVA_GASTOS']['SALDO'] = 0;
+                }
                 $page .= '<tr class="cc"><td class="cc1"><table>';
                 $page .= '<tr class="detalle"><td colspan="7"><span class="datos">DETALLE - Cuota Nº'.($cant_cuotas  - $cuota['CUOTAS_RESTANTES'] + 1).'</span></td><td ><span class="datos">IMPORTE</span></td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7">Capital</td><td >$'.number_format($cuota['CAPITAL']['SALDO'],2,",",".").'</td></tr>';
@@ -1079,13 +1081,18 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $int_mor = $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO'];
                if ($int_mor< 0.10) $int_mor= 0;
                 $page .= '<tr class="detalle"><td colspan="7">Intereses Moratorios y Punitorios</td><td >$'.number_format($int_mor ,2,",",".").'</td></tr>';
-                $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) ;
+                $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) +  $cuota['IVA_GASTOS']['SALDO'];
                 if ($iva< 0.10) $iva= 0;
                 $page .= '<tr class="detalle"><td colspan="7">IVA</td><td >$'.number_format($iva,2,",",".").'</td></tr>';
-                $total = $cuota['CAPITAL']['SALDO'] +$cuota['COMPENSATORIO']['SALDO'] + $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO']+ $iva + $cuota['GASTOS_VARIOS']['SALDO'];
-                $page .= '<tr class="detalle"><td colspan="7">Gastos Varios</td><td >$'.number_format($cuota['GASTOS_VARIOS']['SALDO'],2,",",".").'</td></tr>';
-                
+                $total = $cuota['CAPITAL']['SALDO'] +$cuota['COMPENSATORIO']['SALDO'] + $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO']+ $iva;
+                if (isset($cuota['GASTOS_VARIOS']['SALDO'])) {
+                    $page .= '<tr class="detalle"><td colspan="7">Gastos Varios</td><td >$'.number_format($cuota['GASTOS_VARIOS']['SALDO'],2,",",".").'</td></tr>';
+                    $total += $cuota['GASTOS_VARIOS']['SALDO'];
+                } else {
+                    $cuota['GASTOS_VARIOS']['SALDO'] = 0;
+                }
 
+                
                 if ($total < 0.10) $total = 0;
                 $page .= '</table></td><td class="cc2"><table style="padding:15px 5px">';
                 
@@ -1099,7 +1106,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     <td colspan="2"  align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
                     </tr>
                     </table></td></tr>';
-                
+
                 $i++;
                 if ($i%7==0){
 
