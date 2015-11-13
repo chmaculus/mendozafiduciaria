@@ -47,12 +47,13 @@
     float: left;
     position: relative;
 }
-.especificaciones ul li span.dato-esp{
+.especificaciones ul li span.dato-esp, span.titulo-estado{
     width:100px;
+    text-align:right;
 }
+span.titulo-estado:nth-child(1){text-align:left;}
 .especificaciones ul li span.titulo-estado{
     font-weight: bold;
-    width:100px;
 }
 .especificaciones ul li span.titulo-esp.titulo-estado,
 .especificaciones ul li span.titulo-esp{

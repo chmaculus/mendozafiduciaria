@@ -88,6 +88,7 @@ class formalta extends main_controller {
             "T_PUNITORIO" => 24,
             "T_BONIFICACION" => 0,
             "T_MORATORIO" => 12,
+            "T_GASTOS" => 0,
             "INTERES_CUOTAS" => 6,
             "INTERES_VTO" => date("Y-m-d"),
             "INTERES_PERIODO" => 09,
@@ -138,11 +139,12 @@ class formalta extends main_controller {
         $data['plazo_pago'] = $_POST['plazo_pago'];
         $data['por_int_punitorio'] = $_POST['int_punitorio'];
         $data['por_int_moratorio'] = $_POST['int_moratorio'];
+        $data['por_int_gastos'] = $_POST['int_gastos'];
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
         $data['TIPO'] = 0;
         $data['iva'] = key_exists('iva', $_POST) ? $_POST['iva'] : 0.21;
-
+        
         $desembolsos = $_POST['desembolsos'];
         
         $plazo_compensatorio = $_POST['plazo_compensatorio'];
