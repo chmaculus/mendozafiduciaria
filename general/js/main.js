@@ -1,5 +1,6 @@
 var _meses = ["Enero", "Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Setiembre","Octubre","Noviembre","Diciembre"];
 
+var _ID_ADMIN;
 
 var getLocalization = function () {
 
@@ -608,22 +609,21 @@ function actualizaNotif(p_auto) {
         type: "post",
         async: false,
         success: function (data) {
-
-            
-            $.ajax({
-                url: 'backend/carpeta/carpetas/x_consultar_fechas',
-                type: "post",
-                data: {
-                    iduser: _USUARIO_SESION_ACTUAL
-                },
-//                timeout: 10000,
-                dataType: 'html',
-                success: function (respuesta) {
-//                    alert("respuesta");
-                    console.log(respuesta);
-                }
-            });
-            
+//         
+//            $.ajax({
+//                url: 'backend/carpeta/carpetas/x_consultar_fechas',
+//                type: "post",
+//                data: {
+//                    iduser: 56
+//                },
+////                timeout: 10000,
+////                dataType: 'html',
+//                success: function () {
+////                    alert("respuesta");
+////                    console.log(respuesta);
+//                }
+//            });
+//            
 
             if (data > 0) {
                 $(".notif").html('(' + data + ')');

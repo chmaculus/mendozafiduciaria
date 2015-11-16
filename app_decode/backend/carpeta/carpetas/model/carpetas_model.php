@@ -2077,7 +2077,7 @@ class carpetas_model extends main_model {
         //log_this('xxxxx.log', $this->_db->last_query() );
         //traza
         $obj_ed = array(
-            "ACTIVO" => "0"
+            "ACTIVO" => "0",
         );
         $this->_db->update("fid_traza", $obj_ed, "ID_OPERACION='" . $id . "'");
         //log_this('xxxxx.log', $this->_db->last_query() );
@@ -2175,14 +2175,14 @@ class carpetas_model extends main_model {
 //        $obj_insert = $this->_db->insertar_traza_semaforo($arr_semaforo);
 //    }
     
-    function lanzar_alertas($idUser) {  
-/*Busca fechas vencidas*/
-        $fechaAct = date('Y-m-d H:i:s');
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
-//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-03 17:30:45'  AND HAB=1");
-//        print_r($rtn);die();
-        return $rtn;
-    }
+//    function lanzar_alertas($idUser) {  
+///*Busca fechas vencidas*/
+//        $fechaAct = date('Y-m-d H:i:s');
+//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='".$fechaAct."'  AND HAB=1 AND ID_NOTIFICAR='".$idUser."'");
+////        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-03 17:30:45'  AND HAB=1");
+////        print_r($rtn);die();
+//        return $rtn;
+//    }
 
     function ver_semaforo($operacion,$etapa_actualizar) {  
          $rtn = $this->_db->query("SELECT  *  FROM fid_semaforo WHERE id_carpeta='".$operacion."' "
@@ -2197,15 +2197,15 @@ class carpetas_model extends main_model {
             }
 //         return $rtn;
     }
-    function repetir_alertas() {  
-    /*Busca fechas vencidas*/
-        $fechaAct = date('Y-m-d H:i:s');
-        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_REPETIR<='".$fechaAct."'  "
-                . "AND HAB=2");
-//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_REPETIR<='2015-11-01 17:30:45'  "
+//    function repetir_alertas() {  
+//    /*Busca fechas vencidas*/
+//        $fechaAct = date('Y-m-d H:i:s');
+//        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_REPETIR<='".$fechaAct."'  "
 //                . "AND HAB=2");
-        return $rtn;
-    }
+////        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_REPETIR<='2015-11-01 17:30:45'  "
+////                . "AND HAB=2");
+//        return $rtn;
+//    }
     
     function en_carterade($operacion){
         $rtn = $this->_db->query("SELECT CARTERADE FROM fid_traza "
@@ -2267,48 +2267,48 @@ class carpetas_model extends main_model {
         return $rtn;
     }
 
-    function guardar_traza_alertas($obj) {
-/* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha*/        
-/* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion*/     
-//    $valor_id = $obj[0]['ID'];  
-//    $valores_insert = $obj[0]['ID_NOTIFICAR'];
-    $fechaActual = date("Y-m-d H:i:s");
-//    $contador = 0;
-    foreach ($obj as $value) {
-//    $contador = $contador + 1;
-    $valor_id = $value['ID'];  
-    $valores_insert = $value['ID_NOTIFICAR'];
-    $fecha_aviso = $value['FECHA_AVISO'];
-    $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fecha_aviso ) ) ;
-    $fecha_repetir = date ( 'Y-m-j H:i:s' , $fecha_repetir );
-//    print_r($obj);die("VIENA LA FECHAAAAAAAAA");
-    $arr_datos_traza = array(
-                    "ID_OPERACION"=> $value['ID_CARPETA'],
-                    "CARTERADE"=>$value['CARTERADE'],
-                    "ETAPA"=>$value['ID_ETAPA'],
-                    "DESTINO"=>$valores_insert,
-                    "DESCRIPCION"=>$value['MENSAJE_ALERTA'],
-                    "FECHA"=> $fechaActual,
-                    "OBSERVACION"=> "AVISO",
-                    "ESTADO"=>22,
-                    "SEM"=>1
-                 );
-                $arr_datos_sem = array(
-                    "HAB"=>2,
-                    "FECHA_REPETIR"=>$fecha_repetir
-                );
-                
-//                echo " valuuuuuuuuuuueeeeeeeeee ";
-//print_r($value);
-                $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
-            $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$valor_id."'");
-//                echo $valor_id." ------------ ";
-//print_r($arr_datos_traza);
-//print_r($arr_datos_sem);
-            }
-//die(" LPMMMMMMMMMMMMMMMMM 2aaa// ");
-//            echo "CONTADOR = ".$contador;
-}
+//    function guardar_traza_alertas($obj) {
+///* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha*/        
+///* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion*/     
+////    $valor_id = $obj[0]['ID'];  
+////    $valores_insert = $obj[0]['ID_NOTIFICAR'];
+//    $fechaActual = date("Y-m-d H:i:s");
+////    $contador = 0;
+//    foreach ($obj as $value) {
+////    $contador = $contador + 1;
+//    $valor_id = $value['ID'];  
+//    $valores_insert = $value['ID_NOTIFICAR'];
+//    $fecha_aviso = $value['FECHA_AVISO'];
+//    $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fecha_aviso ) ) ;
+//    $fecha_repetir = date ( 'Y-m-j H:i:s' , $fecha_repetir );
+////    print_r($obj);die("VIENA LA FECHAAAAAAAAA");
+//    $arr_datos_traza = array(
+//                    "ID_OPERACION"=> $value['ID_CARPETA'],
+//                    "CARTERADE"=>$value['CARTERADE'],
+//                    "ETAPA"=>$value['ID_ETAPA'],
+//                    "DESTINO"=>$valores_insert,
+//                    "DESCRIPCION"=>$value['MENSAJE_ALERTA'],
+//                    "FECHA"=> $fechaActual,
+//                    "OBSERVACION"=> "AVISO",
+//                    "ESTADO"=>22,
+//                    "SEM"=>1
+//                 );
+//                $arr_datos_sem = array(
+//                    "HAB"=>2,
+//                    "FECHA_REPETIR"=>$fecha_repetir
+//                );
+//                
+////                echo " valuuuuuuuuuuueeeeeeeeee ";
+////print_r($value);
+//                $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
+//            $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$valor_id."'");
+////                echo $valor_id." ------------ ";
+////print_r($arr_datos_traza);
+////print_r($arr_datos_sem);
+//            }
+////die(" LPMMMMMMMMMMMMMMMMM 2aaa// ");
+////            echo "CONTADOR = ".$contador;
+//}
     function guardar_traza_alertas_repetir($obj_repetir) {
     $valores_insert = $obj_repetir[0]['ID_NOTIFICAR'];
     $fechaActual = date("Y-m-d H:i:s");

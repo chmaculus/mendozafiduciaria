@@ -86,6 +86,30 @@ class notificaciones extends main_controller{
     }
     
     function x_get_carpetas_pendientes_cont(){
+        /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
+          Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.
+          Si lo devuelve ingresa en guardar_traza_alertas donde ingresa una nueva traza para que se
+          muestre como notificacion y se actualiza el campo de semaforo HAB=2 para que indique que ya se aviso
+         */
+        $idUser = $_SESSION["USERADM"];
+//        echo "id " . $idUser;
+        $obj = $this->mod->lanzar_alertas($idUser);
+//        die(" DIE HERE");
+        $obj_repetir = $this->mod->repetir_alertas();
+//        print_r($obj);die(" SACAR HORA");
+//        print_r($obj);
+//       print_r($obj_repetir);
+        
+        if ($obj) {
+            $noti = $this->mod->guardar_traza_alertas($obj);
+        }
+//        else {
+//            echo "NO HACE NADA";
+//        }
+//        if ($obj_repetir) {
+//            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
+//        }
+        
         $rtn = $this->mod->get_carpetas_pendientes_cont($_SESSION["USERADM"]);
         echo $rtn?$rtn:'-1';
     }

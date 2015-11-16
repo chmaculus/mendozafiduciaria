@@ -528,28 +528,28 @@ class carpetas extends main_controller {
         echo trim(json_encode($obj ? $obj : array()));
     }
 
-    function x_consultar_fechas() {
-        /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
-          Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.
-          Si lo devuelve ingresa en guardar_traza_alertas donde ingresa una nueva traza para que se
-          muestre como notificacion y se actualiza el campo de semaforo HAB=2 para que indique que ya se aviso
-         */
-        $idUser = $_POST['iduser'];
-        $obj = $this->mod->lanzar_alertas($idUser);
-        $obj_repetir = $this->mod->repetir_alertas();
-//        print_r($obj);die(" SACAR HORA");
-//        print_r($obj);
-//        print_r($obj_repetir);
-//        die();
-        if ($obj) {
-            $noti = $this->mod->guardar_traza_alertas($obj);
-        } else {
-            echo "NO HACE NADA";
-        }
-//        if ($obj_repetir) {
-//            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
-//        }
-    }
+//    function x_consultar_fechas() {
+////        /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
+////          Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.
+////          Si lo devuelve ingresa en guardar_traza_alertas donde ingresa una nueva traza para que se
+////          muestre como notificacion y se actualiza el campo de semaforo HAB=2 para que indique que ya se aviso
+////         */
+////        $idUser = $_POST['iduser'];
+////        $obj = $this->mod->lanzar_alertas($idUser);
+////        $obj_repetir = $this->mod->repetir_alertas();
+//////        print_r($obj);die(" SACAR HORA");
+//////        print_r($obj);
+//////        print_r($obj_repetir);
+//////        die();
+////        if ($obj) {
+////            $noti = $this->mod->guardar_traza_alertas($obj);
+////        } else {
+////            echo "NO HACE NADA";
+////        }
+//////        if ($obj_repetir) {
+//////            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
+//////        }
+//    }
 
     function x_getetapas_menor() {
         $etapa = $_POST['etapa'];
@@ -939,7 +939,7 @@ class carpetas extends main_controller {
         $fecha_actual = date("Y-m-d H:i:s");
         $operacion = $_POST['OPERACION'];
         $etapa = $_POST['ID_ETAPA_ACTUAL'];
-        //$usuario = $_POST['USUARIO'];
+//        $usuario = $_POST['USUARIO'];
         $etapa_origen = $_POST['ID_ETAPA_ORIGEN'];
 
         $observacion = $_POST['OBSERVACION'];
@@ -952,7 +952,32 @@ class carpetas extends main_controller {
             "ENVIADOA" => '',
             "CARTERADE" => $carterade
         );
-
+        
+//        
+//        $autor = isset($_POST['AUTOR']) ? $_POST['AUTOR'] : "0";
+//        $autor1 = isset($_POST['AUTOR1']) ? $_POST['AUTOR1'] : "0";
+//        $autor2 = isset($_POST['AUTOR2']) ? $_POST['AUTOR2'] : "0";
+//        
+//         $arr_traza = array(
+//            "ID_OPERACION" => $operacion,
+//            "ESTADO" => $estado,
+//            "CARTERADE" => $carterade,
+//            "DESTINO" => $usuario,
+//            "OBSERVACION" => "REGRESO",
+//            "DESCRIPCION" => "SE ASIGNO NUEVAMENTE",
+//            "ETAPA" => $etapa,
+//            "FECHA" => $fecha_actual,
+//            "ETAPA_ORIGEN" => $etapa_origen,
+//            "ETAPA_REAL" => $etapa_origen,
+//            "AUTOR" => $autor,
+//            "AUTOR1" => $autor1,
+//            "AUTOR2" => $autor2,
+//            "SEM" => 0
+//            
+//        );
+//        echo "operacion ".$operacion . " ";
+//        print_r($arr_up);
+//        die("ACA !!!");
         $obj = $this->mod->actualizar_operacion_atras($operacion, $arr_up);
         echo $obj;
     }

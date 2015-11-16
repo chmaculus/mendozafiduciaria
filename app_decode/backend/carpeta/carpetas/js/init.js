@@ -7633,7 +7633,7 @@ function agregar_nota(idobjeto, ver){
             }
         });
 }
-//
+
 //var inter = function(){
 //             
 //    setInterval(
