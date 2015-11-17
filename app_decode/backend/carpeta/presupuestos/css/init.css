@@ -17,23 +17,14 @@
     width: 480px;
 }
 
-.content-formchk{
-    width: 780px;
-}
-
 .elem_med{
-    width: 360px;
+    width: 370px;
     float: left;
     clear: none!important;    
-    margin-right: 80px;
+   
 }
 .elem_med input{
-    width: 80px;
-    margin-right: 30px;
-}
-
-.form_cuentbanco .elem_med label{
-    width: 220px;
+    width: 235px;
 }
 
 #tabs-3 .elem_med{
@@ -42,13 +33,6 @@
 
 .indent{
     margin-left: 106px!important;
-}
-.indent.impt{
-    margin-left: 220px!important;
-}
-.indent.impt input{
-    width:10px;
-    margin-right:5px
 }
 .elem label{
     padding-top: 8px;
@@ -61,7 +45,7 @@
 .btn_add_footer input{
     margin-left: 20px;
 }
-.content-formadd .title,.content-formchk .title{
+.content-formadd .title{
     width: 98%;
     font-size: 20px;
     font-weight: bold;
@@ -73,6 +57,9 @@
 }
 .medium-select{
     width: 258px !important;
+}
+.large-select{
+    width: 650px !important;
 }
 
 .medium-select1{
@@ -115,12 +102,15 @@
     padding: 9px;
 }
 #tabs .content-gird{
-    min-height: 490px;
+    min-height: 390px;
 }
-.contenedor_entidades2{
+.contenedor_entidades2,.contenedor_operatorias{
     width: 640px;
     float: left;
     padding-top: 20px;
+}
+.e3{
+    width: 760px!important;
 }
 .lista_opciones{
     height: 30px;
@@ -137,20 +127,34 @@
     background: url('../../../../../general/css/images/32x32/Floppy.png') no-repeat 50% 6px !important;
     background-size:20px 20px !important;
 }
-#add_banco{
+.lista_opciones.addope{
+    background: url('../../../../../general/css/images/32x32/Add.png') no-repeat 50% 6px !important;
+    background-size:20px 20px !important;
+    margin-top: 28px!important;
+}
+#add_banco,#add_aporte{
     margin-left: 45px;
     margin-top: 7px;
     margin-bottom: 15px;
 }
-.lista_ents,.lista_banco{
-    list-style: none;
-    margin-top: 35px;
-    float: left;
-    margin-left: 23px;
+.lista_ope{
+    margin-left: 108px;
 }
-.lista_ents li,.lista_banco li{
+.lista_uploads{
+    float: left;
+    margin-top: 38px;
+    position: absolute;
+    top:92px;
+    margin-left: 81px;  
+}
+.lista_ents,.lista_banco,.lista_ope,.lista_uploads{
+    list-style: none;
+    margin-top: 10px;
+    float: left;
+}
+.lista_ents li,.lista_banco li,.lista_ope li,.lista_uploads li{
     margin-top: 3px;
-    width: 637px;
+    width: 629px;
     height: 26px;
     float: left;
     clear: both;
@@ -166,8 +170,6 @@
 }
 .lista_banco li{
     width: 840px!important;
-    
-    
 }
 
 .lista_banco li span{
@@ -178,28 +180,15 @@
     float: right;
     margin-right: 18px;
 }
-.provinciaformError {
-    top: 365px!important;
-    left: 589px!important;
+.provinciaformError{
+    position: relative!important;
+    float: left!important;
+    top : 0px!important;
+    left: 180px!important;
 }
-.nombreformError{
-    top: 245px!important;
-    left: 730px!important;
-}
-.tipoopeformError {
-    top: 324px!important;
-    left: 300px!important;
-}
-.copeformError{
-    top: 400px!important;
-    left: 300px!important;
-}
-.jefeopeformError{
-    top: 363px!important;
-    left: 770px!important;
-}
-.checklist_cont{
-    margin-top: 20px;
+.finiformError{
+    top : 284px!important;
+    left: 340px!important;
 }
 iframe{
     display: none;
@@ -207,7 +196,7 @@ iframe{
 #upload_file1{
     display: none;
     position: absolute;
-    top: 475px;
+    top: 510px;
     left: 132px;
 }
 .uploader{
@@ -226,5 +215,17 @@ iframe{
     width: 40px;
     height: 40px;
 }
-#bancoope_chosen{width:140px !important}
-div.cb{clear:both}
+
+.suma_aportes{
+    width: 873px;
+    margin-top: 20px;
+    font-size: 20px;
+    text-align: right;
+    display: none;
+}
+
+#action{display:block;clear:both}
+#action input{height: 30px;margin-top:10px}
+#items .dd{cursor:pointer;font-weight:bold}
+#items .tit{font-weight:bold;font-size:1.1em}
+.subtot .net,.subtot .ivat,.subtot .tt{border-top:1px solid #777}

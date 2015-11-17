@@ -14,18 +14,28 @@ $total_cuota_moratorio = 0;
 $total_cuota_punitorio = 0;
 $total_cuota_iva = 0;
 $total_cuota_iva_subsidio = 0;
+$total_cuota_gastos = 0;
+$total_cuota_iva_compensatorio = 0;
+$total_cuota_iva_moratorio = 0;
+$total_cuota_iva_punitorio = 0;
 
 $pagado_cuota_capital = 0;
 $pagado_cuota_compensatorio = 0;
 $pagado_cuota_moratorio = 0;
 $pagado_cuota_punitorio = 0;
 $pagado_cuota_iva = 0;
+$pagado_cuota_iva_compensatorio = 0;
+$pagado_cuota_iva_moratorio = 0;
+$pagado_cuota_iva_punitorio = 0;
 
 $saldo_cuota_capital = 0;
 $saldo_cuota_compensatorio = 0;
 $saldo_cuota_moratorio = 0;
 $saldo_cuota_punitorio = 0;
 $saldo_cuota_iva = 0;
+$saldo_cuota_iva_compensatorio = 0;
+$saldo_cuota_iva_moratorio = 0;
+$saldo_cuota_iva_punitorio = 0;
 
 //variables acumuladores totales
 $total_cuota_total = 0;
@@ -58,10 +68,19 @@ foreach($cuotas as $kk=>$cuota){
     $iva_subsidiado = $cuota['_INFO']['IVA_COMPENSATORIO_SUBSIDIO']['TOTAL'];
     $compensatorio_subsidiado = $cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'];
     
-    $iva_pagado = $iva_moratorio_pagado + $iva_punitorio_pagado + $iva_compensatorio_pagado ;
+    $total_gastos = $cuota['GASTOS_VARIOS']['TOTAL'];
+    $pagado_gastos = $cuota['GASTOS_VARIOS']['PAGOS'];
+    $saldo_gastos = $cuota['GASTOS_VARIOS']['SALDO'];
+    
+    $iva_gastos_total = $cuota['IVA_GASTOS']['TOTAL'];
+    $iva_gastos_pagado = $cuota['IVA_GASTOS']['PAGOS'];
+    //if(!isset($cuota['IVA_GASTOS']['SALDO'])) die("aca");
+    $iva_gastos_saldo = $cuota['IVA_GASTOS']['SALDO'];
+    
+    $iva_pagado = $iva_moratorio_pagado + $iva_punitorio_pagado + $iva_compensatorio_pagado + $iva_gastos_pagado;
     //echo "<br/>IVA m/p/c:".$iva_moratorio_pagado ."/". $iva_punitorio_pagado ."/". $iva_compensatorio_pagado ."-";
-    $iva_total = $iva_moratorio_total + $iva_punitorio_total + $iva_compensatorio_total ;
-    $iva_saldo = $iva_moratorio_saldo + $iva_punitorio_saldo + $iva_compensatorio_saldo;
+    $iva_total = $iva_moratorio_total + $iva_punitorio_total + $iva_compensatorio_total + $iva_gastos_total;
+    $iva_saldo = $iva_moratorio_saldo + $iva_punitorio_saldo + $iva_compensatorio_saldo + $iva_gastos_saldo;
     
     $total_moratorio = 0;
     $pagado_moratorio = 0;
@@ -71,35 +90,22 @@ foreach($cuotas as $kk=>$cuota){
     $pagado_punitorio = 0;
     $saldo_punitorio = 0;                    
 
-    $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'];
+    $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO_ACT'];
     $pagado_compenstorio = $cuota['COMPENSATORIO']['PAGOS'];//($cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO']['SALDO'] );
-    $saldo_compensatorio = $cuota['COMPENSATORIO']['SALDO'];                    
-     
+    $saldo_compensatorio = $cuota['COMPENSATORIO']['SALDO'];
+    $total_compensatorio_act = $cuota['COMPENSATORIO_ACT'] ? '<br />' . number_format($cuota['COMPENSATORIO_ACT'],2,",",".") : '';
+    $iva_compensatorio_act_total = '';
+    if ($cuota['COMPENSATORIO_ACT'] && $cuota['COMPENSATORIO']['TOTAL']) {
+        $tmp_iva = number_format($iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'],2,",",".");
+        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
+        $iva_compensatorio_total -= $tmp_iva;
+    }
+            
     $total_capital = $cuota['CAPITAL']['TOTAL'];
     $pagado_capital = $cuota['CAPITAL']['TOTAL'] - $cuota['CAPITAL']['SALDO'];
     $saldo_capital = $total_capital - $pagado_capital;//$cuota['CAPITAL']['SALDO'];                    
     $total_iva_subsidio = $iva_subsidiado;                   
 
-    
-    $total_cuota_capital += $total_capital;
-    $total_cuota_compensatorio += $total_compensatorio;
-    $total_cuota_moratorio += $total_moratorio;
-    $total_cuota_punitorio += $total_punitorio;
-    $total_cuota_iva += $iva_total;
-    $total_cuota_iva_subsidio += $iva_subsidiado;;
-    
-    $pagado_cuota_capital += $pagado_capital;
-    $pagado_cuota_compensatorio += $pagado_compenstorio;
-    $pagado_cuota_moratorio += $pagado_moratorio;
-    $pagado_cuota_punitorio += $pagado_punitorio;
-    $pagado_cuota_iva += $iva_pagado;
-
-    $saldo_cuota_capital += $saldo_capital;
-    $saldo_cuota_compensatorio += $saldo_compensatorio;
-    $saldo_cuota_moratorio += $saldo_moratorio;
-    $saldo_cuota_punitorio += $saldo_punitorio;
-    $saldo_cuota_iva += $iva_saldo;    
-    
     
     $total_cuota_gastos = 0; 
     
@@ -133,15 +139,44 @@ foreach($cuotas as $kk=>$cuota){
         $saldo_punitorio = $cuota['PUNITORIO']['SALDO'];
     }
     
-    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital;
-    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital;
-    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital;
-    $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'];
+    $pagado_cuota_capital += $pagado_capital;
+    $pagado_cuota_compensatorio += $pagado_compenstorio;
+    $pagado_cuota_moratorio += $pagado_moratorio;
+    $pagado_cuota_punitorio += $pagado_punitorio;
+    $pagado_cuota_iva += $iva_pagado;
+    $pagado_cuota_iva_compensatorio += $iva_compensatorio_pagado;
+    $pagado_cuota_iva_moratorio += $iva_moratorio_pagado;
+    $pagado_cuota_iva_punitorio += $iva_punitorio_pagado;
 
-    $total_cuota_total += $total_total + $iva_total;
-    $total_cuota_saldo += $total_saldo + $iva_saldo;
-    $total_cuota_pagado += $total_pagado + $iva_pagado;
-    $total_cuota_subsidio += $total_subsidio + $iva_subsidiado;
+    $saldo_cuota_capital += $saldo_capital;
+    $saldo_cuota_compensatorio += $saldo_compensatorio;
+    $saldo_cuota_moratorio += $saldo_moratorio;
+    $saldo_cuota_punitorio += $saldo_punitorio;
+    $saldo_cuota_iva += $iva_saldo;
+    $saldo_cuota_iva_compensatorio += $iva_compensatorio_saldo;
+    $saldo_cuota_iva_moratorio += $iva_moratorio_saldo;
+    $saldo_cuota_iva_punitorio += $iva_punitorio_saldo;
+    
+    
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos;
+    $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $saldo_gastos;
+    $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $pagado_gastos;
+    $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
+        
+    $total_cuota_capital += $total_capital;
+    $total_cuota_compensatorio += $total_compensatorio;
+    $total_cuota_moratorio += $total_moratorio;
+    $total_cuota_punitorio += $total_punitorio;
+    $total_cuota_iva += $iva_total;
+    $total_cuota_iva_subsidio += $iva_subsidiado;;
+    $total_cuota_iva_compensatorio += $iva_compensatorio_total;
+    $total_cuota_iva_moratorio += $iva_moratorio_total;
+    $total_cuota_iva_punitorio += $iva_punitorio_total;
+
+    $total_cuota_total += $total_total;
+    $total_cuota_saldo += $total_saldo;
+    $total_cuota_pagado += $total_pagado;
+    $total_cuota_subsidio += $total_subsidio;
     $total_cuota_iva_subsidio += $total_iva_subsidio;
     
              
@@ -202,8 +237,8 @@ foreach($cuotas as $kk=>$cuota){
                 <?php }?>
                 <tr>
                     <td class="titulo-esp ">Interes Compensatorio</td>
-                    <td class="dato-esp"><?=number_format($total_compensatorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_total,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($total_compensatorio,2,",",".").$total_compensatorio_act?></td>
+                    <td class="dato-esp iva"><?=number_format($iva_compensatorio_total,2,",",".").$iva_compensatorio_act_total?></td>
                     <td class="dato-esp res"><?=number_format($cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'],2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($iva_subsidiado,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($pagado_compenstorio,2,",",".")?></td>
@@ -221,6 +256,17 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format(abs(round($saldo_capital,2)),2,",",".")?></td>
                     <td class="dato-esp iva"></td>
+                </tr>
+                <tr>
+                    <td class="titulo-esp ">Gastos Varios</td>
+                    <td class="dato-esp"><?=number_format($total_gastos,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs(round($iva_gastos_total,2)),2,",",".")?></td>
+                    <td class="dato-esp res"></td>
+                    <td class="dato-esp iva"></td>
+                    <td class="dato-esp"><?=number_format($pagado_gastos,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs(round($iva_gastos_pagado,2)),2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format(abs(round($saldo_capital,2)),2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format(abs(round($saldo_gastos,2)),2,",",".") ?></td>
                 </tr>
                 <tr class="totales-cuota">
                     <td class="titulo-esp ">TOTALES CUOTA</td>
@@ -252,7 +298,7 @@ foreach($cuotas as $kk=>$cuota){
 ?>
     <li class="datos totales">
         <span class="porcentaje-desembolso">SALDO TOTAL</span>
-        <span class="porcentaje-desembolso">$<?= number_format($total_cuota_saldo,2)?></span>
+        <span class="porcentaje-desembolso">$<?= number_format($total_cuota_saldo+$saldo_cuota_iva,2)?></span>
         <span class="opcion ampliar">( + )</span>
         <div class="especificaciones">
             <table width="100%">
@@ -270,35 +316,35 @@ foreach($cuotas as $kk=>$cuota){
                 <tr>
                     <td class="titulo-esp ">Interes Moratorio</td>
                     <td class="dato-esp"><?=number_format($total_cuota_moratorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($total_cuota_iva_moratorio,2,",",".")?></td>
                     <td class="dato-esp res">0</td>
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_cuota_moratorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($pagado_cuota_iva_moratorio,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($saldo_cuota_moratorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_moratorio,2,",",".")?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Interes Punitorio</td>
                     <td class="dato-esp"><?=number_format($total_cuota_punitorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($total_cuota_iva_punitorio,2,",",".")?></td>
                     <td class="dato-esp res">0</td>
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_cuota_punitorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($pagado_cuota_iva_punitorio,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($saldo_cuota_punitorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_punitorio,2,",",".")?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Interes Compensatorio</td>
                     <td class="dato-esp"><?=number_format($total_cuota_compensatorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($total_cuota_iva_compensatorio,2,",",".")?></td>
                     <td class="dato-esp res"><?=number_format($total_cuota_subsidio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($pagado_cuota_compensatorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($pagado_cuota_iva_compensatorio,2,",",".")?></td>
                     <td class="dato-esp"><?=number_format($saldo_cuota_compensatorio,2,",",".") ?></td>
-                    <td class="dato-esp iva"><?=number_format(0,2,",",".") ?></td>
+                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_compensatorio,2,",",".") ?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Capital</td>

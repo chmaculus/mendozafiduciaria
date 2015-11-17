@@ -75,19 +75,117 @@ class cuotas extends main_controller{
         $fecha = $_POST['fecha'];
         $credito_id = $_POST['credito_id'];
         
-        if ($this->mod->set_credito_active($credito_id)) {
-            $version = $_POST['version_id'];
-            $this->mod->set_version_active($version);
-
-            $monto = $_POST['monto'];
-
-            $this->mod->realizar_pago($fecha,  $monto);
-        }
+        $this->mod->set_credito_active($credito_id);
+        $version = $_POST['version_id'];
+        $this->mod->set_version_active($version);
+        
+        $monto = $_POST['monto'];
+        
+        $this->realizar_pago($fecha,  $monto);
         
         $this->mod->renew_datos();
         echo $this->_get_cuotas();
     }
     
+    function realizar_pago($fecha, $monto){
+        
+        
+        $this->mod->elimina_eventos_temporales();        
+
+        
+        //se genera evento para definir el dia de corte
+        $this->mod->renew_datos();
+        $this->mod->save_last_state(false);
+        $this->mod->set_fecha_actual($fecha);
+        
+        $ret_evento = $this->mod->generar_evento( array(), true, $fecha, true);
+        
+        $this->mod->set_log(true);
+        $ret_evento_id = $ret_evento['ID'];
+        
+        $ret_reduda = $this->mod->get_deuda($fecha);
+
+        
+        
+        //se elimina el evento
+        $this->mod->elimina_evento($ret_evento_id );        
+        $this->mod->set_log(false);
+        
+        //si el monto es 0 solo se mostrara la deuda
+        $obj_pago = $this->mod->pagar_deuda($ret_reduda, $monto, $fecha);
+        $pagos = $obj_pago['pagos'];
+        
+        
+        //en las cuotas canceladas tenemos las cuotas que han sido canceladas en el ultimo pago y la fecha de dicho pago
+        //de esta forma podemos adelantar las fechas de vencimiento segun algun criterio a especificar o alguna otra
+        //tarea que se necesite
+
+        //$cuotas_canceladas = $obj_pago['cuotas_canceladas'];
+        
+
+        
+        
+        $data = array();
+        
+        
+        $this->mod->save_last_state(true);
+        $pago_total = 0;
+        
+        //recorremos los pagos para verificar anteriormente a la asignacion
+        //el pago de adelantos
+        $badelanta = false;
+        $cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
+        foreach($pagos as $pago){
+            //se puede cargar un tipo de pago para reasignar (lo cual indica cuota cancelada)
+            if ($pago['ID_TIPO']==PAGO_ADELANTADO){
+                $badelanta = true;
+                break;
+            }
+            
+            
+            //o si existe un pago de capital de una cuota siguiente a la cuota correspondiente en la fecha dada
+            //es decir, se paga un 5/5 correspondiente a la fecha de la cuota 5, 
+            //si se paga capital de  la cuota 4 significa que se ha adelantado capital
+            if ($pago['ID_TIPO']==PAGO_CAPITAL && $cuotas_restantes > $pago['CUOTAS_RESTANTES'] ){
+                $badelanta = true;
+                break;
+            }
+        }
+        
+        if ($badelanta){
+            //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
+            //y recalcula los pagos desde esa fecha
+            if ( ($fecha_planchado = $this->mod->modificar_planchado($fecha)) > 0 ){
+                //se debe reimputar los pagos desde la fecha de planchado
+     //           $this->_recalcular_pagos($fecha_planchado);
+     //           return;
+
+            }
+        }
+        
+        //recorremos los pagos para asignar los adelantos de pago
+        foreach($pagos as $pago){
+            if ($pago['ID_TIPO']==PAGO_CAPITAL){
+                $pago_total += $pago['MONTO'];
+                break;
+            }
+            if ($pago['ID_TIPO']==PAGO_ADELANTADO){
+                $this->mod->renew_datos();
+                
+                $adelanto_pago = $this->mod->adelantar_pagos( $fecha);
+                $pago_total += $adelanto_pago;
+                break;
+            }
+        }
+        $data['monto'] = $pago_total;
+        $data['TIPO'] = EVENTO_RECUPERO;
+        $ret = $this->mod->generar_evento( $data, true, $fecha);  
+
+        $this->mod->assign_id_evento($ret['ID'],EVENTO_RECUPERO);
+
+        $this->mod->get_segmentos_cuota();
+        
+    }
     
     function x_agregar_desembolso(){
         $credito_id = $_POST['credito_id'];
@@ -180,14 +278,14 @@ class cuotas extends main_controller{
         }
     }
     
-    function x_agregar_cambiotasa($retornar = FALSE){
+    function x_agregar_cambiotasa(){
         $credito_id = $_POST['credito_id'];
         
         $this->mod->set_credito_active($credito_id);
         $version = $_POST['version_id'];
         $this->mod->set_version_active($version);
 
-        if (!$this->_verificar_desembolsos_teoricos( false) && !$retornar){
+        if (!$this->_verificar_desembolsos_teoricos( false)){
             echo "-1";
             return;
         }        
@@ -204,13 +302,9 @@ class cuotas extends main_controller{
         $ret = $this->mod->generar_evento( $data, true, $fecha);
         
         //agrego el registro desembolso a la db 
-        //$cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
-        $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
-        
+        $cuotas_restantes = $this->mod->get_cuotas_restantes( $fecha);
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
-        
-        if ($retornar) return;
         
         //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
         //y recalcula los pagos desde esa fecha
@@ -223,61 +317,6 @@ class cuotas extends main_controller{
         $this->mod->get_segmentos_cuota();
             
         echo $this->_get_cuotas();
-    }
-    
-    function impactar_tasas() {
-        set_time_limit(0);
-        if(!isset($_SESSION['CAMBIO_TASAS'])) {
-            header('Location:/' . URL_PATH);
-        }
-        
-        $creditos = $this->mod->get_creditos_by_operatoria($_SESSION['CAMBIO_TASAS']['OPERATORIA']['id']);
-        
-        if ($creditos) {
-            $tasa_comp = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_COMPENSATORIA'];
-            $tasa_subs = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_SUBSIDIADA'];
-            $tasa_mora = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_MORATORIA'];
-            $tasa_pun = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_POR_PUNITORIOS'];
-            
-            $_POST['tasa'] = $tasa_comp; 
-            $_POST['subsidio'] = $tasa_subs;
-            $_POST['moratorio'] = $tasa_mora;
-            $_POST['punitorio'] = $tasa_pun;
-            
-            $_POST['fecha'] = $_SESSION['CAMBIO_TASAS']['FECHA'];
-            
-            $cambiar_valores = FALSE;
-            if ($tasa_comp === FALSE || $tasa_subs === FALSE || $tasa_mora === FALSE || $tasa_pun === FALSE) {
-                $cambiar_valores = TRUE;
-            }
-            
-            foreach ($creditos as $credito) {
-                
-                if ($cambiar_valores) {
-                    $tasas = $this->mod->getTasasCredito($credito['ID'], $_POST['fecha']);
-                    if ($tasa_comp === FALSE) {
-                        $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
-                    }
-                    if ($tasa_subs === FALSE) {
-                        $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
-                    }
-                    if ($tasa_mora === FALSE) {
-                        $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
-                    }
-                    if ($tasa_pun === FALSE) {
-                        $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
-                    }
-                }
-                $_POST['credito_id'] = $credito['ID'];
-                $_POST['version_id'] = $credito['ID_VERSION'];
-                
-                $this->x_agregar_cambiotasa(TRUE);
-            }
-        }
-        
-        echo trim(json_encode($_SESSION['CAMBIO_TASAS']['RESULTADO']));
-        unset($_SESSION['CAMBIO_TASAS']);
-        die();
     }
 
     
@@ -645,7 +684,7 @@ class cuotas extends main_controller{
         $pagos = $this->mod->desimputar_pago();
         
         foreach($pagos as $pago){
-            $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+            $this->realizar_pago($pago['fecha'], $pago['monto']);
         }
     }
     
@@ -810,9 +849,6 @@ class cuotas extends main_controller{
 
 .codbar{font-size:0;position:relative;}
 .codbar div{-webkit-print-color-adjust:exact}
-.cc1{width:55%;padding-right:15px}
-.cc1 table{border-collapse: collapse;}
-.cc2{width:45%;text-align:center;}
 
 @media print {
     .page {
@@ -854,10 +890,8 @@ class cuotas extends main_controller{
     .datos{font-weight:bold;}
     .detalle td{
         border-bottom:1px solid black;
-        font-size:9pt;
+        font-size:10pt;
     }
-
-    .detalle td:nth-child(2){text-align:right;}
 
     .newpage{
         width: 210mm !important;
@@ -871,7 +905,7 @@ class cuotas extends main_controller{
     }
     .div-header{
         padding-top:10mm;
-        height:32mm;
+        height:30mm;
         width: 210mm;
         display: block;
         overflow: hidden;
@@ -887,7 +921,7 @@ class cuotas extends main_controller{
         font-size:8pt;
     }
     .div-content-cuotas{
-        height: 254mm;
+        height: 240mm;
         width: 210mm;
         display: block;
         overflow: hidden;
@@ -918,19 +952,15 @@ class cuotas extends main_controller{
     }
 
     .div-footer{
-        height: 30mm;
+        height: 50mm;
         width: 210mm;
         display: block;
         overflow: hidden;
         font-size:8pt;
     }
-    hr.end_cuota,
+    
     .end_cuota td{
         border-top:1px dotted #888;
-    }
-
-    .div-footer span{
-        font-size:8pt;
     }
 
     .c2{width:25%}
@@ -939,7 +969,6 @@ class cuotas extends main_controller{
     .c6{width:75%}
     .c7{width:87.5%}
     .c8{width:100%}
-    .cc1,.cc2{border-bottom:1px dotted #888;}
 
   }
 </style><table  >";
@@ -1029,47 +1058,40 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             $page = '';
             $cant_cuotas = count($cuotas);
   
-            $page .= '<tr><td colspan="8">&nbsp;</td></tr>';
         
             foreach($cuotas as $cuota){
-                if (!isset($cuota['IVA_GASTOS']['SALDO'])) {
-                    $cuota['IVA_GASTOS']['SALDO'] = 0;
-                }
-                $page .= '<tr class="cc"><td class="cc1"><table>';
+                
+                
+                
+                $page .= '<tr><td colspan="8">&nbsp;</td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7"><span class="datos">DETALLE - Cuota Nº'.($cant_cuotas  - $cuota['CUOTAS_RESTANTES'] + 1).'</span></td><td ><span class="datos">IMPORTE</span></td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7">Capital</td><td >$'.number_format($cuota['CAPITAL']['SALDO'],2,",",".").'</td></tr>';
                 $page .= '<tr class="detalle"><td colspan="7">Intereses Compensatorios</td><td >$'.number_format($cuota['COMPENSATORIO']['SALDO'],2,",",".").'</td></tr>';
                 $int_mor = $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO'];
                if ($int_mor< 0.10) $int_mor= 0;
                 $page .= '<tr class="detalle"><td colspan="7">Intereses Moratorios y Punitorios</td><td >$'.number_format($int_mor ,2,",",".").'</td></tr>';
-                $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) +  $cuota['IVA_GASTOS']['SALDO'];
+                $iva = $cuota['IVA_COMPENSATORIO']['SALDO']  + ($cuota['IVA_MORATORIO']['SALDO'])  + ($cuota['IVA_PUNITORIO']['SALDO']) ;
                 if ($iva< 0.10) $iva= 0;
                 $page .= '<tr class="detalle"><td colspan="7">IVA</td><td >$'.number_format($iva,2,",",".").'</td></tr>';
                 $total = $cuota['CAPITAL']['SALDO'] +$cuota['COMPENSATORIO']['SALDO'] + $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO']+ $iva;
-                if (isset($cuota['GASTOS_VARIOS']['SALDO'])) {
-                    $page .= '<tr class="detalle"><td colspan="7">Gastos Varios</td><td >$'.number_format($cuota['GASTOS_VARIOS']['SALDO'],2,",",".").'</td></tr>';
-                    $total += $cuota['GASTOS_VARIOS']['SALDO'];
-                } else {
-                    $cuota['GASTOS_VARIOS']['SALDO'] = 0;
-                }
 
-                
                 if ($total < 0.10) $total = 0;
-                $page .= '</table></td><td class="cc2"><table style="padding:15px 5px">';
                 
                 $code = $this->mod->_generar_codbar($cuota['ID'], $total);
                 $barcode = new TCPDFBarcode($code, "C128");
                 $html_code = $barcode->getBarcodeHTML(1.5,35,'black');
                 //echo $html_code ;
+                $page .= "<tr><td class='c8' colspan='8'>&nbsp;</td></tr>";
                 $page .= '<tr>
-                    <td colspan="4">' . $html_code . $code . '</td><td >&nbsp;</td></tr>
-                    <tr><td colspan="2" align="center" valign="top"><span class="datos"  >Vencimiento <br/>'.date("d/m/Y",$cuota['_INFO']['HASTA']).'</span></td>
-                    <td colspan="2"  align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
+                    <td colspan="4" class="c3">' . $html_code . $code . '</td><td >&nbsp;</td>
+                    <td colspan="2" class="c2" align="center" valign="top"><span class="datos"  >Vencimiento <br/>'.date("d/m/Y",$cuota['_INFO']['HASTA']).'</span></td>
+                    <td colspan="2" class="c2" align="right" valign="top"><span class="datos"  >Total <br/>$'.number_format($total,2,",",".").'</span></td>
                     </tr>
-                    </table></td></tr>';
+                    <tr class="end_cuota"><td  class="c8" colspan="8">&nbsp;</td></tr>';
+
 
                 $i++;
-                if ($i%7==0){
+                if ($i%4==0){
 
                     $html_page = '
                         <table class="newpage"  >
@@ -1089,7 +1111,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         
             }
             
-            if ($i%7 > 0){
+            if ($i%4 > 0){
                     $html_page = '
                         <table class="newpage"  >
                             <tr class="header"><td class="c8" colspan="8"><div class="div-header">'.$header.'</div></td></tr>
@@ -1113,186 +1135,9 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         
 
     }
-    
-    function x_guardar_pagos_excel() {
-        if ($this->_guardar_pagos_excel()) {
-            $_SESSION['msg_ok'] = "El proceso de importación de pagos ha finalizado";
-        }
-        
-        header('Location:/' . URL_PATH . 'creditos/front/creditos');
-        die();
-    }
-    
-    function _guardar_pagos_excel() {
-        $_SESSION['msg_err'] = "";
-        $excel = $_FILES['fexcel'];
-        if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
-
-            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
-            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
-            
-            $objReader = new PHPExcel_Reader_Excel2007();
-            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
-                $_SESSION['msg_err'] = "";
-                set_time_limit(0);
-                $err = "";
-                $objPHPExcel->setActiveSheetIndex(0);
-                $arr_creditos = array();
-                $creditos_err = array();
-                $cuit_creditos = array();
-                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
-                    $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
-                    if (!$credito_id) {
-                        
-                        //voy a buscar si anteriormente se habían cargado créditos y buscar por cuit del postulante
-                        $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
-                        
-                        if (!$cuit) {
-                            break;
-                        }
-                        
-                        $cuit = explode("\n", $cuit);
-                        
-                        $_cuits = array();
-                        foreach ($cuit as $c) {
-                            $_cuits[] = trim(str_replace("-", "", trim($c)));
-                        }
-                        
-                        $_cuits = implode("/", $_cuits);
-                        
-                        if (isset($_SESSION['creditos_importados'][$_cuits]) && $_SESSION['creditos_importados'][$_cuits]) {
-                            $credito_id = $_SESSION['creditos_importados'][$_cuits];
-                            $cuit_creditos[$credito_id] = $_cuits;
-                        } else {
-                            //busco el cliente por el cuit, luego busco 
-                            $credito_id = $this->mod->buscarCreditoPorCuit($_cuits);
-                        }
-                    }
-                    
-                    if ($credito_id) {
-                        $fpago = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("E" . $j)->getCalculatedValue()) + 86400;
-                        $fpago = strtotime(date('Y-m-d', $fpago));
-                        $_fpago = (int)$fpago;
-                        
-                        if (isset($arr_creditos[$credito_id][$_fpago])) {
-                            $_fpago += $j;
-                        }
-                        
-                        $arr_creditos[$credito_id][$_fpago] = array(
-                            'FP' => $fpago,
-                            'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
-                            );
-                    } else {
-                        $creditos_err[$cuit] = $cuit;
-                    }
-                }
-                
-                foreach ($arr_creditos as $credito_id=>$creditos) { //ordenamos los pagos
-                    ksort($creditos);
-                    $arr_creditos[$credito_id] = $creditos;
-                }
-                
-                if (count($creditos_err)>0) {
-                    $_SESSION['msg_err'] = "Los siguientes créditos no se imputaron pagos: " . implode(", ", $creditos_err);
-                }
-                
-                foreach ($arr_creditos as $credito_id=>$creditos) {
-                    //obtener array de cuotas
-                    $this->mod->clear();
-                    if ($this->mod->set_credito_active($credito_id)) {
-                        $ultimo_pago = $this->mod->obtener_ultimo_pago();
-                        $this->mod->set_version_active();
-                        $this->mod->renew_datos();
-                        
-                        $pagos_no = 0;
-                        foreach ($creditos as $pago) {
-                            if (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
-                                $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
-                            } else {
-                                ++$pagos_no;
-                            }
-                        }
-                        
-                        if ($pagos_no) {
-                            $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
-                        }
-                        
-                        if(isset($cuit_creditos[$credito_id])) {
-                            $cuit = $cuit_creditos[$credito_id];
-                            unset($_SESSION['creditos_importados'][$cuit]);
-                        }
-                    } else {
-                        $err .= "El crédito $credito_id no existe<br />";
-                    }
-                }
-                
-                if ($err) {
-                    $_SESSION['msg_err'] .= $err;
-                }
-                
-                RETURN TRUE;
-            }
-            
-        } else {
-            $_SESSION['msg_err'] = "Hubo un problema al cargar el archivo";
-        }
-        
-        return FALSE;
-    }
-    
-    
-    function x_emitir_una_cuota() {
-        $credito_id = $_POST['credito_id'];
-        $fecha = $_POST['fecha'];
-        $ret_reuda = FALSE;
-        if ($this->mod->set_credito_active($credito_id)) {
-            $this->mod->set_version_active();        
-
-            $this->mod->set_fecha_actual($fecha);
-            $this->mod->set_fecha_calculo();
-
-
-            $this->mod->renew_datos();
-            $this->mod->emitir_una_cuota($fecha);
-
-            $this->mod->save_last_state(false);
-
-
-            //chequera = proyeccion teorica
-            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);    
-
-            $this->mod->generar_evento(array(), true, $fecha);
-
-
-            //segundo parametro: recalcular datos
-            //tercer parametro true para forzar la deuda con el compensatorio total
-
-            $ret_reuda = $this->mod->get_deuda($fecha, true);
-            $ret_reuda['fecha_actual'] = $fecha;
-            echo $this->view("cuota",$ret_reuda);
-        
-        } else {
-            echo '-1';
-        }
-        die();
-    }
-    
-    function x_refinanciacion_caida() {
-        $credito_id = $_POST['credito_id'];
-        $fecha = strtotime(date('Y-m-d'));
-        
-        if ($this->mod->set_credito_active($credito_id)) {
-            $this->mod->refinanciacion_caida();
-            echo "1";
-        }
-        die();
-    }
-    
-    function update_pagos() {
-        set_time_limit(0);
-        $this->mod->updateFechaPago();
-    }
 }
+
+
 
 
 
@@ -1333,5 +1178,5 @@ class MYPDF extends TCPDF {
         $this->setPage(max($page_end_1,$page_end_2));
         $this->SetXY($this->GetX(),$ynew);
     }
-    
+
 }
