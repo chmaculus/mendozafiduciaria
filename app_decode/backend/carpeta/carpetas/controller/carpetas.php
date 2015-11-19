@@ -1477,7 +1477,8 @@ class carpetas extends main_controller {
                     "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                     "ID_ETAPA" => $arr_traza['ETAPA'],
                     "FECHA_CARGA" => $fecha_actual,
-                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." 12",
+                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME'],
+//                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." 12",
                     "FECHA_AVISO" => $fecha_aviso,
                     "ID_TRAZA" => $id_traza[0]['ID'],
                     "ID_NOTIFICAR" => $value['ID'],
@@ -1513,7 +1514,8 @@ class carpetas extends main_controller {
                         "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                         "ID_ETAPA" => $arr_traza['ETAPA'],
                         "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." linea 38",
+//                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." linea 38",
+                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME'],
                         "FECHA_AVISO" => $fecha_aviso,
                         "ID_TRAZA" => $id_traza[0]['ID'],
                         "ID_NOTIFICAR" => $value['ID'],
@@ -1572,33 +1574,39 @@ class carpetas extends main_controller {
                 $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
                 $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
                 $id_jefe_administracion = $this->mod->jefe_administracion();
+
                 foreach ($id_jefe_administracion as $administracion) {
-                    foreach ($administracion as $id) {
+//                      foreach ($administracion as $id) {
                         $arr_semaforo = array(
                             "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                             "ID_ETAPA" => $arr_traza['ETAPA'],
                             "FECHA_CARGA" => $fecha_actual,
-                            "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 24hs 13 3',
+//                            "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 24hs 13 3',
+                            "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$administracion['USERNAME'],
                             "FECHA_AVISO" => $fecha_aviso,
                             "ID_TRAZA" => $id_traza[0]['ID'],
-                            "ID_NOTIFICAR" => $id,
+                            "ID_NOTIFICAR" => $administracion['ID'],
                             "CARTERADE" => $arr_traza['DESTINO'],
                             "HAB" => 1
                         );
+                      
+//print_r($arr_semaforo);die();
                         $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
-                    }
+//                    }
                 }
             } else if ($arr_traza['DESCRIPCION'] == 'DE ADMINISTRATIVO CONTABLE A COORDINADOR PARA OTRO DESEMBOLSO, AUDITORIA O ARCHIVO, ESPERANDO ACEPTACION') {
 //      EXCEL lineas 45 - 46
                 $fecha_aviso = strtotime('+48 hour', strtotime($fecha_actual));
                 $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
                 $obtener_gerentes = $this->mod->notificar_gerente();
+//echo "die 1";print_r($obtener_gerentes);die();
                 foreach ($obtener_gerentes as $value) {
                     $arr_semaforo = array(
                         "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                         "ID_ETAPA" => $arr_traza['ETAPA'],
                         "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 48hs 13 4',
+//                        "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 48hs 13 4', .$value['USERNAME']
+                        "MENSAJE_ALERTA" => 'MÁS DE 48HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'],
                         "FECHA_AVISO" => $fecha_aviso,
                         "ID_TRAZA" => $id_traza[0]['ID'],
                         "ID_NOTIFICAR" => $value['ID'],
@@ -1628,7 +1636,8 @@ class carpetas extends main_controller {
 //)
 //ESTO TRA LKA TRAZA
             else if ($arr_traza['DESCRIPCION'] == 'DE COORDINADOR DE OPERACIONES A ADMINISTRATIVO CONTABLE PARA EMISION DESEMBOLSO, ESPERANDO ACEPTACION') {
-                $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
+//                $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
+                $fecha_aviso = strtotime('+72 hour', strtotime($fecha_actual));
                 $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
                 $obtener_adminitracion = $this->mod->notificar_gerente_administracion();
                 foreach ($obtener_adminitracion as $value) {
@@ -1637,7 +1646,7 @@ class carpetas extends main_controller {
                         "ID_ETAPA" => $arr_traza['ETAPA'],
                         "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 24hs 13 5',
-                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'].' valor 5',
+                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'].' valor 5',
                         "FECHA_AVISO" => $fecha_aviso,
                         "ID_TRAZA" => $id_traza[0]['ID'],
                         "ID_NOTIFICAR" => $value['ID'],
@@ -1744,7 +1753,8 @@ if($etapa==11){
 //                        "ID_NOTIFICAR" => $value['ID'],
                         // primero seria 63 por que va al glegales
                         // despues mmmm
-                        "ID_NOTIFICAR" => 63,
+//                        "ID_NOTIFICAR" => 63,
+                        "ID_NOTIFICAR" => $value['ID'],
                         "CARTERADE" => $_SESSION["USERADM"],
                         "HAB" => 1
                     );

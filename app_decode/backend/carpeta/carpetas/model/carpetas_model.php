@@ -2255,7 +2255,7 @@ class carpetas_model extends main_model {
         return $rtn;
     }
      function jefe_administracion() {  
-        $rtn = $this->_db->query("SELECT ID FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
         return $rtn;
     }
     function jefe_operaciones($operacion) {
