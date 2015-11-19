@@ -3312,7 +3312,8 @@ ORDER BY T1.lvl DESC');
             if (isset($this->_pagos[$cuota['CUOTAS_RESTANTES']])) {
                 $SALDO_CAPITAL -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL];
                 
-                if (!$__cuota && ($cuota['CAPITAL_CUOTA'] - $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL]) > 1) {
+                $dif_pago = ($cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA']) - ($this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL] + $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_COMPENSATORIO] + $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_IVA_COMPENSATORIO]);
+                if (!$__cuota && $dif_pago > 1) {
                     $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL];
                     $cuota_vencimiento = $cuota;
                     $__cuota = $id;
