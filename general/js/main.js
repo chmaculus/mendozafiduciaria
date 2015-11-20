@@ -1,5 +1,6 @@
 var _meses = ["Enero", "Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Setiembre","Octubre","Noviembre","Diciembre"];
 
+var _ID_ADMIN;
 
 var getLocalization = function () {
 
@@ -86,8 +87,10 @@ $(document).ready(function(){
     if (_this_app.URL!='main'){
         setInterval(function(){
             actualizaNotif();
+//            inter();
         },15000);
     }
+        
     if ( _this_app.URL!='main' && _this_app.URL!='backend/cambiarpassword' )
         $("#jMenu").jMenu()
    
@@ -222,7 +225,48 @@ function notifMain( iid ){
                     'scrolling' : 'no'
                 }
             );
+ 
+            $('.link_aceptar.tb_leida').click(function(){
+            var id_operacion_sem = $(this).data('iid');
+            var etapa = $(this).data('etapa');
+            var meobj = $(this);
+//            var etapa = $(this).data('etapa');
+//            alert("id_operacion  "+id_operacion_sem);
+//            alert("etapa  "+etapa);
+//            
+//            var idope = $(this).data('idope');
+//            alert(idope);
+                    var obst = 'AVISADO';
+                    var dest = 'SE NOTIFICO SOBRE LA DEMORA AL USUARIO ';
+//                    registrar ingreso en traza
+                    var obj = {
+                        ID_OPERACION:id_operacion_sem,
+                        ESTADO:'3', //aceptado
+                        //CARTERADE:carterade, //setear en php
+                        DESTINO:'',
+                        OBSERVACION: obst,
+                        DESCRIPCION: dest,
+                        ETAPA:etapa,
+                        ETAPA_REAL:etapa
+                    }
+                    $.ajax({
+                        url : 'backend/notificaciones/x_actualizar_traza_sem',
+                        type : "post",
+                        data : {
+                            obj:obj
+                        },
+                        async:false,
+                        success : function(){
+//                            alert(" PASO");
+                             actualizaNotif();
+                            regresar_a_listado();
+                            jAlert('Carpeta vista.', 'Carpetas',function(){
+                                refrescarDomNotif(meobj);
+                            });
+                        }
+                    });
 
+            });
 
             $('.link_aceptar_carpeta').click(function(){
 
@@ -377,7 +421,7 @@ function notifMain( iid ){
                         obst = 'ACEPTADO CON SU';
                         dest = 'SE ACEPTO LA CARPETA CON SU';
                     }
-                    
+    
                     //registrar ingreso en traza
                     var obj = {
                         ID_OPERACION:id_operacion,
@@ -387,7 +431,8 @@ function notifMain( iid ){
                         OBSERVACION: obst,
                         DESCRIPCION: dest,
                         ETAPA:etapa,
-                        ETAPA_REAL:etapa
+                        ETAPA_REAL:etapa,
+                        SEM:0
                     }
                     $.ajax({
                         url : 'backend/notificaciones/x_send_traza',
@@ -557,22 +602,38 @@ function notifMain( iid ){
 }
 
 
-function actualizaNotif(p_auto){
-    p_auto || ( p_auto = '0' );
+function actualizaNotif(p_auto) {
+    p_auto || (p_auto = '0');
     $.ajax({
-        url : 'backend/notificaciones/x_get_carpetas_pendientes_cont',
-        type : "post",
-        async:false,
-        success : function(data){
-            if(data>0){
-                $(".notif").html('('+data+')');
-                $(".notif").attr("data-notificaciones",data);
-                if (p_auto==1){
+        url: 'backend/notificaciones/x_get_carpetas_pendientes_cont',
+        type: "post",
+        async: false,
+        success: function (data) {
+//         
+//            $.ajax({
+//                url: 'backend/carpeta/carpetas/x_consultar_fechas',
+//                type: "post",
+//                data: {
+//                    iduser: 56
+//                },
+////                timeout: 10000,
+////                dataType: 'html',
+//                success: function () {
+////                    alert("respuesta");
+////                    console.log(respuesta);
+//                }
+//            });
+//            
+
+            if (data > 0) {
+                $(".notif").html('(' + data + ')');
+                $(".notif").attr("data-notificaciones", data);
+                if (p_auto == 1) {
                     $.fancybox.close();
                     $(".notif").trigger('click');
                 }
             }
-            else if(data==-1){
+            else if (data == -1) {
                 $(".notif").html('');
             }
         }

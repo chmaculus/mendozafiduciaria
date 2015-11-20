@@ -35,7 +35,7 @@ function tooltip_evento(){
 }
 
 $(document).ready(function(){
-        
+               
     tooltip_evento();
     semmilla = fGetNumUnico();
     mydata = '';
@@ -341,10 +341,10 @@ $(document).ready(function(){
                                         });
                                         if (tmpfancy==1)
                                             myfancy=1;
-                                        alert("Poner Regresar");
+//                                        alert("Poner Regresar");
 
                                         $(".regresar_ar").click(function(e){
-                                            alert("Deberia regresar");
+//                                            alert("Deberia regresar");
                                             e.preventDefault();
                                             $.fancybox.close();
                                             //$(".asignar").trigger('click');
@@ -855,7 +855,7 @@ $(document).ready(function(){
                                     return false;
                                 }
                             }
-                            
+                  
                             $.ajax({
                                 url : _carpetas.URL + "/x_sendobj",
                                 data : {
@@ -1986,7 +1986,7 @@ $(document).ready(function(){
                                 dataType : "json",
                                 type : "post",
                                 success : function(data){
-                                    
+             
                                     if(data.result>0){
                                         jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo),function(){
                                             /*
@@ -7633,3 +7633,32 @@ function agregar_nota(idobjeto, ver){
             }
         });
 }
+
+//var inter = function(){
+//             
+//    setInterval(
+//        function() {
+//            poll()
+//        }, 1000 * 10 * 1);
+// }
+//    
+////var poll = function(){
+// function poll(){
+//    $.ajax({
+//       url: _carpetas.URL + "/x_consultar_fechas",
+////       url : _carpetas.URL + "/x_getenviar_a1",
+//        type : "post",
+//        data : {
+//        iduser:_USUARIO_SESION_ACTUAL
+//        },
+//        timeout: 10000,
+//        dataType: 'html',
+//         
+//        success: function(respuesta){
+////            alert(respuesta);
+//console.log(respuesta);
+//        }
+//    });
+//};
+// 
+//inter();

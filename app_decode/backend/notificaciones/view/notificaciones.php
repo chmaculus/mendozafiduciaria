@@ -35,6 +35,9 @@
                 <div data-iid="<?php echo $c["TID"]?>" data-idope="<?php echo $c["ID"]?>" data-autor="1" class="link_aceptar tb_no"></div>
             <?php else: ?>
                 <?php if ($c["TNOTIF"]==0): ?>
+                
+                <!--La condicion ==22 es solo para mostrar aviso de pasadas 24hs con la carpeta-->
+                <?php if ($c["TESTADO"]!=22): ?>
                     <?php if ($c["TESTADO"]!=4): ?>
                         <?php if ($c["TESTADO"]!=8): ?>
                             <div class="<?php echo $clase ?>" >Carpeta: <?php echo $c["ID"]?> (<?php echo $c["OPERATORIA"] ?>) de: <?php echo $c["CLIENTE"] ?>. <span>Te lo envia: <?php echo $c['ENVIA']?></span> </div>
@@ -51,6 +54,15 @@
                     <div data-etapa="<?php echo $c["TETAPA"]?>" data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_si"></div>
                     <div data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_no"></div>
                     <?php endif; ?>
+                   
+                    <?php elseif($c["TESTADO"]==22): ?>
+  
+                            <div class="<?php echo $clase ?>">Carpeta: <?php echo $c["ID"]?> (<?php echo $c["OPERATORIA"] ?>)  <span>La carpeta asignada supero el tiempo permitido en la etapa. </span> </div>
+                            <div data-etapa="<?php echo $c["TETAPA"]?>" data-iid="<?php echo $c["ID"]?>" class="link_aceptar tb_leida"></div>
+                    
+
+                     <?php endif; ?>
+                    <!--finaliza el aviso de las 24hs-->
                 <?php elseif($c["TNOTA"]>0): //Nota ?>
                     <?php if ( $c["TESTADO"]!=4 ):?>
                     <div id="line1" class="<?php echo $clase ?>" >Te enviaron una nota.<span id="a"> Nota ID: <span id="idNoti"><?php echo $c["TNOTA"]?></span></span>

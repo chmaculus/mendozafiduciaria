@@ -109,6 +109,7 @@ class permisos extends main_controller{
     }
     
     function x_getform_addentidad_new(){
+        
         $obj = isset($_POST['obj'])?$_POST['obj']:array();
         $tmp = $this->mod->get_obj($obj);
         $data['cad'] = "";

@@ -61,20 +61,55 @@ class notificaciones extends main_controller{
         $id_ope = $obj["ID_OPERACION"];
         
         $destino = $this->mod->get_destino($id_ope);
-        
-        //log_this('qqqq.log',print_r($destino,1));
-        
+
         if ($destino>0 && $destino != $_SESSION["USERADM"] ){
             $obj["CARTERADE"] = $destino;
         }else{
             $obj["CARTERADE"] = $_SESSION["USERADM"];
         }
-        
+    
         $rtn = $this->mod->send_traza($obj);
+        
+        echo $rtn?$rtn:'-1';
+    }
+    
+    
+    function x_actualizar_traza_sem(){
+        $obj = $_POST["obj"];
+        $id_ope = $obj['ID_OPERACION'];
+
+        $destino = $this->mod->get_destino($id_ope);
+
+        $rtn = $this->mod->send_traza_sem($obj,$destino);
+
         echo $rtn?$rtn:'-1';
     }
     
     function x_get_carpetas_pendientes_cont(){
+        /* Entra en lanzar alerta y va consultando de acuerdo a la fecha y hora actual.
+          Pasa el numero de operario y busco si hay algo para mostar y lo devuelve.
+          Si lo devuelve ingresa en guardar_traza_alertas donde ingresa una nueva traza para que se
+          muestre como notificacion y se actualiza el campo de semaforo HAB=2 para que indique que ya se aviso
+         */
+        $idUser = $_SESSION["USERADM"];
+//        echo "id " . $idUser;
+        $obj = $this->mod->lanzar_alertas($idUser);
+//        die(" DIE HERE");
+        $obj_repetir = $this->mod->repetir_alertas();
+//        print_r($obj);die(" SACAR HORA");
+//        print_r($obj);
+//       print_r($obj_repetir);
+        
+        if ($obj) {
+            $noti = $this->mod->guardar_traza_alertas($obj);
+        }
+//        else {
+//            echo "NO HACE NADA";
+//        }
+//        if ($obj_repetir) {
+//            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
+//        }
+        
         $rtn = $this->mod->get_carpetas_pendientes_cont($_SESSION["USERADM"]);
         echo $rtn?$rtn:'-1';
     }

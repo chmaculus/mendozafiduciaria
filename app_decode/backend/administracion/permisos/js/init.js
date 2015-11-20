@@ -921,6 +921,8 @@ function actualiza_ss(valu) {
         async:false,
         type : "post",
         success : function(data){
+//console.log("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+//console.log(data);
 
             $.unblockUI();
             $("#jqxgrid").hide();
@@ -932,7 +934,11 @@ function actualiza_ss(valu) {
             $("#label_action").html('Editar');
             var _arr_obj_n = jQuery.parseJSON($("#_arr_obj_n").val());
 
+//console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+//console.log($("#_arr_obj_n").val());
+
             $("#id_rol").val(_arr_obj_n[0].ID_ROL).trigger("chosen:updated");
+
             //$("#id_permiso").val(_array_obj.ID_PERMISO).trigger("chosen:updated");
 
             //eventos

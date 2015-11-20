@@ -1,6 +1,6 @@
 <?php
     require_once('connect.php');
-    
+
     if (isset($_GET["accion"]) && $_GET["accion"]=='getFacturasCuva' ){
 
         $word = isset($_GET["name_startsWith"])?$_GET["name_startsWith"]:"";
@@ -274,10 +274,10 @@
         $rtn = $cnn->order_by("IDOPE","DESC");
                 
         
-        $cnn->where( $cad_like );
+        $cnn->where( $cad_like . 'AND tr1.SEM=0'   );
         $rtn = $cnn->get_tabla("fid_operaciones o");
         
-        //file_put_contents('qqqq.log', $cnn->last_query() );
+        file_put_contents('qqqq.log', $cnn->last_query() );
         
         echo trim(json_encode($rtn?$rtn:array()));
         die();

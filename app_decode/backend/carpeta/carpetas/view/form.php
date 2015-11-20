@@ -468,9 +468,12 @@
         <div class="vtabinfo" data-etapa="10">
             <!--<div class="ocultame_etapa"><span>Contenido Bloqueado</span></div>-->
             <?php if (in_array("7",$permisos_etapas) or $_SESSION["USER_USERNAME"]=='admin' or 1): ?>
-                <p class="div_chk" id="div_chk_checklist1">
+<!--            <p class="div_chk" id="div_chk_checklist1">
                     <input type="checkbox" id="chk_rcontrato" name="chk_rcontrato" value="2" class="styled" <?php echo (isset($array_chk['RCONTRATO']) && $array_chk['RCONTRATO']==1 ? 'checked="checked"':'') ?>/> <label for="chk_rcontrato">Dar conformidad</label>
-                </p>
+                </p>-->
+            <!--<p class="div_chk" id="div_chk_checklist1">-->
+                    <input type="checkbox" id="chk_rcontrato" name="chk_rcontrato" value="2" class="styled"/> <label for="chk_rcontrato">Dar conformidad</label>
+                <!--</p>-->
                 
                 <?php if(is_array($lst_escribanos)): ?>
                 <div class="elem elem_med" >

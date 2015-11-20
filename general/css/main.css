@@ -234,6 +234,10 @@ verfoto img{
     background: url('../../general/css/images/32x32/checked.png') no-repeat 50% 6px !important;
     background-size:25px 25px!important;
 }
+.tb_leida{
+    background: url('../../general/css/images/32x32/checked.png') no-repeat 50% 6px !important;
+    background-size:25px 25px!important;
+}
 .tb_no{
     background: url('../../general/css/images/32x32/Close.png') no-repeat 50% 6px !important;
     background-size:25px 25px!important;
