@@ -106,9 +106,9 @@ class notificaciones extends main_controller{
 //        else {
 //            echo "NO HACE NADA";
 //        }
-//        if ($obj_repetir) {
-//            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
-//        }
+        if ($obj_repetir) {
+            $noti = $this->mod->guardar_traza_alertas_repetir($obj_repetir);
+        }
         
         $rtn = $this->mod->get_carpetas_pendientes_cont($_SESSION["USERADM"]);
         echo $rtn?$rtn:'-1';
