@@ -9,11 +9,11 @@
 <table style="width:100%">
     <tr>
         <td>Fecha desde</td>
-        <td><input type="text" value="<?=$fecha_desde ? date('Y-m-d', strtotime($fecha_desde)) : '';?>" /></td>
+        <td><input type="text" value="<?=$fecha_desde ? date('Y-m-d', $fecha_desde) : '';?>" /></td>
     </tr>
     <tr>
         <td>Fecha hasta</td>
-        <td><input type="text" value="<?=$fecha_hasta ? date('Y-m-d', strtotime($fecha_hasta)) : '';?>" /></td>
+        <td><input type="text" value="<?=$fecha_hasta ? date('Y-m-d', $fecha_hasta) : '';?>" /></td>
     </tr>
     <tr>
         <td style="border:0.1pt solid #000;">Fideicomiso</td>
@@ -71,7 +71,7 @@
     <tr>
         <td style="border:0.1pt solid #000;">#</td>
 <?php foreach($arr_reporte as $item) { ?>
-        <td style="border:0.1pt solid #000;"><?=number_format($item['CANT_CUOTAS_COBRADAS'] * 100 / $item['CANT_CUOTAS'], 2, ",", "")?>%</td>
+        <td style="border:0.1pt solid #000;"><?=number_format($item['CANT_CUOTAS'] ? ($item['CANT_CUOTAS_COBRADAS'] * 100 / $item['CANT_CUOTAS']) : 0, 2, ",", "")?>%</td>
 <?php } ?>
     </tr>
 </table>

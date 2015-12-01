@@ -1465,7 +1465,7 @@ class credito_model extends main_model {
                     break;
                 }
             }
-
+            
             $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true);
             $inicial = $capital_arr['INICIAL'];
             $desembolsos = $capital_arr['DESEMBOLSOS'];
@@ -2514,15 +2514,20 @@ class credito_model extends main_model {
                 else{
         //ETAPA 1
                     $version = array(
-                        "FECHA_VERSION" => $fecha,
+                        "FECHA_VERSION" => time(),
                         "ID_CREDITO_VERSION" => $this->_id_credito,
                         "TIPO_VERSION" => 1,
                         "DESCRIPCION_VERSION" => "Inicial",
                         "PARENT_ID" => 0,
+                        "ACTIVA" => 1,
                         "UPDATE_TIME" => time()
                     );
                     $id_version = $this->_db->insert("fid_creditos_version", $version);
                     $this->_id_version = $id_version;
+                    
+                    $this->_db->where("ID_CREDITO_VERSION = " . $this->_id_credito);
+                    $this->_db->where("ACTIVA = 1");
+                    $version = $this->_db->get_row("fid_creditos_version");
                 }
                 
             }
@@ -2535,7 +2540,7 @@ class credito_model extends main_model {
 
         $this->_version = $version;
         $this->_id_version = $id_version;
-
+        
 
         //obtiene toda la candea ancestor de la version dada
         //obtiene encadenado todas las versiones
@@ -3150,14 +3155,14 @@ ORDER BY T1.lvl DESC');
             $sql .= " AND ID_FIDEICOMISO  IN (" . implode(",", $ffid) . ")";
         }
         
-        if ($fdesde || $fhasta) {
+       /* if ($fdesde || $fhasta) {
             if ($fdesde) {
                 $sql .= " AND CAPITAL_VTO >= '" . date('Y-m-d', $fdesde) . "'";
             }
             if ($fhasta) {
                 $sql .= " AND CAPITAL_VTO <= '" . date('Y-m-d', $fhasta) ." 23:59:59'";
             }
-        }
+        }*/
         
         $this->_db->select('c.ID, ID_FIDEICOMISO, NOMBRE AS FIDEICOMISO, MONTO_CREDITO, INTERES_VTO, RAZON_SOCIAL, cl.CUIT, DIRECCION, COD_POSTAL, TELEFONO, PROVINCIA, LOCALIDAD');
         //$this->_db->where("c.ID IN (SELECT ID_CREDITO FROM fid_creditos_pagos WHERE ID_TIPO IN (". PAGO_MORATORIO .") ) ");
@@ -3247,13 +3252,18 @@ ORDER BY T1.lvl DESC');
         
     }
     
-    public function get_cuotas() {
-        $this->_db->select('CAPITAL_CUOTA, INT_COMPENSATORIO, INT_COMPENSATORIO_IVA, FECHA_VENCIMIENTO, CUOTAS_RESTANTES, CUOTA_AL_DIA, FECHA_PAGO, CUOTA_TOTAL');
-        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+    public function get_cuotas($fdesde=FALSE, $fhasta=FALSE) {
+        if ($fdesde && $fhasta) {
+            $where = " AND FECHA_VENCIMIENTO>='$fdesde' AND FECHA_VENCIMIENTO<='$fhasta'";
+        } else {
+            $where = '';
+        }
+        $this->_db->select('CAPITAL_CUOTA, INT_COMPENSATORIO, INT_COMPENSATORIO_IVA, INT_MORATORIO, INT_PUNITORIO, FECHA_VENCIMIENTO, CUOTAS_RESTANTES, CUOTA_AL_DIA, FECHA_PAGO, CUOTA_TOTAL');
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito . $where);
         $this->_db->order_by("FECHA_INICIO", "ASC");
         $cuotas = $this->_db->get_tabla("fid_creditos_cuotas");
         
-        //echo $this->_db->last_query();
+        //echo $this->_db->last_query();die();
         
         if($cuotas) {
             return $cuotas;
@@ -3428,7 +3438,16 @@ ORDER BY T1.lvl DESC');
                         $_intereses = $c['IVA_PUNITORIO']['TOTAL'] + $c['IVA_MORATORIO']['TOTAL'] + $c['IVA_COMPENSATORIO']['TOTAL'] + $c['PUNITORIO']['TOTAL'] + $c['MORATORIO']['TOTAL'] + $c['COMPENSATORIO']['TOTAL'];
                         $total_cuota = (isset($c['GASTOS']['TOTAL']) ? $c['GASTOS']['TOTAL'] : 0) + $c['CAPITAL']['TOTAL'] + $_intereses;
                         $intereses += $_intereses;
-                        $this->_db->update('fid_creditos_cuotas', array('CUOTA_AL_DIA' => $total_a_pagar, 'CUOTA_TOTAL'=>$total_cuota), "ID_CREDITO={$credito['ID']} AND CUOTAS_RESTANTES={$c['CUOTAS_RESTANTES']}");
+                        $arr_update = array(
+                            'CUOTA_AL_DIA' => $total_a_pagar,
+                            'CUOTA_TOTAL' => $total_cuota,
+                            'INT_COMPENSATORIO' => $c['COMPENSATORIO']['TOTAL'],
+                            'INT_COMPENSATORIO_IVA' => $c['IVA_COMPENSATORIO']['TOTAL'],
+                            'INT_MORATORIO' => $c['MORATORIO']['TOTAL'] + $c['IVA_MORATORIO']['TOTAL'],
+                            'INT_PUNITORIO' => $c['PUNITORIO']['TOTAL'] + $c['IVA_PUNITORIO']['TOTAL']
+                        );
+                        
+                        $this->_db->update('fid_creditos_cuotas', $arr_update, "ID_CREDITO={$credito['ID']} AND CUOTAS_RESTANTES={$c['CUOTAS_RESTANTES']}");
                     }
                 }
                 

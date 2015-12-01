@@ -117,7 +117,7 @@
                             <span >Interes Compensatorio</span>
                         </div>
                         <div class="c3">
-                            <input type="text" class="" id="txtInteresCompensatorio" value="<?= $credito['T_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 'readonly="readonly"' : '' ?>/>
+                            <input type="text" class="" id="txtInteresCompensatorio" value="<?= $credito['T_COMPENSATORIO'] ?>" />
                         </div>
                         <div class="c3">
                             <input type="text" class="" id="txtPeriodicidadCalculoCompensatorio" value="<?= $credito['PLAZO_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 'readonly="readonly"' : '' ?>/>

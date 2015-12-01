@@ -46,7 +46,7 @@ define('MYSQL_SERVER', 'localhost');
 define('MYSQL_USER', 'root');
 define('MYSQL_PASS', '');
 //define('MYSQL_DATABASE', 'fiduciaria_prod');
-define('MYSQL_DATABASE', 'fiduciaria_m2');
+define('MYSQL_DATABASE', 'fiduciaria');
 
 
 define('SQL_SERVER', 'SVDESARROLLO\SQL2008R2');

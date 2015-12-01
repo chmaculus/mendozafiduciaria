@@ -65,7 +65,7 @@ class formaltabase extends main_controller {
             
             $credito["ID"] = $ultimo;
             if ($prorroga) {
-                $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
+                $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'], 2, '.', '');// + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
             } else {
                 $credito["MONTO_CREDITO"] = number_format($ret_reuda['cuotas'][0]['CAPITAL']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_COMPENSATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['IVA_MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['PUNITORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['MORATORIO']['TOTAL'] + $ret_reuda['cuotas'][0]['COMPENSATORIO']['TOTAL'], 2, '.', '');
             }
@@ -423,7 +423,7 @@ class formaltabase extends main_controller {
         $data['plazo_pago'] = $_POST['plazo_pago'];
         $data['por_int_punitorio'] = $_POST['int_punitorio'];
         $data['por_int_moratorio'] = $_POST['int_moratorio'];
-        $data['por_int_gastos'] = $_POST['int_gastos'];
+        $data['por_int_gastos'] = isset($_POST['int_gastos']) ? $_POST['int_gastos'] : 0;
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
         $data['TIPO'] = 0;
@@ -514,6 +514,7 @@ class formaltabase extends main_controller {
         $this->mod->set_fecha_calculo();
 
         $this->mod->save_operacion_credito();
+        $_POST['credito_caduca'] = isset($_POST['credito_caduca']) ? $_POST['credito_caduca'] : FALSE;
         if ($_POST['credito_caduca'] || $_SESSION['simulacion_credito']) {
             if($_POST['prorroga']) {
                 $this->mod->prorrogar_credito($_POST['credito_caduca'], $credito_id, $_POST['fecha_caduca']);

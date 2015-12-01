@@ -355,7 +355,8 @@ class sqldata {
             $trace = $e->getTrace();
             $last_call = $trace [1];
 
-            $err_string = "Archivo: " . $_SESSION ['FILE'] . "\nFuncion: " . $trace [2] ['function'] . "\nLinea: " . $trace [1] ['line'] . "\nError : " . $error . "\n[ERR-700]Sql: " . $this->_sql;
+            $archivo = isset($_SESSION ['FILE']) ? $_SESSION ['FILE'] : 'archivo-no-definido';
+            $err_string = "Archivo: " . $archivo . "\nFuncion: " . $trace [2] ['function'] . "\nLinea: " . $trace [1] ['line'] . "\nError : " . $error . "\n[ERR-700]Sql: " . $this->_sql;
 
             include_once ("core/view/err_controller.php");
             view_error(str_replace("\n", "<br/>", $err_string));
