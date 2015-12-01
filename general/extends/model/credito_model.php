@@ -1119,7 +1119,7 @@ class credito_model extends main_model {
                     $rango_comp = ($fecha_fin - $fecha_inicio) / (24 * 3600);
                     $rango_comp = $rango_comp > 0 ? $rango_comp : 0;
                     
-                    $capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
+                    $capital_arr = $this->_get_saldo_capital($fecha_inicio + 1, true, false);
                     //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
                     $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
@@ -1173,7 +1173,7 @@ class credito_model extends main_model {
                             //$fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']
                             $rango_int_mor = ($variacion['FECHA'] - $fecha_variacion_moratorio) / (24 * 3600);
                             $rango_int_mor = round($rango_int_mor);
-                            
+                          
                             $fecha_variacion_moratorio = $variacion['FECHA'];
                             //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
 
@@ -1182,7 +1182,7 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'] + 1, true, false);
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
@@ -1384,8 +1384,6 @@ class credito_model extends main_model {
                 }
             }
         }
-        
-        $bsegmentos = true;
             
         $cuotas_anteriores = array();
         foreach ($this->_cuotas as $cuota_item) {
@@ -1904,7 +1902,7 @@ class credito_model extends main_model {
         //obtenemos todas las cuotas que hayan iniciado
         $cuotas = array();
         foreach ($this->_cuotas as $cuota) {
-            if ($cuota['FECHA_INICIO'] <= $fecha) {
+            if ($cuota['FECHA_INICIO'] < $fecha) {
                 $cuotas[] = $cuota;
             }
         }
