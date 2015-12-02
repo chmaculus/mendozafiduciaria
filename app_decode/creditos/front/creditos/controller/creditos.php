@@ -475,16 +475,17 @@ class creditos extends main_controller{
             foreach ($reporte as $item) {
                 $monto_a_cobrar = 0;
                 $monto_mora = 0;
-                $cuotas_mora = 0;
-                $cant_cuotas = 0;
+                $cant_mora = 0;
+                $cant_creditos_a_cobrar = 0;
                 $cuotas_cobradas = 0;
                 $cobrado = 0;
                 
+                print_r($item);die();
+                
                 if (count($item['CUOTAS']) > 0) {
                     
-                    foreach ($item['CUOTAS'] as $cc) {
-                        ++$cant_cuotas;
-                        $monto_a_cobrar += ($cc['CAPITAL_CUOTA'] + $cc['INT_COMPENSATORIO'] + $cc['INT_COMPENSATORIO_IVA']);
+                    foreach ($item['CUOTAS'] as $kkk => $cc) {
+                        //$monto_a_cobrar += ($cc['CAPITAL_CUOTA'] + $cc['INT_COMPENSATORIO'] + $cc['INT_COMPENSATORIO_IVA']);
                         $pago_cuota = 0;
                         
                         if ($item['PAGOS']) {
@@ -498,13 +499,13 @@ class creditos extends main_controller{
                         $tt_cuota = $cc['CAPITAL_CUOTA'] + $cc['INT_COMPENSATORIO'] + $cc['INT_COMPENSATORIO_IVA'] + $cc['INT_MORATORIO'] + $cc['INT_PUNITORIO'];
                         if ($cc['INT_MORATORIO']) {
                             $_monto_mora = $tt_cuota - $pago_cuota;
-                            if ($_monto_mora > 0.5) {
-                                if ($_monto_mora > $cc['INT_MORATORIO']) {
-                                    $_monto_mora = $cc['INT_MORATORIO'];
-                                }
+                            if ($_monto_mora > 0.5) {   
                                 $monto_mora += $_monto_mora;
-                                ++$cuotas_mora;
                             }
+                        } else {
+                            //si no tiene int_moratorio es xq no está vencido
+                            $_monto_sin_pagar = $tt_cuota - $pago_cuota;
+                            $monto_a_cobrar += $_monto_sin_pagar;
                         }
                         
                         if($item['ID']==2067) {
@@ -516,31 +517,51 @@ class creditos extends main_controller{
                             ++$cuotas_cobradas;
                         }
                     }
+                    
+                    if($monto_a_cobrar) {
+                        ++$cant_creditos_a_cobrar;
+                    }
+                    
+                    if($monto_mora) {
+                        ++$cant_mora;
+                    }
                 }
+                
+                //echo $monto_a_cobrar;die("aca");
+                
+                echo "F:".$item['ID_FIDEICOMISO']."<br />";
 
                 if (isset($arr_reporte[$item['ID_FIDEICOMISO']])) {
                     $arr = $arr_reporte[$item['ID_FIDEICOMISO']];
                     $arr['MONTO_A_COBRAR'] += $monto_a_cobrar;
-                    $arr['CANT_CUOTAS'] += $cant_cuotas;
+                    $arr['CANT_CREDITOS_A_COBRAR'] += $cant_creditos_a_cobrar;
                     $arr['COBRADO'] += $cobrado;
                     $arr['CANT_CUOTAS_COBRADAS'] += $cuotas_cobradas;
                     $arr['MONTO_EN_MORA'] += $monto_mora;
-                    $arr['CUOTAS_EN_MORA'] += $cuotas_mora;
+                    $arr['CUOTAS_EN_MORA'] += $cant_mora;
+                    $arr['TOTAL'] += $cant_mora;
+                    $arr['TOTAL_OTORGADO'] += $cant_mora;
+                    $arr['TOTAL_A_COBRAR'] += $cant_mora;
+                    ++$arr['TOTAL_CASOS'];
                 } else {
                     $arr = array();
                     $arr['NOMBRE'] = $item['FIDEICOMISO'];
                     $arr['MONTO_A_COBRAR'] = $monto_a_cobrar;
                     $arr['COBRADO'] = $cobrado;
                     $arr['CANT_CUOTAS_COBRADAS'] = $cuotas_cobradas;
-                    $arr['CANT_CUOTAS'] = $cant_cuotas;
+                    $arr['CANT_CREDITOS_A_COBRAR'] = $cant_creditos_a_cobrar;
                     $arr['MONTO_EN_MORA'] = $monto_mora;
-                    $arr['CUOTAS_EN_MORA'] = $cuotas_mora;
+                    $arr['CUOTAS_EN_MORA'] = $cant_mora;
+                    $arr['TOTAL_OTORGADO'] = $cant_mora;
+                    $arr['TOTAL_A_COBRAR'] = $cant_mora;
+                    $arr['TOTAL_CASOS'] = 1;
                 }
                 
                 $arr_reporte[$item['ID_FIDEICOMISO']] = $arr;
             }
             
         }
+        die();
         
         echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte, 'fecha_desde'=>$filtros[1], 'fecha_hasta'=>$filtros[2]));
     }

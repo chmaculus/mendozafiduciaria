@@ -18,8 +18,8 @@
     <tr>
         <td style="border:0.1pt solid #000;">Fideicomiso</td>
         <td style="border:0.1pt solid #000;"></td>
-<?php foreach($arr_reporte as $item) { ?>
-        <td style="border:0.1pt solid #000;background-color:#ccc"><?=$item['NOMBRE']?></td>
+<?php foreach($arr_reporte as $k => $item) { ?>
+        <td style="border:0.1pt solid #000;background-color:#ccc"><?=$item['NOMBRE'] ? $item['NOMBRE'] : "#" . $k ?></td>
 <?php } ?>
     </tr>
     <tr>
@@ -32,7 +32,7 @@
     <tr>
         <td style="border:0.1pt solid #000;">#</td>
 <?php foreach($arr_reporte as $item) { ?>
-        <td style="border:0.1pt solid #000;"><?=$item['CANT_CUOTAS']?></td>
+        <td style="border:0.1pt solid #000;"><?=$item['CANT_CREDITOS_A_COBRAR']?></td>
 <?php } ?>
     </tr>
     <tr>
@@ -71,7 +71,7 @@
     <tr>
         <td style="border:0.1pt solid #000;">#</td>
 <?php foreach($arr_reporte as $item) { ?>
-        <td style="border:0.1pt solid #000;"><?=number_format($item['CANT_CUOTAS'] ? ($item['CANT_CUOTAS_COBRADAS'] * 100 / $item['CANT_CUOTAS']) : 0, 2, ",", "")?>%</td>
+        <td style="border:0.1pt solid #000;"><?=number_format($item['CANT_CREDITOS_A_COBRAR'] ? ($item['CANT_CUOTAS_COBRADAS'] * 100 / $item['CANT_CREDITOS_A_COBRAR']) : 0, 2, ",", "")?>%</td>
 <?php } ?>
     </tr>
 </table>
