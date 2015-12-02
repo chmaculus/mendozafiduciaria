@@ -474,13 +474,23 @@ class creditos extends main_controller{
         if ($reporte) {
             foreach ($reporte as $item) {
                 $monto_a_cobrar = 0;
+                $total_a_cobrar = 0;
                 $monto_mora = 0;
                 $cant_mora = 0;
                 $cant_creditos_a_cobrar = 0;
                 $cuotas_cobradas = 0;
                 $cobrado = 0;
+                $desembolsos = 0;
                 
-                print_r($item);die();
+                if (is_array($item['DESEMBOLSO']) && count($item['DESEMBOLSO']) > 0) {
+                    foreach ($item['DESEMBOLSO'] as $des) {
+                        if (!$filtros[1] || ($filtros[1] && $filtros[1] <= $des['FECHA'])) {
+                            if (!$filtros[2] || ($filtros[2] && $filtros[2] >= $des['FECHA'])) {
+                                $desembolsos += $des['MONTO'];
+                            }
+                        }
+                    }
+                }
                 
                 if (count($item['CUOTAS']) > 0) {
                     
@@ -508,6 +518,9 @@ class creditos extends main_controller{
                             $monto_a_cobrar += $_monto_sin_pagar;
                         }
                         
+                        $_monto_sin_pagar = $tt_cuota - $pago_cuota;
+                        $total_a_cobrar += $_monto_sin_pagar;
+                        
                         if($item['ID']==2067) {
                             //echo $cuotas_mora . "<br />";
                         }
@@ -528,8 +541,6 @@ class creditos extends main_controller{
                 }
                 
                 //echo $monto_a_cobrar;die("aca");
-                
-                echo "F:".$item['ID_FIDEICOMISO']."<br />";
 
                 if (isset($arr_reporte[$item['ID_FIDEICOMISO']])) {
                     $arr = $arr_reporte[$item['ID_FIDEICOMISO']];
@@ -539,9 +550,8 @@ class creditos extends main_controller{
                     $arr['CANT_CUOTAS_COBRADAS'] += $cuotas_cobradas;
                     $arr['MONTO_EN_MORA'] += $monto_mora;
                     $arr['CUOTAS_EN_MORA'] += $cant_mora;
-                    $arr['TOTAL'] += $cant_mora;
-                    $arr['TOTAL_OTORGADO'] += $cant_mora;
-                    $arr['TOTAL_A_COBRAR'] += $cant_mora;
+                    $arr['TOTAL_OTORGADO'] += $desembolsos;
+                    $arr['TOTAL_A_COBRAR'] += $total_a_cobrar;
                     ++$arr['TOTAL_CASOS'];
                 } else {
                     $arr = array();
@@ -552,8 +562,8 @@ class creditos extends main_controller{
                     $arr['CANT_CREDITOS_A_COBRAR'] = $cant_creditos_a_cobrar;
                     $arr['MONTO_EN_MORA'] = $monto_mora;
                     $arr['CUOTAS_EN_MORA'] = $cant_mora;
-                    $arr['TOTAL_OTORGADO'] = $cant_mora;
-                    $arr['TOTAL_A_COBRAR'] = $cant_mora;
+                    $arr['TOTAL_OTORGADO'] = $desembolsos;
+                    $arr['TOTAL_A_COBRAR'] = $total_a_cobrar;
                     $arr['TOTAL_CASOS'] = 1;
                 }
                 
@@ -561,7 +571,6 @@ class creditos extends main_controller{
             }
             
         }
-        die();
         
         echo $this->view("informes/reporte_credito3", array('arr_reporte' => $arr_reporte, 'fecha_desde'=>$filtros[1], 'fecha_hasta'=>$filtros[2]));
     }

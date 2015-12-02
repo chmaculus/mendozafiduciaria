@@ -1119,7 +1119,7 @@ class credito_model extends main_model {
                     $rango_comp = ($fecha_fin - $fecha_inicio) / (24 * 3600);
                     $rango_comp = $rango_comp > 0 ? $rango_comp : 0;
                     
-                    $capital_arr = $this->_get_saldo_capital($fecha_inicio + 1, true, false);
+                    $capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
                     //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
                     $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
@@ -1182,7 +1182,7 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'] + 1, true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
@@ -1408,12 +1408,12 @@ class credito_model extends main_model {
               $segmentos && $this->_forzar_devengamiento_a_fecha ) { */
             //calculamos saldo de capital
 
-            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true);
+            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'] + 1, true);
             $SALDO_CAPITAL = $capital_arr['SALDO'];
 
 
             //calculamos saldo de capital
-            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true);
+            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] + 1, true);
 
             $cuota['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
             $cuota['SALDO_CAPITAL'] = $SALDO_CAPITAL;
@@ -1464,12 +1464,12 @@ class credito_model extends main_model {
                 }
             }
             
-            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true);
+            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'] + 1, true);
             $inicial = $capital_arr['INICIAL'];
             $desembolsos = $capital_arr['DESEMBOLSOS'];
             $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
 
-            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true);
+            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] + 1, true);
             $this->_cuotas[$cuota_id]['SALDO_CAPITAL'] = $capital_arr['BASE_CALCULO'];
 
             /*
@@ -1902,7 +1902,7 @@ class credito_model extends main_model {
         //obtenemos todas las cuotas que hayan iniciado
         $cuotas = array();
         foreach ($this->_cuotas as $cuota) {
-            if ($cuota['FECHA_INICIO'] < $fecha) {
+            if ($cuota['FECHA_INICIO'] <= $fecha) {
                 $cuotas[] = $cuota;
             }
         }
