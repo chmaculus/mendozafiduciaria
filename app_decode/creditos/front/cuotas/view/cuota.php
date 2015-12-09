@@ -243,10 +243,10 @@ foreach($cuotas as $kk=>$cuota){
                 </tr>
                 <tr class="totales-cuota-c">
                     <td class="titulo-esp ">TOTALES PRÓRROGA</td>
-                    <td class="dato-esp total" colspan="2"><?=number_format($total_compensatorio + $total_capital + $iva_compensatorio_total,2,",",".")  ?></td>
-                    <td class="dato-esp total" colspan="2"><?=number_format($total_subsidio + $iva_subsidiado,2,",",".")  ?></td>
-                    <td class="dato-esp total" colspan="2"><?=number_format($pagado_compenstorio + $pagado_capital + $iva_compensatorio_pagado,2,",",".")  ?></td>
-                    <td class="dato-esp total" colspan="2"><?=number_format(str_replace(",", "", ($total_compensatorio + $total_capital + $iva_compensatorio_total)-($pagado_compenstorio + $pagado_capital + $iva_compensatorio_pagado)),2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($total_capital,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format(0,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format($pagado_capital,2,",",".")  ?></td>
+                    <td class="dato-esp total" colspan="2"><?=number_format(str_replace(",", "", ($total_capital)-($pagado_capital)),2,",",".")  ?></td>
                 </tr>
             </table>
             

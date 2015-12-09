@@ -1,0 +1,1 @@
+"C:\Archivos de Programa\Git\bin\curl.exe" http://localhost/fideicomiso/creditos/front/cuotas/update_pagos
