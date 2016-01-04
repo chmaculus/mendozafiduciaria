@@ -85,6 +85,9 @@ class credito extends main_controller{
             header("Location: " . '/'.URL_PATH.'/creditos/front/creditos');
         }
         
+        $fupdate = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s')) - (3600 * 24 - 5 * 60)); //dejamos 5 min para
+        $this->mod->fupdate_credito($id_credito, $fupdate);
+        
         $this->mod->set_version_active();
         $this->mod->renew_datos();
         
@@ -322,6 +325,7 @@ class credito extends main_controller{
         $total_saldo = 0;
         $total_comp_act = 0;
         $total_comp_act_iva = 0;
+        $total_capital = 0;
         
         $desembolsos = $this->mod->get_desembolsos();
         
@@ -381,6 +385,8 @@ class credito extends main_controller{
                 $cuota['INT_MORA_PUN_IVA'] = $item['IVA_PUNITORIO']['TOTAL'] + $item['IVA_MORATORIO']['TOTAL'];
                 $total_int_mor_pun_iva += $cuota['INT_MORA_PUN_IVA'];
                 $cuota['INT_MORA_PUN_IVA'] = number_format($cuota['INT_MORA_PUN_IVA'], 2, ",", "");
+                $total_capital += $item['CAPITAL']['TOTAL'];
+                $cuota['CAPITAL'] = number_format($item['CAPITAL']['TOTAL'], 2, ",", "");
                 
                 $arra_res[] = $cuota;
             }
@@ -400,6 +406,7 @@ class credito extends main_controller{
         $totales['INT_MORA_PUN_IVA'] = number_format($total_int_mor_pun_iva, 2, ",", "");
         $totales['SALDO_MORA'] = number_format($total_saldo_mora, 2, ",", "");
         $totales['SALDO_CUOTA'] = number_format($total_saldo, 2, ",", "");
+        $totales['TOTAL_CAPITAL'] = number_format($total_capital, 2, ",", "");
         
 
         $ret_deuda['fecha_actual'] = $fecha;

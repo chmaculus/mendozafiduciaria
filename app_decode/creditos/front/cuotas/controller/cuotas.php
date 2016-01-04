@@ -39,6 +39,8 @@ class cuotas extends main_controller{
             return $this->view("form_generar", array());
         }
         else{
+            $fupdate = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s')) - (3600 * 24 - 5 * 60)); //dejamos 5 min para
+            $this->mod->fupdate_credito($credito, $fupdate);
             
             $this->mod->set_credito_active($credito);
             $this->mod->set_version_active();

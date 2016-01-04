@@ -30,6 +30,7 @@
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Saldo</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Fecha</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Vencida</th>
+            <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Capital</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">Int. Compens.</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">IVA</th>
             <th style="border:1pt solid #000;background-color:#ccc;text-align:center">I.C.A.</th>
@@ -59,6 +60,7 @@
             <td style="border:0.1pt solid #000;"></td>
             <td style="border:0.1pt solid #000;"></td>
             <td style="border:0.1pt solid #000;"></td>
+            <td style="border:0.1pt solid #000;"></td>
             <td style="border-width:0.1pt 1pt 0.1pt 0.1pt;border-style:solid;border-color:#000"></td>
         </tr>
 
@@ -70,6 +72,7 @@
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['SALDO'];?></td>
             <td style="border:0.1pt solid #000;"><?=$item['FECHA'];?></td>
             <td style="border:0.1pt solid #000;"><?=$item['VENCIDA'];?></td>
+            <td style="border:0.1pt solid #000;"><?=$item['CAPITAL'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['INT_COMPENSATORIO'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['INT_COMPENSATORIO_IVA'];?></td>
             <td style="border:0.1pt solid #000;text-align:right"><?=$item['COMPENSATORIO_ACT'];?></td>
@@ -90,6 +93,7 @@
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;background-color:#ddd"></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;background-color:#ddd"></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;background-color:#ddd"></td>
+            <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['TOTAL_CAPITAL'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['INT_COMPENSATORIO'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['INT_COMPENSATORIO_IVA'];?></td>
             <td style="border-width:1pt 0 1pt 0;border-style:solid;border-color:#000;text-align:right;background-color:#ddd"><?=$totales_credito['COMPENSATORIO_ACT'];?></td>

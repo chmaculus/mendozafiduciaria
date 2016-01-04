@@ -1118,6 +1118,7 @@ class credito_model extends main_model {
                     
                     $rango_comp = ($fecha_fin - $fecha_inicio) / (24 * 3600);
                     $rango_comp = $rango_comp > 0 ? $rango_comp : 0;
+                    $ranto_total_comp = ($cuota['FECHA_VENCIMIENTO'] - $cuota['FECHA_INICIO']) / (24 * 3600);
                     
                     $capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
                     //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
@@ -1136,7 +1137,7 @@ class credito_model extends main_model {
                     /////
                     if($fecha_get >= $cuota['FECHA_VENCIMIENTO'] || $this->_tipo_devengamiento == TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO) {
                     
-                        $interes = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                        $interes = $this->_calcular_interes($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp);
                         $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
 
                         if ($cuota['ID']==0 && $interes) {
@@ -1249,7 +1250,7 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
+                        if($variacion['FECHA'] > $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
@@ -3305,10 +3306,21 @@ ORDER BY T1.lvl DESC');
     }
     
     public function get_creditos() {
+        $fecha = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s')) - (3600*24));
+        
         $this->_db->select('ID');
-        $this->_db->where("CREDITO_ESTADO <> ".ESTADO_CREDITO_ELIMINADO);
+        $this->_db->where("CREDITO_ESTADO <> " . ESTADO_CREDITO_ELIMINADO . " AND FUPDATED < '$fecha'");
         $this->_db->order_by("ID", "ASC");
         return $this->_db->get_tabla("fid_creditos");
+    }
+    
+    public function fupdate_credito($id, $fupdated = FALSE) {
+        if ($fupdated) {
+            $fupdated = array('FUPDATED' => $fupdated);
+        } else {
+            $fupdated = array('FUPDATED' => date('Y-m-d H:i:s'));
+        }
+        $this->_db->update('fid_creditos', $fupdated, "ID={$id}");//marco para no actualizar
     }
     
     public function emitir_una_cuota($fecha = FALSE) {
@@ -3447,6 +3459,8 @@ ORDER BY T1.lvl DESC');
                         
                         $this->_db->update('fid_creditos_cuotas', $arr_update, "ID_CREDITO={$credito['ID']} AND CUOTAS_RESTANTES={$c['CUOTAS_RESTANTES']}");
                     }
+                    
+                    $this->fupdate_credito($credito['ID']);
                 }
                 
                 if ($intereses==0) { //si no tiene intereses debe ser porque no tiene cargado desembolsos
