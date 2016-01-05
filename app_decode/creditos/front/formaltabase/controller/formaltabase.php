@@ -44,7 +44,7 @@ class formaltabase extends main_controller {
     }
 
     function _obtener_main($id, $credito_caduca, $fecha_caduca, $caducidad, $prorroga) {
-        
+
         $ultimo = $this->mod->get_next_id();
 
         if ($credito_caduca && $this->mod->set_credito_active($credito_caduca)) {
@@ -424,6 +424,7 @@ class formaltabase extends main_controller {
         $data['por_int_punitorio'] = $_POST['int_punitorio'];
         $data['por_int_moratorio'] = $_POST['int_moratorio'];
         $data['por_int_gastos'] = isset($_POST['int_gastos']) ? $_POST['int_gastos'] : 0;
+        $data['por_int_gastos_min'] = isset($_POST['int_gastos']) ? $_POST['int_gastos_min'] : 0;
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
         $data['TIPO'] = 0;

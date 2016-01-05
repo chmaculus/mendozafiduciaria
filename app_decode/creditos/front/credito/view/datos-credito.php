@@ -121,9 +121,9 @@
             <div class="elem elem_med tri" >
                 <label>Gastos</label>
                 <div class="indent">
-                    <span ><?=  number_format($T_GASTOS,3,",",".")?>%  </span>
+                    <span ><?=  number_format($T_GASTOS,3,",",".")?>% / (Mín: $<?=  number_format($T_GASTOS_MIN,2,",",".")?>)  </span>
                 </div>
-            </div> 
+            </div>
             
             <div class="elem elem_med tri" >
                 <label>Convenio</label>

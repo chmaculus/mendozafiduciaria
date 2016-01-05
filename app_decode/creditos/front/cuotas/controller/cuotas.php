@@ -1335,5 +1335,5 @@ class MYPDF extends TCPDF {
         $this->setPage(max($page_end_1,$page_end_2));
         $this->SetXY($this->GetX(),$ynew);
     }
-    
+
 }

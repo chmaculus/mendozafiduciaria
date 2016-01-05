@@ -224,6 +224,7 @@ class credito_model extends main_model {
             $data['por_int_punitorio'] = (key_exists('por_int_punitorio', $data)) ? $data['por_int_punitorio'] : $variacion['POR_INT_PUNITORIO'];
             $data['por_int_moratorio'] = (key_exists('por_int_moratorio', $data)) ? $data['por_int_moratorio'] : $variacion['POR_INT_MORATORIO'];
             $data['por_int_gastos'] = (key_exists('por_int_gastos', $data)) ? $data['por_int_gastos'] : $variacion['POR_INT_GASTOS'];
+            $data['por_int_gastos_min'] = (key_exists('por_int_gastos_min', $data)) ? $data['por_int_gastos_min'] : $variacion['POR_INT_GASTOS_MIN'];
             $data['monto'] = (key_exists('monto', $data)) ? $variacion['CAPITAL'] + $desembolso : $variacion['CAPITAL'];
             $data['iva'] = (key_exists('iva', $data)) ? $data['iva'] : $variacion['IVA'];
             $data['periodicidad_tasa'] = (key_exists('periodicidad_tasa', $data)) ? $data['periodicidad_tasa'] : $variacion['PERIODICIDAD_TASA'];
@@ -249,6 +250,7 @@ class credito_model extends main_model {
             "POR_INT_PUNITORIO" => $data['por_int_punitorio'],
             "POR_INT_MORATORIO" => $data['por_int_moratorio'],
             "POR_INT_GASTOS" => $data['por_int_gastos'],
+            "POR_INT_GASTOS_MIN" => $data['por_int_gastos_min'],
             "PERIODICIDAD_TASA" => $data['periodicidad_tasa'],
             "CAPITAL" => $data['monto'],
             "IVA" => $data['iva'],
@@ -558,7 +560,10 @@ class credito_model extends main_model {
                 $total_gastos_pagos += $pago_gasto;
                 
                 $TOTAL_CUOTA = $arr_capital['TOTAL'] + $arr_iva_punitorio['TOTAL'] + $arr_iva_moratorio['TOTAL'] + $arr_punitorio['TOTAL'] + $arr_moratorio['TOTAL'] + $arr_compensatorio['TOTAL'] + $arr_iva_compensatorio['TOTAL'] + $total_gastos;
-                $gastos_adm = $TOTAL_CUOTA * (1 / (1 - $this->_credito['T_GASTOS'] /100) - 1);
+                $gastos_adm = $TOTAL_CUOTA * (1 / (1 - $this->_credito['T_GASTOS'] / 100) - 1);
+                if ($TOTAL_CUOTA && $gastos_adm < $this->_credito['T_GASTOS_MIN']) {
+                    $gastos_adm = $this->_credito['T_GASTOS_MIN'];
+                }
                 
                 $arr_gastos[] = array(
                     'TOTAL' => $gastos_adm,

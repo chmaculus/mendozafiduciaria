@@ -95,6 +95,7 @@ class formalta_model extends credito_model {
         $moratorio = $primera_variacion['POR_INT_MORATORIO'] ;
         $bonificacion = $primera_variacion['POR_INT_SUBSIDIO'];
         $gastos = $primera_variacion['POR_INT_GASTOS'];
+        $gastosMin = $primera_variacion['POR_INT_GASTOS_MIN'];
         
         $primera_cuota = reset($this->_cuotas);
         $primer_vencimiento = $primera_cuota['FECHA_VENCIMIENTO'];
@@ -121,6 +122,7 @@ class formalta_model extends credito_model {
             "T_BONIFICACION" => $bonificacion,
             "T_MORATORIO" => $moratorio,
             "T_GASTOS" => $gastos,
+            "T_GASTOS_MIN" => $gastosMin,
             "INTERES_CUOTAS" => $interes_cuotas,
             "INTERES_VTO" => date("Y-m-d",$primer_vencimiento),
             "INTERES_PERIODO" => 09,

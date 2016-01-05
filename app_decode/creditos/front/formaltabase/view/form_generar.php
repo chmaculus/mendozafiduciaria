@@ -146,6 +146,17 @@
                             <span ><input type="text" class="" id="txtPeriodicidadCalculoPunitorio" value="<?= $credito['PLAZO_MORATORIO'] ?>"/></span>
                         </div>
                     </div>
+                    <div class=" row titulo-intereses">
+                        <div class="c5">
+                            <span >&nbsp;</span>
+                        </div>
+                        <div class="c3">
+                            <span class="">Interes (%)</span>
+                        </div>
+                        <div class="c3">
+                            <span class="">Monto Mínimo</span>
+                        </div>
+                    </div>   
                     <div class="row ">
                         <div class="c5">
                             <span >Gastos</span>
@@ -153,7 +164,9 @@
                         <div class="c3">
                             <span ><input type="text" class="" id="txtGastos" value="<?= $credito['T_GASTOS'] ?>"/></span>
                         </div>
-                        <div class="c3"></div>
+                        <div class="c3">
+                            <span ><input type="text" class="" id="txtGastosMin" value="<?= $credito['T_GASTOS_MIN'] ?>"/></span>
+                        </div>
                     </div>
                 </div>
             </div>
