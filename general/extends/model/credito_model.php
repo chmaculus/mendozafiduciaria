@@ -1142,7 +1142,7 @@ class credito_model extends main_model {
                     /////
                     if($fecha_get >= $cuota['FECHA_VENCIMIENTO'] || $this->_tipo_devengamiento == TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO) {
                     
-                        $interes = $this->_calcular_interes($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp);
+                        $interes = $ranto_total_comp ? ($this->_calcular_interes($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp)) : 0;
                         $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
 
                         if ($cuota['ID']==0 && $interes) {

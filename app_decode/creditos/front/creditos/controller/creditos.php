@@ -12,7 +12,7 @@ class creditos extends main_controller{
         
         $this->setCss( array("init.css","informes.css","informes_cuota.css") );
         $this->setJs( array( "creditos.js") );
-        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid"));
+        $this->setPlug( array("chosen","jalerts","numeric","validation","fancybox","jqgrid","table2excel"));
         
         $arr_permiso_mod = $this->_init();
         $datax = array();
@@ -507,18 +507,17 @@ class creditos extends main_controller{
                         }
                         
                         $tt_cuota = $cc['CAPITAL_CUOTA'] + $cc['INT_COMPENSATORIO'] + $cc['INT_COMPENSATORIO_IVA'] + $cc['INT_MORATORIO'] + $cc['INT_PUNITORIO'];
-                        if ($cc['INT_MORATORIO']) {
-                            $_monto_mora = $tt_cuota - $pago_cuota;
-                            if ($_monto_mora > 0.5) {   
+                        $_monto_mora = $tt_cuota - $pago_cuota;
+                        $_monto_sin_pagar = $tt_cuota - $pago_cuota;
+                        if ($_monto_mora > 0.5) {
+                            if ($cc['INT_MORATORIO']) {
                                 $monto_mora += $_monto_mora;
+                            } else {
+                                //si no tiene int_moratorio es xq no está vencido
                             }
-                        } else {
-                            //si no tiene int_moratorio es xq no está vencido
-                            $_monto_sin_pagar = $tt_cuota - $pago_cuota;
                             $monto_a_cobrar += $_monto_sin_pagar;
                         }
                         
-                        $_monto_sin_pagar = $tt_cuota - $pago_cuota;
                         $total_a_cobrar += $_monto_sin_pagar;
                         
                         if($item['ID']==2067) {
