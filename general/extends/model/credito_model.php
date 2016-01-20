@@ -216,7 +216,7 @@ class credito_model extends main_model {
             "ID_VERSION" => $id_version,
             "_FECHA_UPDATE" => time()
         );
-
+        
         if ($this->_bsave) {
             $id = $this->_db->insert("fid_creditos_eventos", $ret);
         } else {

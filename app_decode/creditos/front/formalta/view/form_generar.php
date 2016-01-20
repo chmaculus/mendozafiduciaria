@@ -282,7 +282,7 @@
             
 
     <input type="hidden" class="fecha" id="hFechaActual" value="<?= time(); ?>"/>
-    <input type="hidden" value="<?=$credito['ID']?>" id="hCreditoID"/>
+    <input type="hidden" value="<?=isset($credito['ID']) ? $credito['ID'] : 0?>" id="hCreditoID"/>
     <input type="hidden" value="<?=$credito['MICRO']?>" id="hMicro"/>
 
 
