@@ -154,8 +154,11 @@ class formalta extends main_controller {
         $plazo_moratorio = $_POST['plazo_moratorio'];
         $plazo_punitorio = $_POST['plazo_punitorio'];
 
-        $credito_id = key_exists('credito_id', $_POST) ? $_POST['credito_id'] : 1;
+        $credito_id = key_exists('credito_id', $_POST) ? $_POST['credito_id'] : 0;
         
+        if (!$credito_id) {
+            $credito_id = $this->mod->get_next_id();
+        }
         
         echo "credito_id: ".$credito_id."<br/>";
         

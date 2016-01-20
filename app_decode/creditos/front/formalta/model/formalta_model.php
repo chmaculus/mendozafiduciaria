@@ -30,9 +30,9 @@ class formalta_model extends credito_model {
         $this->renew_datos();
         
         $credito = $this->_db->get_row("fid_creditos","ID = ".$this->_id_credito);
-        $operacion = $this->_db->get_row("fid_operaciones","ID = ".$credito['ID_OPERACION']);
+        $operacion = (isset($credito['ID_OPERACION']) && $credito['ID_OPERACION']) ? $this->_db->get_row("fid_operaciones","ID = ".$credito['ID_OPERACION']) : 0;
         
-        $clientes = $this->_db->get_tabla("fid_operacion_cliente","ID_OPERACION  = ".$credito['ID_OPERACION']);
+        $clientes = $credito ? $this->_db->get_tabla("fid_operacion_cliente","ID_OPERACION  = ".$credito['ID_OPERACION']) : array();
         
         $arr_clientes = array();
         foreach($clientes as $cliente){
@@ -43,7 +43,7 @@ class formalta_model extends credito_model {
         
         $total = 0;
         $primera_variacion = reset($this->_variaciones);
-        print_array($this->_variaciones);
+        
         foreach($this->_variaciones as $variacion){
             if ($variacion['TIPO']==0){
                 $total += $variacion['CAPITAL'];
@@ -56,6 +56,8 @@ class formalta_model extends credito_model {
         $punitorio = $primera_variacion['POR_INT_PUNITORIO'];
         $moratorio = $primera_variacion['POR_INT_MORATORIO'] ;
         $bonificacion = $primera_variacion['POR_INT_SUBSIDIO'];
+        $gastos = $primera_variacion['POR_INT_GASTOS'];
+        $gastos_min = $primera_variacion['POR_INT_GASTOS_MIN'];
         
         $primera_cuota = reset($this->_cuotas);
         $primer_vencimiento = $primera_cuota['FECHA_VENCIMIENTO'];
@@ -71,14 +73,16 @@ class formalta_model extends credito_model {
             "T_PUNITORIO" => $punitorio,
             "T_BONIFICACION" => $bonificacion,
             "T_MORATORIO" => $moratorio,
+            "T_GASTOS" => $gastos,
+            "T_GASTOS_MIN" => $gastos_min,
             "INTERES_CUOTAS" => $interes_cuotas,
             "INTERES_VTO" => date("Y-m-d",$primer_vencimiento),
             "INTERES_PERIODO" => 09,
             "CAPITAL_CUOTAS" => $interes_cuotas,
             "CAPITAL_VTO" => date("Y-m-d"),
             "CAPITAL_PERIODO" => 0,
-            "ID_FIDEICOMISO" =>  $operacion['ID_FIDEICOMISO'],
-            "ID_OPERATORIA" => $operacion['ID_OPERATORIA'],
+            "ID_FIDEICOMISO" =>  $operacion ? $operacion['ID_FIDEICOMISO'] : 0,
+            "ID_OPERATORIA" => $operacion ? $operacion['ID_OPERATORIA'] : 0,
             "POSTULANTES" => implode(",", $arr_clientes)
         );
         $this->_db->update("fid_creditos",$credito,"ID = ".$this->_id_credito);
@@ -261,6 +265,17 @@ class formalta_model extends credito_model {
         }
 
         return $cuotas_arr;
+    }
+    
+    function get_next_id(){
+        $this->_db->select("max( ID ) +1 AS ultimo");
+        $row = $this->_db->get_row("fid_creditos");
+        if ($row['ultimo'] < 1200){
+            return 1200;
+        }
+        else{
+            return $row['ultimo'];
+        }
     }
     
     

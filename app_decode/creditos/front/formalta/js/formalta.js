@@ -191,6 +191,7 @@ function generar_cuotas(){
     var int_punitorio = $("#txtInteresPunitorio").val();
     var int_moratorio= $("#txtIntereeMoratorio").val();
     var gastos= $("#txtGastos").val();
+    var gastos_min= $("#txtGastosMin").val();
     
     var plazo_compensatorio = $("#txtPeriodicidadCalculoCompensatorio").val();
     var plazo_moratorio = $("#txtPeriodicidadCalculoMoratorio").val();
@@ -248,6 +249,7 @@ function generar_cuotas(){
             int_punitorio : int_punitorio,
             int_moratorio : int_moratorio,
             int_gastos : gastos,
+            int_gastos_min : gastos_min,
             plazo_compensatorio : plazo_compensatorio || 365,
             plazo_moratorio : plazo_moratorio || 365,
             plazo_punitorio : plazo_punitorio || 365,            

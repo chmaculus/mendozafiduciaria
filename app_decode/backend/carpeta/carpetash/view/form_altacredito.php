@@ -311,6 +311,16 @@
                 <?php endif; ?>
             </div>
         </div>
+        <div class="elem elem_med_ac save">
+            <label>Tasa Gastos Mín:</label>
+            <div class="indent formtext">
+                <?php if(isset($obj_credito["T_GASTOS_MIN"])): ?>
+                    <input data-campo="T_GASTOS_MIN" type="text" class="" title="Ingrese tasa de gastos" id="alta_t_gastos_min" value="<?php echo isset($obj_credito["T_GASTOS_MIN"])?$obj_credito["T_GASTOS_MIN"]:"" ?>">
+                <?php else: ?>
+                    <input data-campo="T_GASTOS_MIN" type="text" class="" title="Ingrese tasa de gastos" id="alta_t_gastos_min" value="<?php echo isset($cad_obj["cad_obj"][0]["T_GASTOS_MIN"])?$cad_obj["cad_obj"][0]["T_GASTOS_MIN"]:"" ?>">
+                <?php endif; ?>
+            </div>
+        </div>
         
         
         <div class="elem elem_med_alta">
