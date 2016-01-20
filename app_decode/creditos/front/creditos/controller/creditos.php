@@ -532,10 +532,15 @@ class creditos extends main_controller{
                     
                     if($monto_a_cobrar) {
                         ++$cant_creditos_a_cobrar;
+                        $cuotas_cobradas = 0; // tiene cuotas aún sin cobrar
                     }
                     
                     if($monto_mora) {
                         ++$cant_mora;
+                    }
+                    
+                    if ($cuotas_cobradas) {
+                        $cuotas_cobradas = 1;
                     }
                 }
                 
