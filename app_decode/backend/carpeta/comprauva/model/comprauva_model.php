@@ -305,7 +305,7 @@ class comprauva_model extends main_model {
         $iid = $obj["id"];
         unset($obj["id"]);
         $obj["CU"] = 1;
-
+//        var_dump($obj);die();
         if ($iid == 0)://agregar
             $resp = $this->_db->insert('fid_clientes', $obj);
             //log_this('log/aaaaa.log', $this->_db->last_query());

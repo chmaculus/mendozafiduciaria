@@ -306,7 +306,7 @@ function show_btns(sw) {
         $("#nuevafactura").hide();
         $(".tb_fil").hide();
         $(".tb_save").hide();
-        $(".tb_search").show();
+        $(".tb_search").hide();
         $(".tb_atras").hide();
         $(".tb_save1").hide();
         $(".env_form").hide();
@@ -477,6 +477,7 @@ $(document).ready(function() {
         $('.nuevafact_form').show();
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
+        $("#porcentaje_iva").val('10.5');
         show_btns(2);
 
     });
@@ -610,6 +611,8 @@ $(document).ready(function() {
             dataType: "json",
             type: "post",
             success: function(data) {
+                alert("Mensaje");
+                alert(data.valor);
                 condicioniva_g = data.valor;
                 console.dir(data);
                 if (data.result > 0) {
@@ -804,15 +807,25 @@ $(document).ready(function() {
             var neto = $("#kgrs").val() * $(this).val();
             $("#neto").val(dec(neto, 2));
 
+            factor = $('#porcentaje_iva').val();
             var iva = factor * $("#neto").val() / 100;
             $("#iva").val(dec(iva, 2));
+
 
             var total = 1 * $("#neto").val() + 1 * $("#iva").val();
             $("#total").val(dec(total, 2));
 
         }
     });
-
+    
+    $("#porcentaje_iva").keyup(function() {
+        factor = $('#porcentaje_iva').val();
+        var iva = factor * $("#neto").val() / 100;
+        $("#iva").val(dec(iva, 2));
+        
+        var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+        $("#total").val(dec(total, 2));
+    });
 
     $("#cbu").focusout(function() {
         //verificar cbu
@@ -1104,18 +1117,20 @@ function agregarCIUS(_arr_cius) {
         var ciu_insc = $("#ciu_insc").val();
 
         if (!isnumeroCiu(ciu_num)) {
+//            alert("ciu_num 1");
             jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function() {
                 $("#frm_cargacius input").first().select();
             });
             return false;
         }
-
-        if (!isnumeroCiuIns(ciu_insc)) {
-            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function() {
-                $("#frm_cargacius #ciu_insc").first().next().next().select();
-            });
-            return false;
-        }
+/*Esto valida lo contrario a la anterior, si uno no le pone guion (-) es ejecutada, la comento para que se ingresen
+ * sin guion el dato */
+//        if (!isnumeroCiuIns(ciu_insc)) {
+//            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function() {
+//                $("#frm_cargacius #ciu_insc").first().next().next().select();
+//            });
+//            return false;
+//        }
 
 
 
@@ -1418,7 +1433,7 @@ function addEventsRequerimientos(idnr) {
             dataType: "json",
             type: "post",
             success: function(resp) {
-alert("SIIIIIII");
+
                 data = resp.result;
                 if (resp.accion == 'add') {
                     if (data) {

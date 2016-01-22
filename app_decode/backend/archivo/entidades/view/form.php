@@ -94,6 +94,12 @@
                     <?php endif; ?>
                  </div>
 
+                <div class="elem elem_med">
+                    <label>Limite:</label>
+                    <div class="indent formtext">
+                        <input type="text" class="" title="Ingrese limite" id="limite" value="0"> 
+                    </div>
+                </div>
 
                  <div class="elem elempie">
                         <div class="indent">

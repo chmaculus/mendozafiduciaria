@@ -138,6 +138,7 @@ $(document).ready(function(){
                             var situacion_iibb  = $("#situacion_iibb").val();
                             var mail           = $("#mail").val();
                             var representante   = $("#representante").val();
+                            var limite   = $("#limite").val();
                             
                             if ( !$("#customForm").validationEngine('validate') )
                                 return false;
@@ -154,7 +155,8 @@ $(document).ready(function(){
                                 situacion_iva:situacion_iva,
                                 situacion_iibb:situacion_iibb,
                                 mail:mail,
-                                representante:representante
+                                representante:representante,
+                                limite:limite
                             }
 
                             $.ajax({

@@ -258,9 +258,17 @@
     </div>
     
     <div class="elem elem_med">
+            <label class="der">Porcentaje Iva:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="" id="porcentaje_iva">
+            </div>
+    </div>
+    
+    <div class="elem elem_med">
             <label class="der">Iva:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>
+                <!--<input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>-->
+                <input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
             </div>
     </div>
     
@@ -300,7 +308,7 @@
             <div class="titulo_cius">Cargar CIUs</div>
 
             <div class="elem elem_med">
-                    <label class="der">Numero CIU:</label>
+                <label class="der">Numero CIU:<div style="font-size: 10px;">(Hasta 8 digitos)</div></label>
                     <div class="indent formtext">
                         <input type="text" class="tip-right" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
                     </div>

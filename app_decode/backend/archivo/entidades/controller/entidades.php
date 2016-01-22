@@ -123,7 +123,8 @@ class entidades extends main_controller{
     
     function x_sendobj(){
         $obj = $_POST['obj'];
-                
+//        var_dump($obj);die();
+        
         $obj['OBSERVACIONES'] = "";
         $obj['FEC'] = date('d/m/Y H:i:s');
         $obj['ESTADO'] = "1";
