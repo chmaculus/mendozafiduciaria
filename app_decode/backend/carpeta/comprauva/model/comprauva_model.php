@@ -299,6 +299,8 @@ class comprauva_model extends main_model {
         return $rtn;
     }
 
+  
+    
     function sendobjcli($obj) {
         //log_this('log/aaaaa.log',print_r($obj,1));
 
@@ -451,7 +453,7 @@ class comprauva_model extends main_model {
 
     function get_tipos_entidades($where = "") {
         $this->_db->select("ID,NOMBRE");
-        $rtn = $this->_db->get_tabla("fid_entidades_tipos", $where);
+        $rtn = $this->_db->get_tabla("fid_entidades_tipos");
         return $rtn;
     }
 

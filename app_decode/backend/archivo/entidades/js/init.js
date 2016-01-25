@@ -119,7 +119,7 @@ $(document).ready(function(){
                             $("#frmagregar :text").removeClass('error');
                             $("#nom").select();
                             
-                            $('#tipo_entidades').val('').trigger('chosen:updated');
+//                            $('#tipo_entidades').val('').trigger('chosen:updated');
 
                         });
                                                 

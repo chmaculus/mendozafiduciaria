@@ -99,6 +99,9 @@ class comprauva extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
+        
+        $data['lst_entidades'] = $this->x_get_tipos_entidades();
+        
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
 
@@ -176,6 +179,15 @@ class comprauva extends main_controller {
         return $tmp;
     }
 
+    function x_get_tipos_entidades(){
+//        $rtn = $this->mod->get_tipos_entidades();
+//        echo trim(json_encode($rtn?$rtn:array()));
+         $obj = $this->mod->get_tipos_entidades();
+        $tmp = $obj ? $obj : array();
+//        var_dump($tmp);die;
+        return $tmp;
+    }
+    
     function x_marcar_respondida() {
         $iid = $_POST['iid'];
         $idope = $_POST['idope'];
@@ -466,7 +478,7 @@ class comprauva extends main_controller {
         $etiqueta = "etik";
         
         if (isset($_FILES['imagen'])) {
-                       
+        
 
             $archivo['tmp'] = $_FILES["imagen"]["tmp_name"];
             $archivo['size'] = $_FILES["imagen"]["size"];
@@ -483,30 +495,37 @@ class comprauva extends main_controller {
             }
 
             if ($subir == true) {
-                
-                $resultado = stripos($archivo['name'], 'ciu');
-                if ($resultado !== FALSE) {
-                    $file_name = 'imp_cius.xlsx';
-                }
+                alert("subir ");
+//                $resultado = stripos($archivo['name'], 'ciu');
+//                alert($resultado);
+//                if ($resultado !== FALSE) {
+//                    alert("paso 1");
+//                    $file_name = 'imp_cius.xlsx';
+//                }
 
-                $resultado = stripos($archivo['name'], 'fact');
-                if ($resultado !== FALSE) {
-                    $file_name = 'imp_fact.xlsx';
-                }
+//                $resultado = stripos($archivo['name'], 'fact');
+//                if ($resultado !== FALSE) {
+//                    alert("paso 2");
+//                    $file_name = 'imp_fact.xlsx';
+//                }
 
+//                alert("nombre archivos " + $archivo['name']);
                 $extencion = substr($archivo['name'], -3);
                 $uploaded = TEMP_PATH . "importar/" . $file_name; //.".".$extencion;
                 
                 log_this('log/dddddd.log', '222222 ' . $extencion . "---" . $uploaded);
-                
                 if (file_exists($uploaded)) {
+                alert("paso 4");
                     echo '
                             <script>
                                 var nombre = "' . $archivo['name'] . '";
                                 parent.error_post_upload(nombre);
                             </script>';
                 } else {
+                alert("paso 5");
                     if (@move_uploaded_file($archivo['tmp'], $uploaded)) {
+                alert("move");
+
                         echo '
                             <script>
                                 var nombre = "' . $archivo['name'] . '";
@@ -518,6 +537,7 @@ class comprauva extends main_controller {
                     }
                 }
             } else {
+                alert("paso 6");
                 echo '
                         <script>
                             var nombre = "' . $archivo['name'] . '";

@@ -14,7 +14,18 @@
                 <input type="file" name="imagen" id="imagen"/>
                 <input type="hidden" name="semilla" id="semilla" value=""/>
             </div>
-            <input id="btnSubirfile" name="btnSubirfile" type="submit" class="button-a dark-blue" value="Upload" /> &nbsp;&nbsp;
+            </br>
+            <?php if(isset($lst_entidades) && is_array($lst_entidades)){ ?>
+            <select id="tipo_entidades" style="margin-top: 20px; width: 200px; height: 30px; margin-left: -100px;">
+                
+                <?php foreach($lst_entidades as $rs_ent){ ?>
+                <option id="<?php echo $rs_ent["ID"] ?>" value="<?php echo $rs_ent["ID"] ?>">
+                    <?php echo $rs_ent["NOMBRE"] ?></option>
+                <?php } ?>
+            </select>
+                <?php } ?>
+            
+            <input id="btnSubirfile" style="margin-top: 80px; margin-left: 0px;" name="btnSubirfile" type="submit" class="button-a dark-blue" value="Upload" /> &nbsp;&nbsp;
         </form>
       </div>
 </div>
