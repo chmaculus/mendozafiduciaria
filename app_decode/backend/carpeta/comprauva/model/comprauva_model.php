@@ -610,6 +610,12 @@ class comprauva_model extends main_model {
         return $rtn;
     }
 
+    function obtenerNombreEntidad($num_entidad) {
+        $this->_db->select("NOMBRE");
+        $rtn = $this->_db->get_tabla('fid_entidades_tipos', "ID=".$num_entidad);
+        return $rtn;
+    }
+
     function verificarnumfactura($numero) {
         $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO=" . $numero);
         if (count($rtn) > 0) {
@@ -653,12 +659,6 @@ class comprauva_model extends main_model {
     }
 
     function get_bodegas() {
-        /*
-          select l.LOCALIDAD,b.ID as ID, b.NOMBRE AS NOMBRE
-          from fid_bodegas b
-          inner join fid_localidades l on l.ID=b.ID_DEPARTAMENTO
-         */
-
         $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
         $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
         $rtn = $this->_db->get_tabla("fid_bodegas b");
@@ -754,12 +754,10 @@ class comprauva_model extends main_model {
             $id_condicion_iva = $objPHPExcel->getActiveSheet()->getCell("N" . $i)->getValue();
             $id_condicion_iibb = $objPHPExcel->getActiveSheet()->getCell("O" . $i)->getValue();
             //$inscripcion_iibb   = $objPHPExcel->getActiveSheet()->getCell("O".$i)->getValue();
-
             $cuit = strval($cuit);
             //$cbu = exp_to_dec($cbu);
             $cbu = $cbu;
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-            
             
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
@@ -811,7 +809,7 @@ class comprauva_model extends main_model {
 
             //validar numero de factura
             $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=".$id_cliente);
-
+            // log_this('log/aaaaaaVVVEEEEEERRRRRR.log', $this->_db->last_query() );
             if ($existe_fact) {
                 $i++;
                 $k++;
@@ -945,9 +943,8 @@ class comprauva_model extends main_model {
                     $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
                 }
             }
-
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
-            //log_this('log/aaaaaa.log', $this->_db->last_query() );
+//            log_this('log/aaaaaa.log', $this->_db->last_query() );
             $res[] = $resp;
 
             $i++;
@@ -958,7 +955,6 @@ class comprauva_model extends main_model {
               } */
         }
         rename("_tmp/importar/imp_fact.xlsx", "_tmp/importar/imp_fact_procesado.xlsx");
-
         return $res;
     }
 

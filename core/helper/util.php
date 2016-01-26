@@ -284,7 +284,8 @@ function listar_archivos($carpeta){
             echo '<ul class="lista_adjuntos" style="float:left;margin-top:60px;">';
             while(($archivo = readdir($dir)) !== false){
                 if($archivo != '.' && $archivo != '..' && $archivo != '.htaccess'){
-                    echo '<li><a target="_blank" href="'.$carpeta.$archivo.'">'.$archivo.'</a> <span>&nbsp;<span></li>';
+//            echo '<li><a target="_blank" href="'.$carpeta.$archivo.'">'.$archivo.'</a> - Tipo de entidad: Depositario<span>&nbsp;<span></li>';
+            echo '<li><a target="_blank" href="'.$carpeta.$archivo.'">'.$archivo.'</a><span>&nbsp;<span></li>';
                 }
             }
             echo '</ul>';

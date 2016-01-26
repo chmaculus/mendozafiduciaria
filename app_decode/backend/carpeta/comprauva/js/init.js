@@ -2073,7 +2073,7 @@ function initGridListado(id_usuario) {
             }
     );
 
-    $("#jqxgrid_listado").jqxGrid({
+    $("#jqxgridgetFacturasCuva").jqxGrid({
         width: '96%',
         source: dataAdapterope,
         theme: 'energyblue',

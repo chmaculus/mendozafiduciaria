@@ -67,9 +67,9 @@ class comprauva extends main_controller {
         else
             $this->_js_var['_permiso_ver'] = 0;
         /* permiso ver */
-        
+
         /* permiso exportar */
-        if($_SESSION["USER_ROL"]==1 || $arr_permiso_mod['EXPORTAR'] == 1)
+        if ($_SESSION["USER_ROL"] == 1 || $arr_permiso_mod['EXPORTAR'] == 1)
             $this->_js_var['_permiso_exportar'] = 1;
         else
             $this->_js_var['_permiso_exportar'] = 0;
@@ -99,15 +99,12 @@ class comprauva extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
-        
+
         $data['lst_entidades'] = $this->x_get_tipos_entidades();
-        
+
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
-
 //        $data['clientes_sql'] = $this->x_getclientessql();
-
-
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
         //$data['provincia'] = $this->x_getbodegas();
         //$data['opcion'] = $this->x_getbodegas();
@@ -154,7 +151,7 @@ class comprauva extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
-    
+
 //    function x_getformulas(){
 //        $obj = $this->mod->getformulassql();
 //        $tmp = $obj ? $obj : array();
@@ -179,15 +176,14 @@ class comprauva extends main_controller {
         return $tmp;
     }
 
-    function x_get_tipos_entidades(){
+    function x_get_tipos_entidades() {
 //        $rtn = $this->mod->get_tipos_entidades();
 //        echo trim(json_encode($rtn?$rtn:array()));
-         $obj = $this->mod->get_tipos_entidades();
+        $obj = $this->mod->get_tipos_entidades();
         $tmp = $obj ? $obj : array();
-//        var_dump($tmp);die;
         return $tmp;
     }
-    
+
     function x_marcar_respondida() {
         $iid = $_POST['iid'];
         $idope = $_POST['idope'];
@@ -423,26 +419,28 @@ class comprauva extends main_controller {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];
 
-        $preg = $this->mod->validar_archivos_imp_f();//validar si existe el archivo de la factura
+        $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
+            echo $fid_sanjuan . " - " . $ope_sanjuan;
             $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
-            $preg1 = $this->mod->validar_archivos_imp_c();//validar si existe archivo de los cius
-            if ($preg1>0){
+            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+
+            if ($preg1 > 0) {
                 $obj = $this->mod->importar_ciu();
                 $this->mod->validar_azucar();
                 echo trim(json_encode(isset($obj) ? $obj : array()));
-            }else{
-                echo -1;//advertencia no existe cius
+            } else {
+                echo -1; //advertencia no existe cius
             }
         } else {
             //echo -1;
-            $preg1 = $this->mod->validar_archivos_imp_c();//validar si existe archivo de los cius
-            if ($preg1>0){
+            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+            if ($preg1 > 0) {
                 $obj = $this->mod->importar_ciu();
                 $this->mod->validar_azucar();
                 echo trim(json_encode(isset($obj) ? $obj : array()));
-            }else{
-                echo -2;//no existen archivos a procesar
+            } else {
+                echo -2; //no existen archivos a procesar
             }
         }
     }
@@ -473,12 +471,15 @@ class comprauva extends main_controller {
     }
 
     function get_file1() {
+//        $nombre_entidad = $this->mod->obtenerNombreEntidad($_POST['entidad']);
+//        $nombre_entidad = $nombre_entidad[0]['NOMBRE'];
+
         $semilla = "sem";
         $etapa = "1";
         $etiqueta = "etik";
-        
+
         if (isset($_FILES['imagen'])) {
-        
+
 
             $archivo['tmp'] = $_FILES["imagen"]["tmp_name"];
             $archivo['size'] = $_FILES["imagen"]["size"];
@@ -495,40 +496,30 @@ class comprauva extends main_controller {
             }
 
             if ($subir == true) {
-                alert("subir ");
-//                $resultado = stripos($archivo['name'], 'ciu');
-//                alert($resultado);
-//                if ($resultado !== FALSE) {
-//                    alert("paso 1");
-//                    $file_name = 'imp_cius.xlsx';
-//                }
+                $resultado = stripos($archivo['name'], 'ciu');
+                if ($resultado !== FALSE) {
+                    $file_name = 'imp_cius.xlsx';
+                }
 
-//                $resultado = stripos($archivo['name'], 'fact');
-//                if ($resultado !== FALSE) {
-//                    alert("paso 2");
-//                    $file_name = 'imp_fact.xlsx';
-//                }
+                $resultado = stripos($archivo['name'], 'fact');
+                if ($resultado !== FALSE) {
+                    $file_name = 'imp_fact.xlsx';
+                }
 
-//                alert("nombre archivos " + $archivo['name']);
                 $extencion = substr($archivo['name'], -3);
                 $uploaded = TEMP_PATH . "importar/" . $file_name; //.".".$extencion;
-                
                 log_this('log/dddddd.log', '222222 ' . $extencion . "---" . $uploaded);
                 if (file_exists($uploaded)) {
-                alert("paso 4");
                     echo '
                             <script>
                                 var nombre = "' . $archivo['name'] . '";
                                 parent.error_post_upload(nombre);
                             </script>';
                 } else {
-                alert("paso 5");
                     if (@move_uploaded_file($archivo['tmp'], $uploaded)) {
-                alert("move");
-
                         echo '
                             <script>
-                                var nombre = "' . $archivo['name'] . '";
+                                var nombre = "Entidad:' . $tipo_entidad . " - " . $archivo['name'] . '";
                                 var nombre_tmp = "' . $uploaded . '";
                                 var etapa = "' . $etapa . '";
                                 parent.post_upload(nombre,nombre_tmp,etapa);
@@ -537,7 +528,6 @@ class comprauva extends main_controller {
                     }
                 }
             } else {
-                alert("paso 6");
                 echo '
                         <script>
                             var nombre = "' . $archivo['name'] . '";

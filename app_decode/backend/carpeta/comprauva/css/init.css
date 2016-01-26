@@ -48,7 +48,7 @@
 }
 
 .btn_add_footer{
-   float: left; margin-top:20px;
+    float: left; margin-top:20px;
 }
 
 .btn_add_footer input{
@@ -159,8 +159,8 @@
 }
 .lista_banco li{
     width: 840px!important;
-    
-    
+
+
 }
 
 .lista_banco li span{
@@ -196,8 +196,10 @@ iframe{
 #btnSubirfile{
     float: left;
     height: 30px!important;
-    margin-left: 10px;
+    /*margin-left: 10px;*/
     min-width: 100px;
+    margin-top: 90px;
+    margin-left: -52px;
 }
 .download_file{
     float: left;
@@ -230,7 +232,7 @@ iframe{
 #frm_reqs{
     width: 740px;
     height: 600px;
-    
+
 }
 .blue{
     height: 30px!important;
@@ -366,13 +368,13 @@ iframe{
     width: 77px;
     display: inline;
     cursor: pointer;
-    
+
     margin-top: 58px;
     float: left;
     position: relative;
     left: 338px;
-    
-    
+
+
 }
 #jqxgridcius{
     margin-top: 70px;
@@ -487,3 +489,16 @@ iframe{
 }
 
 
+#tipo_entidades{
+    margin-top: 42px;
+    width: 200px;
+    height: 30px;
+    margin-left: -47px;
+}
+#mensaje-entidades{
+    margin-top: 50px;
+    margin-left: -49px;
+    display: block;
+    float: left;
+    width: 50px;
+}
