@@ -270,11 +270,13 @@ function contar_archivos_imp(){
 
 function contar_archivos_imp_f(){
     $total = count(glob("_tmp/importar/imp_fact.xlsx",GLOB_BRACE));
+//    $total = count(glob("_tmp/importar/imp_fact_procesado.xlsx",GLOB_BRACE));
     return $total;
 }
 
 function contar_archivos_imp_c(){
     $total  = count(glob("_tmp/importar/imp_cius.xlsx",GLOB_BRACE));
+//    $total  = count(glob("_tmp/importar/imp_cius_procesado.xlsx",GLOB_BRACE));
     return $total;
 }
 
@@ -293,5 +295,4 @@ function listar_archivos($carpeta){
         }
     }
 }
-
 ?>

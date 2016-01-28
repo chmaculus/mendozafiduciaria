@@ -2073,7 +2073,7 @@ function initGridListado(id_usuario) {
             }
     );
 
-    $("#jqxgridgetFacturasCuva").jqxGrid({
+    $("#jqxgrid_listado").jqxGrid({
         width: '96%',
         source: dataAdapterope,
         theme: 'energyblue',
@@ -2325,7 +2325,8 @@ function post_upload(nombre, nombre_tmp, etapa) {
 
 function importar_procesar() {
 
-    jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
+    if($('#tipo_entidades').val()!=''){
+            jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
             // llamar ajax
             $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
@@ -2340,9 +2341,7 @@ function importar_procesar() {
                 success: function (dat) {
                     console.dir(dat);
                     if (dat == -2) {
-                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {
-
-                        });
+                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {});
                     } else if (dat == -1) {
                         jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
                             $.ajax({
@@ -2382,6 +2381,12 @@ function importar_procesar() {
             });
         }
     });
+    }else{
+        alert("Debe seleccionar un tipo de entidad");
+//        jAlert('Debe seleccionar un tipo de entidad.', $.ucwords(_etiqueta_modulo), function () {});
+    }
+
+
 
 
 }

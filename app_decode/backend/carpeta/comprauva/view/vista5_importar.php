@@ -15,6 +15,18 @@
                 <input type="hidden" name="semilla" id="semilla" value=""/>
             </div>
             </br>
+            <input id="btnSubirfile" name="btnSubirfile" type="submit" class="button-a dark-blue" value="Upload" /> &nbsp;&nbsp;
+            <?php // if(isset($lst_entidades) && is_array($lst_entidades)){ ?>
+            <!--<div id="mensaje-entidades">Entidad</div>-->
+            <!--<select id="tipo_entidades" name="entidad">-->
+                <!--<option id="0" name="tipo_entidad" value="">Seleccione el tipo de entidad...</option>-->
+                <?php // foreach($lst_entidades as $rs_ent){ ?>
+                <!--<option id="<?php // echo $rs_ent["ID"] ?>" name="tipo_entidad" value="<?php // echo $rs_ent["ID"] ?>">-->
+                    <?php // echo $rs_ent["NOMBRE"] ?></option>
+                <?php // } ?>
+            <!--</select>-->
+                <?php // } ?>
+        </form>
             <?php if(isset($lst_entidades) && is_array($lst_entidades)){ ?>
             <div id="mensaje-entidades">Entidad</div>
             <select id="tipo_entidades" name="entidad">
@@ -25,17 +37,11 @@
                 <?php } ?>
             </select>
                 <?php } ?>
-            <input id="btnSubirfile" name="btnSubirfile" type="submit" class="button-a dark-blue" value="Upload" /> &nbsp;&nbsp;
-        </form>
       </div>
 </div>
 <iframe name="enviar_archivo" id="enviar_archivo"></iframe>
 
 
-<div style="margin-top:150px; margin-left: 55px;" class="lista_arch">
+<div style="margin-top:-10px;" class="lista_arch">
 <?php echo listar_archivos('_tmp/importar/'); ?>
 </div>
-
-
-
-
