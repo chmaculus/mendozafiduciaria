@@ -32,10 +32,11 @@
         $cnn->select("e.id as id,ets.nombre as entidad_tipo,ets.id as idt, e.nombre as entidad, e.cuit as cuit, e.* ");
         $cnn->join("fid_entidades e","et.id_entidad=e.id",'inner');
         $cnn->join("fid_entidades_tipos ets","et.id_tipo=ets.id",'inner');
+        $cnn->group_by("e.id");
         $cnn->order_by("entidad");
         //$cnn->where( $cad_like );
         $rtn = $cnn->get_tabla("fid_entidadestipo et");
-        //file_put_contents('aaaaa.log',$cnn->last_query() );
+//        file_put_contents('entidades.log',$cnn->last_query() );
         
         echo trim(json_encode($rtn?$rtn:array()));
         die();
