@@ -211,7 +211,8 @@
         <select class="chzn-select medium-select select" id="bodega">
             <option value="">Elegir Bodega</option>
             <?php foreach($lst_bodegas as $rs_iva): ?>
-            <option data-local="<?php echo $rs_iva["LOCAL"] ?>" data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["NOMBRE"] ?></option>
+            <!--<option data-local="<?php // echo $rs_iva["LOCAL"] ?>" data-connection="<?php // echo $rs_iva["ID"] ?>" value="<?php // echo $rs_iva["ID"] ?>"><?php // echo $rs_iva["NOMBRE"] ?></option>-->
+            <option data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["entidad"] ?></option>
             <?php endforeach; ?>
         </select>   
         </div>
@@ -222,10 +223,17 @@
     <div class="elem elem_med">
             <label class="der">Departamento:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>
+                <!--<input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>-->
+                <input type="text" class="tip-right" title="" id="dto_bodega" value="" readonly>
             </div>
     </div>
     
+    <div class="elem elem_med">
+            <label class="der">Limite permitido:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="" id="limite_bodega" value="" readonly>
+            </div>
+    </div>
     
     <div class="elem elem_med">
             <label class="der">Kgrs:</label>
@@ -310,7 +318,7 @@
             <div class="elem elem_med">
                 <label class="der">Numero CIU:<div style="font-size: 10px;">(Hasta 8 digitos)</div></label>
                     <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                        <input type="text" class="tip-right"  maxlength="8" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
                     </div>
             </div>
 

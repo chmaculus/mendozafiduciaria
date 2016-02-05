@@ -109,7 +109,8 @@ function guardar_factura() {
          return false;
          }
          */
-
+//        var valor_kgrs = $("#kgrs").val();
+        var valor_limite = $("#limite_bodega").val();
         if (cai !== '') {
             if (fechavto < fecha) {
                 jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -128,6 +129,12 @@ function guardar_factura() {
 
         if (kgrs == '') {
             jAlert('Ingrese el valor de los Kgrs.', $.ucwords(_etiqueta_modulo), function () {
+                $("#kgrs").focus();
+            });
+            return false;
+        }
+        if (kgrs > valor_limite) {
+            jAlert('El valor de los Kgrs NO puede ser superior al limite establecido.', $.ucwords(_etiqueta_modulo), function () {
                 $("#kgrs").focus();
             });
             return false;
@@ -403,9 +410,37 @@ $(document).ready(function () {
     $('#bodega').bind('change', function (event) {
         event.preventDefault();
         var selected = $(this).find('option').eq(this.selectedIndex);
-        var local = selected.data('local');
-        if ($('#bodega').val() != '') {
-            $("#dto_bodega").val(local);
+        var id_Provincia = $('#bodega').val();
+//        var local = selected.data('local');
+//        if ($('#bodega').val() != '') {
+//            $("#dto_bodega").val(local);
+//        }
+        var local = selected.data('ID_PROVINCIA');
+        if (id_Provincia != '') {
+            $.ajax({
+                url: _comprauva.URL + "/x_get_limite_permitido",
+                data: {
+                    id: id_Provincia
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    $("#limite_bodega").val(data);
+                }
+            });
+
+            $.ajax({
+                url: _comprauva.URL + "/x_get_nombreProvincia",
+                data: {
+                    id: id_Provincia
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    $("#dto_bodega").val(data);
+                }
+            });
+
         }
     });
 
@@ -413,45 +448,54 @@ $(document).ready(function () {
     $('.consultar').on('click', function (e) {
         e.preventDefault();
 
-        $('.env_form').show();
-        $('.nuevafact_form').hide();
-        $("#provincia").chosen();
-        $("#condicioniva").chosen({width: "220px"});
-        $("#condicioniibb").chosen({width: "220px"});
-        $("#bodega").chosen({width: "220px"});
-        $("#formula").chosen({width: "220px"});
+        if ($("#cuit_busqueda").val().length == 0) {
 
-        var cuit = $("#cuit_busqueda").val();
+            jAlert('Debe ingresar un CUIT antes de continuar.', $.ucwords(_etiqueta_modulo), function () {
+                $("#nombre").focus();
+            });
+        } else {
+            $('.env_form').show();
+            $('.nuevafact_form').hide();
+            $("#provincia").chosen();
+            $("#condicioniva").chosen({width: "220px"});
+            $("#condicioniibb").chosen({width: "220px"});
+            $("#bodega").chosen({width: "220px"});
+            $("#formula").chosen({width: "220px"});
 
-        /* buscar por cuit */
-        $.ajax({
-            url: _comprauva.URL + "/x_getobjcliente",
-            data: {
-                cuit: cuit
-            },
-            dataType: "json",
-            type: "post",
-            success: function (data) {
+            var cuit = $("#cuit_busqueda").val();
 
-                if (data.ID > 0) {
-                    $.unblockUI();
-                    llenar_form(data);
-                    //$("#nuevafactura").show();
-                    show_btns(1);
-                    $("#send").hide();
-                } else {
-                    jAlert('Este CUIT no está registrado. guarde un nuevo cliente o intente otra busqueda (con Escape - Esc ).', $.ucwords(_etiqueta_modulo), function () {
-                        $("#cuit_busqueda").val('');
-                        $("#nombre").focus();
-                        $("#cuit").val(cuit);
-                        //$("#nuevafactura").hide();
-                        show_btns(3);
-                        $("#send").show();
+            /* buscar por cuit */
+            $.ajax({
+                url: _comprauva.URL + "/x_getobjcliente",
+                data: {
+                    cuit: cuit
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+
+                    if (data.ID > 0) {
                         $.unblockUI();
-                    });
+                        llenar_form(data);
+                        //$("#nuevafactura").show();
+                        show_btns(1);
+                        $("#send").hide();
+                    } else {
+                        jAlert('Este CUIT no está registrado. guarde un nuevo cliente o intente otra busqueda (con Escape - Esc ).', $.ucwords(_etiqueta_modulo), function () {
+                            $("#cuit_busqueda").val('');
+                            $("#nombre").focus();
+                            $("#cuit").val(cuit);
+                            //$("#nuevafactura").hide();
+                            show_btns(3);
+                            $("#send").show();
+                            $.unblockUI();
+                        });
+                    }
                 }
-            }
-        });
+            });
+
+        }
+
     });
 
     $('#nuevafactura').off().on('click', function (e) {
@@ -2325,63 +2369,64 @@ function post_upload(nombre, nombre_tmp, etapa) {
 
 function importar_procesar() {
 
-    if($('#tipo_entidades').val()!=''){
-            jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
-        if (r == true) {
-            // llamar ajax
-            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
-            $.ajax({
-                url: _comprauva.URL + "/x_importar_xls",
-                data: {
-                    fid_sanjuan: _fid_sanjuan,
-                    ope_sanjuan: _ope_sanjuan
-                },
-                dataType: "json",
-                type: "post",
-                success: function (dat) {
-                    console.dir(dat);
-                    if (dat == -2) {
-                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {});
-                    } else if (dat == -1) {
-                        jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
-                            $.ajax({
-                                url: _comprauva.URL + "/x_actualizarLista",
-                                data: {
-                                },
-                                //dataType: "json",
-                                type: "post",
-                                success: function (data) {
-                                    console.dir(data);
-                                    $('.lista_arch').html(data);
-                                    evento_lista_arch();
-                                }
+    if ($('#tipo_entidades').val() != '') {
+        jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
+            if (r == true) {
+                // llamar ajax
+                $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
+                $.ajax({
+                    url: _comprauva.URL + "/x_importar_xls",
+                    data: {
+                        fid_sanjuan: _fid_sanjuan,
+                        ope_sanjuan: _ope_sanjuan
+                    },
+                    dataType: "json",
+                    type: "post",
+                    success: function (dat) {
+                        console.dir(dat);
+                        if (dat == -2) {
+                            jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {
                             });
-                        });
-                    } else {
-                        jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
-                            //actualizar el listado
-                            $.ajax({
-                                url: _comprauva.URL + "/x_actualizarLista",
-                                data: {
-                                },
-                                //dataType: "json",
-                                type: "post",
-                                success: function (data) {
-                                    console.dir(data);
-                                    $('.lista_arch').html(data);
-                                    evento_lista_arch();
-                                }
+                        } else if (dat == -1) {
+                            jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
+                                $.ajax({
+                                    url: _comprauva.URL + "/x_actualizarLista",
+                                    data: {
+                                    },
+                                    //dataType: "json",
+                                    type: "post",
+                                    success: function (data) {
+                                        console.dir(data);
+                                        $('.lista_arch').html(data);
+                                        evento_lista_arch();
+                                    }
+                                });
                             });
+                        } else {
+                            jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
+                                //actualizar el listado
+                                $.ajax({
+                                    url: _comprauva.URL + "/x_actualizarLista",
+                                    data: {
+                                    },
+                                    //dataType: "json",
+                                    type: "post",
+                                    success: function (data) {
+                                        console.dir(data);
+                                        $('.lista_arch').html(data);
+                                        evento_lista_arch();
+                                    }
+                                });
 
 
 
-                        });
+                            });
+                        }
                     }
-                }
-            });
-        }
-    });
-    }else{
+                });
+            }
+        });
+    } else {
         alert("Debe seleccionar un tipo de entidad");
 //        jAlert('Debe seleccionar un tipo de entidad.', $.ucwords(_etiqueta_modulo), function () {});
     }

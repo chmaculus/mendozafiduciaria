@@ -52,6 +52,12 @@
 .medium-select{
     width: 627px !important;
 }
+.medium-select-prov{
+    width: 250px !important;
+}
+.medium-select-loc{
+    width: 250px !important;
+}
 
 .formError{
     left: 589px !important;

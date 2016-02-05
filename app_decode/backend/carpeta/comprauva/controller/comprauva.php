@@ -140,6 +140,18 @@ class comprauva extends main_controller {
         endif;
     }
 
+    function x_get_nombreProvincia() {
+        $id = $_POST['id'];
+        $obj = $this->mod->nombreProvincia($id);
+        echo json_encode($obj[0]['PROVINCIA']);
+    }
+    
+    function x_get_limite_permitido() {
+        $id = $_POST['id'];
+        $obj = $this->mod->limiteBodega($id);
+        echo json_encode($obj[0]['LIMITE']);
+    }
+
     function x_actualizarT_tmp() {
         $obj = $this->mod->actualizarT_tmp();
         $tmp = $obj ? $obj : array();

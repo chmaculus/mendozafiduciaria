@@ -22,7 +22,6 @@ class entidades_model extends main_model{
     function sendobj($obj , $obj_tipo_entidades){
         $iid = $obj["id"];
         unset($obj["id"]);
-                
         if ($iid==0)://agregar
             $resp = $this->_db->insert($this->_tablamod, $obj);
             $acc = "add";
@@ -69,6 +68,10 @@ class entidades_model extends main_model{
     
     function get_provincias(){
         $rtn = $this->_db->get_tabla("fid_provincias");
+        return $rtn;
+    }
+    function get_localidades($id_provincia){
+        $rtn = $this->_db->get_tabla("fid_localidades","ID_PROVINCIA=".$id_provincia);
         return $rtn;
     }
     

@@ -234,6 +234,19 @@ class comprauva_model extends main_model {
 
         return $rtn;
     }
+    function nombreProvincia($id) {
+        $this->_db->select("ID_PROVINCIA");
+        $id_provincia = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
+        $this->_db->select("PROVINCIA");
+        $rtn = $this->_db->get_tabla('fid_provincias', "ID= '" . $id_provincia[0]['ID_PROVINCIA']. "'");
+
+        return $rtn;
+    }
+    function limiteBodega($id) {
+        $this->_db->select("LIMITE");
+        $rtn = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
+        return $rtn;
+    }
 
     function getobj($id_objeto) {
 
@@ -659,9 +672,15 @@ class comprauva_model extends main_model {
     }
 
     function get_bodegas() {
-        $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
-        $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
-        $rtn = $this->_db->get_tabla("fid_bodegas b");
+//        $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
+//        $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
+//        $rtn = $this->_db->get_tabla("fid_bodegas b");
+//        return $rtn;
+
+        $this->_db->select("e.id AS id,ets.nombre AS entidad_tipo,ets.id AS idt, e.nombre AS entidad, e.cuit AS cuit, e.*  ");
+        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
+        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
+        $rtn = $this->_db->get_tabla("fid_entidadestipo et","ets.ID =24");
         return $rtn;
     }
     
