@@ -149,7 +149,8 @@ class comprauva extends main_controller {
     function x_get_limite_permitido() {
         $id = $_POST['id'];
         $obj = $this->mod->limiteBodega($id);
-        echo json_encode($obj[0]['LIMITE']);
+//        var_dump($obj);die;
+        echo json_encode($obj);
     }
 
     function x_actualizarT_tmp() {

@@ -223,8 +223,21 @@
     <div class="elem elem_med">
             <label class="der">Departamento:</label>
             <div class="indent formtext">
-                <!--<input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>-->
                 <input type="text" class="tip-right" title="" id="dto_bodega" value="" readonly>
+            </div>
+    </div>
+
+    <div class="elem elem_med">
+            <label class="der">Lim. Bodega elegida:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
+            </div>
+    </div>
+    
+    <div class="elem elem_med">
+            <label class="der">Kgrs cargados en bodega:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="" id="kgrs_cargados" value="" readonly>
             </div>
     </div>
     

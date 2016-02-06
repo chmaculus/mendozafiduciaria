@@ -243,9 +243,33 @@ class comprauva_model extends main_model {
         return $rtn;
     }
     function limiteBodega($id) {
+//La consulta de las facturas se selecciona tomando el campo ID_BODEGAS, a tener
+// en cuenta por que la tabla fid_bodegas no se usa mas,
+//sino que las bodegas se van a obtener de la tabla fid_entidades cuando tengan 
+//el tipo de entidad Depositario al cargarse.
+        $datos_limite_bodega = array();
+        
+        $suma_kgrs = 0;
+        $diferencia = 0;
         $this->_db->select("LIMITE");
-        $rtn = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
-        return $rtn;
+        $rtn_limite_asignado = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
+        
+        $this->_db->select("*");
+        $rtn_limite_facturas = $this->_db->get_tabla('fid_cu_factura', "ID_BODEGA= '" . $id. "'");
+        
+        foreach ($rtn_limite_facturas as $value) {
+            $suma_kgrs = $suma_kgrs + $value['KGRS'];
+        }
+
+        $diferencia = $rtn_limite_asignado[0]['LIMITE'] - $suma_kgrs;
+        
+        $datos_limite_bodega = array(
+        "LIMITE" => $rtn_limite_asignado[0]['LIMITE'],
+        "DIFERENCIA" => $diferencia,
+        "CARGA" => $suma_kgrs,
+        );
+        
+        return $datos_limite_bodega;
     }
 
     function getobj($id_objeto) {

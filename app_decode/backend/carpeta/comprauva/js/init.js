@@ -406,15 +406,14 @@ $(document).ready(function () {
 
     });
 
-
+//La consulta de las facturas se selecciona tomando el campo ID_BODEGAS, a tener
+// en cuenta por que la tabla fid_bodegas no se usa mas,
+//sino que las bodegas se van a obtener de la tabla fid_entidades cuando tengan 
+//el tipo de entidad Depositario al cargarse.
     $('#bodega').bind('change', function (event) {
         event.preventDefault();
         var selected = $(this).find('option').eq(this.selectedIndex);
         var id_Provincia = $('#bodega').val();
-//        var local = selected.data('local');
-//        if ($('#bodega').val() != '') {
-//            $("#dto_bodega").val(local);
-//        }
         var local = selected.data('ID_PROVINCIA');
         if (id_Provincia != '') {
             $.ajax({
@@ -425,7 +424,9 @@ $(document).ready(function () {
                 dataType: "json",
                 type: "post",
                 success: function (data) {
-                    $("#limite_bodega").val(data);
+                    $("#limite_bodega_selec").val(data['LIMITE']);
+                    $("#kgrs_cargados").val(data['CARGA']);
+                    $("#limite_bodega").val(data['DIFERENCIA']);
                 }
             });
 
