@@ -2216,7 +2216,7 @@ function limpiar_form_nf() {
     $(".nuevafact_form textarea").val("").removeAttr("readonly");
     $(".nuevafact_form input").not("#add_cius").val("");
 
-    $(".nuevafact_form input").not("#cuitform,#nombre2,#add_cius,#total,#dto_bodega,#neto,#iva").removeAttr("readonly");
+    $(".nuevafact_form input").not("#cuitform,#nombre2,#add_cius,#total,#dto_bodega,#limite_bodega_selec,#kgrs_cargados,#limite_bodega,#neto,#iva").removeAttr("readonly");
 
     $("#bodega").val(0).trigger("chosen:updated");
 
