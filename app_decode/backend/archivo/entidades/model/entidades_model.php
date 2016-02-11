@@ -105,6 +105,7 @@ class entidades_model extends main_model{
     
     function get_tipos_entidades(){
         $this->_db->select("ID,NOMBRE");
+        $this->_db->order_by("NOMBRE", "ASC");
         $rtn = $this->_db->get_tabla("fid_entidades_tipos");
         return $rtn;
     }

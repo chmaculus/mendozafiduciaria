@@ -37,6 +37,20 @@
                         </div>
                     </div>
 
+
+                    <div class="elem">
+                        <label>Entidad:</label>
+                        <?php if ($lst_tipoentidades): ?>
+                            <div class="indent">
+                                <select class="chzn-select medium-select select" multiple data-placeholder="Selecciones Entidad/es" id="tipo_entidades">
+                                    <?php foreach ($lst_tipoentidades as $rs_ent): ?>
+                                        <option value="<?php echo $rs_ent["ID"] ?>"><?php echo $rs_ent["NOMBRE"] ?></option>
+                                    <?php endforeach; ?>
+                                </select> 
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                     <div class="elem">
                         <label>Organismo:</label>
                         <div class="indent formtext">
@@ -107,20 +121,6 @@
                         <div class="indent formtext">
                             <input type="text" class="" title="Ingrese Situación IIBB" id="situacion_iibb" value="<?php echo $entidad["SITUACION_IIBB"] ?>"> 
                         </div>
-                    </div>
-
-
-                    <div class="elem">
-                        <label>Entidad:</label>
-                        <?php if ($lst_tipoentidades): ?>
-                            <div class="indent">
-                                <select class="chzn-select medium-select select" multiple data-placeholder="Selecciones Entidad/es" id="tipo_entidades">
-                                    <?php foreach ($lst_tipoentidades as $rs_ent): ?>
-                                        <option value="<?php echo $rs_ent["ID"] ?>"><?php echo $rs_ent["NOMBRE"] ?></option>
-                                    <?php endforeach; ?>
-                                </select> 
-                            </div>
-                        <?php endif; ?>
                     </div>
 
                     <div class="elem elem_med">
