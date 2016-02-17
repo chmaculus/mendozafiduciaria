@@ -36,7 +36,7 @@
         $cad_where .= " AND TIPO=" . $idtipo ;
         
         $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where );
-//        file_put_contents('zzzzzz.log',$cnn->last_query() );
+//        file_put_contents('OBTENERLOTESFACTURAS.log',$cnn->last_query() );
         
         echo trim(json_encode($rtn?$rtn:array()));
         die();

@@ -2374,6 +2374,7 @@ function importar_procesar() {
         jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
             if (r == true) {
                 // llamar ajax
+                alert("si esta aca");
                 $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
                 $.ajax({
                     url: _comprauva.URL + "/x_importar_xls",

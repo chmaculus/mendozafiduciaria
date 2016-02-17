@@ -763,7 +763,7 @@ class comprauva_model extends main_model {
     }
 
     function importar_xls($fid_sanjuan, $ope_sanjuan) {
-        alert("IMPORTAR xls");
+//        alert("IMPORTAR xls");
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
@@ -824,7 +824,7 @@ class comprauva_model extends main_model {
                     "CU" => 1
                 );
                 $id_cliente = $this->_db->insert('fid_clientes', $arr_ins);
-                //log_this('log/aaaaaa.log', $this->_db->last_query() );
+//                log_this('log/insertArchivosImportacion.log', $this->_db->last_query() );
             }
 
             $idbodega_xls = $objPHPExcel->getActiveSheet()->getCell("P" . $i)->getValue();
@@ -1003,7 +1003,7 @@ class comprauva_model extends main_model {
     }
 
     function importar_ciu() {
-        alert("IMPORTAR CIU");
+      //  alert("IMPORTAR CIU");
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");

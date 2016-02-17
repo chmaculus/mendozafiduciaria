@@ -431,7 +431,7 @@ class comprauva extends main_controller {
     function x_importar_xls() {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];
-
+        var_dump($ope_sanjuan);die("LALA");
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
             echo $fid_sanjuan . " - " . $ope_sanjuan;
