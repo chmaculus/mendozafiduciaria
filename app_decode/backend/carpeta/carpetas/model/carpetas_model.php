@@ -332,6 +332,7 @@ class carpetas_model extends main_model {
     function actualizar_operacion_desistir($idope, $estado) {
         $etapa_desistir = 16;
         $resp = $this->_db->update('fid_operaciones', array("ID_ESTADO" => $estado, "ID_ETAPA_ACTUAL" => $etapa_desistir), "ID='" . $idope . "'");
+        $this->_db->update('fid_creditos', array("CREDITO_ESTADO" => ESTADO_CREDITO_DESISTIDO), "ID_OPERACION='" . $idope . "'");
         return $resp;
     }
 
