@@ -27,6 +27,9 @@ if (nolocal == 1) {
     var _ope_mendoza = 18;
 }
 
+var totalLimite = 0;
+var datosBodegas;
+var valor_acumulativo = 0;
 
 function guardar_factura() {
     //e.preventDefault();
@@ -38,7 +41,8 @@ function guardar_factura() {
     var cai = $("#cai").val();
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
-    var bodega = $("#bodega").val();
+    var bodega_array = $("#bodega").val();
+    var bodega = "";
     var kgrs = $("#kgrs").val();
     var cuitform = $("#cuitform").val();
     var azucar = $("#azucar").val();
@@ -49,7 +53,16 @@ function guardar_factura() {
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
 
+// con este obtengo el total!!!!
+    var total_grilla = $('#jqxgrid_bodegas').jqxGrid('getcolumnaggregateddata', 'LIMITE', ['sum']);
+    var total_limites = total_grilla.sum;
 
+    var contador = bodega_array.length;
+
+    for (var i = 0; i < contador; i++) {
+        bodega += bodega_array[i] + ",";
+    }
+    bodega = bodega.slice(0, -1);
 
     //bancos
     var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
@@ -133,7 +146,8 @@ function guardar_factura() {
             });
             return false;
         }
-        if (kgrs > valor_limite) {
+
+        if (kgrs > total_limites) {
             jAlert('El valor de los Kgrs NO puede ser superior al limite establecido.', $.ucwords(_etiqueta_modulo), function () {
                 $("#kgrs").focus();
             });
@@ -234,6 +248,7 @@ function guardar_factura() {
                 });
             } else { // no existe
 
+                alert("ajax sendobj");
                 $.ajax({
                     url: _comprauva.URL + "/x_sendobj",
                     data: {
@@ -350,8 +365,13 @@ function llenar_form(cliente) {
 
 $(document).ready(function () {
 
-
+    $("#jqxgrid_bodegas").hide();
+    $("#calculos-con-ciu").hide();
     //alert(_permiso_exportar+'-'+_permiso_ver+'-'+_permiso_modificacion+'-'+_permiso_baja+'-'+_permiso_alta);
+
+    $('#mostrarBodegas').on('click', function () {
+//        alert("AAAAA");
+    });
 
 
     semmilla = fGetNumUnico();
@@ -501,7 +521,6 @@ $(document).ready(function () {
 
     $('#nuevafactura').off().on('click', function (e) {
         e.preventDefault();
-
         /*
          $.ajax({
          url: _comprauva.URL + "/x_getobjcliente",
@@ -511,11 +530,9 @@ $(document).ready(function () {
          dataType: "json",
          type: "post",
          success: function(data) {
-         
          }
          });
          */
-
         var cc = $("#cuit_busqueda").val();
         limpiar_form_nf();
         $('.env_form').hide();
@@ -525,15 +542,140 @@ $(document).ready(function () {
         $("#porcentaje_iva").val('10.5');
         show_btns(2);
 
+//        var formaPago = $("input[name=tipoInteres]:checked").val();
+//        if (formaPago == 0) {
+//            alert("0 fijo");
+//        } else {
+//            alert("1 porcentual");
+//        }
     });
 
     refresGridevent();
 
+//$('#nuevafactura').off().on('click', function (e) {
+//        e.preventDefault();
+//        var cc = $("#cuit_busqueda").val();
+//        limpiar_form_nf();
+//        $('.env_form').hide();
+//        $('.nuevafact_form').show();
+//        $("#nombre2").val($("#nombre").val());
+//        $("#cuitform").val(cc);
+//        $("#porcentaje_iva").val('10.5');
+//        show_btns(2);
+//
+//    });
+
+    $('.mostrarBodegas').on('click', function () {
+        var id_bodegas = $('#bodega').val();
+        $("#info-bodegas").show();
+        $("#jqxgrid_bodegas").show();
+        var sourceope = {
+            datatype: "json",
+            datafields: [
+                {name: 'id', type: 'int'},
+                {name: 'entidad_tipo', type: 'string'},
+                {name: 'entidad', type: 'string'},
+                {name: 'cuit', type: 'string'},
+                {name: 'IDE', type: 'int'},
+                {name: 'LIMITE', type: 'number'}
+            ],
+            url: 'general/extends/extra/carpetas.php',
+            data: {
+                accion: "getBodegasGrilla",
+                id_bodegas: id_bodegas,
+            },
+            async: false,
+            deleterow: function (rowid, commit) {
+                commit(true);
+            }
+        };
+        var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+                {
+                    formatData: function (data) {
+                        data.name_startsWith = $("#searchField").val();
+                        return data;
+                    }
+                }
+        );
+        $("#jqxgrid_bodegas").jqxGrid({
+            width: '90%',
+            height: '200px',
+            source: dataAdapterope,
+            theme: 'energyblue',
+//            selectionmode: 'multiplerows',
+            showstatusbar: true,
+//                statusbarheight: 50,
+//                editable: true,
+            showaggregates: true,
+            selectionmode: 'singlerows',
+            localization: getLocalization(),
+            columns: [
+                {text: 'ID', datafield: 'id', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+                {text: 'BODEGA', datafield: 'entidad', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+                {text: 'CUIT', datafield: 'cuit', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+                {text: 'Limite', datafield: 'LIMITE', cellsalign: 'right', aggregates: ['sum'],
+                    aggregatesrenderer: function (aggregates, column, element, summaryData) {
+                        var renderstring = "<div class='jqx-widget-content' style='float: left; width: 100%; height: 100%;'>";
+                        $.each(aggregates, function (key, value) {
+                            var name = key == 'sum' ? 'Total' : 'Total';
+                            var color = 'green';
+                            totalLimite = value;
+                            renderstring += '<div id="totalBod" style="color: ' + color + '; position: relative; margin: 6px; text-align: right; overflow: hidden;">' + name + ': ' + value + '</div>';
+                        });
+                        renderstring += "</div>";
+                        return renderstring;
+                    }
+                }
+            ]
+        });
+
+        $.ajax({
+            url: _comprauva.URL + "/x_getDatosBodegas",
+            data: {
+                id: sourceope.data.id_bodegas
+            },
+            dataType: "json",
+            type: "post",
+            success: function (data) {
+                console.log(data);
+                var formularios = "";
+                var nombres_div = [];
+                $('#limite_bodega_selec').val(totalLimite);
+                var cantidad_bodegas = sourceope.data.id_bodegas.length;
+                for (var i = 0; i < cantidad_bodegas; i++) {
+                    console.log(datosBodegas);
+                    formularios = formularios + "<div style='width:396px; margin-left:2px; margin-bottom:5px; height:150px; float:left; border-radius: 10px 10px 10px 10px; background-color:#e7eef8;'>"
+                            + "<h2 style='font-size: 14px;margin-left:10px; margin-top: 10px; width:200px;'>Bodega " + data[i].NOMBRE + "</h2> "
+                            + "<div class='elem elem_med'><label  style='margin-left:10px;' class='der'>Krgs asignados:</label>"
+                            + "<div class='indent formtext'>"
+                            + "<input type='text' class='tip-right valorkg' title='' data-algo='kgrs_cargados_" + data[i].ID + "' id='kgrs_cargados_" + data[i].ID + "' value='' ></div></div></div>";
+//                    formularios = formularios + "<div style='width:396px; margin-left:2px; height:150px; float:left; border: 1px solid #000000; border-radius: 10px 10px 10px 10px; background-color:#e7eef8;'>"
+//                            + "<h2 style='font-size: 14px;margin-left:10px; margin-top: 10px; width:200px;'>Bodega " + data[i].NOMBRE + "</h2> "
+//                            + "<div class='elem elem_med'><label  style='margin-left:10px;' class='der'>Krgs asignados:</label>"
+//                            + "<div class='indent formtext'>"
+//                            + "<input type='text' class='tip-right valorkg' title='' data-algo='kgrs_cargados_" + data[i].ID + "' id='kgrs_cargados_" + data[i].ID + "' value='' ></div></div></div>";
+                    nombres_div[i] = "kgrs_cargados_" + data[i].ID;
+                }
+                $('#formularios-individuales').html(formularios);
+
+                $(".valorkg").keyup(function () {
+                    valor_acumulativo = 0;
+                    for (var i = 0; i < cantidad_bodegas; i++) {
+                        valor_acumulativo = valor_acumulativo + Number($("#kgrs_cargados_" + data[i].ID).val());
+                    }
+                    $("#kgrs").val(0);
+                    $("#kgrs").val(valor_acumulativo);
+
+                });
+            }
+        });
+
+    });
+
+
     $('#send').on('click', function (e) {
         e.preventDefault();
-
         var id = $("#idh").val();
-
         var prov = $("#provinciah").val();
         var loca = $("#localidadh").val();
         var condicioniibb = $("#condicioniibb").val();
@@ -565,7 +707,6 @@ $(document).ready(function () {
             INSCRIPCION_IIBB: insciibb,
             CBU: cbu
         }
-
         //validar campos
         if (nombre == '') {
             jAlert('Ingrese Razón Social.', $.ucwords(_etiqueta_modulo), function () {
@@ -995,7 +1136,8 @@ function editar_formulario() {
             $("#precio").val(data.PRECIO);
             $("#observacion_fact").val(data.OBSERVACIONES);
 
-            //$("#kgrs").val( data.KGRS ).attr("readonly","readonly");
+            $("#kgrs").attr("readonly", "readonly");
+//            $("#kgrs").val( data.KGRS ).attr("readonly","readonly");
             //$("#azucar").val( data.AZUCAR ).attr("readonly","readonly");
             //$("#precio").val( data.PRECIO ).attr("readonly","readonly");
             $("#neto").val(data.NETO).attr("readonly", "readonly");
@@ -1003,6 +1145,9 @@ function editar_formulario() {
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
             //$("#observacion_fact").val( data.OBSERVACIONES ).attr("readonly","readonly");
 
+            $("#kgrs-ciu").val().attr("readonly", "readonly");
+            $("#azucar-ciu").val().attr("readonly", "readonly");
+//            $("#azucar-ciu").attr("readonly","readonly");
             //$(".cabezera_frm_ciu").hide();
 
             if (arr_cius.length > 0) {
@@ -1231,7 +1376,6 @@ function agregarCIUS(_arr_cius) {
                     //$('#jqxgridbancos').jqxGrid( { editable: true} );
                     //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
 
-
                     //actualizar suma
                     var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
                     var _arr_aportes_tmp = [];
@@ -1259,6 +1403,13 @@ function agregarCIUS(_arr_cius) {
 
                     $("#frm_cargacius input").not('#add_cius').val('');
                     $("#frm_cargacius input").first().focus();
+                    $("#calculos-con-ciu").show();
+                    var calculo1 = Number($("#suma_aporte").text());
+                    var calculo2 = Number($("#kgrs").val());
+                    var calculo3 = Number($("#suma_aporte1").text());
+                    var calculo4 = Number($("#azucar").val());
+                    $("#kgrs-ciu").val(calculo2 - calculo1);
+                    $("#azucar-ciu").val(calculo3 - calculo4);
 
                 } else {
                     jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
@@ -1269,11 +1420,7 @@ function agregarCIUS(_arr_cius) {
             }
         });
 
-
-
         return false;
-
-
 
     });
 

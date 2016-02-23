@@ -3,6 +3,7 @@ var mydata;
 $(document).ready(function () {
     mydata = '';
 
+
     $(".toolbar li").hover(
             function () {
                 $(this).removeClass('li_sel').addClass('li_sel');

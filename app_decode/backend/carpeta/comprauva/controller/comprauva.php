@@ -10,7 +10,7 @@ class comprauva extends main_controller {
 
         //opcion = 1,2,3
         //1 = Consultar o Agregar // 2 = Listado // 3 = Editar
-
+                
 
         $this->constructor();
         if (!isset($_SESSION["USERADM"]))
@@ -24,6 +24,8 @@ class comprauva extends main_controller {
         $this->setPlug(array("validation"));
         $this->setPlug(array("fancybox"));
         $this->setPlug(array("jqgrid"));
+        $this->setPlug(array("multiselect"));
+        
 
         $id_permiso = 18; // permiso de acceso a este modulo (fid_permisos)
         $arr_permiso_mod = isset($_SESSION["USER_PERMISOS"][$id_permiso]) ? $_SESSION["USER_PERMISOS"][$id_permiso] : 0;
@@ -150,6 +152,11 @@ class comprauva extends main_controller {
         $id = $_POST['id'];
         $obj = $this->mod->limiteBodega($id);
 //        var_dump($obj);die;
+        echo json_encode($obj);
+    }
+    function x_getDatosBodegas() {
+        $id = $_POST['id'];
+        $obj = $this->mod->datosBodega($id);
         echo json_encode($obj);
     }
 
@@ -634,6 +641,12 @@ class comprauva extends main_controller {
         return $tmp;
     }
 
+    
+//    function x_getform_addBodegas() {
+//         $data['lst_bodegas'] = $this->x_getbodegas();
+//         echo $this->view("bodegas", $data);
+//    }
+    
 }
 
 class SelectBox {

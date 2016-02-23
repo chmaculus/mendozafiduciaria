@@ -32,7 +32,6 @@ class comprauva_model extends main_model {
         $id_lote_new = 0;
         if ($arr_obj):
             //insert cabezera
-
             $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
 
             foreach ($arr_obj as $ciu):
@@ -234,42 +233,66 @@ class comprauva_model extends main_model {
 
         return $rtn;
     }
+
     function nombreProvincia($id) {
         $this->_db->select("ID_PROVINCIA");
-        $id_provincia = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
+        $id_provincia = $this->_db->get_tabla('fid_entidades', "ID= '" . $id . "'");
         $this->_db->select("PROVINCIA");
-        $rtn = $this->_db->get_tabla('fid_provincias', "ID= '" . $id_provincia[0]['ID_PROVINCIA']. "'");
+        $rtn = $this->_db->get_tabla('fid_provincias', "ID= '" . $id_provincia[0]['ID_PROVINCIA'] . "'");
 
         return $rtn;
     }
+
     function limiteBodega($id) {
 //La consulta de las facturas se selecciona tomando el campo ID_BODEGAS, a tener
 // en cuenta por que la tabla fid_bodegas no se usa mas,
 //sino que las bodegas se van a obtener de la tabla fid_entidades cuando tengan 
 //el tipo de entidad Depositario al cargarse.
         $datos_limite_bodega = array();
-        
+        $cadena_ids = "";
+        foreach ($id as $value) {
+            $cadena_ids .= $value . ',';
+        }
+        $cadena_ids = substr($cadena_ids, 0, -1);
+        echo $cadena_ids;
+        die(" ESTA ES LA CADENA DE ID");
+        var_dump($id);
+        die(" LOS IDS");
+
+
         $suma_kgrs = 0;
         $diferencia = 0;
         $this->_db->select("LIMITE");
-        $rtn_limite_asignado = $this->_db->get_tabla('fid_entidades', "ID= '" . $id. "'");
-        
+        $rtn_limite_asignado = $this->_db->get_tabla('fid_entidades', "ID IN ('" . $id . "')");
+
         $this->_db->select("*");
-        $rtn_limite_facturas = $this->_db->get_tabla('fid_cu_factura', "ID_BODEGA= '" . $id. "'");
-        
+        $rtn_limite_facturas = $this->_db->get_tabla('fid_cu_factura', "ID_BODEGA IN ('" . $id . "')");
+
         foreach ($rtn_limite_facturas as $value) {
             $suma_kgrs = $suma_kgrs + $value['KGRS'];
         }
 
         $diferencia = $rtn_limite_asignado[0]['LIMITE'] - $suma_kgrs;
-        
+
         $datos_limite_bodega = array(
-        "LIMITE" => $rtn_limite_asignado[0]['LIMITE'],
-        "DIFERENCIA" => $diferencia,
-        "CARGA" => $suma_kgrs,
+            "LIMITE" => $rtn_limite_asignado[0]['LIMITE'],
+            "DIFERENCIA" => $diferencia,
+            "CARGA" => $suma_kgrs,
         );
-        
+
         return $datos_limite_bodega;
+    }
+
+    function datosBodega($id) {
+        $datos_limite_bodega = array();
+        $cadena_ids = "";
+        foreach ($id as $value) {
+            $cadena_ids .= $value . ',';
+        }
+        $cadena_ids = substr($cadena_ids, 0, -1);
+        $this->_db->select("*");
+        $rtn_datos_bodegas = $this->_db->get_tabla('fid_entidades', "ID IN ($cadena_ids)");
+        return $rtn_datos_bodegas;
     }
 
     function getobj($id_objeto) {
@@ -279,9 +302,9 @@ class comprauva_model extends main_model {
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-        
+
         //log_this();
-        
+
 
         $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
 
@@ -336,8 +359,6 @@ class comprauva_model extends main_model {
         return $rtn;
     }
 
-  
-    
     function sendobjcli($obj) {
         //log_this('log/aaaaa.log',print_r($obj,1));
 
@@ -373,10 +394,8 @@ class comprauva_model extends main_model {
     }
 
     function sendobj($obj) {
-
-        //log_this('log/xxxxx.log',print_r($obj,1));
         $iid = $obj["id"];
-        $arr_cius = isset($obj["arr_cius"])?$obj["arr_cius"]:array();
+        $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
 
         $cuit = $obj["CUIT"];
         $cli = $this->_db->get_tabla('fid_clientes', 'CUIT=' . $cuit);
@@ -384,6 +403,20 @@ class comprauva_model extends main_model {
         $cod_cli = $cli[0]['ID'];
         $obj["ID_CLIENTE"] = $cod_cli;
         $cuit_tmp = $obj["CUIT"];
+
+        $bodegas_elegidas = explode(',', $obj['ID_BODEGA']);
+        
+        $id_insert = "";
+        
+        
+        foreach ($bodegas_elegidas as $value) {
+            $id_insert = $this->_db->query('INSERT INTO fid_factura_depositarios(NUMERO_FACTURA,ID_BODEGA) '
+                    . 'VALUES ('.$obj['NUMERO'].','.$value.')');
+       }
+        $obj['ID_BODEGA']= $obj['NUMERO']; 
+       
+//        var_dump($obj);die("EL objeto");
+//       die("LAS BODEGAS");
 
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
 
@@ -408,8 +441,8 @@ class comprauva_model extends main_model {
 
                 $verif = ($ciu["CHEQUEO"] == '1' or $ciu["CHEQUEO"] == 'true') ? 1 : 0;
                 $arr_ins = array(
-                    "ID_CLIENTE"=>$cod_cli,
-                    "CUIT"=>$cuit_tmp,
+                    "ID_CLIENTE" => $cod_cli,
+                    "CUIT" => $cuit_tmp,
                     "ID_FACTURA" => $id_new,
                     "NUMERO" => $ciu["NUM"],
                     "AZUCAR" => $ciu["AZUCAR"],
@@ -649,7 +682,7 @@ class comprauva_model extends main_model {
 
     function obtenerNombreEntidad($num_entidad) {
         $this->_db->select("NOMBRE");
-        $rtn = $this->_db->get_tabla('fid_entidades_tipos', "ID=".$num_entidad);
+        $rtn = $this->_db->get_tabla('fid_entidades_tipos', "ID=" . $num_entidad);
         return $rtn;
     }
 
@@ -672,11 +705,11 @@ class comprauva_model extends main_model {
     }
 
     function verificar_cbu($cbu) {
-        
-        if (trim($cbu)==''){
+
+        if (trim($cbu) == '') {
             return array("result" => true, "error" => false);
         }
-        
+
         $rtn = $this->_db->get_tabla("fid_clientes c", "CBU='" . $cbu . "' group by cuit");
         if (count($rtn) > 1) {
             $result = "CBU Duplicado: cliente(";
@@ -704,10 +737,10 @@ class comprauva_model extends main_model {
         $this->_db->select("e.id AS id,ets.nombre AS entidad_tipo,ets.id AS idt, e.nombre AS entidad, e.cuit AS cuit, e.*  ");
         $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
         $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
-        $rtn = $this->_db->get_tabla("fid_entidadestipo et","ets.ID =24");
+        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID =24");
         return $rtn;
     }
-    
+
 //    function getformulassql(){
 //        $this->_dbsql->order_by('idFormula');
 //        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
@@ -776,9 +809,9 @@ class comprauva_model extends main_model {
         $res = array();
 
         $k = 0;
-        
-        
-        
+
+
+
         while ($objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue() != '') {
 
             $iid = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
@@ -802,7 +835,7 @@ class comprauva_model extends main_model {
             //$cbu = exp_to_dec($cbu);
             $cbu = $cbu;
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-            
+
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
@@ -852,7 +885,7 @@ class comprauva_model extends main_model {
 
 
             //validar numero de factura
-            $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=".$id_cliente);
+            $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente);
             // log_this('log/aaaaaaVVVEEEEEERRRRRR.log', $this->_db->last_query() );
             if ($existe_fact) {
                 $i++;
@@ -872,7 +905,7 @@ class comprauva_model extends main_model {
             $total = $objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue();
             $observaciones = $objPHPExcel->getActiveSheet()->getCell("AE" . $i)->getValue();
             $formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
-            
+
             if (trim($fecha) == "-   -") {
                 $fecha = '';
             } else {
@@ -900,15 +933,15 @@ class comprauva_model extends main_model {
                 $_fid_mendoza = 10;
                 $_ope_mendoza = 18;
             }
-            
-            if ($id_provincia=='17'){
+
+            if ($id_provincia == '17') {
                 $save_ope = $_ope_sanjuan;
                 $save_fid = $_fid_sanjuan;
-            }else{
+            } else {
                 $save_ope = $_ope_mendoza;
                 $save_fid = $_fid_mendoza;
             }
-            
+
             $arr_fact = array(
                 "NUMERO" => $numero,
                 "FECHA" => $fecha,
@@ -928,8 +961,8 @@ class comprauva_model extends main_model {
                 "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => $id_provincia,
             );
-            
-            if (intval($formula)>0){
+
+            if (intval($formula) > 0) {
                 $arr_fact["FORMULA"] = $formula;
             }
 
@@ -944,7 +977,7 @@ class comprauva_model extends main_model {
                 $factor = $arr_factor[0]['VALOR'];
             }
 
-            if ( 0 and ($neto != $kgrs * $precio)) {
+            if (0 and ( $neto != $kgrs * $precio)) {
                 $sw_error = 1; //
                 $arr_error[] = "Neto observado";
             }
@@ -952,12 +985,12 @@ class comprauva_model extends main_model {
             $iva = round($iva * 1, 2);
             $factor = round(($factor * $neto / 100) * 1, 2);
             //log_this("iv-factor.txt", $iva . " - " . $factor);
-            if (  (abs($iva - $factor) > 1) ) {
+            if ((abs($iva - $factor) > 1)) {
                 $sw_error = 1;
                 $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
             }
 
-            if ($total - ($neto + $iva) > 1 ) {
+            if ($total - ($neto + $iva) > 1) {
                 $sw_error = 1;
                 $arr_error[] = "Total observado";
             }
@@ -1003,7 +1036,7 @@ class comprauva_model extends main_model {
     }
 
     function importar_ciu() {
-      //  alert("IMPORTAR CIU");
+        //  alert("IMPORTAR CIU");
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
@@ -1015,7 +1048,7 @@ class comprauva_model extends main_model {
         $i = 2;
         $res = array();
         $suma_kgrs = 0;
-        while ( trim($objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue()) != '') {
+        while (trim($objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue()) != '') {
 
             //$iid            = $objPHPExcel->getActiveSheet()->getCell("A".$i)->getValue();
             $cuit = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
@@ -1030,26 +1063,26 @@ class comprauva_model extends main_model {
 
             $dat_cliente = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
             $id_cliente = 0;
-            if ($dat_cliente){
+            if ($dat_cliente) {
                 //log_this('log/yyyyy.log', print_r($dat_cliente,1) );
-                if (isset($dat_cliente[0]["ID"])){
+                if (isset($dat_cliente[0]["ID"])) {
                     $id_cliente = $dat_cliente[0]["ID"];
-                }else{
-                  //  continue;
+                } else {
+                    //  continue;
                 }
             }
-            
+
             $existe_fact = $this->_db->get_tabla('fid_cu_factura', 'NUMERO="' . $num_fact . '"');
             //log_this('log/zzzzzzz.log',$this->_db->last_query() );
 
             $existe_ciu = $this->_db->get_tabla('fid_cu_ciu', 'NUMERO="' . $numero . '"');
-            
+
             if ($existe_fact && !$existe_ciu) {
                 $id_fact = $existe_fact[0]["ID"];
                 //insertar cius
                 $arr_ciu = array(
-                    "CUIT"=>$cuit,
-                    "ID_CLIENTE"=>$id_cliente,
+                    "CUIT" => $cuit,
+                    "ID_CLIENTE" => $id_cliente,
                     "ID_FACTURA" => $id_fact,
                     "NUMERO" => $numero,
                     "KGRS" => $kgrs,
@@ -1092,7 +1125,7 @@ class comprauva_model extends main_model {
             return 0;
         }
     }
-    
+
     function validar_archivos_imp_f() {
 
         $num_files = contar_archivos_imp_f();
@@ -1102,7 +1135,7 @@ class comprauva_model extends main_model {
             return 0;
         }
     }
-    
+
     function validar_archivos_imp_c() {
 
         $num_files = contar_archivos_imp_c();

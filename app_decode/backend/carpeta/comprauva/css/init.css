@@ -32,6 +32,32 @@
     margin-right: 30px;
 }
 
+#info-bodegas{
+    width: 800px; 
+    /*height: 230px;*/ 
+    height: auto;
+
+overflow: hidden;
+    display: none; 
+    border: 1px solid #000000; 
+    border-radius: 10px 10px 10px 10px;
+}
+
+#todas_bodegas{
+    width: 400px;
+    height: 192px;
+    float: left;
+}
+#cada_bodega{
+    width: 400px; 
+    height: 192px;
+    float:left;
+}
+.box_limite{
+    margin-top: 10px;
+    margin-left: 15px;
+}
+
 .form_cuentbanco .elem_med label{
     width: 220px;
 }
