@@ -160,6 +160,13 @@ class formaltabase extends main_controller {
         $_SESSION['msg_err'] = "";
         $excel = $_FILES['fexcel'];
         if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
+            $dir = 'backup/importaciones/' ;
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+            
+            $file_import = $dir . 'creditos_' . date('Ymd_Hi_') . $excel['name'];
+            move_uploaded_file($excel['tmp_name'], $file_import);
 
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
@@ -388,6 +395,90 @@ class formaltabase extends main_controller {
             //return $this->view("form_excel", array("creditos" => $creditos));
         }
         $_SESSION['msg_err'] = "Hubo un problema al cargar el archivo";
+        return FALSE;
+    }
+    
+    function x_importar_desembolsos() {
+        if ($this->_importar_desembolsos_excel()) {
+            $_SESSION['msg_ok'] = "El proceso de importación de desembolsos ha finalizado";
+        }
+        
+        header('Location:/' . URL_PATH . 'creditos/front/creditos');
+        die();
+    }
+    
+    function _importar_desembolsos_excel() {
+        $_SESSION['msg_err'] = "";
+        $excel = $_FILES['fexcel'];
+        if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
+            $dir = 'backup/importaciones/' ;
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+            
+            $file_import = $dir . 'desembolso_' . date('Ymd_Hi_') . $excel['name'];
+            move_uploaded_file($excel['tmp_name'], $file_import);
+            
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
+            require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
+            
+            $objReader = new PHPExcel_Reader_Excel2007();
+            if ($objPHPExcel = $objReader->load($file_import)) {
+                set_time_limit(0);
+                $err = "";
+                $objPHPExcel->setActiveSheetIndex(0);
+                $arr_creditos = array();
+                
+                if ($objPHPExcel->getActiveSheet()->getCell("A1")->getCalculatedValue() != 'ID' || $objPHPExcel->getActiveSheet()->getCell("C1")->getCalculatedValue() != 'Desembolso') {
+                    $err = "Excel incorrecto";
+                    return FALSE;
+                }
+                
+                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
+                    $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
+                    $fdesemb = PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell("D" . $j)->getCalculatedValue()) + 86400;
+                    $monto = $objPHPExcel->getActiveSheet()->getCell("C" . $j)->getCalculatedValue();
+                    $arr_creditos[] = array(
+                        'ID_CREDITO' => $credito_id,
+                        'FECHA' => $fdesemb,
+                        'MONTO' => $monto
+                    );
+                }
+                
+                
+                if ($arr_creditos) {
+                    foreach($arr_creditos as $it) {
+                        //$this->mod->clear();
+                        $this->mod->set_credito_active($it['ID_CREDITO']);
+                        $this->mod->set_version_active();
+
+                        $versiones = $this->mod->get_versiones();
+                        $version = $versiones[0]['value'];
+                        
+                        $_POST = array();
+                        $_POST['credito_id'] = $it['ID_CREDITO'];
+                        $_POST['fecha'] = $it['FECHA'];
+                        $_POST['tipo'] = 1;
+                        $_POST['reset'] = 0;
+                        $_POST['version_id'] = $version;
+                        $_POST['monto'] = $it['MONTO'];
+
+                        $this->x_agregar_desembolso();
+
+                    }
+                }
+                
+                if ($err) {
+                    $_SESSION['msg_err'] .= $err;
+                }
+                
+                RETURN TRUE;
+            }
+            
+        } else {
+            $_SESSION['msg_err'] = "Hubo un problema al cargar el archivo";
+        }
+        
         return FALSE;
     }
     

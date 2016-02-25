@@ -430,6 +430,30 @@ function ver_detalle(id_evento,elem){
     }
 }
 
+function eliminar_pago(id_evento){
+   
+    jConfirm("¿Esta seguro?, se eliminará también los pagos siguientes", "Eliminar pagos de créditos", function (i) {
+        if (i) {
+            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+            $.ajax({
+                url : _credito.URL + "/x_eliminar_cobranza",
+                data : {
+                    credito_id : _credito.ID,
+                    id_evento : id_evento
+                },
+                type : "post",
+                async : false,
+                success : function (rtn) {
+                    $.unblockUI();
+                    if (rtn == "1") {
+                        actualizar_informe();
+                    }
+                }
+            });
+        }
+    });
+}
+
 
 _credito.get_gastos = function(credito_id, fecha, chequera){
 

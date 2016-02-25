@@ -382,14 +382,19 @@ class sqldata {
             mkdir($dir);
         }
         $file = $dir . $accion . '_' . date('Y-m-d') . ".log";
-        if ($pfile = fopen($file,'a+')) {
-            if (is_array($var)) {
-                fwrite($pfile, print_r($var, TRUE) . "\n");
+        try {
+            if ($pfile = fopen($file,'a+')) {
+                if (is_array($var)) {
+                    fwrite($pfile, print_r($var, TRUE) . "\n");
+                } else {
+                    fwrite($pfile, $var . "\n");
+                }
             } else {
-                fwrite($pfile, $var . "\n");
+                die("ERROR EN EL SISTEMA, contactar con soporte");
             }
-        } else {
-            die("ERROR EN EL SISTEMA, contactar con soporte");
+        
+        } catch (Exception $ex) {
+            print_r($ex);die;
         }
 
         fclose($pfile);

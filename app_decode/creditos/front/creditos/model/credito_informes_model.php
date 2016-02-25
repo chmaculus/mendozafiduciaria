@@ -397,6 +397,7 @@ class credito_informes_model extends credito_model {
             $fecha = time();
             foreach ($_creditos as $credito) {
                 $this->set_credito_active($credito['ID']);
+                $this->set_fecha_actual($fecha);
                 
                 if ($cuotas = $this->get_cuotas($fdesde, $fhasta)) {
                     $creditos_moratorios[$credito['ID']] = $credito;

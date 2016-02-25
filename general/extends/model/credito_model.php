@@ -3258,7 +3258,7 @@ ORDER BY T1.lvl DESC');
     
     public function get_cuotas($fdesde=FALSE, $fhasta=FALSE) {
         if ($fdesde && $fhasta) {
-            $where = " AND FECHA_VENCIMIENTO>='$fdesde' AND FECHA_VENCIMIENTO<='$fhasta'";
+            $where = " AND FECHA_GENERADA>='$fdesde' AND FECHA_GENERADA<='$fhasta'";
         } else {
             $where = '';
         }
@@ -3526,6 +3526,26 @@ ORDER BY T1.lvl DESC');
                 return FALSE;
             }
         }
+    }
+    
+    function eliminar_pagos($id_evento) {
+        $this->_db->select("ID_VARIACION");
+        $ids_eventos = $this->_db->get_tabla("fid_creditos_pagos", "ID_CREDITO=" . $this->_id_credito . " AND FECHA >= (SELECT FECHA FROM fid_creditos_pagos WHERE ID_CREDITO=" . $this->_id_credito . " AND ID_VARIACION=$id_evento LIMIT 1) GROUP BY ID_VARIACION");
+        
+        if($ids_eventos) {
+            $arr = array();
+            foreach ($ids_eventos as $it) {
+                $arr[] =  $it['ID_VARIACION'];
+            }
+            
+            $ids_eventos = implode(', ', $arr);
+            
+            $this->_db->delete("fid_creditos_pagos", "ID_CREDITO=" . $this->_id_credito . " AND ID_VARIACION IN ($ids_eventos)");
+            $this->_db->delete("fid_creditos_eventos", "ID_CREDITO=" . $this->_id_credito . " AND ID IN ($ids_eventos)");
+            return TRUE;
+        }
+        
+        return FALSE;
     }
   
 }

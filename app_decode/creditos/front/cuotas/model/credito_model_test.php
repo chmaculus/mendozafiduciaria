@@ -343,8 +343,10 @@ class credito_model_test extends credito_model {
             if ($variaciones[$i]['ASOC']) {
                 $total_monto = 0;
                 foreach ($variaciones[$i]['ASOC'] as $valor) {
-                    $total_monto += $valor['MONTO'];
-                    $tipo = 'Recupero';
+                    if($valor) {
+                        $total_monto += $valor['MONTO'];
+                        $tipo = 'Recupero';
+                    }
                 }
                 $variaciones[$i]['TOTAL'] = $total_monto;
                 $variaciones[$i]['TIPO'] = $tipo;

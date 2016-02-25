@@ -99,7 +99,7 @@
 }
 
 .lista-informe.pagos .numero-pago{
-    width: 80px;
+    width: 70px;
 }
 .lista-informe.pagos .fecha-pago{
     width: 140px;
@@ -110,6 +110,17 @@
 .lista-informe.pagos .porcentaje-pago{
     width: 120px;
 }
+.lista-informe.pagos .recibo-recibo{
+    width: 170px;
+}
+.lista-informe.pagos .recibo-ver{
+    width: 80px;
+}
+.lista-informe.pagos .recibo-eliminar{
+    width: 80px;display:none;
+}
+
+.lista-informe.pagos .recibo-eliminar button{color:#ff0000}
 
 
 
