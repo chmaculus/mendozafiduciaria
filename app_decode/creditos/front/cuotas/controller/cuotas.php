@@ -1129,6 +1129,13 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $_SESSION['msg_err'] = "";
         $excel = $_FILES['fexcel'];
         if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
+            $dir = 'backup/importaciones/' ;
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+            
+            $file_import = $dir . 'pagos_' . date('Ymd_Hi_') . $excel['name'];
+            move_uploaded_file($excel['tmp_name'], $file_import);
 
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel.php');
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');

@@ -94,6 +94,13 @@
             <input type="submit" class="btnImp" name="import_excel" value="IMPORTAR PAGOS" onclick="importarExcel()" />
         </div>
     </form>
+    <form action="creditos/front/formaltabase/x_importar_desembolsos" method="post" enctype="multipart/form-data">
+        <h2>Importar desembolsos desde Excel</h2>
+        <div class="c8">
+            <input type="file" name="fexcel" />
+            <input type="submit" class="btnImp" name="import_excel" value="IMPORTAR DESEMBOLSOS" onclick="importarExcel()" />
+        </div>
+    </form>
 </div>
 
 <div id="jqxgrid"></div>

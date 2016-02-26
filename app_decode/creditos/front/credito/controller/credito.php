@@ -152,6 +152,19 @@ class credito extends main_controller{
         echo $this->view("informes/pagos", array("pagos"=>$pagos) );
     }
     
+    function x_eliminar_cobranza() {
+        $credito_id = $_POST['credito_id'];
+        $id_evento = $_POST['id_evento'];
+        
+        if ($this->mod->set_credito_active($credito_id)) {
+            if ($this->mod->eliminar_pagos($id_evento)) {
+                die("1");
+            }
+        }
+        
+        die("0");
+    }
+    
     function x_obtener_pago(){
         $credito_id = $_POST['credito_id'];
         $fecha = isset($_POST['fecha']) ? $_POST['fecha'] : time();
