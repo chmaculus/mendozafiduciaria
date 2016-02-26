@@ -1,4 +1,3 @@
-//ESTA CLASE NOSE Q HACE; NO SE MODIFICA
 var mydata;
 var id_edit;
 var working = false;
@@ -52,27 +51,74 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
+    
+    var _arr_bodegas = [];
+
+    
+
 
 // con este obtengo el total!!!!
     var total_grilla = $('#jqxgrid_bodegas').jqxGrid('getcolumnaggregateddata', 'LIMITE', ['sum']);
     var total_limites = total_grilla.sum;
-
     var contador = bodega_array.length;
-
     for (var i = 0; i < contador; i++) {
         bodega += bodega_array[i] + ",";
+       
+        $.ajax({
+        url: _comprauva.URL + "/x_solotraerId",
+        data: {
+            numero: numero
+        },
+        dataType: "json",
+        type: "post",
+        success: function (data) {
+
+
+            // 1 existe // 0 no existe
+            if (data > 0 && _opcion != 3) {//existe
+                jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
+
+                });
+            } else { // no existe
+
+                alert("ajax sendobj");
+                $.ajax({
+                    url: _comprauva.URL + "/x_sendobj",
+                    data: {
+                        obj: objsave
+                    },
+                    dataType: "json",
+                    type: "post",
+                    success: function (data) {
+
+                        console.dir(data);
+                        if (data.result > 0) {
+                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                show_btns();
+                                limpiar_form_fact();
+                                $('#send').hide();
+                                var_cliente = {};
+                            });
+                        } else {
+                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+                                $.unblockUI();
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+    });
     }
     bodega = bodega.slice(0, -1);
-
     //bancos
     var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
     var _arr_cius = [];
     for (var i = 0; i < griddata.rowscount; i++)
         _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-
     var sum_kgrs = 0;
     var sum_azuc = 0;
-
     //validacion
     if (_arr_cius) {
         $.each(_arr_cius, function (index, value) {
@@ -82,7 +128,6 @@ function guardar_factura() {
         });
         sum_azuc = sum_azuc / sum_kgrs;
     }
-
     iid = id ? id : 0;
 
 
@@ -224,9 +269,6 @@ function guardar_factura() {
         console.dir(objsave);
 
     }
-
-
-
 
 
     //validar numero de factura
@@ -613,7 +655,7 @@ $(document).ready(function () {
                 {text: 'ID', datafield: 'id', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
                 {text: 'BODEGA', datafield: 'entidad', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
                 {text: 'CUIT', datafield: 'cuit', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-                {text: 'Limite', datafield: 'LIMITE', cellsalign: 'right', aggregates: ['sum'],
+                {text: 'Limite', datafield: 'LIMITE', cellsalign: 'right', aggregates: ["sum"],
                     aggregatesrenderer: function (aggregates, column, element, summaryData) {
                         var renderstring = "<div class='jqx-widget-content' style='float: left; width: 100%; height: 100%;'>";
                         $.each(aggregates, function (key, value) {

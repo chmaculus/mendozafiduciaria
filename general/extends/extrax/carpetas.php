@@ -20,7 +20,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasGrilla') {
     die();
 }
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasDatos') {
-die("AAAAAAALLLLLLLLLLLLCHUUUUUUUUUU");
+die("Error, no es posible acceder a este sector");
     $idBodegas = $_GET["id_bodegas"];
     $bodegas_ids = "";
     foreach ($idBodegas as $value) {

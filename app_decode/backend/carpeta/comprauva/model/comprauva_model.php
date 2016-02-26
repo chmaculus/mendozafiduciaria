@@ -361,11 +361,9 @@ class comprauva_model extends main_model {
 
     function sendobjcli($obj) {
         //log_this('log/aaaaa.log',print_r($obj,1));
-
         $iid = $obj["id"];
         unset($obj["id"]);
         $obj["CU"] = 1;
-//        var_dump($obj);die();
         if ($iid == 0)://agregar
             $resp = $this->_db->insert('fid_clientes', $obj);
             //log_this('log/aaaaa.log', $this->_db->last_query());
@@ -406,9 +404,9 @@ class comprauva_model extends main_model {
 
         $bodegas_elegidas = explode(',', $obj['ID_BODEGA']);
         
+        var_dump($obj);die("ESTE OBJETO DEBE TRAER TODO");
+        
         $id_insert = "";
-        
-        
         foreach ($bodegas_elegidas as $value) {
             $id_insert = $this->_db->query('INSERT INTO fid_factura_depositarios(NUMERO_FACTURA,ID_BODEGA) '
                     . 'VALUES ('.$obj['NUMERO'].','.$value.')');
