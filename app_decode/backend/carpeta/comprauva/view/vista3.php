@@ -225,36 +225,7 @@
     <div id="info-bodegas">
         <div id="jqxgrid_bodegas" style="margin-left:20px; margin-top: 5px;">
         </div>
-        <!--        <div id="todas_bodegas">
-                    <h2 style="font-size: 16px; margin-top: 10px; margin-left: 10px;">Totales Bodegas Elegidas</h2>
-                    <div class="elem elem_med" style="margin-left: 20px;">
-                        <label class="der">Limite Total:</label>
-                        <div class="indent formtext">
-                            <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
-                        </div>
-                    </div>
-                                <div class="elem elem_med" style="margin-left: 20px;">
-                                    <label class="der">Kgrs cargados total:</label>
-                                    <div class="indent formtext">
-                                        <input type="text" class="tip-right" title="" id="kgrs_cargados" value="" readonly>
-                                    </div>
-                                </div>
-                                <div class="elem elem_med" style="margin-left: 20px;">
-                                    <label class="der">Limite total permitido:</label>
-                                    <div class="indent formtext">
-                                        <input type="text" class="tip-right" title="" id="limite_bodega" value="" readonly>
-                                    </div>
-                                </div>
-                </div>-->
-        <!--        <div id="cada_bodega">
-                    <h2 style="font-size: 16px; margin-top: 10px; margin-left: 10px;">Total por Bodega</h2>
-                    <div class="elem elem_med" style="margin-left: 20px;">
-                        <label class="der">Limite </label>
-                        <div class="indent formtext">
-                            <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
-                        </div>
-                    </div>
-                </div>-->
+        
         <div id="formularios-individuales" style="width: 800px; height:auto; margin-top: 10px;">
         </div>
     </div>

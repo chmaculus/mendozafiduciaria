@@ -10,21 +10,23 @@ var myfancy = 0;
 var var_cliente = {};
 var condicioniva_g = 0;
 
+var asignacion_x_bodega = [];
 // local
 /*
-var _fid_sanjuan = 41;
-var _ope_sanjuan = 32;
-
-var _fid_mendoza = 33;
-var _ope_mendoza = 42;
-*/
+ var _fid_sanjuan = 41;
+ var _ope_sanjuan = 32;
+ var _fid_mendoza = 33;
+ var _ope_mendoza = 42;
+ */
 var _fid_sanjuan = 88;
 var _ope_sanjuan = 99;
-
 var _fid_mendoza = 66;
 var _ope_mendoza = 77;
 
-
+var datosBodegas;
+var totalLimite = 0;
+var valor_acumulativo = 0;
+var nuevo_o_editar = 0;
 
 var nolocal = 1;
 if (nolocal == 1) {
@@ -34,7 +36,6 @@ if (nolocal == 1) {
     var _fid_mendoza = 1;
     var _ope_mendoza = 16;
 }
-
 
 function guardar_factura() {
     //e.preventDefault();
@@ -46,8 +47,10 @@ function guardar_factura() {
     var cai = $("#cai").val();
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
-    var bodega = $("#bodega").val();
-    var kgrs = $("#kgrs").val();
+    var bodega_array = $("#bodega").val();
+    var bodega = "";
+//    var kgrs = $("#kgrs").val();
+    var litros = $("#litros").val();
     var cuitform = $("#cuitform").val();
     var azucar = $("#azucar").val();
     var precio = $("#precio").val();
@@ -56,9 +59,57 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
-    
-    
+    var porcentaje_iva = $("#porcentaje_iva").val();
 
+// con este obtengo el total!!!!
+    var total_grilla = $('#jqxgrid_bodegas').jqxGrid('getcolumnaggregateddata', 'LIMITE_LITROS', ['sum']);
+    var total_limites = total_grilla.sum;
+    var contador = bodega_array.length;
+    //No se realmente para que estaba agregando el siguiente ajax, dejo comentado
+    for (var i = 0; i < contador; i++) {
+        bodega += bodega_array[i] + ",";
+        $.ajax({
+            url: _compravino.URL + "/x_solotraerId",
+            data: {
+                numero: numero
+            },
+            dataType: "json",
+            type: "post",
+            success: function (data) {
+                // 1 existe // 0 no existe
+                if (data > 0 && _opcion != 3) {//existe
+                    jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
+                    });
+                } else { // no existe
+                    
+                    $.ajax({
+                        url: _compravino.URL + "/x_sendobj",
+                        data: {
+                            obj: objsave
+                        },
+                        dataType: "json",
+                        type: "post",
+                        success: function (data) {
+                            console.dir(data);
+                            if (data.result > 0) {
+                                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                    show_btns();
+                                    limpiar_form_fact();
+                                    $('#send').hide();
+                                    var_cliente = {};
+                                });
+                            } else {
+                                jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+                                    $.unblockUI();
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    bodega = bodega.slice(0, -1);
     //bancos
     var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
     var _arr_cius = [];
@@ -68,9 +119,16 @@ function guardar_factura() {
     var sum_kgrs = 0;
     var sum_azuc = 0;
 
+    var datos_asignados_bodegas = [];
+    for (i = 0; i < asignacion_x_bodega.length; i++) {
+        var array_asigna = [];
+        array_asigna.push(asignacion_x_bodega[i], $("#" + asignacion_x_bodega[i] + "").val());
+        datos_asignados_bodegas.push(array_asigna);
+    }
+
     //validacion
     if (_arr_cius) {
-        $.each(_arr_cius, function(index, value) {
+        $.each(_arr_cius, function (index, value) {
             //sum_kgrs
             sum_kgrs += parseFloat(value.KGRS);
             sum_azuc += parseFloat(value.AZUCAR * value.KGRS);
@@ -91,14 +149,14 @@ function guardar_factura() {
     } else {
         //validar campos
         if (numero == '') {
-            jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
                 $("#numero").focus();
             });
             return false;
         }
 
         if (fecha == '') {
-            jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
                 $("#fecha").focus();
             });
             return false;
@@ -120,7 +178,7 @@ function guardar_factura() {
 
         if (cai !== '') {
             if (fechavto < fecha) {
-                jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function() {
+                jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
                     $("#fechavto").focus();
                 });
                 return false;
@@ -128,47 +186,48 @@ function guardar_factura() {
         }
 
         if (bodega == '') {
-            jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
                 $("#bodega").focus();
             });
             return false;
         }
 
-        if (kgrs == '') {
-            jAlert('Ingrese el valor de los Kgrs.', $.ucwords(_etiqueta_modulo), function() {
-                $("#kgrs").focus();
+        if (litros == '') {
+            jAlert('Ingrese el valor de los Litros.', $.ucwords(_etiqueta_modulo), function () {
+                $("#litros").focus();
             });
             return false;
         }
 
         if (azucar == '') {
-            jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function () {
                 $("#azucar").focus();
             });
             return false;
         }
 
         if (precio == '') {
-            jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function () {
                 $("#precio").focus();
             });
             return false;
         }
 
-        console.log('kgrs:: ' + kgrs + ' sum kgrs::' + sum_kgrs);
-        if (kgrs != sum_kgrs) {
-            jAlert('Las sumas kgrs no coinciden.', $.ucwords(_etiqueta_modulo), function() {
-            });
-            return false;
-        }
+//        console.log('kgrs:: ' + kgrs + ' sum kgrs::' + sum_kgrs);
+//        if (kgrs != sum_kgrs) {
+//            jAlert('Las sumas kgrs no coinciden.', $.ucwords(_etiqueta_modulo), function () {
+//            });
+//            return false;
+//        }
 
-        console.log('azucar:: ' + azucar + ' sum azucar::' + sum_azuc);
-        if (sum_azuc < azucar) {
-            jAlert('Las sumas azucar no coinciden.', $.ucwords(_etiqueta_modulo), function() {
+//        console.log('azucar:: ' + azucar + ' sum azucar::' + sum_azuc);
+//        if (sum_azuc < azucar) {
+//            jAlert('Las sumas azucar no coinciden.', $.ucwords(_etiqueta_modulo), function () {
+//
+//            });
+//            return false;
+//        }
 
-            });
-            return false;
-        }
 
         var tmp_ope, tmp_fid;
         var local = 1;
@@ -183,7 +242,7 @@ function guardar_factura() {
 
         var nolocal = 1;
         if (nolocal == 1) {
-            
+
             if (_provincia == '12') {
                 tmp_ope = _ope_mendoza;
                 tmp_fid = _fid_mendoza;
@@ -192,6 +251,58 @@ function guardar_factura() {
                 tmp_fid = _fid_sanjuan;
             }
         }
+
+        objbodegas_litros = {
+            NUMERO: numero,
+            ID_BODEGA: bodega,
+            LITROS: litros,
+        }
+
+        $.ajax({
+            url: _compravino.URL + "/x_guardar_litros_bodegas",
+            data: {
+                numero: numero
+            },
+            dataType: "json",
+            type: "post",
+            success: function (data) {
+                if (data > 0 && _opcion != 3) {//existe
+                    jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
+
+                    });
+                } else { // no existe
+
+                    $.ajax({
+                        url: _compravino.URL + "/x_sendobj",
+                        data: {
+                            obj: objsave
+                        },
+                        dataType: "json",
+                        type: "post",
+                        success: function (data) {
+
+                            console.dir(data);
+                            if (data.result > 0) {
+                                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                    show_btns();
+                                    limpiar_form_fact();
+                                    $('#send').hide();
+                                    var_cliente = {};
+                                });
+                            } else {
+                                jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+                                    $.unblockUI();
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+
+        });
+
+
+
 
         objsave = {
             id: iid,
@@ -202,7 +313,8 @@ function guardar_factura() {
             FECHAVTO: fechavto,
             ID_BODEGA: bodega,
             CUIT: cuitform,
-            KGRS: kgrs,
+//            KGRS: kgrs,
+            LITROS: litros,
             AZUCAR: azucar,
             PRECIO: precio,
             ID_ESTADO: 1,
@@ -215,13 +327,12 @@ function guardar_factura() {
             update_cius: 0,
             ID_OPERATORIA: tmp_ope,
             ID_FIDEICOMISO: tmp_fid,
-            FORMULA : formula,
-            TIPO:1
+            FORMULA: formula,
+            TIPO: 1,
+            PORC_IVA: porcentaje_iva
         }
-
         console.log('aaaaaaaa::::');
         console.dir(objsave);
-
     }
 
     //validar numero de factura
@@ -233,13 +344,11 @@ function guardar_factura() {
         },
         dataType: "json",
         type: "post",
-        success: function(data) {
-
+        success: function (data) {
 
             // 1 existe // 0 no existe
             if (data > 0 && _opcion != 3) {//existe
-                jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function() {
-
+                jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
                 });
             } else { // no existe
 
@@ -250,18 +359,32 @@ function guardar_factura() {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function(data) {
+                    success: function (data) {
 
                         console.dir(data);
                         if (data.result > 0) {
-                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function() {
+
+                            $.ajax({
+                                url: _compravino.URL + "/x_carga_por_bodega",
+                                data: {
+                                    obj: objsave,
+                                    datos_asignados_bodegas: datos_asignados_bodegas
+                                },
+                                dataType: "json",
+                                type: "post",
+                                success: function (data) {
+
+                                }
+
+                            });
+                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                                 show_btns();
                                 limpiar_form_fact();
                                 $('#send').hide();
                                 var_cliente = {};
                             });
                         } else {
-                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function() {
+                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
                                 $.unblockUI();
                             });
                         }
@@ -357,13 +480,13 @@ function llenar_form(cliente) {
 }
 
 
-$(document).ready(function() {
-    
-    
-    
+$(document).ready(function () {
+
+
+
     //alert(_permiso_exportar+'-'+_permiso_ver+'-'+_permiso_modificacion+'-'+_permiso_baja+'-'+_permiso_alta);
-    
-    
+
+
     semmilla = fGetNumUnico();
     mydata = '';
 
@@ -371,26 +494,26 @@ $(document).ready(function() {
     initGridListadoRevision();
 
     $(".toolbar li").hover(
-            function() {
+            function () {
                 $(this).removeClass('li_sel').addClass('li_sel');
             },
-            function() {
+            function () {
                 $(this).removeClass('li_sel');
             }
     );
 
 
-    $('.tb_todas').on('click', function(e) {
+    $('.tb_todas').on('click', function (e) {
         e.preventDefault();
         initGrid();
     });
 
-    $('.tb_miscar').on('click', function(e) {
+    $('.tb_miscar').on('click', function (e) {
         e.preventDefault();
         initGrid(_USUARIO_SESION_ACTUAL);
     });
 
-    $("#cuit_busqueda").keyup(function(event) {
+    $("#cuit_busqueda").keyup(function (event) {
         if (event.which == 13) {
             $('.consultar').trigger('click');
         }
@@ -398,7 +521,7 @@ $(document).ready(function() {
 
 
     loadChild(0);
-    $('#provincia').bind('change', function(event) {
+    $('#provincia').bind('change', function (event) {
         event.preventDefault();
         $(this).validationEngine('validate');
         if ($('#provincia').val() == '')
@@ -417,7 +540,7 @@ $(document).ready(function() {
     });
 
 
-    $('#bodega').bind('change', function(event) {
+    $('#bodega').bind('change', function (event) {
         event.preventDefault();
         var selected = $(this).find('option').eq(this.selectedIndex);
         var local = selected.data('local');
@@ -427,51 +550,54 @@ $(document).ready(function() {
     });
 
 
-    $('.consultar').on('click', function(e) {
+    $('.consultar').on('click', function (e) {
         e.preventDefault();
+        if ($("#cuit_busqueda").val().length == 0) {
+            jAlert('Debe ingresar un CUIT antes de continuar.', $.ucwords(_etiqueta_modulo), function () {
+                $("#nombre").focus();
+            });
+        } else {
+            $('.env_form').show();
+            $('.nuevafact_form').hide();
+            $("#provincia").chosen();
+            $("#condicioniva").chosen({width: "220px"});
+            $("#condicioniibb").chosen({width: "220px"});
+            $("#bodega").chosen({width: "220px"});
+            $("#formula").chosen({width: "220px"});
+            var cuit = $("#cuit_busqueda").val();
+            /* buscar por cuit */
+            $.ajax({
+                url: _compravino.URL + "/x_getobjcliente",
+                data: {
+                    cuit: cuit
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
 
-        $('.env_form').show();
-        $('.nuevafact_form').hide();
-        $("#provincia").chosen();
-        $("#condicioniva").chosen({width: "220px"});
-        $("#condicioniibb").chosen({width: "220px"});
-        $("#bodega").chosen({width: "220px"});
-        $("#formula").chosen({width: "220px"});
-
-        var cuit = $("#cuit_busqueda").val();
-
-        /* buscar por cuit */
-        $.ajax({
-            url: _compravino.URL + "/x_getobjcliente",
-            data: {
-                cuit: cuit
-            },
-            dataType: "json",
-            type: "post",
-            success: function(data) {
-
-                if (data.ID > 0) {
-                    $.unblockUI();
-                    llenar_form(data);
-                    //$("#nuevafactura").show();
-                    show_btns(1);
-                    $("#send").hide();
-                } else {
-                    jAlert('Este CUIT no está registrado. guarde un nuevo cliente o intente otra busqueda (con Escape - Esc ).', $.ucwords(_etiqueta_modulo), function() {
-                        $("#cuit_busqueda").val('');
-                        $("#nombre").focus();
-                        $("#cuit").val(cuit);
-                        //$("#nuevafactura").hide();
-                        show_btns(3);
-                        $("#send").show();
+                    if (data.ID > 0) {
                         $.unblockUI();
-                    });
+                        llenar_form(data);
+                        //$("#nuevafactura").show();
+                        show_btns(1);
+                        $("#send").hide();
+                    } else {
+                        jAlert('Este CUIT no está registrado. guarde un nuevo cliente o intente otra busqueda (con Escape - Esc ).', $.ucwords(_etiqueta_modulo), function () {
+                            $("#cuit_busqueda").val('');
+                            $("#nombre").focus();
+                            $("#cuit").val(cuit);
+                            //$("#nuevafactura").hide();
+                            show_btns(3);
+                            $("#send").show();
+                            $.unblockUI();
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
-    $('#nuevafactura').off().on('click', function(e) {
+    $('#nuevafactura').off().on('click', function (e) {
         e.preventDefault();
 
         /*
@@ -494,17 +620,170 @@ $(document).ready(function() {
         $('.nuevafact_form').show();
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
+        $("#porcentaje_iva").val('10.5');
         show_btns(2);
 
     });
 
     refresGridevent();
 
-    $('#send').on('click', function(e) {
+    $('.mostrarBodegas').on('click', function () {
+        var id_bodegas = $('#bodega').val();
+        $("#info-bodegas").show();
+        $("#jqxgrid_bodegas").show();
+        var sourceope = {
+            datatype: "json",
+            datafields: [
+                {name: 'id', type: 'int'},
+                {name: 'entidad_tipo', type: 'string'},
+                {name: 'entidad', type: 'string'},
+                {name: 'cuit', type: 'string'},
+                {name: 'IDE', type: 'int'},
+                {name: 'LIMITE_LITROS', type: 'number'}
+            ],
+            url: 'general/extends/extra/carpetas.php',
+            data: {
+                accion: "getBodegasGrilla",
+                id_bodegas: id_bodegas,
+            },
+            async: false,
+            deleterow: function (rowid, commit) {
+                commit(true);
+            }
+        };
+        var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+                {
+                    formatData: function (data) {
+                        data.name_startsWith = $("#searchField").val();
+                        return data;
+                    }
+                }
+        );
+        $("#jqxgrid_bodegas").jqxGrid({
+            width: '90%',
+            height: '200px',
+            source: dataAdapterope,
+            theme: 'energyblue',
+            showstatusbar: true,
+            showaggregates: true,
+            selectionmode: 'singlerows',
+            localization: getLocalization(),
+            columns: [
+                {text: 'ID', datafield: 'id', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+                {text: 'BODEGA', datafield: 'entidad', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+                {text: 'CUIT', datafield: 'cuit', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+                {text: 'LIMITE LITROS', datafield: 'LIMITE_LITROS', cellsalign: 'right', aggregates: ["sum"],
+                    aggregatesrenderer: function (aggregates, column, element, summaryData) {
+                        var renderstring = "<div class='jqx-widget-content' style='float: left; width: 100%; height: 100%;'>";
+                        $.each(aggregates, function (key, value) {
+                            var name = key == 'sum' ? 'Total' : 'Total';
+                            var color = 'green';
+                            totalLimite = value;
+                            renderstring += '<div id="totalBod" style="color: ' + color + '; position: relative; margin: 6px; text-align: right; overflow: hidden;">' + name + ': ' + value + '</div>';
+                        });
+                        renderstring += "</div>";
+                        return renderstring;
+                    }
+                }
+            ]
+        });
+
+        if (nuevo_o_editar == 0) {
+            $.ajax({
+                url: _compravino.URL + "/x_getDatosBodegas",
+                data: {
+                    id: sourceope.data.id_bodegas
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    var formularios = "";
+                    var nombres_div = [];
+                    $('#limite_bodega_selec').val(totalLimite);
+                    var cantidad_bodegas = sourceope.data.id_bodegas.length;
+                    asignacion_x_bodega = [];
+                    for (var i = 0; i < cantidad_bodegas; i++) {
+                        console.log(datosBodegas);
+                        formularios = formularios + "<div style='width:396px; margin-left:2px; margin-bottom:5px; height:150px; float:left; border-radius: 10px 10px 10px 10px; background-color:#e7eef8;'>"
+                                + "<h2 style='font-size: 14px;margin-left:10px; margin-top: 10px; width:200px;'>Bodega " + data[i].NOMBRE + "</h2> "
+                                + "<div class='elem elem_med'><label  style='margin-left:10px;' class='der'>Litros asignados:</label>"
+                                + "<div class='indent formtext'>"
+                                + "<input type='text' class='tip-right valorlitro' title='' data-algo='litros_cargados_"
+                                + data[i].ID + "' id='litros_cargados_" + data[i].ID + "' value='' ></div></div></div>";
+//                      nombres_div[i] = "litros_cargados_" + data[i].ID;
+//                    asignacion_x_bodega.push(data[i].ID);
+                        asignacion_x_bodega.push("litros_cargados_" + data[i].ID);
+                    }
+//                console.log(nombres_div);
+                    console.log(asignacion_x_bodega);
+                    $('#formularios-individuales').html(formularios);
+                    $(".valorlitro").keyup(function () {
+                        valor_acumulativo = 0;
+                        for (var i = 0; i < cantidad_bodegas; i++) {
+                            valor_acumulativo = valor_acumulativo + Number($("#litros_cargados_" + data[i].ID).val());
+                        }
+                        $("#valorlitro").val(0);
+                        $("#litros").val(valor_acumulativo);
+                    });
+                }
+            });
+
+        } else {
+            var el_numero_factura = $("#numero").val();
+            $.ajax({
+                url: _compravino.URL + "/x_getDatosBodegas",
+                data: {
+                    id: sourceope.data.id_bodegas
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    var formularios = "";
+                    var nombres_div = [];
+                    $('#limite_bodega_selec').val(totalLimite);
+                    var cantidad_bodegas = sourceope.data.id_bodegas.length;
+                    asignacion_x_bodega = [];
+                    for (var i = 0; i < cantidad_bodegas; i++) {
+                        console.log(datosBodegas);
+        formularios = formularios + "<div style='width:396px; margin-left:2px; margin-bottom:5px; height:150px; float:left; border-radius: 10px 10px 10px 10px; background-color:#e7eef8;'>"
+                        + "<h2 style='font-size: 14px;margin-left:10px; margin-top: 10px; width:200px;'>Bodega " + data[i].NOMBRE + "</h2> "
+                        + "<div class='elem elem_med'><label  style='margin-left:10px;' class='der'>Litros asignados:</label>"
+                        + "<div class='indent formtext'>"
+                        + "<input type='text' class='tip-right valorlitro' title='' data-algo='litros_cargados_"
+                        + data[i].ID + "' id='litros_cargados_" + data[i].ID + "' value='' readonly></div></div></div>";
+                        asignacion_x_bodega.push("litros_cargados_" + data[i].ID);
+                    }
+                    $.ajax({
+                        url: _compravino.URL + "/x_getFacturaDepositarios",
+                        data: {
+                            numero_factura: el_numero_factura
+                        },
+                        dataType: "json",
+                        type: "post",
+                        success: function (data) {
+                            for(var j =0;j< data.length ; j++){
+                            $('#litros_cargados_'+data[j].ID_BODEGA).val(data[j].LITROS);
+                            }
+                        }
+                    });
+
+                    $('#formularios-individuales').html(formularios);
+                    $(".valorlitro").keyup(function () {
+                        valor_acumulativo = 0;
+                        for (var i = 0; i < cantidad_bodegas; i++) {
+                            valor_acumulativo = valor_acumulativo + Number($("#litros_cargados_" + data[i].ID).val());
+                        }
+                        $("#valorlitro").val(0);
+                        $("#litros").val(valor_acumulativo);
+                    });
+                }
+            });
+        }
+    });
+
+    $('#send').on('click', function (e) {
         e.preventDefault();
-
         var id = $("#idh").val();
-
         var prov = $("#provinciah").val();
         var loca = $("#localidadh").val();
         var condicioniibb = $("#condicioniibb").val();
@@ -539,85 +818,81 @@ $(document).ready(function() {
 
         //validar campos
         if (nombre == '') {
-            jAlert('Ingrese Razón Social.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese Razón Social.', $.ucwords(_etiqueta_modulo), function () {
                 $("#nombre").focus();
             });
             return false;
         }
 
         if (cuit == '') {
-            jAlert('Ingrese CUIT.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese CUIT.', $.ucwords(_etiqueta_modulo), function () {
                 $("#cuit").focus();
             });
             return false;
         }
 
         if (cbu == '') {
-            jAlert('Ingrese CBU.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese CBU.', $.ucwords(_etiqueta_modulo), function () {
                 $("#cbu").focus();
             });
             return false;
         }
 
         if (condicioniva == '') {
-            jAlert('Elija condicion iva.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija condicion iva.', $.ucwords(_etiqueta_modulo), function () {
                 $("#condicioniva").focus();
             });
             return false;
         }
 
         if (condicioniibb == '') {
-            jAlert('Elija condicion iibb.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija condicion iibb.', $.ucwords(_etiqueta_modulo), function () {
                 $("#condicioniibb").focus();
             });
             return false;
         }
 
         if (insciibb == '') {
-            jAlert('Elija Inscripcion IIBB.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija Inscripcion IIBB.', $.ucwords(_etiqueta_modulo), function () {
                 $("#insciibb").focus();
             });
             return false;
         }
 
         if (dir == '') {
-            jAlert('Ingrese domicilio.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese domicilio.', $.ucwords(_etiqueta_modulo), function () {
                 $("#direccion").focus();
             });
             return false;
         }
 
         if (prov == '') {
-            jAlert('Elija provincia.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija provincia.', $.ucwords(_etiqueta_modulo), function () {
                 $("#provincia").focus();
             });
             return false;
         }
 
         if (loca == '') {
-            jAlert('Elija Localidad.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Elija Localidad.', $.ucwords(_etiqueta_modulo), function () {
                 $("#subrubro").focus();
             });
             return false;
         }
 
         if (tel == '') {
-            jAlert('Ingrese un numero de teléfono.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese un numero de teléfono.', $.ucwords(_etiqueta_modulo), function () {
                 $("#telefono").focus();
             });
             return false;
         }
 
         if (correo == '') {
-            jAlert('Ingrese email.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese email.', $.ucwords(_etiqueta_modulo), function () {
                 $("#correo").focus();
             });
             return false;
         }
-
-
-
-
 
         $.ajax({
             url: _compravino.URL + "/x_sendobjcli",
@@ -626,11 +901,11 @@ $(document).ready(function() {
             },
             dataType: "json",
             type: "post",
-            success: function(data) {
+            success: function (data) {
                 condicioniva_g = data.valor;
                 console.dir(data);
                 if (data.result > 0) {
-                    $('#nuevafactura').off().on('click', function(e) {
+                    $('#nuevafactura').off().on('click', function (e) {
                         e.preventDefault();
                         limpiar_form_nf();
                         $('.env_form').hide();
@@ -640,14 +915,14 @@ $(document).ready(function() {
                         show_btns(2);
                     });
 
-                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                         show_btns(1);
                         limpiar_form_fact();
                         $('#send').hide();
                     });
 
                 } else {
-                    jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
                     });
                 }
@@ -655,7 +930,7 @@ $(document).ready(function() {
         });
     });
 
-    $(".toolbar li:not(.sub)").click(function(e) {
+    $(".toolbar li:not(.sub)").click(function (e) {
         e.preventDefault();
         var top = $(this).data('top');
         var obj = [];
@@ -677,22 +952,22 @@ $(document).ready(function() {
             var urlh = "backend/carpeta/compravino/init/17";
             $(location).attr('href', urlh);
         } else if (top == 'lis_addnf') {
-            
-            if (_permiso_alta==0){
 
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            if (_permiso_alta == 0) {
+
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
                 return false;
             }
-    
+
             var urlh = "backend/carpeta/compravino/init/" + _provincia + "/1";
             $(location).attr('href', urlh);
         } else if (top == 'lis_lis') {
-            if (_permiso_ver==0){
+            if (_permiso_ver == 0) {
 
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
@@ -704,8 +979,8 @@ $(document).ready(function() {
             var urlh = "backend/carpeta/compravino";
             $(location).attr('href', urlh);
         } else if (top == 'edi') {
-            if (_permiso_modificacion==0){
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            if (_permiso_modificacion == 0) {
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
@@ -713,8 +988,8 @@ $(document).ready(function() {
             }
             editar_factura();
         } else if (top == 'edi_rev') {
-            if (_permiso_modificacion==0){
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            if (_permiso_modificacion == 0) {
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
@@ -722,8 +997,8 @@ $(document).ready(function() {
             }
             editar_factura('jqxgrid_listado_revision');
         } else if (top == 'pago') {
-            if (_permiso_exportar==0){
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            if (_permiso_exportar == 0) {
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
@@ -733,14 +1008,14 @@ $(document).ready(function() {
         } else if (top == 'export') {
             //imprimir_listado_seleccionado();
         } else if (top == 'lis_importar') {
-            if (_permiso_alta==0){
-                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo),function(){
+            if (_permiso_alta == 0) {
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     switchBarra();
                 });
                 return false;
             }
-            
+
             var urlh = "backend/carpeta/compravino/init/3";
             $(location).attr('href', urlh);
         } else if (top == 'impor_procesar') {
@@ -756,7 +1031,7 @@ $(document).ready(function() {
                 },
                 dataType: "json",
                 type: "post",
-                success: function(data) {
+                success: function (data) {
 
                     alert(data);
 
@@ -790,48 +1065,47 @@ $(document).ready(function() {
     init_datepicker('#fechavto', '-3', '+5', '0', 0);
 
 
-    $("input[type=file]").change(function() {
+    $("input[type=file]").change(function () {
         $(this).parents(".uploader").find(".filename").val($(this).val());
     });
-    $("input[type=file]").each(function() {
+    $("input[type=file]").each(function () {
         if ($(this).val() == "") {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
-
-
     //$("#ciu_num").numeric({negative: false});
     $("#ciu_azucar").numeric({negative: false});
     $("#ciu_kgrs").numeric({negative: false});
 
-
-    $("#precio").keyup(function() {
-
+    $("#precio").keyup(function () {
         if ($(this).val() == 0) {
             $("#neto").val(0);
         } else {
-            //var porc = var_cliente.VALOR;
-            //condicioniva_g
             var factor = 0;
             if (condicioniva_g >= 0) {
                 factor = condicioniva_g;
             } else {
                 factor = var_cliente.VALOR;
             }
-            var neto = $("#kgrs").val() * $(this).val();
+            var neto = $("#litros").val() * $(this).val();
             $("#neto").val(dec(neto, 2));
-
+            factor = $('#porcentaje_iva').val();
             var iva = factor * $("#neto").val() / 100;
             $("#iva").val(dec(iva, 2));
-
             var total = 1 * $("#neto").val() + 1 * $("#iva").val();
             $("#total").val(dec(total, 2));
-
         }
     });
 
+    $("#porcentaje_iva").keyup(function () {
+        var factor = $('#porcentaje_iva').val();
+        var iva = factor * $("#neto").val() / 100;
+        $("#iva").val(dec(iva, 2));
+        var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+        $("#total").val(dec(total, 2));
+    });
 
-    $("#cbu").focusout(function() {
+    $("#cbu").focusout(function () {
         //verificar cbu
         var cbu = $(this).val();
         $.ajax({
@@ -841,16 +1115,16 @@ $(document).ready(function() {
             },
             dataType: "json",
             type: "post",
-            success: function(datos) {
+            success: function (datos) {
 
                 if (datos.length > 0) {
                     var cadcli = '';
-                    $.each(datos, function(index, value) {
+                    $.each(datos, function (index, value) {
                         cadcli += value.RAZON_SOCIAL + '(' + value.CUIT + '), ';
                     });
                     cadcli = cadcli.substring(0, cadcli.length - 2);
 
-                    jAlert('Este cbu esta asociado a mas clientes. ' + cadcli, $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Este cbu esta asociado a mas clientes. ' + cadcli, $.ucwords(_etiqueta_modulo), function () {
                         $("#cbu").focus();
                     });
                 }
@@ -881,10 +1155,10 @@ $(document).ready(function() {
 
 
 function evento_lista_arch() {
-    $('.lista_adjuntos li span').off().on('click', function(event) {
+    $('.lista_adjuntos li span').off().on('click', function (event) {
         event.preventDefault();
         var myobj = $(this)
-        jConfirm('Esta seguro de borrar este archivo??.', $.ucwords(_etiqueta_modulo), function(r) {
+        jConfirm('Esta seguro de borrar este archivo??.', $.ucwords(_etiqueta_modulo), function (r) {
             if (r == true) {
                 $this = myobj.parent();
                 var ruta = myobj.prev().attr('href');
@@ -897,7 +1171,7 @@ function evento_lista_arch() {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function() {
+                    success: function () {
                         $this.remove();
                     }
                 });
@@ -908,8 +1182,8 @@ function evento_lista_arch() {
 
 
 function editar_formulario() {
-
-    //alert('editar:: ' + _id_objeto)
+    nuevo_o_editar = 1;
+    $("#texto_boton").text("Ver cantidades asignadas");
     $.ajax({
         url: _compravino.URL + "/x_getobj",
         data: {
@@ -917,7 +1191,7 @@ function editar_formulario() {
         },
         dataType: "json",
         type: "post",
-        success: function(rtn) {
+        success: function (rtn) {
 
             var arr_cius = rtn.cius;
             data = rtn.factura;
@@ -939,21 +1213,41 @@ function editar_formulario() {
             $("#numero").val(data.NUMERO).attr("readonly", "readonly");
             $("#cai").val(data.CAI).attr("readonly", "readonly");
             $("#bodega").chosen({width: "220px"});
-            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+//            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+            var str = data.ID_BODEGA;
+            var temp = new Array();
+            temp = str.split(",");
+
+            $("#bodega").val(temp).attr('disabled', true).trigger("chosen:updated");
             $("#bodega").trigger('change');
-            
+
             $("#formula").chosen({width: "220px"});
             $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
             $("#formula").trigger('change');
-            
 
+            $("#porcentaje_iva").val(data.PORC_IVA);
             //$("#bodega").attr('disabled', true).trigger("chosen:updated");
 
-            $("#kgrs").val(data.KGRS);
+            $("#litros").val(data.LITROS).attr("readonly", "readonly");;
+//            $("#kgrs").val(data.KGRS);
             $("#azucar").val(data.AZUCAR);
             $("#precio").val(data.PRECIO);
             $("#observacion_fact").val(data.OBSERVACIONES);
 
+            $.ajax({
+                url: _compravino.URL + "/x_getFacturaDepositarios",
+                data: {
+                    numero_factura: data.NUMERO
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    console.log("ESTE ES LA CONSULTA DE LOS DEPOSITARIOS");
+                    console.log(data);
+                }
+            });
+
+//            $("#kgrs").val( data.KGRS ).attr("readonly","readonly");
             //$("#kgrs").val( data.KGRS ).attr("readonly","readonly");
             //$("#azucar").val( data.AZUCAR ).attr("readonly","readonly");
             //$("#precio").val( data.PRECIO ).attr("readonly","readonly");
@@ -966,11 +1260,11 @@ function editar_formulario() {
 
             if (arr_cius.length > 0) {
                 //colocar
-                $.each(arr_cius, function(k, v) {
+                $.each(arr_cius, function (k, v) {
                     var data = {
                         'NUM': v.NUMERO,
-                        'KGRS': v.KGRS,
-                        'AZUCAR': v.AZUCAR,
+                        'LITROS': v.LITROS,
+//                        'AZUCAR': v.AZUCAR,
                         'CHEQUEO': v.VERIFICADO,
                         'INSC': v.INSC,
                         'ID': 'DDDDDDD',
@@ -1006,7 +1300,7 @@ function agregarCIUS(_arr_cius) {
             {name: 'ID'}
         ],
         url: _compravino.URL + '/x_get_info_bancos',
-        deleterow: function(rowid, commit) {
+        deleterow: function (rowid, commit) {
             commit(true);
         }
     };
@@ -1017,11 +1311,11 @@ function agregarCIUS(_arr_cius) {
         source: source,
         theme: 'energyblue',
         editable: true,
-        ready: function() {
+        ready: function () {
             $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
             if (_arr_cius.length > 0) {
                 //colocar
-                $.each(_arr_cius, function(k, v) {
+                $.each(_arr_cius, function (k, v) {
                     var data = {
                         'NUM': v.ciu_num,
                         'KGRS': v.ciu_kgrs,
@@ -1040,18 +1334,18 @@ function agregarCIUS(_arr_cius) {
         columnsresize: true,
         localization: getLocalization(),
         showstatusbar: true,
-        renderstatusbar: function(statusbar) {
+        renderstatusbar: function (statusbar) {
             var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
             var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
             container.append(deleteButton);
             statusbar.append(container);
             deleteButton.jqxButton({theme: theme, width: 65, height: 20});
-            deleteButton.click(function(event) {
+            deleteButton.click(function (event) {
                 var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
                 var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
                 if (selectedrowindex < rowscount) {
 
-                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function(r) {
+                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
                         if (r == true) {
 
                             if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
@@ -1073,7 +1367,7 @@ function agregarCIUS(_arr_cius) {
                             } else {
                                 if (_arr_aportes_tmp.length > 0) {
                                     //colocar
-                                    $.each(_arr_aportes_tmp, function(k, v) {
+                                    $.each(_arr_aportes_tmp, function (k, v) {
                                         total = total + parseFloat(v.KGRS);
                                         total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
                                     });
@@ -1088,7 +1382,7 @@ function agregarCIUS(_arr_cius) {
                         }
                     });
                 } else {
-                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
 
                     });
                     return false;
@@ -1105,11 +1399,11 @@ function agregarCIUS(_arr_cius) {
         ]
     });
 
-    $("#add_cius").off().on('click', function() {
+    $("#add_cius").off().on('click', function () {
 
         if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
                 || $("#frm_cargacius input#ciu_azucar").val() == '') {
-            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
                 $("#frm_cargacius input").first().select();
             });
             return false;
@@ -1121,14 +1415,14 @@ function agregarCIUS(_arr_cius) {
         var ciu_insc = $("#ciu_insc").val();
 
         if (!isnumeroCiu(ciu_num)) {
-            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
                 $("#frm_cargacius input").first().select();
             });
             return false;
         }
 
         if (!isnumeroCiuIns(ciu_insc)) {
-            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
                 $("#frm_cargacius #ciu_insc").first().next().next().select();
             });
             return false;
@@ -1145,9 +1439,9 @@ function agregarCIUS(_arr_cius) {
 
         sw1 = 0;
         if (_arr_cius) {
-            $.each(_arr_cius, function(index, value) {
+            $.each(_arr_cius, function (index, value) {
                 if (value.NUM == ciu_num) {
-                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
                         $("#ciu_num").select();
                     });
                     sw1 = 1;
@@ -1168,7 +1462,7 @@ function agregarCIUS(_arr_cius) {
             },
             dataType: "json",
             type: "post",
-            success: function(data) {
+            success: function (data) {
 
                 console.dir(data);
                 if (data <= 0) {
@@ -1203,7 +1497,7 @@ function agregarCIUS(_arr_cius) {
                     } else {
                         if (_arr_aportes_tmp.length > 0) {
                             //colocar
-                            $.each(_arr_aportes_tmp, function(k, v) {
+                            $.each(_arr_aportes_tmp, function (k, v) {
                                 total = total + parseFloat(v.KGRS);
                                 total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
                             });
@@ -1218,7 +1512,7 @@ function agregarCIUS(_arr_cius) {
                     $("#frm_cargacius input").first().focus();
 
                 } else {
-                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
                     });
                 }
@@ -1265,14 +1559,14 @@ function initGrid(id_usuario) {
             iduser: id_usuario
         },
         async: false,
-        deleterow: function(rowid, commit) {
+        deleterow: function (rowid, commit) {
             commit(true);
         }
     };
 
     var dataAdapterope = new $.jqx.dataAdapter(sourceope,
             {
-                formatData: function(data) {
+                formatData: function (data) {
                     data.name_startsWith = $("#searchField").val();
                     return data;
                 }
@@ -1285,7 +1579,7 @@ function initGrid(id_usuario) {
         groupable: true,
         source: dataAdapterope,
         theme: 'energyblue',
-        ready: function() {
+        ready: function () {
             $("#jqxgrid").jqxGrid('hidecolumn', 'FOJAS');
         },
         columnsresize: true,
@@ -1294,7 +1588,7 @@ function initGrid(id_usuario) {
         filterable: true,
         showfilterrow: true,
         localization: getLocalization(),
-        rendertoolbar: function(toolbar) {
+        rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
@@ -1307,10 +1601,10 @@ function initGrid(id_usuario) {
                 input.addClass('jqx-rc-all-' + theme);
             }
 
-            input.on('keydown', function(event) {
+            input.on('keydown', function (event) {
                 if (me.timer)
                     clearTimeout(me.timer);
-                me.timer = setTimeout(function() {
+                me.timer = setTimeout(function () {
                     dataAdapterope.dataBind();
                 }, 300);
             });
@@ -1334,11 +1628,11 @@ function initGrid(id_usuario) {
 function addEventsRequerimientos(idnr) {
     idnr || (idnr = '0');
 
-    $("#btnSubirfile").click(function(e) {
+    $("#btnSubirfile").click(function (e) {
 
         if ($("#req_etiqueta").val() == '') {
             e.preventDefault();
-            jAlert('Ingrese una etiqueta, por favor.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('Ingrese una etiqueta, por favor.', $.ucwords(_etiqueta_modulo), function () {
                 $("#req_etiqueta").select();
             });
         }
@@ -1346,7 +1640,7 @@ function addEventsRequerimientos(idnr) {
     });
 
     if (idnr > 0) {
-        $(".lista_reqs_adj a").click(function(e) {
+        $(".lista_reqs_adj a").click(function (e) {
             e.preventDefault();
 
             var nom = $(this).prev().data('nom');
@@ -1361,8 +1655,8 @@ function addEventsRequerimientos(idnr) {
                 },
                 dataType: "json",
                 type: "post",
-                success: function(data) {
-                    jAlert('Item Borrado.', $.ucwords(_etiqueta_modulo), function() {
+                success: function (data) {
+                    jAlert('Item Borrado.', $.ucwords(_etiqueta_modulo), function () {
                         yo.remove();
                         el.remove();
                     });
@@ -1372,7 +1666,7 @@ function addEventsRequerimientos(idnr) {
         });
     }
 
-    $(".send_nota").on('click', function(e) {
+    $(".send_nota").on('click', function (e) {
         e.preventDefault();
 
 
@@ -1408,7 +1702,7 @@ function addEventsRequerimientos(idnr) {
 
         //adjuntos
         var _array_uploads_adj = [];
-        $(".lista_reqs_adj li").each(function(index) {
+        $(".lista_reqs_adj li").each(function (index) {
             var nombre = $(this).data('nom');
             var nombre_tmp = $(this).data('tmp');
             _array_uploads_adj.push({nombre: nombre, nombre_tmp: nombre_tmp});
@@ -1434,12 +1728,12 @@ function addEventsRequerimientos(idnr) {
             },
             dataType: "json",
             type: "post",
-            success: function(resp) {
+            success: function (resp) {
 
                 data = resp.result;
                 if (resp.accion == 'add') {
                     if (data) {
-                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function() {
+                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
 
                             $.fancybox.close();
                             $("#jqxgrid").show();
@@ -1449,13 +1743,13 @@ function addEventsRequerimientos(idnr) {
 
                         });
                     } else {
-                        jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function() {
+                        jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
                             $.unblockUI();
                         });
                     }
 
                 } else {
-                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                         //evento_lista_req();
                         $.fancybox.close();
                         $("#jqxgrid").show();
@@ -1468,7 +1762,7 @@ function addEventsRequerimientos(idnr) {
         });
     });
 
-    $("#req_etiqueta").keyup(function() {
+    $("#req_etiqueta").keyup(function () {
         $("#req_etiquetah").val($(this).val());
     });
 
@@ -1485,14 +1779,14 @@ function agregar_nota(idobjeto, ver) {
         },
         async: false,
         type: "post",
-        success: function(datareq) {
+        success: function (datareq) {
             $.fancybox({
                 "content": datareq,
                 'padding': 35,
                 'autoScale': true,
                 'height': 900,
                 'scrolling': 'yes',
-                'afterShow': function() {
+                'afterShow': function () {
                     $(".fancybox-inner").css({'overflow-x': 'hidden'});
                 }
             });
@@ -1510,10 +1804,10 @@ function agregar_nota(idobjeto, ver) {
             addEventsRequerimientos(idobjeto);
 
             $(".chzn-select").chosen({disable_search_threshold: 5});
-            $("input[type=file]").change(function() {
+            $("input[type=file]").change(function () {
                 $(this).parents(".uploader").find(".filename").val($(this).val());
             });
-            $("input[type=file]").each(function() {
+            $("input[type=file]").each(function () {
                 if ($(this).val() == "") {
                     $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
                 }
@@ -1542,12 +1836,12 @@ function process_vincular(iid_nr, carpeta) {
         },
         dataType: "json",
         type: "post",
-        success: function(data1) {
+        success: function (data1) {
             var clase_asignar;
             var cadhtml = '<div class="asignar_titulo">Vincular a Carpeta Nº:</div>';
             if (data1) {
 
-                $.each(data1, function(index, value) {
+                $.each(data1, function (index, value) {
                     clase_asignar = 'link_asignar link_vincular';
                     if (value.IID != _USUARIO_SESION_ACTUAL) {
                         if (carpeta > 0) {
@@ -1571,7 +1865,7 @@ function process_vincular(iid_nr, carpeta) {
                 'autoScale': true,
                 'height': 900,
                 'scrolling': 'no',
-                'beforeClose': function() {
+                'beforeClose': function () {
                     /*
                      if (myfancy==1)
                      regresar_a_listado();
@@ -1580,14 +1874,14 @@ function process_vincular(iid_nr, carpeta) {
             });
 
 
-            $(".link_vincular").click(function(e) {
+            $(".link_vincular").click(function (e) {
 
                 e.preventDefault();
                 var idcarpeta = $(this).data('iid');
                 var idnr = $(this).data('iid_nr');
 
                 //asignar id_operacion a nr
-                jConfirm('Esta seguro de realizar esta Asignación?.', $.ucwords(_etiqueta_modulo), function(r) {
+                jConfirm('Esta seguro de realizar esta Asignación?.', $.ucwords(_etiqueta_modulo), function (r) {
                     if (r == true) {
                         $.ajax({
                             url: _compravino.URL + "/x_vincular_nr",
@@ -1597,9 +1891,9 @@ function process_vincular(iid_nr, carpeta) {
                             },
                             dataType: "json",
                             type: "post",
-                            success: function(data) {
+                            success: function (data) {
 
-                                jAlert('La nota fue adjuntada a la carpeta Nº .' + idcarpeta, $.ucwords(_etiqueta_modulo), function() {
+                                jAlert('La nota fue adjuntada a la carpeta Nº .' + idcarpeta, $.ucwords(_etiqueta_modulo), function () {
                                     $.fancybox.close();
                                     $("#jqxgrid").show();
                                     $("#jqxgrid").jqxGrid('updatebounddata');
@@ -1641,11 +1935,11 @@ function process_asignar(iidnota) {
         },
         dataType: "json",
         type: "post",
-        success: function(data1) {
+        success: function (data1) {
             var clase_asignar;
             var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div>';
             if (data1) {
-                $.each(data1, function(index, value) {
+                $.each(data1, function (index, value) {
                     clase_asignar = 'link_asignar';
                     if (value.IID != _USUARIO_SESION_ACTUAL) {
                         cadhtml += '<div class="' + clase_asignar + ' x_area" data-etapa="' + value.ETAPA + '" data-iid="' + value.ID + '" data-puesto_in="' + value.puesto_in + '"><span>' + value.DENOMINACION;
@@ -1661,14 +1955,14 @@ function process_asignar(iidnota) {
                 'autoScale': true,
                 'height': 900,
                 'scrolling': 'no',
-                'beforeClose': function() {
+                'beforeClose': function () {
                     if (myfancy == 1)
                         regresar_a_listado();
                 }
             });
 
 
-            $(".x_area").click(function(e1) {
+            $(".x_area").click(function (e1) {
                 e1.preventDefault();
                 var tmpfancy = myfancy;
                 myfancy = 0;
@@ -1684,18 +1978,18 @@ function process_asignar(iidnota) {
                         id_area: iid,
                         puesto_in: apuesto_in
                     },
-                    error: function(xhr, ajaxOptions, thrownError) {
+                    error: function (xhr, ajaxOptions, thrownError) {
                         alert(xhr.status);
                         alert(thrownError);
                     },
                     dataType: "json",
                     type: "post",
-                    success: function(datar) {
+                    success: function (datar) {
 
                         var clase_asignar;
                         var cadhtml = '<div class="asignar_titulo">Asignar Carpeta a:</div> <div class="regresar_ar">Regresar</div>';
                         if (datar) {
-                            $.each(datar, function(index, value) {
+                            $.each(datar, function (index, value) {
 
                                 clase_asignar = 'link_asignar';
                                 if (value.IID != _USUARIO_SESION_ACTUAL) {
@@ -1714,7 +2008,7 @@ function process_asignar(iidnota) {
                             'autoScale': true,
                             'height': 900,
                             'scrolling': 'no',
-                            'beforeClose': function() {
+                            'beforeClose': function () {
                                 if (myfancy == 1)
                                     regresar_a_listado();
                             }
@@ -1723,13 +2017,13 @@ function process_asignar(iidnota) {
                             myfancy = 1;
 
 
-                        $(".regresar_ar").click(function(e) {
+                        $(".regresar_ar").click(function (e) {
                             e.preventDefault();
                             $.fancybox.close();
                             $("#asignar").trigger('click');
                         });
 
-                        $(".link_asignar").click(function(e) {
+                        $(".link_asignar").click(function (e) {
 
                             e.preventDefault();
                             var iid = $(this).data('iid');
@@ -1749,7 +2043,7 @@ function process_asignar(iidnota) {
                                 id_send = iidnota
                             }
 
-                            jConfirm('Esta seguro de realizar esta Asignación?.', $.ucwords(_etiqueta_modulo), function(r) {
+                            jConfirm('Esta seguro de realizar esta Asignación?.', $.ucwords(_etiqueta_modulo), function (r) {
                                 if (r == true) {
                                     observacion = 'ENVIAR NOTA';
                                     descripcion = 'ENVIO DE NOTA A DESTINATARIO'
@@ -1765,7 +2059,7 @@ function process_asignar(iidnota) {
                                         },
                                         dataType: "json",
                                         type: "post",
-                                        success: function(data) {
+                                        success: function (data) {
                                             $.fancybox.close();
                                             $("#jqxgrid").show();
                                             $("#jqxgrid").jqxGrid('updatebounddata');
@@ -1817,7 +2111,7 @@ function event_grid_traza(idnota) {
             width: '98%',
             source: dataAdaptertraza,
             theme: 'energyblue',
-            ready: function() {
+            ready: function () {
                 $("#jqxgrid_traza").jqxGrid('hidecolumn', 'ID');
             },
             columnsresize: true,
@@ -1846,9 +2140,9 @@ function loadChild(val) {
             },
             dataType: "json",
             type: "post",
-            success: function(r) {
+            success: function (r) {
                 var connection, options = '';
-                $.each(r.items, function(k, v) {
+                $.each(r.items, function (k, v) {
                     connection = '';
                     if (v)
                         connection = 'data-connection="' + v + '"';
@@ -1859,7 +2153,7 @@ function loadChild(val) {
                 }
 
                 $('#div_subrubro').html('<select class="chzn-select medium-select2 select" id="subrubro">' + options + '</select>');
-                $('#subrubro').on('change', function(event) {
+                $('#subrubro').on('change', function (event) {
                     event.preventDefault();
                     $('#localidadh').val($('#subrubro').val());
                 });
@@ -1877,7 +2171,7 @@ function loadChild(val) {
 
 function initGridListadoRevision(id_usuario) {
 
-    var cellclass = function(row, columnfield, value) {
+    var cellclass = function (row, columnfield, value) {
         return 'green'
     }
 
@@ -1911,12 +2205,12 @@ function initGridListadoRevision(id_usuario) {
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
-            accion: "getFacturasCuva",
-            idtipo:1,
+            accion: "getFacturasCvino",
+            idtipo: 1,
             estado: '12' // en revision
         },
         async: false,
-        deleterow: function(rowid, commit) {
+        deleterow: function (rowid, commit) {
             process_data(_compravino.URL + "/x_delete_facturas_cu", mydata);
             console.dir(mydata);
             commit(true);
@@ -1925,7 +2219,7 @@ function initGridListadoRevision(id_usuario) {
 
     var dataAdapterope = new $.jqx.dataAdapter(sourceope,
             {
-                formatData: function(data) {
+                formatData: function (data) {
                     data.name_startsWith = $("#searchField").val();
                     return data;
                 }
@@ -1936,7 +2230,7 @@ function initGridListadoRevision(id_usuario) {
         width: '96%',
         source: dataAdapterope,
         theme: 'energyblue',
-        ready: function() {
+        ready: function () {
             $("#jqxgrid_listado_revision").jqxGrid('hidecolumn', 'IID');
         },
         //selectionmode:'multiplerows',
@@ -1946,7 +2240,7 @@ function initGridListadoRevision(id_usuario) {
         //filterable: true,
         //showfilterrow: true,
         localization: getLocalization(),
-        rendertoolbar: function(toolbar) {
+        rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
@@ -1959,28 +2253,28 @@ function initGridListadoRevision(id_usuario) {
                 input.addClass('jqx-rc-all-' + theme);
             }
 
-            input.on('keydown', function(event) {
+            input.on('keydown', function (event) {
                 if (me.timer)
                     clearTimeout(me.timer);
-                me.timer = setTimeout(function() {
+                me.timer = setTimeout(function () {
                     dataAdapterope.dataBind();
                 }, 300);
             });
         },
         showstatusbar: true,
-        renderstatusbar: function(statusbar) {
+        renderstatusbar: function (statusbar) {
             var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
             var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
             container.append(deleteButton);
             statusbar.append(container);
             deleteButton.jqxButton({theme: theme, width: 65, height: 20});
-            deleteButton.click(function(event) {
+            deleteButton.click(function (event) {
                 var selectedrowindex = $("#jqxgrid_listado_revision").jqxGrid('getselectedrowindex');
                 var rowscount = $("#jqxgrid_listado_revision").jqxGrid('getdatainformation').rowscount;
                 mydata = $('#jqxgrid_listado_revision').jqxGrid('getrowdata', selectedrowindex);
                 if (selectedrowindex > -1 && selectedrowindex < rowscount) {
 
-                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function(r) {
+                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
                         if (r == true) {
 
                             if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
@@ -1991,7 +2285,7 @@ function initGridListadoRevision(id_usuario) {
                         }
                     });
                 } else {
-                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function() {
+                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
 
                     });
                     return false;
@@ -2024,6 +2318,8 @@ function initGridListadoRevision(id_usuario) {
         ]
     });
 
+    
+
 }
 
 
@@ -2044,6 +2340,7 @@ function initGridListado(id_usuario) {
             {name: 'BODEGA', type: 'string'},
             {name: 'DEPARTAMENTO', type: 'string'},
             {name: 'KGRS', type: 'string'},
+            {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
             {name: 'USU_CARGA', type: 'string'},
             {name: 'USU_CHEQUEO', type: 'string'},
@@ -2059,19 +2356,19 @@ function initGridListado(id_usuario) {
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
-            accion: "getFacturasCuva",
-            idtipo:1,
+            accion: "getFacturasCvino",
+            idtipo: 1,
             idpro: _provincia
         },
         async: false,
-        deleterow: function(rowid, commit) {
+        deleterow: function (rowid, commit) {
             commit(true);
         }
     };
 
     var dataAdapterope = new $.jqx.dataAdapter(sourceope,
             {
-                formatData: function(data) {
+                formatData: function (data) {
                     data.name_startsWith = $("#searchField").val();
                     return data;
                 }
@@ -2082,7 +2379,7 @@ function initGridListado(id_usuario) {
         width: '96%',
         source: dataAdapterope,
         theme: 'energyblue',
-        ready: function() {
+        ready: function () {
             $("#jqxgrid_listado").jqxGrid('hidecolumn', 'IID');
         },
         selectionmode: 'multiplerows',
@@ -2093,7 +2390,7 @@ function initGridListado(id_usuario) {
         //filterable: true,
         //showfilterrow: true,
         localization: getLocalization(),
-        rendertoolbar: function(toolbar) {
+        rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
@@ -2106,10 +2403,10 @@ function initGridListado(id_usuario) {
                 input.addClass('jqx-rc-all-' + theme);
             }
 
-            input.on('keydown', function(event) {
+            input.on('keydown', function (event) {
                 if (me.timer)
                     clearTimeout(me.timer);
-                me.timer = setTimeout(function() {
+                me.timer = setTimeout(function () {
                     dataAdapterope.dataBind();
                 }, 300);
             });
@@ -2125,7 +2422,8 @@ function initGridListado(id_usuario) {
             {text: 'FECHA FACTURA', datafield: 'FECHA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false},
             {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+//            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
@@ -2153,14 +2451,14 @@ function editar_factura(name_grid) {
 
 
     if (mydata == null) {
-        jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function() {
+        jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
         });
         return false;
     }
 
     if (selectedrowindexes.length > 1) {
-        jAlert('Elija solo una Factura para editar.', $.ucwords(_etiqueta_modulo), function() {
+        jAlert('Elija solo una Factura para editar.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
         });
         return false;
@@ -2196,7 +2494,7 @@ function lote_pago() {
 
     if (rowindexes.length > 0) {
         var swa = 0;
-        $.each(rowindexes, function(index, value) {
+        $.each(rowindexes, function (index, value) {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
             if (reg.ESTADO == 'Pago Solicitado') {
                 swa = 1;
@@ -2205,13 +2503,13 @@ function lote_pago() {
         });
 
         if (swa == '1') {
-            jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function() {
+            jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
 
             });
             return false;
         }
 
-        jConfirm('Esta seguro de generar este lote de pago??.', $.ucwords(_etiqueta_modulo), function(r) {
+        jConfirm('Esta seguro de generar este lote de pago??.', $.ucwords(_etiqueta_modulo), function (r) {
             if (r == true) {
                 $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
                 $.ajax({
@@ -2222,10 +2520,10 @@ function lote_pago() {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function(data) {
+                    success: function (data) {
                         console.dir(data);
                         if (data > 0) {
-                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function() {
+                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
 
                                 imprimir_listado_seleccionado();
                                 show_btns();
@@ -2236,7 +2534,7 @@ function lote_pago() {
                                 $("#wpopup").html('');
                             });
                         } else {
-                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function() {
+                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
                                 $.unblockUI();
                             });
                         }
@@ -2246,7 +2544,7 @@ function lote_pago() {
         });
 
     } else {
-        jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function() {
+        jAlert('Seleccione Item.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
         });
         return false;
@@ -2286,14 +2584,14 @@ function imprimir_listado_seleccionado() {
 
 function post_upload(nombre, nombre_tmp, etapa) {
 
-    jAlert('Archivo cargado correctamente. ' + nombre, $.ucwords(_etiqueta_modulo), function() {
+    jAlert('Archivo cargado correctamente. ' + nombre, $.ucwords(_etiqueta_modulo), function () {
         //agregarlo a la lista
         $(".lista_adjuntos").append('<li class="eta-' + etapa + '" data-eta="' + etapa + '" data-nom="' + nombre + '" data-tmp="' + nombre_tmp + '">' + nombre + '<span>&nbsp;<span></li>');
 
-        $('.lista_adjuntos li span').off().on('click', function(event) {
+        $('.lista_adjuntos li span').off().on('click', function (event) {
             event.preventDefault();
             var myobj = $(this)
-            jConfirm('Esta seguro de borrar este archivo??.', $.ucwords(_etiqueta_modulo), function(r) {
+            jConfirm('Esta seguro de borrar este archivo??.', $.ucwords(_etiqueta_modulo), function (r) {
                 if (r == true) {
                     $this = myobj.parent();
                     var ruta = $this.data('tmp');
@@ -2306,17 +2604,17 @@ function post_upload(nombre, nombre_tmp, etapa) {
                         },
                         dataType: "json",
                         type: "post",
-                        success: function() {
+                        success: function () {
                             $this.remove();
                         }
                     });
                 }
             });
         });
-        $('#upload_file1').each(function() {
+        $('#upload_file1').each(function () {
             this.reset();
         });
-        $("#upload_file1 input[type=file]").each(function() {
+        $("#upload_file1 input[type=file]").each(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         });
         $.fancybox.close();
@@ -2330,7 +2628,7 @@ function post_upload(nombre, nombre_tmp, etapa) {
 
 function importar_procesar() {
 
-    jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function(r) {
+    jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
             // llamar ajax
             $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
@@ -2342,21 +2640,21 @@ function importar_procesar() {
                 },
                 dataType: "json",
                 type: "post",
-                success: function(dat) {
+                success: function (dat) {
                     console.dir(dat);
                     if (dat == -2) {
-                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function() {
-                            
+                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {
+
                         });
-                    } else if(dat == -1){
-                        jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function() {
+                    } else if (dat == -1) {
+                        jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
                             $.ajax({
                                 url: _compravino.URL + "/x_actualizarLista",
                                 data: {
                                 },
                                 //dataType: "json",
                                 type: "post",
-                                success: function(data) {
+                                success: function (data) {
                                     console.dir(data);
                                     $('.lista_arch').html(data);
                                     evento_lista_arch();
@@ -2364,7 +2662,7 @@ function importar_procesar() {
                             });
                         });
                     } else {
-                        jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function() {
+                        jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
                             //actualizar el listado
                             $.ajax({
                                 url: _compravino.URL + "/x_actualizarLista",
@@ -2372,7 +2670,7 @@ function importar_procesar() {
                                 },
                                 //dataType: "json",
                                 type: "post",
-                                success: function(data) {
+                                success: function (data) {
                                     console.dir(data);
                                     $('.lista_arch').html(data);
                                     evento_lista_arch();

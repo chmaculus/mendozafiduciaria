@@ -392,6 +392,9 @@ class comprauva_model extends main_model {
     }
 
     function sendobj($obj) {
+        
+//        var_dump($obj);die("OBJETO EN UVA");
+        
         $iid = $obj["id"];
         $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
 

@@ -54,9 +54,6 @@ function guardar_factura() {
     
     var _arr_bodegas = [];
 
-    
-
-
 // con este obtengo el total!!!!
     var total_grilla = $('#jqxgrid_bodegas').jqxGrid('getcolumnaggregateddata', 'LIMITE', ['sum']);
     var total_limites = total_grilla.sum;
@@ -72,15 +69,11 @@ function guardar_factura() {
         dataType: "json",
         type: "post",
         success: function (data) {
-
-
             // 1 existe // 0 no existe
             if (data > 0 && _opcion != 3) {//existe
                 jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
-
                 });
             } else { // no existe
-
                 alert("ajax sendobj");
                 $.ajax({
                     url: _comprauva.URL + "/x_sendobj",
@@ -90,7 +83,6 @@ function guardar_factura() {
                     dataType: "json",
                     type: "post",
                     success: function (data) {
-
                         console.dir(data);
                         if (data.result > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
@@ -1039,10 +1031,8 @@ $(document).ready(function () {
             var iva = factor * $("#neto").val() / 100;
             $("#iva").val(dec(iva, 2));
 
-
             var total = 1 * $("#neto").val() + 1 * $("#iva").val();
             $("#total").val(dec(total, 2));
-
         }
     });
 

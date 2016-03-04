@@ -67,7 +67,8 @@
                 <input type="hidden" name="semilla" id="semilla" value="<?php echo $_semilla ?>">
                 <input type="hidden" name="req_etiquetah" id="req_etiquetah" value="">
                 
-                <?php if (isset($entidad["ID"])): ?>
+                <?php 
+                if (isset($entidad["ID"])): ?>
                 <input type="hidden" name="id_edit" id="id_edit" value="<?php echo "22"//$entidad["ID"] ?>"/>
                 <?php else: ?>
                 <input type="hidden" name="id_edit" id="id_edit" value="0"/>

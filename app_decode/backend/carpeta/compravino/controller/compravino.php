@@ -7,10 +7,8 @@ class compravino extends main_controller {
     }
 
     function init($provincia = 0, $opcion = 0, $id_objeto = 0) {
-
         //opcion = 1,2,3
         //1 = Consultar o Agregar // 2 = Listado // 3 = Editar
-
 
         $this->constructor();
         if (!isset($_SESSION["USERADM"]))
@@ -101,18 +99,13 @@ class compravino extends main_controller {
         $data['lst_bodegas'] = $this->x_getbodegas();
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
-
 //        $data['clientes_sql'] = $this->x_getclientessql();
-
-
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
         //$data['provincia'] = $this->x_getbodegas();
         //$data['opcion'] = $this->x_getbodegas();
-
         $this->_js_var['_provincia'] = $provincia;
         $this->_js_var['_opcion'] = $opcion;
         $this->_js_var['_id_objeto'] = $id_objeto;
-
 
         //return $this->view("notas", $data);
         /* permiso mostrar */
@@ -195,13 +188,26 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobj($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+    
+    function x_getFacturaDepositarios() {
+        $numero_factura = $_POST['numero_factura'];
+        $rtn = $this->mod->facturaDepositarios($numero_factura);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
 
     function x_sendobj() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->sendobj($obj);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-
+    
+    function x_carga_por_bodega() {
+        $obj = $_POST['obj'];
+        $datos_asignados_bodegas = $_POST['datos_asignados_bodegas'];
+        $rtn = $this->mod->cargaXbodega($obj,$datos_asignados_bodegas);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    
     function x_guardarlote() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->guardarlote($obj);
@@ -406,7 +412,21 @@ class compravino extends main_controller {
         $obj = $this->mod->verificarnumfactura($numero);
         echo trim(json_encode($obj ? $obj : array()));
     }
+    
+    function x_guardar_litros_bodegas() {
+        $numero = $_POST['NUMERO'];
+        $array_bodegas = $_POST['ID_BODEGA'];
+        $litros = $_POST['LITROS'];
+        $obj = $this->mod->verificarnumfactura($numero);
+        echo trim(json_encode($obj ? $obj : array()));
+    }
 
+     function x_getDatosBodegas() {
+        $id = $_POST['id'];
+        $obj = $this->mod->datosBodega($id);
+        echo json_encode($obj);
+    }
+    
     function x_importar_xls() {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];

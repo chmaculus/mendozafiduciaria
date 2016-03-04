@@ -74,6 +74,7 @@ class compravino_model extends main_model {
                     $arra_ins["FIDEICOMISO"] = "1";
                 else if ($_POST['provincia'] == 17)
                     $arra_ins["FIDEICOMISO"] = "26";
+//                echo "ACA HACE EL INSERT EN SOLICITUD";die("OPA PA OPA");
                 $return = $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
                 //file_put_contents("loggg.txt", $return, FILE_APPEND);
                 //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
@@ -244,10 +245,15 @@ class compravino_model extends main_model {
         $rtn["factura"] = $rtn["factura"][0];
         
         //log_this();
-        
+//        var_dump($rtn);die();
 
         $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
 
+        return $rtn;
+    }
+    function facturaDepositarios($numero_factura) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla('fid_factura_depositarios','NUMERO_FACTURA="'.$numero_factura.'"');
         return $rtn;
     }
 
@@ -334,7 +340,6 @@ class compravino_model extends main_model {
     }
 
     function sendobj($obj) {
-
         //log_this('log/xxxxx.log',print_r($obj,1));
         $iid = $obj["id"];
         $arr_cius = isset($obj["arr_cius"])?$obj["arr_cius"]:array();
@@ -346,8 +351,16 @@ class compravino_model extends main_model {
         $obj["ID_CLIENTE"] = $cod_cli;
         $cuit_tmp = $obj["CUIT"];
 
+        $bodegas_elegidas = explode(',', $obj['ID_BODEGA']);
+//        $id_insert = "";
+//        foreach ($bodegas_elegidas as $value) {
+//            $id_insert = $this->_db->query('INSERT INTO fid_factura_depositarios(NUMERO_FACTURA,ID_BODEGA) '
+//                    . 'VALUES ('.$obj['NUMERO'].','.$value.')');
+//       }
+//        $obj['ID_BODEGA']= $obj['NUMERO']; 
+        
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
-
+//        var_dump($obj);die("NO HACE INSERT y CORTA TODO");
         if ($iid == 0)://agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
             //log_this('log/aaaaa.log', $this->_db->last_query());
@@ -374,7 +387,7 @@ class compravino_model extends main_model {
                     "ID_FACTURA" => $id_new,
                     "NUMERO" => $ciu["NUM"],
                     "AZUCAR" => $ciu["AZUCAR"],
-                    "KGRS" => $ciu["KGRS"],
+                    "LITROS" => $obj["LITROS"],
                     "INSC" => $ciu["INSC"],
                     "VERIFICADO" => $verif
                 );
@@ -395,6 +408,22 @@ class compravino_model extends main_model {
             "result" => $resp
         );
         return $rtn;
+    }
+    
+    
+    function cargaXbodega($obj,$datos_asignados_bodegas) {
+
+        $numero_fac = $obj["NUMERO"];
+        foreach ($datos_asignados_bodegas as $value) {
+        $arr_ins = array(
+            "ID" => '',
+            "NUMERO_FACTURA" => $numero_fac,
+            "ID_BODEGA" => substr($value[0],16),
+            "LITROS" => $value[1]);
+//        var_dump($arr_ins);die();
+            $this->_db->insert('fid_factura_depositarios', $arr_ins);
+        }
+//        return $rtn;
     }
 
     function delobj($id) {
@@ -650,25 +679,28 @@ class compravino_model extends main_model {
         }
     }
 
-    function get_bodegas() {
-        /*
-          select l.LOCALIDAD,b.ID as ID, b.NOMBRE AS NOMBRE
-          from fid_bodegas b
-          inner join fid_localidades l on l.ID=b.ID_DEPARTAMENTO
-         */
-
-        $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
-        $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
-        $rtn = $this->_db->get_tabla("fid_bodegas b");
+      function get_bodegas() {
+        $this->_db->select("e.id AS id,ets.nombre AS entidad_tipo,ets.id AS idt, e.nombre AS entidad, e.cuit AS cuit, e.*  ");
+        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
+        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
+        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID =24");
         return $rtn;
     }
-    
-//    function getformulassql(){
-//        $this->_dbsql->order_by('idFormula');
-//        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
-//        return $rtn;
-//    }
 
+    
+    function datosBodega($id) {
+        $datos_limite_bodega = array();
+        $cadena_ids = "";
+        foreach ($id as $value) {
+            $cadena_ids .= $value . ',';
+        }
+        $cadena_ids = substr($cadena_ids, 0, -1);
+        $this->_db->select("*");
+        $rtn_datos_bodegas = $this->_db->get_tabla('fid_entidades', "ID IN ($cadena_ids)");
+        return $rtn_datos_bodegas;
+    }
+    
+    
     function getenviar_a1($arr_area, $puesto_in) {
         //$rtn = $this->_db->get_tabla("fid_xareas ", "ID NOT IN('11','12')");
         $rtn = $this->_db->get_tabla("fid_xareas ", "ID NOT IN('12')");
