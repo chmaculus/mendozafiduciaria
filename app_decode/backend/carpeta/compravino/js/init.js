@@ -2190,6 +2190,7 @@ function initGridListadoRevision(id_usuario) {
             {name: 'BODEGA', type: 'string'},
             {name: 'DEPARTAMENTO', type: 'string'},
             {name: 'KGRS', type: 'string'},
+            {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
             {name: 'USU_CARGA', type: 'string'},
             {name: 'USU_CHEQUEO', type: 'string'},
@@ -2201,7 +2202,6 @@ function initGridListadoRevision(id_usuario) {
             {name: 'TOTAL', type: 'number'},
             {name: 'CREATEDON', type: 'string'},
             {name: 'IID', type: 'string'}
-
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
@@ -2276,12 +2276,10 @@ function initGridListadoRevision(id_usuario) {
 
                     jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
                         if (r == true) {
-
                             if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
                                 var id = $("#jqxgrid_listado_revision").jqxGrid('getrowid', selectedrowindex);
                                 $("#jqxgrid_listado_revision").jqxGrid('deleterow', id);
                             }
-
                         }
                     });
                 } else {
@@ -2305,6 +2303,7 @@ function initGridListadoRevision(id_usuario) {
             {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},

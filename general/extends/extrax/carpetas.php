@@ -51,7 +51,12 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     }
     $cad_like = substr($cad_like, 0, -2);
 
-    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, d.LOCALIDAD AS DEPARTAMENTO, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, c.RAZON_SOCIAL AS CLIENTE,c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, date(f.CREATEDON) as CREATEDON");
+    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, "
+            . "f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, "
+            . "f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, "
+            . "d.LOCALIDAD AS DEPARTAMENTO, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, "
+            . "c.RAZON_SOCIAL AS CLIENTE,c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, "
+            . "date(f.CREATEDON) as CREATEDON");
     $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
     $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
     $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
@@ -95,6 +100,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCvino') {
     $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, "
             ."f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, "
             ."f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,"
+//            ."f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS,"
             ."d.LOCALIDAD AS DEPARTAMENTO, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, " 
             ."c.RAZON_SOCIAL AS CLIENTE,c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, "
             ."date(f.CREATEDON) as CREATEDON");
