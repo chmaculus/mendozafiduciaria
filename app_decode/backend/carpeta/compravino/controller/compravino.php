@@ -99,6 +99,10 @@ class compravino extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
+        $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
+        $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
+        $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
+        $data['lst_proveedores'] = $this->x_getProveedores();
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
 
@@ -130,6 +134,10 @@ class compravino extends main_controller {
                 return $this->view("vista3", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 2)):
                 return $this->view("vista4_listado", $data);
+            elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
+                return $this->view("vista7_operatoria", $data);
+            elseif (($provincia == 12 || $provincia == 17) && ($opcion == 8)):
+                return $this->view("form_operatoria_nueva", $data);
             elseif ($provincia == 12 || $provincia == 17):
                 return $this->view("vista2", $data);
             endif;
@@ -160,6 +168,26 @@ class compravino extends main_controller {
 
     function x_getbodegas() {
         $obj = $this->mod->get_bodegas();
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
+    function x_getOpeBodegas() {
+        $obj = $this->mod->get_ope_bodegas();
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
+    function x_getCoordinadores() {
+        $obj = $this->mod->get_coordinadores();
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
+    function x_getJefe() {
+        $obj = $this->mod->get_jefes();
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
+    function x_getProveedores() {
+        $obj = $this->mod->get_proveedores();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }

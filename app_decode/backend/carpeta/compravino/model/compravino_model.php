@@ -663,6 +663,31 @@ class compravino_model extends main_model {
         return $rtn;
     }
     
+    function get_ope_bodegas() {
+        $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
+        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
+        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
+        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID =24");
+        return $rtn;
+    }
+    
+    function get_coordinadores() {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_usuarios");
+        return $rtn;
+    }
+    function get_jefes() {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_usuarios");
+        return $rtn;
+    }
+    
+    function get_proveedores() {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_clientes");
+        return $rtn;
+    }
+    
 //    function getformulassql(){
 //        $this->_dbsql->order_by('idFormula');
 //        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');

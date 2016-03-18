@@ -336,6 +336,34 @@ iframe{
     display: none;
     float: left;
 }
+.nuevaOpe_form{
+    margin-left: 33px;
+    min-height: 520px;
+    width: 980px;
+    position: relative;
+    top: 20px;
+    float: left;
+}
+#opeNombre,#opeDescripcion{
+    width:230px;
+}
+
+.asignarLimiteProv , .asignarLimiteBod{
+    float:left; margin-left:135px;margin-top:10px;
+}
+#info-proveedores,#info-bodegas{
+    /*margin-top: 25px;*/
+    width: 800px; 
+    /*height: 230px;*/ 
+    height: auto;
+
+overflow: hidden;
+    display: none; 
+    /*border: 1px solid #000000;*/ 
+    /*border-radius: 10px 10px 10px 10px;*/
+}
+
+
 
 #div_subrubro{
     width: 400px!important;

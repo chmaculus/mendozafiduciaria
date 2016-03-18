@@ -19,6 +19,37 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasGrilla') {
     echo trim(json_encode($rtn ? $rtn : array()));
     die();
 }
+if (isset($_GET["accion"]) && $_GET["accion"] == 'getProveedoresGrilla') {
+
+    
+    $idProveedor = $_GET["id_proveedor"];
+    $proveedor_ids = "";
+    foreach ($idProveedor as $value) {
+        $proveedor_ids .= $value . ",";
+    }
+    $proveedor_ids = substr($proveedor_ids, 0, -1);
+
+    $cnn->select("*");
+    $rtn = $cnn->get_tabla("fid_clientes", "ID IN($proveedor_ids)");
+    
+    echo trim(json_encode($rtn ? $rtn : array()));
+    die();
+}
+if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasOpeGrilla') {
+   $idBodegas = $_GET["id_bodegas"];
+    $bodegas_ids = "";
+    foreach ($idBodegas as $value) {
+        $bodegas_ids .= $value . ",";
+    }
+    $bodegas_ids = substr($bodegas_ids, 0, -1);
+    $cnn->select("e.id AS ID, e.nombre AS NOMBRE");
+    $cnn->join("fid_entidades e", "et.id_entidad=e.id");
+    $cnn->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
+    $rtn = $cnn->get_tabla("fid_entidadestipo et", "ets.ID =24 AND e.ID IN($bodegas_ids)");
+    
+    echo trim(json_encode($rtn ? $rtn : array()));
+    die();
+}
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasDatos') {
 die("Error, no es posible acceder a este sector");
     $idBodegas = $_GET["id_bodegas"];
