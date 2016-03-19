@@ -34,6 +34,14 @@
         echo trim(json_encode($rtn?$rtn:array()));
         die();
     }
+    if (isset($_GET["accion"]) && $_GET["accion"]=='getOperatoriasChecklistVino' ){
+//        $id_operatoria = $_GET["id_operatoria"];
+        $cnn->select("*");
+        $rtn = $cnn->get_tabla("fid_checklist_vino");
+//        var_dump($rtn);die();
+        echo trim(json_encode($rtn?$rtn:array()));
+        die();
+    }
     
     if (isset($_GET["accion"]) && $_GET["accion"]=='getDeudas' ){
         

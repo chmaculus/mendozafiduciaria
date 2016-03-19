@@ -3,23 +3,20 @@
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio2</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio3</div></li>
-    <li class="tb_save1" data-top="lis_guardar_ope"><div>Guardar Factura</div></li>
 </ul>
 
 <div class="nuevaOpe_form">
-
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
-
     <div class="elem elem_med_cond">
         <label class="der">Nombre:</label>
         <div class="indent formtext">
-            <input type="text" class="tip-right" title="cuit" id="opeNombre" value=""  maxlength="11">
+            <input type="text" class="tip-right" title="nombre" id="opeNombre" value=""  maxlength="64">
         </div>
     </div>
     <div class="elem elem_med_cond">
         <label class="der">Descripcion:</label>
         <div class="indent formtext">
-            <input type="text" title="nombre" id="opeDescripcion" >
+            <input type="text" title="descripcion" id="opeDescripcion" maxlength="100">
         </div>
     </div>
 
@@ -54,31 +51,32 @@
     <div class="elem elem_med_cond">
         <label class="der">Litros Maximo:</label>
         <div class="indent formtext">
-            <input type="text" title="nombre" id="listrosMax" >
+            <input type="text" title="Litros maximo" id="listrosMax" >
         </div>
     </div>
 
     <div class="elem elem_med">
         <label>Condicion de Pago:</label>
         <div class="indent">
-            <select class="chzn-select medium-select select" id="formaPago" data-placeholder="Forma de pago">
+            <select class="chzn-select medium-select select" id="formaPago" onchange="verCuotas()" data-placeholder="Forma de pago">
                 <option value="Contado">Contado</option>
                 <option value="Cuotas">Cuotas</option>
             </select>   
         </div>
     </div>
-
-    <div class="elem elem_med">
-        <label>Cantidad Cuotas:</label>
-        <div class="indent">
-            <select class="chzn-select medium-select select" id="cantCuotas">
-                <option value="cuotaUno">1</option>
-                <option value="cuotaDos">2</option>
-                <option value="cuotaTres">3</option>
-                <option value="cuotaCuatro">4</option>
-                <option value="cuotaCinco">5</option>
-                <option value="cuotaSeis">6</option>
-            </select>   
+    <div id="ver-cuotas" style="display: none;">
+        <div class="elem elem_med">
+            <label>Cantidad Cuotas:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" id="cantCuotas">
+                    <option value="cuotaUno">1</option>
+                    <option value="cuotaDos">2</option>
+                    <option value="cuotaTres">3</option>
+                    <option value="cuotaCuatro">4</option>
+                    <option value="cuotaCinco">5</option>
+                    <option value="cuotaSeis">6</option>
+                </select>   
+            </div>
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
@@ -121,18 +119,18 @@
             </div>
         </div>
     <?php endif; ?>
-    
+
     <div class="button-a blue asignarLimiteBod"><span>Asignar Limite Litros</span></div>
-    
+
     <div id="info-bodegas">
-</br>
+        </br>
         <p style="font-weight:bold;">Ingrese los litros en la columna LIMITE LTRS de la grilla</p>
         <div id="jqxgrid_bodegas" style="margin-left:20px; margin-top: 5px;">
         </div>
     </div>
-<div class="clear"></div>
+    <div class="clear"></div>
     <hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">
-    
+
     <div class="elem elem_med_cond">
         <label class="der">Cant. Max. Hectareas:</label>
         <div class="indent formtext">
@@ -142,10 +140,8 @@
 
     <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox"></div>
 
-    <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
-    <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
-
+    <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
 </div>
 
-<div id="wpopup"></div>
+<!--<div id="wpopup"></div>-->
 

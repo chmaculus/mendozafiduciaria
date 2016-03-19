@@ -358,25 +358,23 @@ function llenar_form(cliente) {
 
 
 $(document).ready(function () {
-
+//$('#myDropDown').chosen({ disable_search_threshold: 10 });
     $("#opeCoordinador").chosen({width: "250px"});
     $("#opeJefe").chosen({width: "250px"});
-    $("#formaPago").chosen({width: "180px"});
+    $("#formaPago").chosen({width: "180px",disable_search_threshold: 10});
     $("#cantCuotas").chosen({width: "180px"});
     $("#opeProveedores").chosen({width: "400px"});
     $("#opeBodega").chosen({width: "400px"});
 
     $("#jqxgrid_proveedores").hide();
 
-    //alert(_permiso_exportar+'-'+_permiso_ver+'-'+_permiso_modificacion+'-'+_permiso_baja+'-'+_permiso_alta);
-
-
+$('#send').show();
+    
+    
     semmilla = fGetNumUnico();
     mydata = '';
-
     initGridListado();
     initGridListadoRevision();
-
     $(".toolbar li").hover(
             function () {
                 $(this).removeClass('li_sel').addClass('li_sel');
@@ -385,45 +383,33 @@ $(document).ready(function () {
                 $(this).removeClass('li_sel');
             }
     );
-
-
     $('.tb_todas').on('click', function (e) {
         e.preventDefault();
         initGrid();
     });
-
     $('.tb_miscar').on('click', function (e) {
         e.preventDefault();
         initGrid(_USUARIO_SESION_ACTUAL);
     });
-
     $("#cuit_busqueda").keyup(function (event) {
         if (event.which == 13) {
             $('.consultar').trigger('click');
         }
     });
-
-
     loadChild(0);
     $('#provincia').bind('change', function (event) {
         event.preventDefault();
         $(this).validationEngine('validate');
         if ($('#provincia').val() == '')
             loadChild(0)
-
         $('#provinciah').val($('#provincia').val());
-
         var selected = $(this).find('option').eq(this.selectedIndex);
-
         var connection = selected.data('connection');
         selected.closest('#rubro li').nextAll().remove();
         if (connection) {
             loadChild(connection);
         }
-
     });
-
-
     $('#bodega').bind('change', function (event) {
         event.preventDefault();
         var selected = $(this).find('option').eq(this.selectedIndex);
@@ -432,11 +418,8 @@ $(document).ready(function () {
             $("#dto_bodega").val(local);
         }
     });
-
-
     $('.consultar').on('click', function (e) {
         e.preventDefault();
-
         $('.env_form').show();
         $('.nuevafact_form').hide();
         $("#provincia").chosen();
@@ -445,9 +428,7 @@ $(document).ready(function () {
         $("#bodega").chosen({width: "220px"});
         $("#formula").chosen({width: "220px"});
         $("#listbox").show();
-        
         var cuit = $("#cuit_busqueda").val();
-
         /* buscar por cuit */
         $.ajax({
             url: _compravino.URL + "/x_getobjcliente",
@@ -457,7 +438,6 @@ $(document).ready(function () {
             dataType: "json",
             type: "post",
             success: function (data) {
-
                 if (data.ID > 0) {
                     $.unblockUI();
                     llenar_form(data);
@@ -478,21 +458,8 @@ $(document).ready(function () {
             }
         });
     });
-
     $('#nuevafactura').off().on('click', function (e) {
         e.preventDefault();
-        /*
-         $.ajax({
-         url: _compravino.URL + "/x_getobjcliente",
-         data: {
-         cuit: cc
-         },
-         dataType: "json",
-         type: "post",
-         success: function(data) {
-         }
-         });
-         */
         var cc = $("#cuit_busqueda").val();
         limpiar_form_nf();
         $('.env_form').hide();
@@ -500,7 +467,6 @@ $(document).ready(function () {
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
         show_btns(2);
-
     });
 
     refresGridevent();
@@ -508,156 +474,156 @@ $(document).ready(function () {
     $('#send').on('click', function (e) {
         e.preventDefault();
 
-        var id = $("#idh").val();
-
-        var prov = $("#provinciah").val();
-        var loca = $("#localidadh").val();
-        var condicioniibb = $("#condicioniibb").val();
-        var condicioniva = $("#condicioniva").val();
-        var nombre = $("#nombre").val();
-        var dir = $("#direccion").val();
-        var tel = $("#telefono").val();
-        var cuit = $("#cuit").val();
-        var insciibb = $("#insciibb").val();
-        var insinv = $("#insinv").val();
-        var correo = $("#correo").val();
-        var obs = $("#observacion").val();
-        var cbu = $("#cbu").val();
-
-        iid = id ? id : 0;
-        objsave = {
-            id: iid,
-            ID_PROVINCIA: prov,
-            ID_DEPARTAMENTO: loca,
-            ID_CONDICION_IIBB: condicioniibb,
-            ID_CONDICION_IVA: condicioniva,
-            ID_INV: insinv,
-            DIRECCION: dir,
-            RAZON_SOCIAL: nombre,
-            TELEFONO: tel,
-            CUIT: cuit,
-            CORREO: correo,
-            OBSERVACION: obs,
-            INSCRIPCION_IIBB: insciibb,
-            CBU: cbu
-        }
-
-        //validar campos
-        if (nombre == '') {
-            jAlert('Ingrese Razón Social.', $.ucwords(_etiqueta_modulo), function () {
-                $("#nombre").focus();
-            });
-            return false;
-        }
-
-        if (cuit == '') {
-            jAlert('Ingrese CUIT.', $.ucwords(_etiqueta_modulo), function () {
-                $("#cuit").focus();
-            });
-            return false;
-        }
-
-        if (cbu == '') {
-            jAlert('Ingrese CBU.', $.ucwords(_etiqueta_modulo), function () {
-                $("#cbu").focus();
-            });
-            return false;
-        }
-
-        if (condicioniva == '') {
-            jAlert('Elija condicion iva.', $.ucwords(_etiqueta_modulo), function () {
-                $("#condicioniva").focus();
-            });
-            return false;
-        }
-
-        if (condicioniibb == '') {
-            jAlert('Elija condicion iibb.', $.ucwords(_etiqueta_modulo), function () {
-                $("#condicioniibb").focus();
-            });
-            return false;
-        }
-
-        if (insciibb == '') {
-            jAlert('Elija Inscripcion IIBB.', $.ucwords(_etiqueta_modulo), function () {
-                $("#insciibb").focus();
-            });
-            return false;
-        }
-
-        if (dir == '') {
-            jAlert('Ingrese domicilio.', $.ucwords(_etiqueta_modulo), function () {
-                $("#direccion").focus();
-            });
-            return false;
-        }
-
-        if (prov == '') {
-            jAlert('Elija provincia.', $.ucwords(_etiqueta_modulo), function () {
-                $("#provincia").focus();
-            });
-            return false;
-        }
-
-        if (loca == '') {
-            jAlert('Elija Localidad.', $.ucwords(_etiqueta_modulo), function () {
-                $("#subrubro").focus();
-            });
-            return false;
-        }
-
-        if (tel == '') {
-            jAlert('Ingrese un numero de teléfono.', $.ucwords(_etiqueta_modulo), function () {
-                $("#telefono").focus();
-            });
-            return false;
-        }
-
-        if (correo == '') {
-            jAlert('Ingrese email.', $.ucwords(_etiqueta_modulo), function () {
-                $("#correo").focus();
-            });
-            return false;
-        }
-
-
-
-
-
-        $.ajax({
-            url: _compravino.URL + "/x_sendobjcli",
-            data: {
-                obj: objsave
-            },
-            dataType: "json",
-            type: "post",
-            success: function (data) {
-                condicioniva_g = data.valor;
-                console.dir(data);
-                if (data.result > 0) {
-                    $('#nuevafactura').off().on('click', function (e) {
-                        e.preventDefault();
-                        limpiar_form_nf();
-                        $('.env_form').hide();
-                        $('.nuevafact_form').show();
-                        $("#cuitform").val(cuit);
-                        $("#nombre2").val($("#nombre").val());
-                        show_btns(2);
-                    });
-
-                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                        show_btns(1);
-                        limpiar_form_fact();
-                        $('#send').hide();
-                    });
-
-                } else {
-                    jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
-                        $.unblockUI();
-                    });
-                }
-            }
-        });
+alert("ACA ESTAMOS");
+        var opeNombre = $("#opeNombre").val();
+        var opeDescripcion = $("#opeDescripcion").val();
+        var opeCoordinador = $("#opeCoordinador").val();
+        var opeJefe = $("#opeJefe").val();
+        var listrosMax = $("#listrosMax").val();
+//        var nombre = $("#nombre").val();
+//        var dir = $("#direccion").val();
+//        var tel = $("#telefono").val();
+//        var cuit = $("#cuit").val();
+//        var insciibb = $("#insciibb").val();
+//        var insinv = $("#insinv").val();
+//        var correo = $("#correo").val();
+//        var obs = $("#observacion").val();
+//        var cbu = $("#cbu").val();
+//
+//        iid = id ? id : 0;
+//        objsave = {
+//            id: iid,
+//            ID_PROVINCIA: prov,
+//            ID_DEPARTAMENTO: loca,
+//            ID_CONDICION_IIBB: condicioniibb,
+//            ID_CONDICION_IVA: condicioniva,
+//            ID_INV: insinv,
+//            DIRECCION: dir,
+//            RAZON_SOCIAL: nombre,
+//            TELEFONO: tel,
+//            CUIT: cuit,
+//            CORREO: correo,
+//            OBSERVACION: obs,
+//            INSCRIPCION_IIBB: insciibb,
+//            CBU: cbu
+//        }
+//
+//        //validar campos
+//        if (nombre == '') {
+//            jAlert('Ingrese Razón Social.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#nombre").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (cuit == '') {
+//            jAlert('Ingrese CUIT.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#cuit").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (cbu == '') {
+//            jAlert('Ingrese CBU.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#cbu").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (condicioniva == '') {
+//            jAlert('Elija condicion iva.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#condicioniva").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (condicioniibb == '') {
+//            jAlert('Elija condicion iibb.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#condicioniibb").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (insciibb == '') {
+//            jAlert('Elija Inscripcion IIBB.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#insciibb").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (dir == '') {
+//            jAlert('Ingrese domicilio.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#direccion").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (prov == '') {
+//            jAlert('Elija provincia.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#provincia").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (loca == '') {
+//            jAlert('Elija Localidad.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#subrubro").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (tel == '') {
+//            jAlert('Ingrese un numero de teléfono.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#telefono").focus();
+//            });
+//            return false;
+//        }
+//
+//        if (correo == '') {
+//            jAlert('Ingrese email.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#correo").focus();
+//            });
+//            return false;
+//        }
+//
+//
+//
+//
+//
+//        $.ajax({
+//            url: _compravino.URL + "/x_sendobjcli",
+//            data: {
+//                obj: objsave
+//            },
+//            dataType: "json",
+//            type: "post",
+//            success: function (data) {
+//                condicioniva_g = data.valor;
+//                console.dir(data);
+//                if (data.result > 0) {
+//                    $('#nuevafactura').off().on('click', function (e) {
+//                        e.preventDefault();
+//                        limpiar_form_nf();
+//                        $('.env_form').hide();
+//                        $('.nuevafact_form').show();
+//                        $("#cuitform").val(cuit);
+//                        $("#nombre2").val($("#nombre").val());
+//                        show_btns(2);
+//                    });
+//
+//                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+//                        show_btns(1);
+//                        limpiar_form_fact();
+//                        $('#send').hide();
+//                    });
+//
+//                } else {
+//                    jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+//                        $.unblockUI();
+//                    });
+//                }
+//            }
+//        });
     });
 
     $('.asignarLimiteProv').on('click', function () {
@@ -759,19 +725,19 @@ $(document).ready(function () {
                 datatype: "json",
                 url: 'general/extends/extra/operatorias.php',
                 data: {
-                    accion: "getOperatoriasChecklist",
-                    id_operatoria: 16
+                    accion: "getOperatoriasChecklistVino"
+//                    id_operatoria: 16
                 },
                 async: false,
                 datafields: [
                     {name: 'ID'},
-                    {name: 'NOMBRE'}
+                    {name: 'DESCRIPCION'}
                 ],
                 id: 'ID'
             };
     var dataAdapterchk = new $.jqx.dataAdapter(sourcechk);
-    
-    $("#listbox").jqxListBox({source: dataAdapterchk, checkboxes: true, displayMember: "NOMBRE", valueMember: "ID", width: 760, height: 300});
+
+    $("#listbox").jqxListBox({source: dataAdapterchk, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
 // AQUI TERMINARIA LA LISTA PARA GENERAR LOS CHECKLIST Y MOSTRARLOS
 
     $(".toolbar li:not(.sub)").click(function (e) {
@@ -1035,6 +1001,13 @@ $(document).ready(function () {
 
 });
 
+function verCuotas(){
+        if ($("#formaPago").val() == 'Cuotas') {
+            $("#ver-cuotas").show();
+        } else {
+            $("#ver-cuotas").hide();
+        }
+}
 
 function evento_lista_arch() {
     $('.lista_adjuntos li span').off().on('click', function (event) {
