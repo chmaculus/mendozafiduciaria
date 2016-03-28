@@ -21,7 +21,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasGrilla') {
 }
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getProveedoresGrilla') {
 
-    
     $idProveedor = $_GET["id_proveedor"];
     $proveedor_ids = "";
     foreach ($idProveedor as $value) {
@@ -107,6 +106,48 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     echo trim(json_encode($rtn ? $rtn : array()));
     die();
 }
+
+if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
+
+    $cnn->select("*");
+    $rtn = $cnn->get_tabla("fid_operatoria_vino");
+    
+//    $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";
+//    $idope = isset($_GET["idope"]) ? $_GET["idope"] : '0';
+//    $idpro = isset($_GET["idpro"]) ? $_GET["idpro"] : '0';
+//    $idestado = isset($_GET["estado"]) ? $_GET["estado"] : '0';
+//    $idtipo = isset($_GET["idtipo"]) ? $_GET["idtipo"] : '0';
+//    $cad_campos = "f.ID, c.CUIT, c.RAZON_SOCIAL";
+//    $arr_campos = explode(', ', $cad_campos);
+//    $cad_like = "";
+//    foreach ($arr_campos as $tp) {
+//        $cad_like .= " " . $tp . " LIKE '%" . $word . "%' OR";
+//    }
+//    $cad_like = substr($cad_like, 0, -2);
+//    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, d.LOCALIDAD AS DEPARTAMENTO, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, c.RAZON_SOCIAL AS CLIENTE,c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, date(f.CREATEDON) as CREATEDON");
+//    $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
+//    $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
+//    $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
+//    $cnn->join("fid_bodegas b", "b.ID=f.ID_BODEGA", "left");
+//    $cnn->join("fid_localidades d", "d.ID=b.ID_DEPARTAMENTO", "left");
+//    $cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
+//    $cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
+//    $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+//    if ($idestado > 0) {
+//        $cad_where = "( " . $cad_like . ") and f.ID_ESTADO = '" . $idestado . "'";
+//    } else {
+//        //$cad_where .= " and f.ID_ESTADO <> '12'";
+//        $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
+//    }
+//    $cad_where .= " AND TIPO=" . $idtipo;
+//
+//    $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
+//        file_put_contents('OBTENERLOTESFACTURAS.log',$cnn->last_query() );
+
+    echo trim(json_encode($rtn ? $rtn : array()));
+    die();
+}
+
 
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getTrazabilidadNota') {
 

@@ -353,14 +353,11 @@ iframe{
 }
 #info-proveedores,#info-bodegas{
     /*margin-top: 25px;*/
-    width: 800px; 
     /*height: 230px;*/ 
+    /*display: none;*/ 
+    width: 800px; 
     height: auto;
-
-overflow: hidden;
-    display: none; 
-    /*border: 1px solid #000000;*/ 
-    /*border-radius: 10px 10px 10px 10px;*/
+    overflow: hidden;
 }
 
 
@@ -372,7 +369,7 @@ overflow: hidden;
     margin-left: 145px;
     width: 618px!important;
 }
-#nuevafactura,#send{
+#nuevafactura,#send,#send_edit{
     display: none;
 }
 .div_cius{

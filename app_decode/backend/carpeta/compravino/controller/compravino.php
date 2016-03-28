@@ -67,9 +67,9 @@ class compravino extends main_controller {
         else
             $this->_js_var['_permiso_ver'] = 0;
         /* permiso ver */
-        
+
         /* permiso exportar */
-        if($_SESSION["USER_ROL"]==1 || $arr_permiso_mod['EXPORTAR'] == 1)
+        if ($_SESSION["USER_ROL"] == 1 || $arr_permiso_mod['EXPORTAR'] == 1)
             $this->_js_var['_permiso_exportar'] = 1;
         else
             $this->_js_var['_permiso_exportar'] = 0;
@@ -105,10 +105,7 @@ class compravino extends main_controller {
         $data['lst_proveedores'] = $this->x_getProveedores();
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
-
 //        $data['clientes_sql'] = $this->x_getclientessql();
-
-
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
         //$data['provincia'] = $this->x_getbodegas();
         //$data['opcion'] = $this->x_getbodegas();
@@ -138,6 +135,8 @@ class compravino extends main_controller {
                 return $this->view("vista7_operatoria", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 8)):
                 return $this->view("form_operatoria_nueva", $data);
+            elseif (($provincia == 12 || $provincia == 17) && ($opcion == 9)):
+                return $this->view("form_operatoria_nueva", $data);
             elseif ($provincia == 12 || $provincia == 17):
                 return $this->view("vista2", $data);
             endif;
@@ -159,7 +158,7 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
-    
+
 //    function x_getformulas(){
 //        $obj = $this->mod->getformulassql();
 //        $tmp = $obj ? $obj : array();
@@ -171,21 +170,25 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+
     function x_getCoordinadores() {
         $obj = $this->mod->get_coordinadores();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+
     function x_getJefe() {
         $obj = $this->mod->get_jefes();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+
     function x_getProveedores() {
         $obj = $this->mod->get_proveedores();
         $tmp = $obj ? $obj : array();
@@ -224,6 +227,60 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
+    function x_getoperatoria() {
+        $id_objeto = $_POST['id_objeto'];
+        $rtn = $this->mod->getoperatoria($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getOperatoriaProveedores() {
+        $id_objeto = $_POST['id_operatoria'];
+        $rtn = $this->mod->getOperatoriaProveedores($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getOperatoriaBodegas() {
+        $id_objeto = $_POST['id_operatoria'];
+        $rtn = $this->mod->getOperatoriaBodegas($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getProveedoresEdit() {
+        $id_objeto = $_POST['id_operatoria'];
+        $rtn = $this->mod->getProveedoresEdit($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getDatoProveedor() {
+        $ids_proveedores = $_POST['ids_proveedores'];
+        if (empty($_POST['firstColumnData'])) {
+            $rtn = $this->mod->getDatoProveedorNuevo($ids_proveedores);
+            echo trim(json_encode($rtn ? $rtn : array()));
+        } else {
+            $firstColumnData = $_POST['firstColumnData'];
+            $rtn = $this->mod->getDatoProveedor($ids_proveedores, $firstColumnData);
+            echo trim(json_encode($rtn ? $rtn : array()));
+        }
+    }
+
+    function x_getDatoBodega() {
+        $ids_bodegas = $_POST['ids_bodegas'];
+        if (empty($_POST['firstColumnData'])) {
+        $rtn = $this->mod->getDatoBodegaNueva($ids_bodegas);
+        echo trim(json_encode($rtn ? $rtn : array()));
+        }else {
+        $firstColumnData = $_POST['firstColumnData'];
+        $rtn = $this->mod->getDatoBodega($ids_bodegas, $firstColumnData);
+        echo trim(json_encode($rtn ? $rtn : array()));
+        }
+    }
+
+    function x_getBodegasEdit() {
+        $id_objeto = $_POST['id_operatoria'];
+        $rtn = $this->mod->getBodegasEdit($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
     function x_sendobj() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->sendobj($obj);
@@ -239,6 +296,67 @@ class compravino extends main_controller {
     function x_sendobjcli() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->sendobjcli($obj);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getIdOperatoria() {
+        $rtn = $this->mod->getIdOperatoria();
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    
+    function x_sendOperatoria() {
+        $nuevoID = $_POST['nuevoID'];
+        $opeNombre = $_POST['opeNombre'];
+        $opeDescripcion = $_POST['opeDescripcion'];
+        $opeCoordinador = $_POST['opeCoordinador'];
+        $opeJefe = $_POST['opeJefe'];
+        $listrosMax = $_POST['listrosMax'];
+        $formaPago = $_POST['formaPago'];
+        $cantCuotas = $_POST['cantCuotas'];
+
+
+        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    
+    function x_updateOperatoria() {
+        $nuevoID = $_POST['nuevoID'];
+        $opeNombre = $_POST['opeNombre'];
+        $opeDescripcion = $_POST['opeDescripcion'];
+        $opeCoordinador = $_POST['opeCoordinador'];
+        $opeJefe = $_POST['opeJefe'];
+        $listrosMax = $_POST['listrosMax'];
+        $formaPago = $_POST['formaPago'];
+        $cantCuotas = $_POST['cantCuotas'];
+
+
+        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_sendProveedores() {
+        $obj = $_POST['data_proveedores'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->sendProveedores($obj, $nuevoID);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    function x_updateProveedores() {
+        $obj = $_POST['data_proveedores'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->updateProveedores($obj, $nuevoID);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_sendBodegas() {
+        $obj = $_POST['data_bodegas'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->sendBodegas($obj, $nuevoID);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    function x_updateBodegas() {
+        $obj = $_POST['data_bodegas'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->updateBodegas($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
@@ -439,26 +557,26 @@ class compravino extends main_controller {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];
 
-        $preg = $this->mod->validar_archivos_imp_f();//validar si existe el archivo de la factura
+        $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
             $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
-            $preg1 = $this->mod->validar_archivos_imp_c();//validar si existe archivo de los cius
-            if ($preg1>0){
+            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+            if ($preg1 > 0) {
                 $obj = $this->mod->importar_ciu();
                 $this->mod->validar_azucar();
                 echo trim(json_encode(isset($obj) ? $obj : array()));
-            }else{
-                echo -1;//advertencia no existe cius
+            } else {
+                echo -1; //advertencia no existe cius
             }
         } else {
             //echo -1;
-            $preg1 = $this->mod->validar_archivos_imp_c();//validar si existe archivo de los cius
-            if ($preg1>0){
+            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+            if ($preg1 > 0) {
                 $obj = $this->mod->importar_ciu();
                 $this->mod->validar_azucar();
                 echo trim(json_encode(isset($obj) ? $obj : array()));
-            }else{
-                echo -2;//no existen archivos a procesar
+            } else {
+                echo -2; //no existen archivos a procesar
             }
         }
     }

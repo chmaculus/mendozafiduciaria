@@ -1,13 +1,7 @@
 <ul class="toolbar">
     <li class="tb_atras" data-top="lis_editar"><div>Regresar</div></li>
-
-
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
-
     <li class="tb_search" data-top='search'><div>Buscar Cuit</div></li>
-
-
-
     <li class="tb_fil" data-top='nueva_f'><div>Nueva Factura</div></li>
     <li class="tb_save" data-top="lis_guardar_enviar"><div>Guardar Cliente</div></li>
     <li class="tb_save1" data-top="lis_guardar_fact"><div>Guardar Factura</div></li>

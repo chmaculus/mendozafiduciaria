@@ -242,12 +242,45 @@ class compravino_model extends main_model {
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-        
+
         //log_this();
-        
+
 
         $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
 
+        return $rtn;
+    }
+
+    function getoperatoria($id_objeto) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla('fid_operatoria_vino', "ID_OPERATORIA = '" . $id_objeto . "'");
+//         log_this('log/lalalalalalallskaldkasl.log', $this->_db->last_query());
+        return $rtn;
+    }
+
+    function getOperatoriaProveedores($id_objeto) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores', "ID_OPERATORIA = '" . $id_objeto . "'");
+        return $rtn;
+    }
+
+    function getOperatoriaBodegas($id_objeto) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla('fid_operatoria_bodegas', "ID_OPERATORIA = '" . $id_objeto . "'");
+        return $rtn;
+    }
+
+    function getProveedoresEdit($id_objeto) {
+        $this->_db->select("p.ID_OPERATORIA,c.RAZON_SOCIAL AS RAZON_SOCIAL,p.ID_PROVEEDOR AS ID, p.LIMITE_OPE AS LIMLTRS, p.LIM_OPE_HECT AS MAXHECTAREAS ");
+        $this->_db->join("fid_clientes c ", "p.ID_PROVEEDOR=c.ID");
+        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
+        return $rtn;
+    }
+
+    function getBodegasEdit($id_objeto) {
+        $this->_db->select("p.ID_OPERATORIA,e.NOMBRE AS NOMBRE,p.ID_BODEGA AS ID, p.LIMITE_OPE AS LIMLTRS ");
+        $this->_db->join("fid_entidades e ", "p.ID_BODEGA=e.ID");
+        $rtn = $this->_db->get_tabla('fid_operatoria_bodegas p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
         return $rtn;
     }
 
@@ -333,11 +366,110 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function sendobj($obj) {
+    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas) {
+        $nuevoID = $nuevoID;
+        $fecha_creacion = date('Y-m-d');
+        $fecha = date('Y-m-j');
+        $nueva_limite= strtotime ( '+1 year' , strtotime($fecha));
+        $nueva_limite = date ( 'Y-m-j' ,$nueva_limite);
+ 
+//        echo $fecha_creacion . " -- " . $nueva_limite;die;
+        $ins_ope = array(
+            "ID_OPERATORIA" => $nuevoID,
+            "FECHA_CRE" => $fecha_creacion,
+            "FECHA_VEN" => $nueva_limite,
+            "NOMBRE_OPE" => $opeNombre,
+            "DESCRIPCION_OPE" => $opeDescripcion,
+            "ID_COORDINADOR_OPE" => $opeCoordinador,
+            "ID_JEFE_OPE" => $opeJefe,
+            "LTRS_MAX" => $listrosMax,
+            "FPAGO" => $formaPago,
+            "CANT_CUOTAS" => $cantCuotas,
+            "HECT_MAX" => ''
+        );
+        $this->_db->insert('fid_operatoria_vino', $ins_ope);
+    }
 
+    function updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas) {
+        $ins_ope = array(
+            "NOMBRE_OPE" => $opeNombre,
+            "DESCRIPCION_OPE" => $opeDescripcion,
+            "ID_COORDINADOR_OPE" => $opeCoordinador,
+            "ID_JEFE_OPE" => $opeJefe,
+            "LTRS_MAX" => $listrosMax,
+            "FPAGO" => $formaPago,
+            "CANT_CUOTAS" => $cantCuotas,
+            "HECT_MAX" => ''
+        );
+        $this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $nuevoID . "'");
+    }
+
+    function getIdOperatoria() {
+        $this->_db->select("ID_OPERATORIA");
+        $this->_db->order_by("ID_OPERATORIA", "DESC LIMIT 1");
+        $rtn = $this->_db->get_tabla("fid_operatoria_vino");
+        $valor = 0;
+        $sumar = 1;
+        $devolver = 0;
+        if ($rtn) {
+            $valor = (int) $rtn[0]['ID_OPERATORIA'];
+            $devolver = $valor + $sumar;
+        }
+        return $devolver;
+    }
+
+    function sendProveedores($obj, $nuevoID) {
+        foreach ($obj as $value) {
+            $ins_proveedor = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_PROVEEDOR" => $value['ID'],
+                "LIMITE_OPE" => $value['LIMLTRS'],
+                "LIM_OPE_HECT" => $value['MAXHECTAREAS']
+            );
+            $this->_db->insert('fid_operatoria_proveedores', $ins_proveedor);
+        }
+    }
+
+    function updateProveedores($obj, $nuevoID) {
+        $this->_db->delete("fid_operatoria_proveedores", "ID_OPERATORIA='" . $nuevoID . "'");
+        foreach ($obj as $value) {
+            $ins_proveedor = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_PROVEEDOR" => $value['ID'],
+                "LIMITE_OPE" => $value['LIMLTRS'],
+                "LIM_OPE_HECT" => $value['MAXHECTAREAS']
+            );
+            $this->_db->insert('fid_operatoria_proveedores', $ins_proveedor);
+        }
+    }
+
+    function sendBodegas($obj, $nuevoID) {
+        foreach ($obj as $value) {
+            $ins_bodegas = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_BODEGA" => $value['ID'],
+                "LIMITE_OPE" => $value['LIMLTRS']
+            );
+            $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+        }
+    }
+
+    function updateBodegas($obj, $nuevoID) {
+        $this->_db->delete("fid_operatoria_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
+        foreach ($obj as $value) {
+            $ins_bodegas = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_BODEGA" => $value['ID'],
+                "LIMITE_OPE" => $value['LIMLTRS']
+            );
+            $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+        }
+    }
+
+    function sendobj($obj) {
         //log_this('log/xxxxx.log',print_r($obj,1));
         $iid = $obj["id"];
-        $arr_cius = isset($obj["arr_cius"])?$obj["arr_cius"]:array();
+        $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
 
         $cuit = $obj["CUIT"];
         $cli = $this->_db->get_tabla('fid_clientes', 'CUIT=' . $cuit);
@@ -369,8 +501,8 @@ class compravino_model extends main_model {
 
                 $verif = ($ciu["CHEQUEO"] == '1' or $ciu["CHEQUEO"] == 'true') ? 1 : 0;
                 $arr_ins = array(
-                    "ID_CLIENTE"=>$cod_cli,
-                    "CUIT"=>$cuit_tmp,
+                    "ID_CLIENTE" => $cod_cli,
+                    "CUIT" => $cuit_tmp,
                     "ID_FACTURA" => $id_new,
                     "NUMERO" => $ciu["NUM"],
                     "AZUCAR" => $ciu["AZUCAR"],
@@ -627,11 +759,11 @@ class compravino_model extends main_model {
     }
 
     function verificar_cbu($cbu) {
-        
-        if (trim($cbu)==''){
+
+        if (trim($cbu) == '') {
             return array("result" => true, "error" => false);
         }
-        
+
         $rtn = $this->_db->get_tabla("fid_clientes c", "CBU='" . $cbu . "' group by cuit");
         if (count($rtn) > 1) {
             $result = "CBU Duplicado: cliente(";
@@ -662,7 +794,7 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_bodegas b");
         return $rtn;
     }
-    
+
     function get_ope_bodegas() {
         $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
         $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
@@ -670,24 +802,213 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID =24");
         return $rtn;
     }
-    
+
     function get_coordinadores() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_usuarios");
         return $rtn;
     }
+
     function get_jefes() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_usuarios");
         return $rtn;
     }
-    
+
     function get_proveedores() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_clientes");
         return $rtn;
     }
-    
+
+    function getDatoProveedor($ids_proveedores, $firstColumnData) {
+        if (count($ids_proveedores) > count($firstColumnData)) {
+            $array_resultado = array();
+            $i = 0;
+            foreach ($ids_proveedores as $nuevos) {
+                $existe = 0;
+                foreach ($firstColumnData as $actuales) {
+                    if ($nuevos == $actuales) {
+                        $existe = 1;
+                    }
+                }
+                if ($existe == 0) {
+                    $array_resultado[$i] = $nuevos;
+                }
+                $i++;
+            }
+            $prov_ids = "";
+            foreach ($array_resultado as $value) {
+                $prov_ids .= $value . ",";
+            }
+            $prov_ids = substr($prov_ids, 0, -1);
+            $this->_db->select("ID,RAZON_SOCIAL");
+            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
+            $n_rtn = array();
+            $j = 0;
+            foreach ($rtn as $value) {
+                $n_rtn[$j]['ID'] = $value['ID'];
+                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+                $n_rtn[$j]['ACCION'] = 'AGREGAR';
+                $j++;
+            }
+            return $n_rtn;
+        } else if (count($ids_proveedores) < count($firstColumnData)) {
+            $array_resultado = array();
+            $i = 0;
+            foreach ($firstColumnData as $actuales) {
+                $existe = 0;
+                foreach ($ids_proveedores as $nuevos) {
+
+                    if ($actuales == $nuevos) {
+                        $existe = 1;
+                    }
+                }
+                if ($existe == 0) {
+                    $array_resultado[$i] = $actuales;
+                }
+                $i++;
+            }
+            $prov_ids = "";
+            foreach ($array_resultado as $value) {
+                $prov_ids .= $value . ",";
+            }
+            $prov_ids = substr($prov_ids, 0, -1);
+            $this->_db->select("ID,RAZON_SOCIAL");
+            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
+            $j = 0;
+            foreach ($rtn as $value) {
+                $n_rtn[$j]['ID'] = $value['ID'];
+                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+                $j++;
+            }
+            return $n_rtn;
+        } else {
+            die("NADA");
+        }
+    }
+
+    function getDatoProveedorNuevo($ids_proveedores) {
+        $array_resultado = array();
+        $i = 0;
+        foreach ($ids_proveedores as $nuevos) {
+
+            $array_resultado[$i] = $nuevos;
+            $i++;
+        }
+        $prov_ids = "";
+        foreach ($array_resultado as $value) {
+            $prov_ids .= $value . ",";
+        }
+        $prov_ids = substr($prov_ids, 0, -1);
+        $this->_db->select("ID,RAZON_SOCIAL");
+        $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
+        $n_rtn = array();
+        $j = 0;
+        foreach ($rtn as $value) {
+            $n_rtn[$j]['ID'] = $value['ID'];
+            $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+            $n_rtn[$j]['ACCION'] = 'AGREGAR';
+            $j++;
+        }
+        return $n_rtn;
+    }
+
+    function getDatoBodega($ids_bodegas, $firstColumnData) {
+        if (count($ids_bodegas) > count($firstColumnData)) {
+            $array_resultado = array();
+            $i = 0;
+            foreach ($ids_bodegas as $nuevos) {
+                $existe = 0;
+                foreach ($firstColumnData as $actuales) {
+                    if ($nuevos == $actuales) {
+                        $existe = 1;
+                    }
+                }
+                if ($existe == 0) {
+                    $array_resultado[$i] = $nuevos;
+                }
+                $i++;
+            }
+            $bod_ids = "";
+            foreach ($array_resultado as $value) {
+                $bod_ids .= $value . ",";
+            }
+            $bod_ids = substr($bod_ids, 0, -1);
+            $this->_db->select("ID,NOMBRE");
+            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+            $n_rtn = array();
+            $j = 0;
+            foreach ($rtn as $value) {
+                $n_rtn[$j]['ID'] = $value['ID'];
+                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                $n_rtn[$j]['ACCION'] = 'AGREGAR';
+                $j++;
+            }
+            return $n_rtn;
+        } else if (count($ids_bodegas) < count($firstColumnData)) {
+            $array_resultado = array();
+            $i = 0;
+            foreach ($firstColumnData as $actuales) {
+                $existe = 0;
+                foreach ($ids_bodegas as $nuevos) {
+
+                    if ($actuales == $nuevos) {
+                        $existe = 1;
+                    }
+                }
+                if ($existe == 0) {
+                    $array_resultado[$i] = $actuales;
+                }
+                $i++;
+            }
+            $bod_ids = "";
+            foreach ($array_resultado as $value) {
+                $bod_ids .= $value . ",";
+            }
+            $bod_ids = substr($bod_ids, 0, -1);
+            $this->_db->select("ID,NOMBRE");
+            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+            $j = 0;
+            foreach ($rtn as $value) {
+                $n_rtn[$j]['ID'] = $value['ID'];
+                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+                $j++;
+            }
+            return $n_rtn;
+        } else {
+            die("NADA");
+        }
+    }
+
+    function getDatoBodegaNueva($ids_bodegas) {
+        $array_resultado = array();
+        $i = 0;
+        foreach ($ids_bodegas as $nuevos) {
+            $array_resultado[$i] = $nuevos;
+            $i++;
+        }
+
+        $bod_ids = "";
+        foreach ($array_resultado as $value) {
+            $bod_ids .= $value . ",";
+        }
+        $bod_ids = substr($bod_ids, 0, -1);
+        $this->_db->select("ID,NOMBRE");
+        $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+        $n_rtn = array();
+        $j = 0;
+        foreach ($rtn as $value) {
+            $n_rtn[$j]['ID'] = $value['ID'];
+            $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+            $n_rtn[$j]['ACCION'] = 'AGREGAR';
+            $j++;
+        }
+        return $n_rtn;
+    }
+
 //    function getformulassql(){
 //        $this->_dbsql->order_by('idFormula');
 //        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
@@ -755,9 +1076,9 @@ class compravino_model extends main_model {
         $res = array();
 
         $k = 0;
-        
-        
-        
+
+
+
         while ($objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue() != '') {
 
             $iid = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
@@ -782,8 +1103,8 @@ class compravino_model extends main_model {
             //$cbu = exp_to_dec($cbu);
             $cbu = $cbu;
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-            
-            
+
+
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
@@ -833,7 +1154,7 @@ class compravino_model extends main_model {
 
 
             //validar numero de factura
-            $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=".$id_cliente);
+            $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente);
 
             if ($existe_fact) {
                 $i++;
@@ -853,7 +1174,7 @@ class compravino_model extends main_model {
             $total = $objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue();
             $observaciones = $objPHPExcel->getActiveSheet()->getCell("AE" . $i)->getValue();
             $formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
-            
+
             if (trim($fecha) == "-   -") {
                 $fecha = '';
             } else {
@@ -881,15 +1202,15 @@ class compravino_model extends main_model {
                 $_fid_mendoza = 1;
                 $_ope_mendoza = 16;
             }
-            
-            if ($id_provincia=='17'){
+
+            if ($id_provincia == '17') {
                 $save_ope = $_ope_sanjuan;
                 $save_fid = $_fid_sanjuan;
-            }else{
+            } else {
                 $save_ope = $_ope_mendoza;
                 $save_fid = $_fid_mendoza;
             }
-            
+
             $arr_fact = array(
                 "NUMERO" => $numero,
                 "FECHA" => $fecha,
@@ -910,8 +1231,8 @@ class compravino_model extends main_model {
                 "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => $id_provincia,
             );
-            
-            if (intval($formula)>0){
+
+            if (intval($formula) > 0) {
                 $arr_fact["FORMULA"] = $formula;
             }
 
@@ -926,7 +1247,7 @@ class compravino_model extends main_model {
                 $factor = $arr_factor[0]['VALOR'];
             }
 
-            if ( 0 and ($neto != $kgrs * $precio)) {
+            if (0 and ( $neto != $kgrs * $precio)) {
                 $sw_error = 1; //
                 $arr_error[] = "Neto observado";
             }
@@ -934,12 +1255,12 @@ class compravino_model extends main_model {
             $iva = round($iva * 1, 2);
             $factor = round(($factor * $neto / 100) * 1, 2);
             //log_this("iv-factor.txt", $iva . " - " . $factor);
-            if (  (abs($iva - $factor) > 1) ) {
+            if ((abs($iva - $factor) > 1)) {
                 $sw_error = 1;
                 $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
             }
 
-            if ($total - ($neto + $iva) > 1 ) {
+            if ($total - ($neto + $iva) > 1) {
                 $sw_error = 1;
                 $arr_error[] = "Total observado";
             }
@@ -998,7 +1319,7 @@ class compravino_model extends main_model {
         $i = 2;
         $res = array();
         $suma_kgrs = 0;
-        while ( trim($objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue()) != '') {
+        while (trim($objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue()) != '') {
 
             //$iid            = $objPHPExcel->getActiveSheet()->getCell("A".$i)->getValue();
             $cuit = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
@@ -1013,26 +1334,26 @@ class compravino_model extends main_model {
 
             $dat_cliente = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
             $id_cliente = 0;
-            if ($dat_cliente){
+            if ($dat_cliente) {
                 //log_this('log/yyyyy.log', print_r($dat_cliente,1) );
-                if (isset($dat_cliente[0]["ID"])){
+                if (isset($dat_cliente[0]["ID"])) {
                     $id_cliente = $dat_cliente[0]["ID"];
-                }else{
-                  //  continue;
+                } else {
+                    //  continue;
                 }
             }
-            
+
             $existe_fact = $this->_db->get_tabla('fid_cu_factura', 'NUMERO="' . $num_fact . '"');
             //log_this('log/zzzzzzz.log',$this->_db->last_query() );
 
             $existe_ciu = $this->_db->get_tabla('fid_cu_ciu', 'NUMERO="' . $numero . '"');
-            
+
             if ($existe_fact && !$existe_ciu) {
                 $id_fact = $existe_fact[0]["ID"];
                 //insertar cius
                 $arr_ciu = array(
-                    "CUIT"=>$cuit,
-                    "ID_CLIENTE"=>$id_cliente,
+                    "CUIT" => $cuit,
+                    "ID_CLIENTE" => $id_cliente,
                     "ID_FACTURA" => $id_fact,
                     "NUMERO" => $numero,
                     "KGRS" => $kgrs,
@@ -1076,7 +1397,7 @@ class compravino_model extends main_model {
             return 0;
         }
     }
-    
+
     function validar_archivos_imp_f() {
 
         $num_files = contar_archivos_imp_f();
@@ -1086,7 +1407,7 @@ class compravino_model extends main_model {
             return 0;
         }
     }
-    
+
     function validar_archivos_imp_c() {
 
         $num_files = contar_archivos_imp_c();
