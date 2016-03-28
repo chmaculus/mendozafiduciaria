@@ -313,9 +313,10 @@ class compravino extends main_controller {
         $listrosMax = $_POST['listrosMax'];
         $formaPago = $_POST['formaPago'];
         $cantCuotas = $_POST['cantCuotas'];
+        $tipoPersona = $_POST['tipoPersona'];
 
 
-        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas);
+        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas, $tipoPersona);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
     
@@ -351,6 +352,18 @@ class compravino extends main_controller {
         $obj = $_POST['data_bodegas'];
         $nuevoID = $_POST['nuevoID'];
         $rtn = $this->mod->sendBodegas($obj, $nuevoID);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    function x_sendHumana() {
+        $obj = $_POST['checks_humana'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->sendHumana($obj, $nuevoID);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    function x_sendJuridica() {
+        $obj = $_POST['checks_juridica'];
+        $nuevoID = $_POST['nuevoID'];
+        $rtn = $this->mod->sendJuridica($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
     function x_updateBodegas() {

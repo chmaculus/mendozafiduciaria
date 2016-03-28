@@ -366,13 +366,13 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas) {
+    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas,$tipoPersona) {
         $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
-        $nueva_limite= strtotime ( '+1 year' , strtotime($fecha));
-        $nueva_limite = date ( 'Y-m-j' ,$nueva_limite);
- 
+        $nueva_limite = strtotime('+1 year', strtotime($fecha));
+        $nueva_limite = date('Y-m-j', $nueva_limite);
+
 //        echo $fecha_creacion . " -- " . $nueva_limite;die;
         $ins_ope = array(
             "ID_OPERATORIA" => $nuevoID,
@@ -385,6 +385,7 @@ class compravino_model extends main_model {
             "LTRS_MAX" => $listrosMax,
             "FPAGO" => $formaPago,
             "CANT_CUOTAS" => $cantCuotas,
+            "PERSONA" => $tipoPersona,
             "HECT_MAX" => ''
         );
         $this->_db->insert('fid_operatoria_vino', $ins_ope);
@@ -451,6 +452,28 @@ class compravino_model extends main_model {
                 "LIMITE_OPE" => $value['LIMLTRS']
             );
             $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+        }
+    }
+
+    function sendHumana($obj, $nuevoID) {
+        $array_checklist = explode(",", $obj);
+        foreach ($array_checklist as $value) {
+            $ins_check = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_HUMANA" => $value,
+            );
+            $this->_db->insert('fid_operatoria_humana', $ins_check);
+        }
+    }
+
+    function sendJuridica($obj, $nuevoID) {
+        $array_checklist = explode(",", $obj);
+        foreach ($obj as $value) {
+            $ins_check = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_JURIDICA" => $value,
+            );
+            $this->_db->insert('fid_operatoria_juridica', $ins_check);
         }
     }
 

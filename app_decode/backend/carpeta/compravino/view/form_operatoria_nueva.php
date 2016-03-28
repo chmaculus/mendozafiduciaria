@@ -137,7 +137,8 @@
         </div>
     </div>
 
-    <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox"></div>
+    <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox_humana"></div>
+    <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox_juridica"></div>
 
     <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
     <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">

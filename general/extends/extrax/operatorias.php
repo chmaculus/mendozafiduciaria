@@ -34,12 +34,17 @@
         echo trim(json_encode($rtn?$rtn:array()));
         die();
     }
-    if (isset($_GET["accion"]) && $_GET["accion"]=='getOperatoriasChecklistVino' ){
+    if (isset($_GET["accion"]) && $_GET["accion"]=='getOperatoriasChecklistHumana' ){
         $seleccion = $_GET["seleccion"];
-        die($seleccion);
         $cnn->select("*");
-        $rtn = $cnn->get_tabla("fid_checklist_vino");
-//        var_dump($rtn);die();
+        $rtn = $cnn->get_tabla('fid_checklist_humana');
+        echo trim(json_encode($rtn?$rtn:array()));
+        die();
+    }
+    if (isset($_GET["accion"]) && $_GET["accion"]=='getOperatoriasChecklistJuridica' ){
+        $seleccion = $_GET["seleccion"];
+        $cnn->select("*");
+        $rtn = $cnn->get_tabla('fid_checklist_juridica');
         echo trim(json_encode($rtn?$rtn:array()));
         die();
     }

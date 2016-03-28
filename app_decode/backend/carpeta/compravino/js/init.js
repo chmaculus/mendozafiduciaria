@@ -370,7 +370,7 @@ $(document).ready(function () {
     $("#opeBodega").chosen({width: "400px"});
     $("#tipoPersona").chosen({width: "180px"});
 
-//    $("#jqxgrid_proveedores").hide();
+    $("#listbox_juridica").hide();
 
     $('#send').show();
 
@@ -482,6 +482,11 @@ $(document).ready(function () {
     $('#send').on('click', function (e) {
         e.preventDefault();
 
+//var selected = '';    
+//alert($('#listbox_humana').val());
+//        $('#listbox_humana').each(function(){
+//            if (this.checked) {selected += $(this).val()+', ';}}); 
+//        if ($('#listbox_humana').val() != '') alert('Has seleccionado: '+selected);  elsealert('Debes seleccionar al menos una opción.');
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
         var opeCoordinador = $("#opeCoordinador").val();
@@ -495,6 +500,7 @@ $(document).ready(function () {
         if (formaPago == 'Cuotas') {
             cantCuotas = $("#cantCuotas").val();
         }
+        var tipoPersona = $("#tipoPersona").val();
         var nuevoID = 0;
 
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
@@ -509,9 +515,12 @@ $(document).ready(function () {
         for (var i = 0; i < rowscount_bodegas; i++) {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
+
 //validar campos
 //        if (opeNombre == '') {
-//            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
+//            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#opeNombre").focus();
+//            });
 //            return false;
 //        }
 //        if (opeDescripcion == '') {
@@ -559,12 +568,12 @@ $(document).ready(function () {
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
                         formaPago: formaPago,
-                        cantCuotas: cantCuotas
+                        cantCuotas: cantCuotas,
+                        tipoPersona: tipoPersona
                     },
                     dataType: "json",
                     type: "post",
                     success: function (data) {
-//                        alert("Se hizo correctamente la carga.");
                     }
                 });
                 $.ajax({
@@ -576,10 +585,8 @@ $(document).ready(function () {
                     dataType: "json",
                     type: "post",
                     success: function (data) {
-//                        alert("SE CARGO PROVEEDORES");
                     }
                 });
-
                 $.ajax({
                     url: _compravino.URL + "/x_sendBodegas",
                     data: {
@@ -589,9 +596,35 @@ $(document).ready(function () {
                     dataType: "json",
                     type: "post",
                     success: function (data) {
-//                        alert("SE CARGO BODEGAS");
                     }
                 });
+
+                if (tipoPersona == 'Humana') {
+                    if ($('#listbox_humana').val() != '') {
+                        $.ajax({
+                            url: _compravino.URL + "/x_sendHumana",
+                            data: {
+                                checks_humana: $('#listbox_humana').val(),
+                                nuevoID: nuevoID
+                            },
+                            dataType: "json",
+                            type: "post",
+                        });
+                    }
+                } else if (tipoPersona == 'Juridica') {
+                    if ($('#listbox_juridica').val() != '') {
+                        $.ajax({
+                            url: _compravino.URL + "/x_sendJuridica",
+                            data: {
+                                checks_juridica: $('#listbox_juridica').val(),
+                                nuevoID: nuevoID
+                            },
+                            dataType: "json",
+                            type: "post",
+                        });
+                    }
+                }
+
             }
         });
 
@@ -972,61 +1005,13 @@ $(document).ready(function () {
             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
         ]
     });
-//    });
-//
-//    $('.asignarLimiteBod').on('click', function () {
-//        var id_bodegas = $('#opeBodega').val();
-//        $("#info-bodegas").show();
-//        $("#jqxgrid_bodegas").show();
-//        var sourceope = {
-//            datatype: "json",
-//            datafields: [
-//                {name: 'ID', type: 'int'},
-//                {name: 'NOMBRE', type: 'string'}
-//            ],
-//            url: 'general/extends/extra/carpetas.php',
-//            data: {
-//                accion: "getBodegasOpeGrilla",
-//                id_bodegas: id_bodegas,
-//            },
-//            async: false,
-//            deleterow: function (rowid, commit) {
-//                commit(true);
-//            }
-//        };
-//        var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-//                {
-//                    formatData: function (data) {
-//                        data.name_startsWith = $("#searchField").val();
-//                        return data;
-//                    }
-//                }
-//        );
-//        $("#jqxgrid_bodegas").jqxGrid({
-//            width: '70%',
-//            height: '200px',
-//            source: dataAdapterope,
-//            theme: 'energyblue',
-////            showstatusbar: true,
-////            showaggregates: true,
-//            editable: true,
-//            selectionmode: 'singlerows',
-//            localization: getLocalization(),
-//            columns: [
-//                {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-//                {text: 'NOMBRE', datafield: 'NOMBRE', width: '70%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-//                {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '30%', filtercondition: 'starts_with', editable: true},
-//            ]
-//        });
-//    });
-
 // ESTO SERIA PARA GENERAR LOS CHECKLIST Y MOSTRARLOS
-    var sourcechk =
+    var sourcechk_humana =
             {
                 datatype: "json",
                 url: 'general/extends/extra/operatorias.php',
                 data: {
-                    accion: "getOperatoriasChecklistVino",
+                    accion: "getOperatoriasChecklistHumana",
                     seleccion: $('#tipoPersona').val()
 
                 },
@@ -1037,9 +1022,30 @@ $(document).ready(function () {
                 ],
                 id: 'ID'
             };
-    var dataAdapterchk = new $.jqx.dataAdapter(sourcechk);
+    var dataAdapterchk_humana = new $.jqx.dataAdapter(sourcechk_humana);
 
-    $("#listbox").jqxListBox({source: dataAdapterchk, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+    $("#listbox_humana").jqxListBox({source: dataAdapterchk_humana, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+
+    var sourcechk_juridica =
+            {
+                datatype: "json",
+                url: 'general/extends/extra/operatorias.php',
+                data: {
+                    accion: "getOperatoriasChecklistJuridica",
+                    seleccion: $('#tipoPersona').val()
+
+                },
+                async: false,
+                datafields: [
+                    {name: 'ID'},
+                    {name: 'DESCRIPCION'}
+                ],
+                id: 'ID'
+            };
+    var dataAdapterchk_juridica = new $.jqx.dataAdapter(sourcechk_juridica);
+
+    $("#listbox_juridica").jqxListBox({source: dataAdapterchk_juridica, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+
 // AQUI TERMINARIA LA LISTA PARA GENERAR LOS CHECKLIST Y MOSTRARLOS
 
     $(".toolbar li:not(.sub)").click(function (e) {
@@ -1323,9 +1329,11 @@ function verCuotas() {
 
 function verPersona() {
     if ($("#tipoPersona").val() == 'Humana') {
-        $("#ver-cuotas").show();
+        $("#listbox_humana").show();
+        $("#listbox_juridica").hide();
     } else {
-        $("#ver-cuotas").hide();
+        $("#listbox_humana").hide();
+        $("#listbox_juridica").show();
     }
 }
 
