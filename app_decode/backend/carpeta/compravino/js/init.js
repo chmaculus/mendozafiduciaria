@@ -477,7 +477,7 @@ $(document).ready(function () {
     $('#send').on('click', function (e) {
         e.preventDefault();
 
-var tipoPersona = $("#tipoPersona").val();
+        var tipoPersona = $("#tipoPersona").val();
 
 
 
@@ -494,20 +494,15 @@ var tipoPersona = $("#tipoPersona").val();
             });
 
             console.log(array_humana);
-
-
-
-//                    if ($('#listbox_humana').val() != '') {
-//                        $.ajax({
-//                            url: _compravino.URL + "/x_sendHumana",
-//                            data: {
-//                                checks_humana: $('#listbox_humana').val(),
-//                                nuevoID: nuevoID
-//                            },
-//                            dataType: "json",
-//                            type: "post",
-//                        });
-//                    }
+            $.ajax({
+                url: _compravino.URL + "/x_sendHumana",
+                data: {
+                    checks_humana: array_humana,
+                    nuevoID: 25
+                },
+                dataType: "json",
+                type: "post",
+            });
         } else if (tipoPersona == 'Juridica') {
 //                    if ($('#listbox_juridica').val() != '') {
 //                        $.ajax({
@@ -521,8 +516,7 @@ var tipoPersona = $("#tipoPersona").val();
 //                        });
 //                    }
         }
-
-
+        return false;
 
 //var selected = '';    
 //alert($('#listbox_humana').val());
@@ -538,10 +532,6 @@ var tipoPersona = $("#tipoPersona").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
 
-        if (formaPago == 'Cuotas') {
-            cantCuotas = $("#cantCuotas").val();
-        }
-        
         var opePrecio1 = $("#opeP1").val();
         var opePrecio2 = $("#opeP2").val();
         var opePrecio3 = $("#opeP3").val();
@@ -564,6 +554,23 @@ var tipoPersona = $("#tipoPersona").val();
         for (var i = 0; i < rowscount_bodegas; i++) {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
+
+//if (formaPago == 'Cuotas') {
+//            cantCuotas = $("#cantCuotas").val();
+//        }
+
+
+        var opeTitular = $("#opeTitular").val();
+        var opeCuit = $("#opeCuit").val();
+        var numVinedo = $("#numVinedo").val();
+        var litrosOfrecidos = $("#litrosOfrecidos").val();
+        var hectDeclaradas = $("#hectDeclaradas").val();
+        var bgaDep = $("#bgaDep").val();
+        var deptBodega = $("#deptBodega").val();
+        var numINVBodega = $("#numINVBodega").val();
+        var opetelefono = $("#opetelefono").val();
+        var opeCorreo = $("#opeCorreo").val();
+
 
 //validar campos
 //        if (opeNombre == '') {

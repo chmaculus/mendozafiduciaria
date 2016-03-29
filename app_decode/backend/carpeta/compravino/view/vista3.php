@@ -143,8 +143,6 @@
     
 </div>
 
-
-
 <div class="nuevafact_form">
     
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"])?$entidad["ID"]:''; ?>" />

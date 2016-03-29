@@ -1,34 +1,14 @@
 <style>
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-top: 25px;
-    }
-
-    th{
-        text-align: center;
-        padding: 8px;
-    }
-    td {
-        text-align: left;
-        padding: 8px;
-    }
-
+    table {border-collapse: collapse;width: 100%;margin-top: 25px;}
+    th{text-align: center;padding: 8px;}
+    td {text-align: left;padding: 8px;}
     tr:nth-child(even){background-color: #f2f2f2}
-
-    th {
-        background-color: #a4bed4;
-        color: white;
-    }
-
-
+    th {background-color: #a4bed4;color: white;}
 </style>
-
 <ul class="toolbar">
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
     <li class="tb_atras_ope" data-top="lis_regresar"><div>Regresar</div></li>
 </ul>
-
 <div class="nuevaOpe_form">
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
     <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
@@ -117,7 +97,6 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
     <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_proveedores) && is_array($lst_proveedores)): ?>
         <div class="elem elem_med">
@@ -132,16 +111,15 @@
             </div>
         </div>
     <?php endif; ?>
-
     <div id="info-proveedores">
-        <br>
+        <!--<br>-->
         <p style="font-weight:bold;">Ingrese el límite de Litros y el maximo de Hectareas de la grilla</p>
         <div id="jqxgrid_proveedores" style="margin-left:20px; margin-top: 5px;">
         </div>
     </div>
     <div class="clear"></div>
     
-    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
+    <hr style="margin-top:20px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_bodegas_ope) && is_array($lst_bodegas_ope)): ?>
         <div class="elem elem_med">
             <label>Bodegas:</label>
@@ -155,16 +133,14 @@
             </div>
         </div>
     <?php endif; ?>
-
     <div id="info-bodegas">
-        </br>
+        <!--</br>-->
         <p style="font-weight:bold;">Ingrese los litros en la columna LIMITE LTRS de la grilla</p>
         <div id="jqxgrid_bodegas" style="margin-left:20px; margin-top: 5px;">
         </div>
     </div>
     <div class="clear"></div>
-    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
-    
+    <hr style="margin-top:20px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <div id="check_datos" style="width: 100%;">
         <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
             <label class="der">Titular:</label>
@@ -172,7 +148,6 @@
                 <input type="text" class="tip-right" title="titular" id="opeTitular" value=""  maxlength="64">
             </div>
         </div>
-
         <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
             <label class="der">Cuit:</label>
             <div class="indent formtext">
@@ -235,7 +210,6 @@
                     <option value="Juridica">Juridica</option>
                 </select>   
             </div>
-
     </div>-->
     <div class="elem elem_med_cond">
         <label>Seleccionar Persona:</label>
@@ -244,7 +218,6 @@
                 <option value="Humana">Humana</option>
                 <option value="Juridica">Jurídica</option>
             </select>   
-
         </div>
     </div>
     <table id="humana">
@@ -285,9 +258,9 @@
             </tr>
         <?php } ?>
     </table>
-
     <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
     <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">
+</div>
 </div>
 
 <!--<div id="wpopup"></div>-->

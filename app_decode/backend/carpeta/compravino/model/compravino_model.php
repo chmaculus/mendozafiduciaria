@@ -456,14 +456,25 @@ class compravino_model extends main_model {
     }
 
     function sendHumana($obj, $nuevoID) {
-        $array_checklist = explode(",", $obj);
-        foreach ($array_checklist as $value) {
-            $ins_check = array(
-                "ID_OPERATORIA" => $nuevoID,
-                "ID_HUMANA" => $value,
-            );
-            $this->_db->insert('fid_operatoria_humana', $ins_check);
+        foreach ($obj as $value) {
+            $aEntero = 0;
+            if($value['valor']=='SI'){
+                $aEntero=2;
+            }
+            if($value['valor']=='NO'){
+                $aEntero=1;
+            }
+            echo $aEntero;
+//            $ins_check = array(
+//                "ID_OPERATORIA" => $nuevoID,
+//                "ID_HUMANA" => $value['numcheck'],
+//                "ESTADO" =>$aEntero
+//            );
+            
+//            var_dump($ins_check);
+//            $this->_db->insert('fid_operatoria_humana', $ins_check);
         }
+            die(" ESTOS SON LOS VALORES -----  ");
     }
 
     function sendJuridica($obj, $nuevoID) {
