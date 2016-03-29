@@ -340,9 +340,10 @@ $(document).ready(function () {
     $("#cantCuotas").chosen({width: "180px"});
     $("#opeProveedores").chosen({width: "400px"});
     $("#opeBodega").chosen({width: "400px"});
-    $("#tipoPersona").chosen({width: "180px"});
+    $("#tipoPersona").chosen({width: "180px", disable_search_threshold: 10});
 
-    $("#listbox_juridica").hide();
+//    $("#listbox_juridica").hide();
+    $("#juridica").hide();
 
     $('#send').show();
 
@@ -478,6 +479,53 @@ $(document).ready(function () {
     $('#send').on('click', function (e) {
         e.preventDefault();
 
+var tipoPersona = $("#tipoPersona").val();
+
+
+
+
+        if (tipoPersona == 'Humana') {
+
+            var array_humana = new Array();
+            $("#humana tr.op").each(function () {
+                var data_p = {
+                    'numcheck': $(this).children("td.numCheck").text(),
+                    'valor': $(this).children("td").children('select').val()
+                }
+                array_humana.push(data_p);
+            });
+
+            console.log(array_humana);
+
+
+
+//                    if ($('#listbox_humana').val() != '') {
+//                        $.ajax({
+//                            url: _compravino.URL + "/x_sendHumana",
+//                            data: {
+//                                checks_humana: $('#listbox_humana').val(),
+//                                nuevoID: nuevoID
+//                            },
+//                            dataType: "json",
+//                            type: "post",
+//                        });
+//                    }
+        } else if (tipoPersona == 'Juridica') {
+//                    if ($('#listbox_juridica').val() != '') {
+//                        $.ajax({
+//                            url: _compravino.URL + "/x_sendJuridica",
+//                            data: {
+//                                checks_juridica: $('#listbox_juridica').val(),
+//                                nuevoID: nuevoID
+//                            },
+//                            dataType: "json",
+//                            type: "post",
+//                        });
+//                    }
+        }
+
+
+
 //var selected = '';    
 //alert($('#listbox_humana').val());
 //        $('#listbox_humana').each(function(){
@@ -496,7 +544,7 @@ $(document).ready(function () {
         if (formaPago == 'Cuotas') {
             cantCuotas = $("#cantCuotas").val();
         }
-        var tipoPersona = $("#tipoPersona").val();
+        
         var nuevoID = 0;
 
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
@@ -589,31 +637,7 @@ $(document).ready(function () {
                     type: "post",
                 });
 
-                if (tipoPersona == 'Humana') {
-                    if ($('#listbox_humana').val() != '') {
-                        $.ajax({
-                            url: _compravino.URL + "/x_sendHumana",
-                            data: {
-                                checks_humana: $('#listbox_humana').val(),
-                                nuevoID: nuevoID
-                            },
-                            dataType: "json",
-                            type: "post",
-                        });
-                    }
-                } else if (tipoPersona == 'Juridica') {
-                    if ($('#listbox_juridica').val() != '') {
-                        $.ajax({
-                            url: _compravino.URL + "/x_sendJuridica",
-                            data: {
-                                checks_juridica: $('#listbox_juridica').val(),
-                                nuevoID: nuevoID
-                            },
-                            dataType: "json",
-                            type: "post",
-                        });
-                    }
-                }
+
                 jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
                     var urlh = "backend/carpeta/compravino/init/12/7";
@@ -1000,25 +1024,80 @@ $(document).ready(function () {
         ]
     });
 // ESTO SERIA PARA GENERAR LOS CHECKLIST Y MOSTRARLOS
-    var sourcechk_humana =
-            {
-                datatype: "json",
-                url: 'general/extends/extra/operatorias.php',
-                data: {
-                    accion: "getOperatoriasChecklistHumana",
-                    seleccion: $('#tipoPersona').val()
+    $.ajax({
+        datatype: "json",
+        url: 'general/extends/extra/operatorias.php',
+        data: {
+            accion: "getOperatoriasChecklistHumana",
+            seleccion: $('#tipoPersona').val()
+        },
+        async: false,
+        success: function (data) {
+            var formularios = "";
+            var cantidad_check = data.length;
+            console.log("cantidad_check");
+            console.log(cantidad_check);
+//                    alert(data);
+//                    for (var i = 0; i < cantidad_check; i++) {
+//////                        console.log(datosBodegas);
+//formularios = formularios + "<td></td>"
+//+ "<td> <select id='' name=''><option value='SI'>SI</option><option value='NO'>NO</option><option value='NC'>N/C</option></select></td>";
+//                        asignacion_x_bodega.push("litros_cargados_" + data[i].ID);
+//                    }
+//
+//                    $('#campos_ver').html(formularios);
+        }
+    });
 
-                },
-                async: false,
-                datafields: [
-                    {name: 'ID'},
-                    {name: 'DESCRIPCION'}
-                ],
-                id: 'ID'
-            };
-    var dataAdapterchk_humana = new $.jqx.dataAdapter(sourcechk_humana);
 
-    $("#listbox_humana").jqxListBox({source: dataAdapterchk_humana, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+
+//    $.ajax({
+//            url: _compravino.URL + "/x_getChecklistHumana",
+//            data: {
+//            seleccion: $('#tipoPersona').val()
+//            },
+//            type: "post",
+//            async: false,
+//            success: function (datos) {
+//                console.log("DATOS CHECK");
+//                console.log(datos);
+//            }
+//        });
+
+
+
+
+
+//    var sourcechk_humana =
+//            {
+//                datatype: "json",
+//                url: 'general/extends/extra/operatorias.php',
+//                data: {
+//                    accion: "getOperatoriasChecklistHumana",
+//                    seleccion: $('#tipoPersona').val()
+//                },
+//                async: false,
+//                datafields: [
+//                    {name: 'ID'},
+//                    {name: 'DESCRIPCION'},
+//                ],
+//                id: 'ID'
+//            };
+//    var dataAdapterchk_humana = new $.jqx.dataAdapter(sourcechk_humana);
+////    $("#listbox_humana").jqxListBox({source: dataAdapterchk_humana, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+////    $("#jqxgrid_humana").jqxGrid({source: dataAdapterchk_humana, checkboxes: true, displayMember: "DESCRIPCION", valueMember: "ID", width: 760, height: 300});
+//    $("#jqxgrid_humana").jqxGrid({
+//        width: '90%',
+//        height: '400px',
+//        source: dataAdapterchk_humana,
+//        autoheight: true,
+//        editable: true,
+//        selectionmode: 'singlecell',
+//        columns: [
+//            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+//            {text: 'DESCRIPCION', datafield: 'DESCRIPCION', width: '90%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+//        ]
+//    });
 
     var sourcechk_juridica =
             {
@@ -1027,7 +1106,6 @@ $(document).ready(function () {
                 data: {
                     accion: "getOperatoriasChecklistJuridica",
                     seleccion: $('#tipoPersona').val()
-
                 },
                 async: false,
                 datafields: [
@@ -1323,12 +1401,19 @@ function verCuotas() {
 
 function verPersona() {
     if ($("#tipoPersona").val() == 'Humana') {
-        $("#listbox_humana").show();
-        $("#listbox_juridica").hide();
+        $("#humana").show();
+        $("#juridica").hide();
     } else {
-        $("#listbox_humana").hide();
-        $("#listbox_juridica").show();
+        $("#humana").hide();
+        $("#juridica").show();
     }
+//    if ($("#tipoPersona").val() == 'Humana') {
+//        $("#listbox_humana").show();
+//        $("#listbox_juridica").hide();
+//    } else {
+//        $("#listbox_humana").hide();
+//        $("#listbox_juridica").show();
+//    }
 }
 
 function evento_lista_arch() {

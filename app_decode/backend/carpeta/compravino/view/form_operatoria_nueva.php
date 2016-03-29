@@ -1,7 +1,33 @@
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 25px;
+    }
+
+    th{
+        text-align: center;
+        padding: 8px;
+    }
+    td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2}
+
+    th {
+        background-color: #a4bed4;
+        color: white;
+    }
+
+
+</style>
+
 <ul class="toolbar">
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
     <li class="tb_atras_ope" data-top="lis_regresar"><div>Regresar</div></li>
-    </ul>
+</ul>
 
 <div class="nuevaOpe_form">
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
@@ -89,7 +115,7 @@
             </div>
         </div>
     <?php endif; ?>
-    <!--<div class="button-a blue asignarLimiteProv"><span>Asignar Limite Litros</span></div>-->
+
     <div id="info-proveedores">
         <br>
         <p style="font-weight:bold;">Ingrese el limite de Litros y el maximo de Hectareas de la grilla</p>
@@ -97,7 +123,7 @@
         </div>
     </div>
     <div class="clear"></div>
-    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
+    
     <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_bodegas_ope) && is_array($lst_bodegas_ope)): ?>
         <div class="elem elem_med">
@@ -112,9 +138,7 @@
             </div>
         </div>
     <?php endif; ?>
-    <!--<div class="button-a blue asignarLimiteBod"><span>Asignar Limite Litros</span></div>-->
-    <!--<div id="mas" class="button-a blue"><span>Mas</span></div>-->
-    
+
     <div id="info-bodegas">
         </br>
         <p style="font-weight:bold;">Ingrese los litros en la columna LIMITE LTRS de la grilla</p>
@@ -122,26 +146,117 @@
         </div>
     </div>
     <div class="clear"></div>
-    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
     <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
-<!--    <div class="elem elem_med_cond">
-        <label class="der">Cant. Max. Hectareas:</label>
-        <div class="indent formtext">
-            <input type="text" title="Max.Hectareas" id="maxHectareas" >
+    
+    <div id="check_datos" style="width: 100%;">
+        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+            <label class="der">Titular:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="titular" id="opeTitular" value=""  maxlength="64">
+            </div>
         </div>
-    </div>-->
-    <div class="elem elem_med_cond">
-        <label>Seleccionar Persona:</label>
-        <div class="indent">
-            <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
-                <option value="Humana">Humana</option>
-                <option value="Juridica">Juridica</option>
-            </select>   
+        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
+            <label class="der">Cuit:</label>
+            <div class="indent formtext">
+                <input type="text" title="Cuit" id="opeCuit" maxlength="100">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+            <label class="der">N° Viñedo:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="numVinedo" id="numVinedo" value=""  maxlength="64">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
+            <label class="der">Litros Ofrecidos:</label>
+            <div class="indent formtext">
+                <input type="text" title="Listros Ofrecidos" id="litrosOfrecidos" maxlength="100">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+            <label class="der">Hectareas Declaradas:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="Hectareas Declaradas" id="hectDeclaradas" value=""  maxlength="64">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
+            <label class="der">BGA Depositaria:</label>
+            <div class="indent formtext">
+                <input type="text" title="BGA Depositaria" id="bgaDep" maxlength="100">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+            <label class="der">Dept. Bodega:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="Dept. Bodega" id="deptBodega" value=""  maxlength="64">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
+            <label class="der">N° INV(Bodega):</label>
+            <div class="indent formtext">
+                <input type="text" title="N INV Bodega" id="numINVBodega" maxlength="100">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+            <label class="der">Telefono:</label>
+            <div class="indent formtext">
+                <input type="text" class="tip-right" title="telefono" id="opetelefono" value=""  maxlength="64">
+            </div>
+        </div>
+        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
+            <label class="der">Correo Electronico:</label>
+            <div class="indent formtext">
+                <input type="text" title="correo electronico" id="opeCorreo" maxlength="100">
+            </div>
+        </div>
+        <div class="elem elem_med_cond">
+            <label>Seleccionar Persona:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
+                    <option value="Humana">Humana</option>
+                    <option value="Juridica">Juridica</option>
+                </select>   
+            </div>
         </div>
     </div>
-
-    <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox_humana"></div>
-    <div style="margin-top: 25px; margin-left: auto; margin-right: auto;" id="listbox_juridica"></div>
+    <table id="humana">
+        <tr>
+            <th class="numCheck" style="width: 5%;">N°</th>
+            <th>DATOS</th>
+            <th>OPCION</th>
+        </tr>
+        <?php foreach ($lst_checkHumana as $it) { ?>
+            <tr class="op">
+                <td class="numCheck"><?php echo $it['ID']; ?></td>
+                <td><?php echo $it['DESCRIPCION']; ?></td>
+                <td> <select class="opeOpcion">
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                        <option value="NC" selected="selected">N/C</option>
+                    </select>
+                </td>        
+            </tr>
+        <?php } ?>
+    </table>
+    <table id="juridica">
+        <tr>
+            <th class="numCheck">N°</th>
+            <th>DATOS</th>
+            <th>OPCION</th>
+        </tr>
+        <?php foreach ($lst_checkJuridica as $it) { ?>
+            <tr class="op">
+                <td class="numCheck"><?php echo $it['ID']; ?></td>
+                <td><?php echo $it['DESCRIPCION']; ?></td>
+                <td> <select class="opeOpcion">
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                        <option value="NC" selected="selected">N/C</option>
+                    </select>
+                </td>        
+            </tr>
+        <?php } ?>
+    </table>
 
     <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
     <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">

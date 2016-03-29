@@ -817,6 +817,18 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_bodegas b");
         return $rtn;
     }
+    function getChecklistHumana() {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_checklist_humana");
+        return $rtn;
+    }
+    function getChecklistJuridica() {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_checklist_juridica");
+        return $rtn;
+    }
+    
+    
 //    function getbodegas_vino() {
 ////SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
 ////JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
