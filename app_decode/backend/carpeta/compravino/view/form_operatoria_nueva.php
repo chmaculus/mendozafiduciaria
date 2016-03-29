@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-        <label class="der">Descripcion:</label>
+        <label class="der">Descripción:</label>
         <div class="indent formtext">
             <input type="text" title="descripcion" id="opeDescripcion" maxlength="100">
         </div>
@@ -70,32 +70,49 @@
         </div>
     <?php endif; ?>
     <div class="elem elem_med_cond">
-        <label class="der">Litros Maximo:</label>
+        <label class="der">Litros Máximo:</label>
         <div class="indent formtext">
             <input type="text" title="Litros maximo" id="listrosMax" >
         </div>
     </div>
     <div class="elem elem_med">
-        <label>Condicion de Pago:</label>
+        <label>Precios por Litro:</label>
         <div class="indent">
-            <select class="chzn-select medium-select select" id="formaPago" onchange="verCuotas()" data-placeholder="Forma de pago">
-                <option value="Contado">Contado</option>
-                <option value="Cuotas">Cuotas</option>
-            </select>   
-        </div>
-    </div>
-    <div id="ver-cuotas" style="display: none;">
-        <div class="elem elem_med">
-            <label>Cantidad Cuotas:</label>
-            <div class="indent">
-                <select class="chzn-select medium-select select" id="cantCuotas">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                </select>   
+            <div class="elem elem_med">
+                <label>Precio Contado (1 cuota):</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio Contado" id="opeP1" value=""  maxlength="20">
+                </div>
+            </div>
+            <div class="elem elem_med">
+                <label>Precio en 2 cuotas:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio en 2 cuotas" id="opeP2" value=""  maxlength="20">
+                </div>
+            </div>
+            <div class="elem elem_med">
+                <label>Precio en 3 cuotas:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio en 3 cuotas" id="opeP3" value=""  maxlength="20">
+                </div>
+            </div>
+            <div class="elem elem_med">
+                <label>Precio en 4 cuotas:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio en 4 cuotas" id="opeP4" value=""  maxlength="20">
+                </div>
+            </div>
+            <div class="elem elem_med">
+                <label>Precio en 5 cuotas:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio en 5 cuotas" id="opeP5" value=""  maxlength="20">
+                </div>
+            </div>
+            <div class="elem elem_med">
+                <label>Precio en 6 cuotas:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="Precio en 6 cuotas" id="opeP6" value=""  maxlength="20">
+                </div>
             </div>
         </div>
     </div>
@@ -118,7 +135,7 @@
 
     <div id="info-proveedores">
         <br>
-        <p style="font-weight:bold;">Ingrese el limite de Litros y el maximo de Hectareas de la grilla</p>
+        <p style="font-weight:bold;">Ingrese el límite de Litros y el maximo de Hectareas de la grilla</p>
         <div id="jqxgrid_proveedores" style="margin-left:20px; margin-top: 5px;">
         </div>
     </div>
@@ -155,6 +172,7 @@
                 <input type="text" class="tip-right" title="titular" id="opeTitular" value=""  maxlength="64">
             </div>
         </div>
+
         <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
             <label class="der">Cuit:</label>
             <div class="indent formtext">
@@ -209,7 +227,7 @@
                 <input type="text" title="correo electronico" id="opeCorreo" maxlength="100">
             </div>
         </div>
-        <div class="elem elem_med_cond">
+<!--        <div class="elem elem_med_cond">
             <label>Seleccionar Persona:</label>
             <div class="indent">
                 <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
@@ -217,6 +235,16 @@
                     <option value="Juridica">Juridica</option>
                 </select>   
             </div>
+
+    </div>-->
+    <div class="elem elem_med_cond">
+        <label>Seleccionar Persona:</label>
+        <div class="indent">
+            <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
+                <option value="Humana">Humana</option>
+                <option value="Juridica">Jurídica</option>
+            </select>   
+
         </div>
     </div>
     <table id="humana">

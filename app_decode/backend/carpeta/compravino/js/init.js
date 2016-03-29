@@ -336,8 +336,6 @@ $(document).ready(function () {
 //$('#myDropDown').chosen({ disable_search_threshold: 10 });
     $("#opeCoordinador").chosen({width: "250px"});
     $("#opeJefe").chosen({width: "250px"});
-    $("#formaPago").chosen({width: "180px", disable_search_threshold: 10});
-    $("#cantCuotas").chosen({width: "180px"});
     $("#opeProveedores").chosen({width: "400px"});
     $("#opeBodega").chosen({width: "400px"});
     $("#tipoPersona").chosen({width: "180px", disable_search_threshold: 10});
@@ -536,15 +534,22 @@ var tipoPersona = $("#tipoPersona").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
-        var formaPago = $("#formaPago").val();
-        var cantCuotas = '';
         var maxHectareas = $("#maxHectareas").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
+
         if (formaPago == 'Cuotas') {
             cantCuotas = $("#cantCuotas").val();
         }
         
+        var opePrecio1 = $("#opeP1").val();
+        var opePrecio2 = $("#opeP2").val();
+        var opePrecio3 = $("#opeP3").val();
+        var opePrecio4 = $("#opeP4").val();
+        var opePrecio5 = $("#opeP5").val();
+        var opePrecio6 = $("#opeP6").val();
+        var tipoPersona = $("#tipoPersona").val();
+
         var nuevoID = 0;
 
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
@@ -611,9 +616,13 @@ var tipoPersona = $("#tipoPersona").val();
                         opeCoordinador: opeCoordinador,
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
-                        formaPago: formaPago,
-                        cantCuotas: cantCuotas,
-                        tipoPersona: tipoPersona
+                        tipoPersona: tipoPersona,
+                        opePrecio1: opePrecio1,
+                        opePrecio2: opePrecio2,
+                        opePrecio3: opePrecio3,
+                        opePrecio4: opePrecio4,
+                        opePrecio5: opePrecio5,
+                        opePrecio6: opePrecio6
                     },
                     dataType: "json",
                     type: "post",
@@ -660,14 +669,15 @@ var tipoPersona = $("#tipoPersona").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
-        var formaPago = $("#formaPago").val();
-        var cantCuotas = '';
         var maxHectareas = $("#maxHectareas").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
-        if (formaPago == 'Cuotas') {
-            cantCuotas = $("#cantCuotas").val();
-        }
+        var opePrecio1 = $("#opeP1").val();
+        var opePrecio2 = $("#opeP2").val();
+        var opePrecio3 = $("#opeP3").val();
+        var opePrecio4 = $("#opeP4").val();
+        var opePrecio5 = $("#opeP5").val();
+        var opePrecio6 = $("#opeP6").val();
 //        var nuevoID = 0;
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
         var rowscount_proveedores = rows_proveedores.length;
@@ -724,8 +734,12 @@ var tipoPersona = $("#tipoPersona").val();
                 opeCoordinador: opeCoordinador,
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
-                formaPago: formaPago,
-                cantCuotas: cantCuotas
+                opePrecio1: opePrecio1,
+                opePrecio2: opePrecio2,
+                opePrecio3: opePrecio3,
+                opePrecio4: opePrecio4,
+                opePrecio5: opePrecio5,
+                opePrecio6: opePrecio6
             },
             dataType: "json",
             type: "post",
@@ -825,7 +839,7 @@ var tipoPersona = $("#tipoPersona").val();
         return row;
     }
     $("#jqxgrid_proveedores").jqxGrid({
-        width: '70%',
+        width: '90%',
         height: '200px',
         source: dataAdapterope,
         theme: 'energyblue',
@@ -1391,13 +1405,6 @@ var tipoPersona = $("#tipoPersona").val();
 
 });
 
-function verCuotas() {
-    if ($("#formaPago").val() == 'Cuotas') {
-        $("#ver-cuotas").show();
-    } else {
-        $("#ver-cuotas").hide();
-    }
-}
 
 function verPersona() {
     if ($("#tipoPersona").val() == 'Humana') {
@@ -1533,11 +1540,13 @@ function editar_formulario_operatoria() {
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#opeCoordinador").val(rtn[0].ID_COORDINADOR_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeJefe").val(rtn[0].ID_JEFE_OPE).attr('eneable', true).trigger("chosen:updated");
-            $("#formaPago").val(rtn[0].FPAGO).attr('eneable', true).trigger("chosen:updated");
-            if (rtn[0].FPAGO == "Cuotas") {
-                $('#ver-cuotas').show();
-                $("#cantCuotas").val(rtn[0].CANT_CUOTAS).attr('eneable', true).trigger("chosen:updated");
-            }
+            $("#opeP1").val(rtn[0].PRECIO_1);
+            $("#opeP2").val(rtn[0].PRECIO_2);
+            $("#opeP3").val(rtn[0].PRECIO_3);
+            $("#opeP4").val(rtn[0].PRECIO_4);
+            $("#opeP5").val(rtn[0].PRECIO_5);
+            $("#opeP6").val(rtn[0].PRECIO_6);
+            $("#opePCuota").val(rtn[0].PRECIO_CUOTA);
             $.ajax({
                 url: _compravino.URL + "/x_getOperatoriaProveedores",
                 data: {
@@ -1772,7 +1781,7 @@ function editar_formulario_operatoria() {
                     }
 
                     $("#jqxgrid_bodegas").jqxGrid({
-                        width: '70%',
+                        width: '90%',
                         height: '200px',
                         source: dataAdapterope_bodegas,
                         theme: 'energyblue',
@@ -1841,7 +1850,7 @@ function editar_formulario_operatoria() {
                         },
                         columns: [
                             {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-                            {text: 'NOMBRE', datafield: 'NOMBRE', width: '70%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+                            {text: 'NOMBRE', datafield: 'NOMBRE', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
                             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '30%', filtercondition: 'starts_with', editable: true}
                         ]
                     });
@@ -3010,9 +3019,7 @@ function initGridListado(id_usuario) {
             {name: 'DESCRIPCION_OPE', type: 'string'},
             {name: 'ID_COORDINADOR_OPE', type: 'int'},
             {name: 'ID_JEFE_OPE', type: 'int'},
-            {name: 'LTRS_MAX', type: 'float'},
-            {name: 'FPAGO', type: 'string'},
-            {name: 'CANT_CUOTAS', type: 'int'}
+            {name: 'LTRS_MAX', type: 'float'}
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
@@ -3052,9 +3059,7 @@ function initGridListado(id_usuario) {
 //            {text: 'DESCRIPCION', datafield: 'DESCRIPCION_OPE', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'COORDINADOR', datafield: 'ID_COORDINADOR_OPE', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'JEFE', datafield: 'ID_JEFE_OPE', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true},
-            {text: 'MAXIMO LITROS', datafield: 'LTRS_MAX', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'PAGO', datafield: 'FPAGO', width: '8%'},
-            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '8%'}
+            {text: 'MAXIMO LITROS', datafield: 'LTRS_MAX', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false}
         ]
     });
 }
