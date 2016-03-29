@@ -99,6 +99,7 @@ class compravino extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
+//        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
         $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
         $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
         $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
@@ -170,6 +171,13 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+//    function x_getbodegas_vino() {
+////        $id_operatoria = $_POST['id_operatoria'];
+////        $obj = $this->mod->getbodegas_vino($id_operatoria);
+//        $obj = $this->mod->getbodegas_vino();
+//        $tmp = $obj ? $obj : array();
+//        return $tmp;
+//    }
 
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
@@ -218,6 +226,11 @@ class compravino extends main_controller {
     function x_getobjcliente() {
         $cuit = $_POST['cuit'];
         $rtn = $this->mod->getobjcliente($cuit);
+        echo trim(json_encode($rtn ? $rtn[0] : array()));
+    }
+    function x_getNumOpe() {
+        $id_cliente = $_POST['id_cliente'];
+        $rtn = $this->mod->getNumOpe($id_cliente);
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
 

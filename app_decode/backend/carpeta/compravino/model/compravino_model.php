@@ -220,18 +220,18 @@ class compravino_model extends main_model {
     }
 
     function getobjcliente($cuit) {
-        //$this->_db->select("ID_TIPO");
-        //$this->_db->where();
         $this->_db->select("c.*, ci.VALOR AS VALOR, ci.CONDICION as CONDICION");
         $this->_db->join("fid_cliente_condicion_iva ci", "ci.ID=c.ID_CONDICION_IVA", 'left');
         $rtn = $this->_db->get_tabla('fid_clientes c', "CUIT = '" . $cuit . "'");
-
-        //update cliente CU=1
         if ($rtn) {
             $this->_db->update('fid_clientes', array("CU" => '1'), "CUIT = '" . $cuit . "'");
         }
-        //log_this('log/qqqqqqq.log', $this->_db->last_query() );
-
+        return $rtn;
+    }
+    function getNumOpe($id_cliente) {
+        $this->_db->select("ID_OPERATORIA");
+        $this->_db->order_by("ID_OPERATORIA","DESC  LIMIT 1");
+        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores', "ID_PROVEEDOR= '" . $id_cliente . "'");
         return $rtn;
     }
 
@@ -817,6 +817,19 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_bodegas b");
         return $rtn;
     }
+//    function getbodegas_vino() {
+////SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
+////JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
+////JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
+////WHERE b.ID_OPERATORIA=20
+////ORDER BY b.ID_OPERATORIA DESC
+//        $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
+//        $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
+//        $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
+//        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
+//        
+//        return $rtn;
+//    }
 
     function get_ope_bodegas() {
         $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");

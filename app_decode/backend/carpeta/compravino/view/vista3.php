@@ -25,6 +25,7 @@
     <div class="elem elem_med_cond">
         <label class="der">Nombre/Razón Social:</label>
         <div class="indent formtext">
+            <input type="hidden" id="id_buscar">
             <input type="text" class="tip-right" title="Ingrese asunto" id="nombre" value="<?php echo isset($obj_req["REMITENTE"])?$obj_req["REMITENTE"]:""?>">
         </div>
     </div>
@@ -150,6 +151,13 @@
     
     
     <div class="elem elem_med_cond">
+        <label class="der">N° Operatoria:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="numOperatoria" id="numOperatoria" value="" readonly maxlength="11">
+        </div>
+    </div>
+    
+    <div class="elem elem_med_cond">
         <label class="der">CUIT:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="nombre" id="cuitform" value="" readonly maxlength="11">
@@ -196,19 +204,20 @@
     </div>
     
     
-    <?php if(isset($lst_bodegas) && is_array($lst_bodegas)): ?>
+    <?php // if(isset($lst_bodegas) && is_array($lst_bodegas)): ?>
     <div class="elem elem_med">
         <label>Bodega:</label>
         <div class="indent">
         <select class="chzn-select medium-select select" id="bodega">
             <option value="">Elegir Bodega</option>
-            <?php foreach($lst_bodegas as $rs_iva): ?>
-            <option data-local="<?php echo $rs_iva["LOCAL"] ?>" data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["NOMBRE"] ?></option>
-            <?php endforeach; ?>
+            <?php // foreach($lst_bodegas as $rs_iva): ?>
+            <?php // foreach($lst_bodegas_vino as $rs_iva): ?>
+            <option data-local="<?php // echo $rs_iva["LOCAL"] ?>" data-connection="<?php // echo $rs_iva["ID"] ?>" value="<?php // echo $rs_iva["ID"] ?>"><?php // echo $rs_iva["NOMBRE"] ?></option>
+            <?php // endforeach; ?>
         </select>   
         </div>
     </div>
-    <?php endif; ?>
+    <?php // endif; ?>
     
     
     <div class="elem elem_med">
@@ -263,7 +272,6 @@
             </div>
     </div>
     
-    
     <?php if(isset($lst_formulas) && is_array($lst_formulas)): ?>
     <div class="elem elem_med">
         <label>Formula:</label>
@@ -284,56 +292,18 @@
             <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
         </div>
     </div>
-    
-    
-    <div class="div_cius" id="frm_cargacius">
-        
-        <div class="cabezera_frm_ciu">
-            <div class="titulo_cius">Cargar CIUs</div>
-
-            <div class="elem elem_med">
-                    <label class="der">Numero CIU:</label>
-                    <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
-                    </div>
-            </div>
-
-            <div class="elem elem_med">
-                    <label class="der">Kgrs:</label>
-                    <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
-                    </div>
-            </div>
-
-            <div class="elem elem_med">
-                    <label class="der">Azucar:</label>
-                    <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_azucar" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
-                    </div>
-            </div>
-            
-            <div class="elem elem_med">
-                    <label class="der">Inscripcion Inv:</label>
-                    <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_insc" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
-                    </div>
-            </div>
-
-
-            <input id="add_cius" name="add_cius" type="submit" class="button-a blue send" value="Agregar CIU">
-        
-        </div>
-        
-        
-        <div data-gridname="jqxgridcius" class="refresgrid">Refresh Grid</div>
-        <div id="jqxgridcius"></div>
-        
-        <div class="suma_aportes"><span></span><span id="suma_aporte"></span><span id="suma_aporte1">$222</span></div>
-        
-        
-        
-    </div>
-    
+<!--    <div class="div_cius" id="frm_cargacius">
+        <div class="cabezera_frm_ciu"><div class="titulo_cius">Cargar CIUs</div><div class="elem elem_med"><label class="der">Numero CIU:</label>
+                    <div class="indent formtext"><input type="text" class="tip-right" title="" id="ciu_num" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                    </div></div>
+            <div class="elem elem_med"><label class="der">Kgrs:</label><div class="indent formtext"><input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                    </div></div><div class="elem elem_med"><label class="der">Azucar:</label><div class="indent formtext">
+                        <input type="text" class="tip-right" title="" id="ciu_azucar" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                    </div></div><div class="elem elem_med"><label class="der">Inscripcion Inv:</label><div class="indent formtext">
+                        <input type="text" class="tip-right" title="" id="ciu_insc" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                    </div></div><input id="add_cius" name="add_cius" type="submit" class="button-a blue send" value="Agregar CIU">
+        </div><div data-gridname="jqxgridcius" class="refresgrid">Refresh Grid</div><div id="jqxgridcius"></div>
+        <div class="suma_aportes"><span></span><span id="suma_aporte"></span><span id="suma_aporte1">$222</span></div></div>-->
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
     

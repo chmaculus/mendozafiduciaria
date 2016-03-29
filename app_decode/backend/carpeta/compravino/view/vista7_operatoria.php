@@ -4,7 +4,7 @@
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
     <li class="tb_edi" data-top='edi_ope'><div>Editar</div></li>
 </ul>
-<div id="jqxgrid_listado_operatoria"></div>
+<div style="margin-left: 15px;" id="jqxgrid_listado_operatoria"></div>
 
 <div id="wpopup"></div>
 

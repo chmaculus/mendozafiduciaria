@@ -1,4 +1,3 @@
-//ESTA CLASE NOSE Q HACE; NO SE MODIFICA
 var mydata;
 var id_edit;
 var working = false;
@@ -57,9 +56,7 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
-
-
-
+    s
     //bancos
     var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
     var _arr_cius = [];
@@ -105,20 +102,9 @@ function guardar_factura() {
             return false;
         }
         /*
-         if (cai==''){
-         jAlert('Ingrese CAI.', $.ucwords(_etiqueta_modulo), function(){
-         $("#cai").focus();
-         });
-         return false;
-         }
-         if (fechavto==''){
-         jAlert('Ingrese fecha Vencimiento.', $.ucwords(_etiqueta_modulo), function(){
-         $("#fechavto").focus();
-         });
-         return false;
-         }
+         if (cai==''){jAlert('Ingrese CAI.', $.ucwords(_etiqueta_modulo), function(){$("#cai").focus();});return false;}
+         if (fechavto==''){jAlert('Ingrese fecha Vencimiento.', $.ucwords(_etiqueta_modulo), function(){$("#fechavto").focus();});return false;}
          */
-
         if (cai !== '') {
             if (fechavto < fecha) {
                 jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -127,14 +113,12 @@ function guardar_factura() {
                 return false;
             }
         }
-
         if (bodega == '') {
             jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
                 $("#bodega").focus();
             });
             return false;
         }
-
         if (kgrs == '') {
             jAlert('Ingrese el valor de los Kgrs.', $.ucwords(_etiqueta_modulo), function () {
                 $("#kgrs").focus();
@@ -219,12 +203,7 @@ function guardar_factura() {
             FORMULA: formula,
             TIPO: 1
         }
-
-        console.log('aaaaaaaa::::');
-        console.dir(objsave);
-
     }
-
     //validar numero de factura
     //numero
     $.ajax({
@@ -235,15 +214,11 @@ function guardar_factura() {
         dataType: "json",
         type: "post",
         success: function (data) {
-
-
             // 1 existe // 0 no existe
             if (data > 0 && _opcion != 3) {//existe
                 jAlert('Este numero de Factura ya esta ingresada. Verifique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
-
                 });
             } else { // no existe
-
                 $.ajax({
                     url: _compravino.URL + "/x_sendobj",
                     data: {
@@ -252,7 +227,6 @@ function guardar_factura() {
                     dataType: "json",
                     type: "post",
                     success: function (data) {
-
                         console.dir(data);
                         if (data.result > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
@@ -270,9 +244,7 @@ function guardar_factura() {
                 });
             }
         }
-
     });
-
 }
 
 function limpiar_form() {
@@ -339,7 +311,7 @@ function show_btns(sw) {
 function llenar_form(cliente) {
 
     var_cliente = cliente;
-
+    $("#id_buscar").val(cliente.ID);
     $(".env_form #nombre").val(cliente.RAZON_SOCIAL);
     $(".env_form #cuit").val(cliente.CUIT);
     $(".env_form #insciibb").val(cliente.INSCRIPCION_IIBB);
@@ -472,6 +444,30 @@ $(document).ready(function () {
         limpiar_form_nf();
         $('.env_form').hide();
         $('.nuevafact_form').show();
+        $.ajax({
+            url: _compravino.URL + "/x_getNumOpe",
+            data: {
+                id_cliente: $("#id_buscar").val()
+            },
+            dataType: "json",
+            type: "post",
+            async: false,
+            success: function (data) {
+                $("#numOperatoria").val(data.ID_OPERATORIA);
+            }
+        });
+//ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
+//     $.ajax({
+//            url: _compravino.URL + "/x_getbodegas_vino",
+//            data: {
+//                id_operatoria: data.ID_OPERATORIA
+//            },
+//            dataType: "json",
+//            type: "post",
+//            success: function (data) {
+//            }
+//        });
+        /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
         show_btns(2);
@@ -573,8 +569,6 @@ $(document).ready(function () {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function (data) {
-                    }
                 });
                 $.ajax({
                     url: _compravino.URL + "/x_sendProveedores",
@@ -584,8 +578,6 @@ $(document).ready(function () {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function (data) {
-                    }
                 });
                 $.ajax({
                     url: _compravino.URL + "/x_sendBodegas",
@@ -595,8 +587,6 @@ $(document).ready(function () {
                     },
                     dataType: "json",
                     type: "post",
-                    success: function (data) {
-                    }
                 });
 
                 if (tipoPersona == 'Humana') {
@@ -624,7 +614,11 @@ $(document).ready(function () {
                         });
                     }
                 }
-
+                jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                    $.unblockUI();
+                    var urlh = "backend/carpeta/compravino/init/12/7";
+                    $(location).attr('href', urlh);
+                });
             }
         });
 
@@ -1001,8 +995,8 @@ $(document).ready(function () {
         },
         columns: [
             {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'NOMBRE', datafield: 'NOMBRE', width: '50%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+            {text: 'NOMBRE', datafield: 'NOMBRE', width: '60%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
         ]
     });
 // ESTO SERIA PARA GENERAR LOS CHECKLIST Y MOSTRARLOS
@@ -2964,18 +2958,18 @@ function initGridListado(id_usuario) {
             $("#jqxgrid_listado").jqxGrid('hidecolumn', 'IID');
         },
         columnsresize: true,
-        showtoolbar: true,
-        groupable: true,
+//        showtoolbar: true,
+//        groupable: true,
         localization: getLocalization(),
         columns: [
-            {text: 'ID_OPERATORIA', datafield: 'ID_OPERATORIA', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'NOMBRE_OPE', datafield: 'NOMBRE_OPE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'DESCRIPCION_OPE', datafield: 'DESCRIPCION_OPE', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'ID_COORDINADOR_OPE', datafield: 'ID_COORDINADOR_OPE', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'ID_JEFE_OPE', datafield: 'ID_JEFE_OPE', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
-            {text: 'LTRS_MAX', datafield: 'LTRS_MAX', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'FPAGO', datafield: 'FPAGO', width: '10%'},
-            {text: 'CANT_CUOTAS', datafield: 'CANT_CUOTAS', width: '10%'}
+            {text: 'OPERATORIA', datafield: 'ID_OPERATORIA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'NOMBRE ', datafield: 'NOMBRE_OPE', width: '32%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+//            {text: 'DESCRIPCION', datafield: 'DESCRIPCION_OPE', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'COORDINADOR', datafield: 'ID_COORDINADOR_OPE', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'JEFE', datafield: 'ID_JEFE_OPE', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true},
+            {text: 'MAXIMO LITROS', datafield: 'LTRS_MAX', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'PAGO', datafield: 'FPAGO', width: '8%'},
+            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '8%'}
         ]
     });
 }
@@ -3249,7 +3243,4 @@ function importar_procesar() {
             });
         }
     });
-
-
 }
-

@@ -74,7 +74,8 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">
+    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
+    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_proveedores) && is_array($lst_proveedores)): ?>
         <div class="elem elem_med">
             <label>Proveedores:</label>
@@ -96,7 +97,8 @@
         </div>
     </div>
     <div class="clear"></div>
-    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">
+    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
+    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_bodegas_ope) && is_array($lst_bodegas_ope)): ?>
         <div class="elem elem_med">
             <label>Bodegas:</label>
@@ -120,7 +122,8 @@
         </div>
     </div>
     <div class="clear"></div>
-    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">
+    <!--<hr style="margin-top:40px; margin-left: auto; margin-right: auto; border: 1px dashed grey; height: 0; width: 60%;">-->
+    <hr style="margin-top:40px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
 <!--    <div class="elem elem_med_cond">
         <label class="der">Cant. Max. Hectareas:</label>
         <div class="indent formtext">
