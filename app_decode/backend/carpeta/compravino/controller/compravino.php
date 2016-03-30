@@ -335,12 +335,29 @@ class compravino extends main_controller {
         $opeCoordinador = $_POST['opeCoordinador'];
         $opeJefe = $_POST['opeJefe'];
         $listrosMax = $_POST['listrosMax'];
-        $formaPago = $_POST['formaPago'];
-        $cantCuotas = $_POST['cantCuotas'];
+//        $formaPago = $_POST['formaPago'];
+//        $cantCuotas = $_POST['cantCuotas'];
         $tipoPersona = $_POST['tipoPersona'];
+        $opePrecio1 = $_POST['opePrecio1'];
+        $opePrecio2 = $_POST['opePrecio2'];
+        $opePrecio3 = $_POST['opePrecio3'];
+        $opePrecio4 = $_POST['opePrecio4'];
+        $opePrecio5 = $_POST['opePrecio5'];
+        $opePrecio6 = $_POST['opePrecio6'];
+        $opeTitular = $_POST['opeTitular'];
+        $opeCuit = $_POST['opeCuit'];
+        $numVinedo = $_POST['numVinedo'];
+        $litrosOfrecidos = $_POST['litrosOfrecidos'];
+        $hectDeclaradas = $_POST['hectDeclaradas'];
+        $bgaDep = $_POST['bgaDep'];
+        $deptBodega = $_POST['deptBodega'];
+        $numINVBodega = $_POST['numINVBodega'];
+        $opetelefono = $_POST['opetelefono'];
+        $opeCorreo = $_POST['opeCorreo'];
 
-
-        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas, $tipoPersona);
+        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona,
+                $opePrecio1,$opePrecio2,$opePrecio3,$opePrecio4,$opePrecio5,$opePrecio6,$opeTitular,$opeCuit,$numVinedo,$litrosOfrecidos,
+                $hectDeclaradas,$bgaDep,$deptBodega,$numINVBodega,$opetelefono,$opeCorreo);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
     

@@ -228,9 +228,10 @@ class compravino_model extends main_model {
         }
         return $rtn;
     }
+
     function getNumOpe($id_cliente) {
         $this->_db->select("ID_OPERATORIA");
-        $this->_db->order_by("ID_OPERATORIA","DESC  LIMIT 1");
+        $this->_db->order_by("ID_OPERATORIA", "DESC  LIMIT 1");
         $rtn = $this->_db->get_tabla('fid_operatoria_proveedores', "ID_PROVEEDOR= '" . $id_cliente . "'");
         return $rtn;
     }
@@ -366,14 +367,15 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas,$tipoPersona) {
+    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona,
+                $opePrecio1,$opePrecio2,$opePrecio3,$opePrecio4,$opePrecio5,$opePrecio6,$opeTitular,$opeCuit,$numVinedo,$litrosOfrecidos,
+                $hectDeclaradas,$bgaDep,$deptBodega,$numINVBodega,$opetelefono,$opeCorreo) {
         $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
         $nueva_limite = strtotime('+1 year', strtotime($fecha));
         $nueva_limite = date('Y-m-j', $nueva_limite);
 
-//        echo $fecha_creacion . " -- " . $nueva_limite;die;
         $ins_ope = array(
             "ID_OPERATORIA" => $nuevoID,
             "FECHA_CRE" => $fecha_creacion,
@@ -383,9 +385,25 @@ class compravino_model extends main_model {
             "ID_COORDINADOR_OPE" => $opeCoordinador,
             "ID_JEFE_OPE" => $opeJefe,
             "LTRS_MAX" => $listrosMax,
-            "FPAGO" => $formaPago,
-            "CANT_CUOTAS" => $cantCuotas,
+//            "FPAGO" => $formaPago,
+//            "CANT_CUOTAS" => $cantCuotas,
             "PERSONA" => $tipoPersona,
+            "PRECIO_1" => $opePrecio1,
+            "PRECIO_2" => $opePrecio2,
+            "PRECIO_3" => $opePrecio3,
+            "PRECIO_4" => $opePrecio4,
+            "PRECIO_5" => $opePrecio5,
+            "PRECIO_6" => $opePrecio6,
+            "TITULAR" => $opeTitular,
+            "CUIT" => $opeCuit,
+            "NUM_VINEDO" => $numVinedo,
+            "LITROS_OFRECIDOS" => $litrosOfrecidos,
+            "HECT_DECLARADAS" => $hectDeclaradas,
+            "BGA_DEP" => $bgaDep,
+            "DEPT_BODEGA" => $deptBodega,
+            "NUM_INV_BODEGA" => $numINVBodega,
+            "TELEFONO" => $opetelefono,
+            "CORREO" => $opeCorreo,
             "HECT_MAX" => ''
         );
         $this->_db->insert('fid_operatoria_vino', $ins_ope);
@@ -458,35 +476,49 @@ class compravino_model extends main_model {
     function sendHumana($obj, $nuevoID) {
         foreach ($obj as $value) {
             $aEntero = 0;
-            if($value['valor']=='SI'){
-                $aEntero=2;
+            if ($value['valor'] == 'SI') {
+                $aEntero = 2;
             }
-            if($value['valor']=='NO'){
-                $aEntero=1;
+            if ($value['valor'] == 'NO') {
+                $aEntero = 1;
             }
-            echo $aEntero;
-//            $ins_check = array(
-//                "ID_OPERATORIA" => $nuevoID,
-//                "ID_HUMANA" => $value['numcheck'],
-//                "ESTADO" =>$aEntero
-//            );
-            
-//            var_dump($ins_check);
-//            $this->_db->insert('fid_operatoria_humana', $ins_check);
+            $ins_check = array(
+                "ID_OPERATORIA" => $nuevoID,
+                "ID_HUMANA" => $value['numcheck'],
+                "ESTADO" => $aEntero
+            );
+            $this->_db->insert('fid_operatoria_humana', $ins_check);
         }
-            die(" ESTOS SON LOS VALORES -----  ");
     }
 
     function sendJuridica($obj, $nuevoID) {
-        $array_checklist = explode(",", $obj);
         foreach ($obj as $value) {
+            $aEntero = 0;
+            if ($value['valor'] == 'SI') {
+                $aEntero = 2;
+            }
+            if ($value['valor'] == 'NO') {
+                $aEntero = 1;
+            }
             $ins_check = array(
                 "ID_OPERATORIA" => $nuevoID,
-                "ID_JURIDICA" => $value,
+                "ID_JURIDICA" => $value['numcheck'],
+                "ESTADO" => $aEntero
             );
             $this->_db->insert('fid_operatoria_juridica', $ins_check);
         }
     }
+
+//    function sendJuridica($obj, $nuevoID) {
+//        $array_checklist = explode(",", $obj);
+//        foreach ($obj as $value) {
+//            $ins_check = array(
+//                "ID_OPERATORIA" => $nuevoID,
+//                "ID_JURIDICA" => $value,
+//            );
+//            $this->_db->insert('fid_operatoria_juridica', $ins_check);
+//        }
+//    }
 
     function updateBodegas($obj, $nuevoID) {
         $this->_db->delete("fid_operatoria_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
@@ -828,18 +860,19 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_bodegas b");
         return $rtn;
     }
+
     function getChecklistHumana() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_checklist_humana");
         return $rtn;
     }
+
     function getChecklistJuridica() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_checklist_juridica");
         return $rtn;
     }
-    
-    
+
 //    function getbodegas_vino() {
 ////SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
 ////JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
