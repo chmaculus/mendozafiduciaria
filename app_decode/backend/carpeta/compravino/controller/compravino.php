@@ -89,6 +89,8 @@ class compravino extends main_controller {
 
     function _obtener_main($arr_permiso_mod, $provincia, $opcion, $id_objeto) {
 
+        $pruebaLlenar = array();
+
         $data['fecha'] = $this->get_fecha();
         $data['etiqueta_mod'] = "Requerimiento";
 
@@ -99,7 +101,9 @@ class compravino extends main_controller {
         $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
-//        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
+        //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
+        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
+        //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
         $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
         $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
         $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
@@ -182,13 +186,12 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
-//    function x_getbodegas_vino() {
-////        $id_operatoria = $_POST['id_operatoria'];
-////        $obj = $this->mod->getbodegas_vino($id_operatoria);
-//        $obj = $this->mod->getbodegas_vino();
-//        $tmp = $obj ? $obj : array();
-//        return $tmp;
-//    }
+    function x_getbodegas_vino() {
+        $id_operatoria = $_SESSION['OPERATORIA'];
+        $obj = $this->mod->getbodegas_vino($id_operatoria);
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
 
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
@@ -242,6 +245,7 @@ class compravino extends main_controller {
     function x_getNumOpe() {
         $id_cliente = $_POST['id_cliente'];
         $rtn = $this->mod->getNumOpe($id_cliente);
+        $_SESSION['OPERATORIA']= $rtn[0]['ID_OPERATORIA'];
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
 

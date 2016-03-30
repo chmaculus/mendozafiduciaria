@@ -510,3 +510,7 @@ iframe{
     color: white;
     background-color: #FF141C;
 }
+
+#fecha_ven_edit{
+    display: none;
+}

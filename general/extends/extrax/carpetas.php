@@ -110,6 +110,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
 
     $cnn->select("*");
+    $cnn->order_by("ID_OPERATORIA"," DESC");
     $rtn = $cnn->get_tabla("fid_operatoria_vino");
     
 //    $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";

@@ -11,14 +11,23 @@
 </ul>
 <div class="nuevaOpe_form">
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
+    <div id="fecha_ven_edit">
+        <div class="elem elem_med">
+            <label class="der">Fecha Vto. Operatoria:</label>
+            <div class="indent formtext">
+                <input type="text" class="validate[required] tip-right" title="Fecha Limite" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-        <label class="der">Nombre:</label>
+        <label class="der">Nombre Operatoria:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="nombre" id="opeNombre" value=""  maxlength="64">
         </div>
     </div>
     <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-        <label class="der">Descripción:</label>
+        <label class="der">Descripción Operatoria:</label>
         <div class="indent formtext">
             <input type="text" title="descripcion" id="opeDescripcion" maxlength="100">
         </div>
@@ -118,7 +127,6 @@
         </div>
     </div>
     <div class="clear"></div>
-    
     <hr style="margin-top:20px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <?php if (isset($lst_bodegas_ope) && is_array($lst_bodegas_ope)): ?>
         <div class="elem elem_med">
@@ -134,7 +142,6 @@
         </div>
     <?php endif; ?>
     <div id="info-bodegas">
-        <!--</br>-->
         <p style="font-weight:bold;">Ingrese los litros en la columna LIMITE LTRS de la grilla</p>
         <div id="jqxgrid_bodegas" style="margin-left:20px; margin-top: 5px;">
         </div>
@@ -202,66 +209,64 @@
                 <input type="text" title="correo electronico" id="opeCorreo" maxlength="100">
             </div>
         </div>
-<!--        <div class="elem elem_med_cond">
+        <!--        <div class="elem elem_med_cond">
+                    <label>Seleccionar Persona:</label>
+                    <div class="indent">
+                        <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
+                            <option value="Humana">Humana</option>
+                            <option value="Juridica">Juridica</option>
+                        </select>   
+                    </div>
+            </div>-->
+        <div class="elem elem_med_cond">
             <label>Seleccionar Persona:</label>
             <div class="indent">
                 <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
                     <option value="Humana">Humana</option>
-                    <option value="Juridica">Juridica</option>
+                    <option value="Juridica">Jurídica</option>
                 </select>   
             </div>
-    </div>-->
-    <div class="elem elem_med_cond">
-        <label>Seleccionar Persona:</label>
-        <div class="indent">
-            <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
-                <option value="Humana">Humana</option>
-                <option value="Juridica">Jurídica</option>
-            </select>   
         </div>
+        <table id="humana">
+            <tr>
+                <th class="numCheck" style="width: 5%;">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>
+            <?php foreach ($lst_checkHumana as $it) { ?>
+                <tr class="op">
+                    <td class="numCheck"><?php echo $it['ID']; ?></td>
+                    <td><?php echo $it['DESCRIPCION']; ?></td>
+                    <td> <select class="opeOpcion">
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                            <option value="NC" selected="selected">N/C</option>
+                        </select>
+                    </td>        
+                </tr>
+            <?php } ?>
+        </table>
+        <table id="juridica">
+            <tr>
+                <th class="numCheck">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>
+            <?php foreach ($lst_checkJuridica as $it) { ?>
+                <tr class="op">
+                    <td class="numCheck"><?php echo $it['ID']; ?></td>
+                    <td><?php echo $it['DESCRIPCION']; ?></td>
+                    <td> <select class="opeOpcion">
+                            <option value="SI">SI</option>
+                            <option value="NO">NO</option>
+                            <option value="NC" selected="selected">N/C</option>
+                        </select>
+                    </td>        
+                </tr>
+            <?php } ?>
+        </table>
+        <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
+        <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">
     </div>
-    <table id="humana">
-        <tr>
-            <th class="numCheck" style="width: 5%;">N°</th>
-            <th>DATOS</th>
-            <th>OPCION</th>
-        </tr>
-        <?php foreach ($lst_checkHumana as $it) { ?>
-            <tr class="op">
-                <td class="numCheck"><?php echo $it['ID']; ?></td>
-                <td><?php echo $it['DESCRIPCION']; ?></td>
-                <td> <select class="opeOpcion">
-                        <option value="SI">SI</option>
-                        <option value="NO">NO</option>
-                        <option value="NC" selected="selected">N/C</option>
-                    </select>
-                </td>        
-            </tr>
-        <?php } ?>
-    </table>
-    <table id="juridica">
-        <tr>
-            <th class="numCheck">N°</th>
-            <th>DATOS</th>
-            <th>OPCION</th>
-        </tr>
-        <?php foreach ($lst_checkJuridica as $it) { ?>
-            <tr class="op">
-                <td class="numCheck"><?php echo $it['ID']; ?></td>
-                <td><?php echo $it['DESCRIPCION']; ?></td>
-                <td> <select class="opeOpcion">
-                        <option value="SI">SI</option>
-                        <option value="NO">NO</option>
-                        <option value="NC" selected="selected">N/C</option>
-                    </select>
-                </td>        
-            </tr>
-        <?php } ?>
-    </table>
-    <input id="send" name="send" type="submit" class="button-a blue send" style="margin-top: 25px;" value="Guardar">
-    <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">
 </div>
-</div>
-
 <!--<div id="wpopup"></div>-->
-

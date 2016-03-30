@@ -535,8 +535,8 @@ class compravino_model extends main_model {
     function sendobj($obj) {
         //log_this('log/xxxxx.log',print_r($obj,1));
         $iid = $obj["id"];
-        $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
-
+//        $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
+//        var_dump($obj);die("EL OBJETO QUE SE PASA");
         $cuit = $obj["CUIT"];
         $cli = $this->_db->get_tabla('fid_clientes', 'CUIT=' . $cuit);
 
@@ -558,36 +558,36 @@ class compravino_model extends main_model {
             $id_new = $iid;
         endif;
 
-        if ($arr_cius):
-            //borrar
-            $this->_db->delete("fid_cu_ciu", "ID_FACTURA='" . $id_new . "'");
-            $tot = count($arr_cius);
-            $c = 0;
-            foreach ($arr_cius as $ciu):
-
-                $verif = ($ciu["CHEQUEO"] == '1' or $ciu["CHEQUEO"] == 'true') ? 1 : 0;
-                $arr_ins = array(
-                    "ID_CLIENTE" => $cod_cli,
-                    "CUIT" => $cuit_tmp,
-                    "ID_FACTURA" => $id_new,
-                    "NUMERO" => $ciu["NUM"],
-                    "AZUCAR" => $ciu["AZUCAR"],
-                    "KGRS" => $ciu["KGRS"],
-                    "INSC" => $ciu["INSC"],
-                    "VERIFICADO" => $verif
-                );
-                $resp = $this->_db->insert('fid_cu_ciu', $arr_ins);
-                $c++;
-                //log_this('log/qqqqqqq.log', $this->_db->last_query() );
-            endforeach;
-
-            if ($c == $tot):
-                //update
-                $resp = $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '4'), "ID='" . $id_new . "'");
-            endif;
-
-
-        endif;
+//        if ($arr_cius):
+//            //borrar
+//            $this->_db->delete("fid_cu_ciu", "ID_FACTURA='" . $id_new . "'");
+//            $tot = count($arr_cius);
+//            $c = 0;
+//            foreach ($arr_cius as $ciu):
+//
+//                $verif = ($ciu["CHEQUEO"] == '1' or $ciu["CHEQUEO"] == 'true') ? 1 : 0;
+//                $arr_ins = array(
+//                    "ID_CLIENTE" => $cod_cli,
+//                    "CUIT" => $cuit_tmp,
+//                    "ID_FACTURA" => $id_new,
+//                    "NUMERO" => $ciu["NUM"],
+//                    "AZUCAR" => $ciu["AZUCAR"],
+//                    "LTROS" => $ciu["KGRS"],
+//                    "INSC" => $ciu["INSC"],
+//                    "VERIFICADO" => $verif
+//                );
+//                $resp = $this->_db->insert('fid_cu_ciu', $arr_ins);
+//                $c++;
+//                //log_this('log/qqqqqqq.log', $this->_db->last_query() );
+//            endforeach;
+//
+//            if ($c == $tot):
+//                //update
+//                $resp = $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '4'), "ID='" . $id_new . "'");
+//            endif;
+//
+//
+//        endif;
         $rtn = array(
             "accion" => $acc,
             "result" => $resp
@@ -874,18 +874,24 @@ class compravino_model extends main_model {
     }
 
 //    function getbodegas_vino() {
-////SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
-////JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
-////JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
-////WHERE b.ID_OPERATORIA=20
-////ORDER BY b.ID_OPERATORIA DESC
-//        $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
-//        $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
-//        $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
+    function getbodegas_vino($id_operatoria) {
+//SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
+//JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
+//JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
+//WHERE b.ID_OPERATORIA=20
+//ORDER BY b.ID_OPERATORIA DESC
+//        print_r($_SESSION);die("ESTE ES EL SESSION");
+        if($id_operatoria==''){
+            echo "ACA NO DEBE";
+            return false;
+        }
+        $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
+        $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
+        $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
 //        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
-//        
-//        return $rtn;
-//    }
+        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=$id_operatoria");
+        return $rtn;
+    }
 
     function get_ope_bodegas() {
         $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
