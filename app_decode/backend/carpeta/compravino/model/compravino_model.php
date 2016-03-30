@@ -367,60 +367,73 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona,
-                $opePrecio1,$opePrecio2,$opePrecio3,$opePrecio4,$opePrecio5,$opePrecio6,$opeTitular,$opeCuit,$numVinedo,$litrosOfrecidos,
-                $hectDeclaradas,$bgaDep,$deptBodega,$numINVBodega,$opetelefono,$opeCorreo) {
+    function sendOperatoria($arr_post) {
         $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
         $nueva_limite = strtotime('+1 year', strtotime($fecha));
         $nueva_limite = date('Y-m-j', $nueva_limite);
-
+        
         $ins_ope = array(
-            "ID_OPERATORIA" => $nuevoID,
+            "ID_OPERATORIA" => $arr_post['nuevoID'],
             "FECHA_CRE" => $fecha_creacion,
             "FECHA_VEN" => $nueva_limite,
-            "NOMBRE_OPE" => $opeNombre,
-            "DESCRIPCION_OPE" => $opeDescripcion,
-            "ID_COORDINADOR_OPE" => $opeCoordinador,
-            "ID_JEFE_OPE" => $opeJefe,
-            "LTRS_MAX" => $listrosMax,
+            "NOMBRE_OPE" => $arr_post['opeNombre'],
+            "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
+            "ID_COORDINADOR_OPE" => $arr_post['opeCoordinador'],
+            "ID_JEFE_OPE" => $arr_post['opeJefe'],
+            "LTRS_MAX" => $arr_post['listrosMax'],
+            "MAX_PESOS" => $arr_post['maxPesos'],
 //            "FPAGO" => $formaPago,
 //            "CANT_CUOTAS" => $cantCuotas,
-            "PERSONA" => $tipoPersona,
-            "PRECIO_1" => $opePrecio1,
-            "PRECIO_2" => $opePrecio2,
-            "PRECIO_3" => $opePrecio3,
-            "PRECIO_4" => $opePrecio4,
-            "PRECIO_5" => $opePrecio5,
-            "PRECIO_6" => $opePrecio6,
-            "TITULAR" => $opeTitular,
-            "CUIT" => $opeCuit,
-            "NUM_VINEDO" => $numVinedo,
-            "LITROS_OFRECIDOS" => $litrosOfrecidos,
-            "HECT_DECLARADAS" => $hectDeclaradas,
-            "BGA_DEP" => $bgaDep,
-            "DEPT_BODEGA" => $deptBodega,
-            "NUM_INV_BODEGA" => $numINVBodega,
-            "TELEFONO" => $opetelefono,
-            "CORREO" => $opeCorreo,
+            "PERSONA" => $arr_post['tipoPersona'],
+            "PRECIO_1" => $arr_post['opePrecio1'],
+            "PRECIO_2" => $arr_post['opePrecio2'],
+            "PRECIO_3" => $arr_post['opePrecio3'],
+            "PRECIO_4" => $arr_post['opePrecio4'],
+            "PRECIO_5" => $arr_post['opePrecio5'],
+            "PRECIO_6" => $arr_post['opePrecio6'],
+            "TITULAR" => $arr_post['opeTitular'],
+            "CUIT" => $arr_post['opeCuit'],
+            "NUM_VINEDO" => $arr_post['numVinedo'],
+            "LITROS_OFRECIDOS" => $arr_post['litrosOfrecidos'],
+            "HECT_DECLARADAS" => $arr_post['hectDeclaradas'],
+            "BGA_DEP" => $arr_post['bgaDep'],
+            "DEPT_BODEGA" => $arr_post['deptBodega'],
+            "NUM_INV_BODEGA" => $arr_post['numINVBodega'],
+            "TELEFONO" => $arr_post['opetelefono'],
+            "CORREO" => $arr_post['opeCorreo'],
             "HECT_MAX" => ''
         );
-        $this->_db->insert('fid_operatoria_vino', $ins_ope);
+        if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
-    function updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas) {
+    function updateOperatoria($arr_post) {
         $ins_ope = array(
-            "NOMBRE_OPE" => $opeNombre,
-            "DESCRIPCION_OPE" => $opeDescripcion,
-            "ID_COORDINADOR_OPE" => $opeCoordinador,
-            "ID_JEFE_OPE" => $opeJefe,
-            "LTRS_MAX" => $listrosMax,
-            "FPAGO" => $formaPago,
-            "CANT_CUOTAS" => $cantCuotas,
+            "NOMBRE_OPE" => $arr_post['opeNombre'],
+            "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
+            "ID_COORDINADOR_OPE" => $arr_post['opeCoordinador'],
+            "ID_JEFE_OPE" => $arr_post['opeJefe'],
+            "LTRS_MAX" => $arr_post['listrosMax'],
+            "MAX_PESOS" => $arr_post['maxPesos'],
+            "PRECIO_1" => $arr_post['opePrecio1'],
+            "PRECIO_2" => $arr_post['opePrecio2'],
+            "PRECIO_3" => $arr_post['opePrecio3'],
+            "PRECIO_4" => $arr_post['opePrecio4'],
+            "PRECIO_5" => $arr_post['opePrecio5'],
+            "PRECIO_6" => $arr_post['opePrecio6'],
             "HECT_MAX" => ''
         );
-        $this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $nuevoID . "'");
+        
+        if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
     function getIdOperatoria() {
@@ -429,7 +442,7 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_operatoria_vino");
         $valor = 0;
         $sumar = 1;
-        $devolver = 0;
+        $devolver = 1;
         if ($rtn) {
             $valor = (int) $rtn[0]['ID_OPERATORIA'];
             $devolver = $valor + $sumar;
@@ -522,13 +535,15 @@ class compravino_model extends main_model {
 
     function updateBodegas($obj, $nuevoID) {
         $this->_db->delete("fid_operatoria_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
-        foreach ($obj as $value) {
-            $ins_bodegas = array(
-                "ID_OPERATORIA" => $nuevoID,
-                "ID_BODEGA" => $value['ID'],
-                "LIMITE_OPE" => $value['LIMLTRS']
-            );
-            $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+        if ($obj && count($obj) > 0) {
+            foreach ($obj as $value) {
+                $ins_bodegas = array(
+                    "ID_OPERATORIA" => $nuevoID,
+                    "ID_BODEGA" => $value['ID'],
+                    "LIMITE_OPE" => $value['LIMLTRS']
+                );
+                $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+            }
         }
     }
 

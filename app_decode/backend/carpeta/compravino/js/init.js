@@ -463,6 +463,7 @@ $(document).ready(function () {
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
+        var maxPesos = $("#maxPesos").val();
         var maxHectareas = $("#maxHectareas").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
@@ -553,6 +554,7 @@ $(document).ready(function () {
                         opeCoordinador: opeCoordinador,
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
+                        maxPesos: maxPesos,
                         tipoPersona: tipoPersona,
                         opePrecio1: opePrecio1,
                         opePrecio2: opePrecio2,
@@ -649,6 +651,7 @@ $(document).ready(function () {
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
+        var maxPesos = $("#maxPesos").val();
         var maxHectareas = $("#maxHectareas").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
@@ -714,6 +717,7 @@ $(document).ready(function () {
                 opeCoordinador: opeCoordinador,
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
+                maxPesos: maxPesos,
                 opePrecio1: opePrecio1,
                 opePrecio2: opePrecio2,
                 opePrecio3: opePrecio3,
@@ -1462,6 +1466,7 @@ function editar_formulario_operatoria() {
             $("#opeNombre").val(rtn[0].NOMBRE_OPE);
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
             $("#listrosMax").val(rtn[0].LTRS_MAX);
+            $("#maxPesos").val(rtn[0].MAX_PESOS);
             $("#opeCoordinador").val(rtn[0].ID_COORDINADOR_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeJefe").val(rtn[0].ID_JEFE_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeP1").val(rtn[0].PRECIO_1);
