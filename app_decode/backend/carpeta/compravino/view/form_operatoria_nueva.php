@@ -149,7 +149,7 @@
     <div class="clear"></div>
     <hr style="margin-top:20px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <div id="check_datos" style="width: 100%;">
-        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
+<!--        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
             <label class="der">Titular:</label>
             <div class="indent formtext">
                 <input type="text" class="tip-right" title="titular" id="opeTitular" value=""  maxlength="64">
@@ -208,16 +208,11 @@
             <div class="indent formtext">
                 <input type="text" title="correo electronico" id="opeCorreo" maxlength="100">
             </div>
-        </div>
-        <!--        <div class="elem elem_med_cond">
-                    <label>Seleccionar Persona:</label>
-                    <div class="indent">
-                        <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
-                            <option value="Humana">Humana</option>
-                            <option value="Juridica">Juridica</option>
-                        </select>   
-                    </div>
-            </div>-->
+        </div>-->
+
+
+<!-- <div class="elem elem_med_cond"><label>Seleccionar Persona:</label><div class="indent"><select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
+<option value="Humana">Humana</option><option value="Juridica">Juridica</option></select></div></div>-->
         <div class="elem elem_med_cond">
             <label>Seleccionar Persona:</label>
             <div class="indent">
@@ -269,4 +264,3 @@
         <input id="send_edit" name="send_edit" type="submit" class="button-a blue send_edit" style="margin-top: 25px;" value="Guardar Cambios">
     </div>
 </div>
-<!--<div id="wpopup"></div>-->

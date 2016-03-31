@@ -297,6 +297,16 @@
             <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
         </div>
     </div>
+    
+    <br><br><br>
+            <div style="margin-top:10px;" class="clear"></div>
+        <div class="elem elem_med">
+                      <label>Cambio de Titularidad:</label>
+                      <div class="indent formtext">
+                          <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
+                      </div>
+        </div>
+    <br><br>
     <!--    <div class="div_cius" id="frm_cargacius">
             <div class="cabezera_frm_ciu"><div class="titulo_cius">Cargar CIUs</div><div class="elem elem_med"><label class="der">Numero CIU:</label>
                         <div class="indent formtext"><input type="text" class="tip-right" title="" id="ciu_num" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>">

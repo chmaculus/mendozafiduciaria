@@ -311,7 +311,9 @@ class compravino extends main_controller {
 
     function x_sendobj() {
         $obj = $_POST['obj'];
-        $rtn = $this->mod->sendobj($obj);
+        $cambio_titularidad=false;
+        $cambio_titularidad = $_POST['cambio_titularidad'];
+        $rtn = $this->mod->sendobj($obj,$cambio_titularidad);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
@@ -372,11 +374,9 @@ class compravino extends main_controller {
         $opeCoordinador = $_POST['opeCoordinador'];
         $opeJefe = $_POST['opeJefe'];
         $listrosMax = $_POST['listrosMax'];
-        $formaPago = $_POST['formaPago'];
-        $cantCuotas = $_POST['cantCuotas'];
-
-
-        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas);
+//        $formaPago = $_POST['formaPago'];
+//        $cantCuotas = $_POST['cantCuotas'];
+        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 

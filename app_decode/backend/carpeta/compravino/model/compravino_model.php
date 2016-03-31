@@ -367,9 +367,7 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona,
-                $opePrecio1,$opePrecio2,$opePrecio3,$opePrecio4,$opePrecio5,$opePrecio6,$opeTitular,$opeCuit,$numVinedo,$litrosOfrecidos,
-                $hectDeclaradas,$bgaDep,$deptBodega,$numINVBodega,$opetelefono,$opeCorreo) {
+    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona, $opePrecio1, $opePrecio2, $opePrecio3, $opePrecio4, $opePrecio5, $opePrecio6, $opeTitular, $opeCuit, $numVinedo, $litrosOfrecidos, $hectDeclaradas, $bgaDep, $deptBodega, $numINVBodega, $opetelefono, $opeCorreo) {
         $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
@@ -409,15 +407,15 @@ class compravino_model extends main_model {
         $this->_db->insert('fid_operatoria_vino', $ins_ope);
     }
 
-    function updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $formaPago, $cantCuotas) {
+    function updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax) {
         $ins_ope = array(
             "NOMBRE_OPE" => $opeNombre,
             "DESCRIPCION_OPE" => $opeDescripcion,
             "ID_COORDINADOR_OPE" => $opeCoordinador,
             "ID_JEFE_OPE" => $opeJefe,
             "LTRS_MAX" => $listrosMax,
-            "FPAGO" => $formaPago,
-            "CANT_CUOTAS" => $cantCuotas,
+//            "FPAGO" => $formaPago,
+//            "CANT_CUOTAS" => $cantCuotas,
             "HECT_MAX" => ''
         );
         $this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $nuevoID . "'");
@@ -532,13 +530,15 @@ class compravino_model extends main_model {
         }
     }
 
-    function sendobj($obj) {
+    function sendobj($obj, $cambio_titularidad) {
         //log_this('log/xxxxx.log',print_r($obj,1));
         $iid = $obj["id"];
-//        $arr_cius = isset($obj["arr_cius"]) ? $obj["arr_cius"] : array();
-//        var_dump($obj);die("EL OBJETO QUE SE PASA");
         $cuit = $obj["CUIT"];
         $cli = $this->_db->get_tabla('fid_clientes', 'CUIT=' . $cuit);
+
+        $valor_actual = 0;
+        $valor_nuevo = 0;
+
 
         $cod_cli = $cli[0]['ID'];
         $obj["ID_CLIENTE"] = $cod_cli;
@@ -548,46 +548,50 @@ class compravino_model extends main_model {
 
         if ($iid == 0)://agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
+            if ($cambio_titularidad == true) {
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_USUARIO" => $_SESSION['USERADM'],
+                    "FECHA" => date("Y-m-d H:i:s"),
+                    "CHECK_ESTADO" => 1,
+                );
+//                var_dump($arr_cambio_titu);
+//                die("ES ES EL ARRAY Q VA A GUARDAR");
+                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+            }
+            $this->_db->insert('fid_traza', $arr_traza);
             //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "add";
             $id_new = $resp;
         else://editar
             $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "'");
+
+            $this->_db->select("*");
+            $this->_db->order_by("FECHA", "DESC LIMIT 1");
+            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=".$obj['NUMERO']);
+            if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == false) {//no esta activado y tampoco se ha activado
+            } else if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == true) {//no esta activado y se ha activado
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $obj['NUMERO'],
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => '',
+                        "CHECK_ESTADO" => 1,
+                    );
+            $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+            } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == true) {//esta activado y sigue activado
+            } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == false) {//esta activado y se ha desactivado
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $obj['NUMERO'],
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => '',
+                        "CHECK" => 0,
+                    );
+            }
             //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "edit";
             $id_new = $iid;
         endif;
 
-//        if ($arr_cius):
-//            //borrar
-//            $this->_db->delete("fid_cu_ciu", "ID_FACTURA='" . $id_new . "'");
-//            $tot = count($arr_cius);
-//            $c = 0;
-//            foreach ($arr_cius as $ciu):
-//
-//                $verif = ($ciu["CHEQUEO"] == '1' or $ciu["CHEQUEO"] == 'true') ? 1 : 0;
-//                $arr_ins = array(
-//                    "ID_CLIENTE" => $cod_cli,
-//                    "CUIT" => $cuit_tmp,
-//                    "ID_FACTURA" => $id_new,
-//                    "NUMERO" => $ciu["NUM"],
-//                    "AZUCAR" => $ciu["AZUCAR"],
-//                    "LTROS" => $ciu["KGRS"],
-//                    "INSC" => $ciu["INSC"],
-//                    "VERIFICADO" => $verif
-//                );
-//                $resp = $this->_db->insert('fid_cu_ciu', $arr_ins);
-//                $c++;
-//                //log_this('log/qqqqqqq.log', $this->_db->last_query() );
-//            endforeach;
-//
-//            if ($c == $tot):
-//                //update
-//                $resp = $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '4'), "ID='" . $id_new . "'");
-//            endif;
-//
-//
-//        endif;
         $rtn = array(
             "accion" => $acc,
             "result" => $resp
@@ -881,7 +885,7 @@ class compravino_model extends main_model {
 //WHERE b.ID_OPERATORIA=20
 //ORDER BY b.ID_OPERATORIA DESC
 //        print_r($_SESSION);die("ESTE ES EL SESSION");
-        if($id_operatoria==''){
+        if ($id_operatoria == '') {
             echo "ACA NO DEBE";
             return false;
         }
@@ -889,7 +893,7 @@ class compravino_model extends main_model {
         $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
         $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
 //        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
-        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=$id_operatoria");
+        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
         return $rtn;
     }
 

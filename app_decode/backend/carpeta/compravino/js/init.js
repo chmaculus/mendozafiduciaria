@@ -13,7 +13,6 @@ var id_a_editar = 0;
 /*
  var _fid_sanjuan = 41;
  var _ope_sanjuan = 32;
- 
  var _fid_mendoza = 33;
  var _ope_mendoza = 42;
  */
@@ -51,100 +50,59 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
+//Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
+    var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
+    
+   iid = id ? id : 0;
 
-    //bancos
-//    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-//    var _arr_cius = [];
-//    for (var i = 0; i < griddata.rowscount; i++)
-//        _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-//    var sum_kgrs = 0;
-//    var sum_azuc = 0;
-    //validacion
-//    if (_arr_cius) {
-//        $.each(_arr_cius, function (index, value) {
-////sum_kgrs
-//            sum_kgrs += parseFloat(value.KGRS);
-//            sum_azuc += parseFloat(value.AZUCAR * value.KGRS);
-//        });
-//        sum_azuc = sum_azuc / sum_kgrs;
-//    }
-
-    iid = id ? id : 0;
-//    if (_opcion == 3) {
-//        objsave = {
-//            id: iid,
-//            update_cius: 1,
-//            arr_cius: _arr_cius,
-//            CUIT: cuitform,
-//        }
-//    } else {
 //validar campos
-    if (numero == '') {
-        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
-            $("#numero").focus();
-        });
-        return false;
-    }
-
-    if (fecha == '') {
-        jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
-            $("#fecha").focus();
-        });
-        return false;
-    }
-    /*
-     if (cai==''){jAlert('Ingrese CAI.', $.ucwords(_etiqueta_modulo), function(){$("#cai").focus();});return false;}
-     if (fechavto==''){jAlert('Ingrese fecha Vencimiento.', $.ucwords(_etiqueta_modulo), function(){$("#fechavto").focus();});return false;}
-     */
-    if (cai !== '') {
-        if (fechavto < fecha) {
-            jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
-                $("#fechavto").focus();
-            });
-            return false;
-        }
-    }
-    if (bodega == '') {
-        jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
-            $("#bodega").focus();
-        });
-        return false;
-    }
-    if (ltros == '') {
-        jAlert('Ingrese el valor de los Ltros.', $.ucwords(_etiqueta_modulo), function () {
-            $("#ltros").focus();
-        });
-        return false;
-    }
-
-    if (azucar == '') {
-        jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function () {
-            $("#azucar").focus();
-        });
-        return false;
-    }
-
-    if (precio == '') {
-        jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function () {
-            $("#precio").focus();
-        });
-        return false;
-    }
-
-//        console.log('kgrs:: ' + kgrs + ' sum kgrs::' + sum_kgrs);
-//        if (kgrs != sum_kgrs) {
-//            jAlert('Las sumas kgrs no coinciden.', $.ucwords(_etiqueta_modulo), function () {
+//    if (numero == '') {
+//        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#numero").focus();
+//        });
+//        return false;
+//    }
+//
+//    if (fecha == '') {
+//        jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#fecha").focus();
+//        });
+//        return false;
+//    }
+//    if (cai !== '') {
+//        if (fechavto < fecha) {
+//            jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#fechavto").focus();
 //            });
 //            return false;
 //        }
+//    }
+//    if (bodega == '') {
+//        jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#bodega").focus();
+//        });
+//        return false;
+//    }
+//    if (ltros == '') {
+//        jAlert('Ingrese el valor de los Ltros.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#ltros").focus();
+//        });
+//        return false;
+//    }
 //
-//        console.log('azucar:: ' + azucar + ' sum azucar::' + sum_azuc);
-//        if (sum_azuc < azucar) {
-//            jAlert('Las sumas azucar no coinciden.', $.ucwords(_etiqueta_modulo), function () {
+//    if (azucar == '') {
+//        jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#azucar").focus();
+//        });
+//        return false;
+//    }
 //
-//            });
-//            return false;
-//        }
+//    if (precio == '') {
+//        jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#precio").focus();
+//        });
+//        return false;
+//    }
 
     var tmp_ope, tmp_fid;
     var local = 1;
@@ -214,12 +172,14 @@ function guardar_factura() {
                 $.ajax({
                     url: _compravino.URL + "/x_sendobj",
                     data: {
-                        obj: objsave
+                        obj: objsave,
+                        cambio_titularidad:cambio_titularidad,
                     },
                     dataType: "json",
                     type: "post",
+                    async:"false",
                     success: function (data) {
-                        console.dir(data);
+//                        console.dir(data);
                         if (data.result > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                                 show_btns();
@@ -448,18 +408,9 @@ $(document).ready(function () {
             }
         });
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
-//        $.ajax({
-//            url: _compravino.URL + "/x_getbodegas_vino",
-//            data: {
-//                id_operatoria:  $("#numOperatoria").val()
-//            },
-//            dataType: "json",
-//            type: "post",
-//            success: function (data) {
-//            }
-//        });
-
-        /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
+//        $.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
+//            dataType: "json",type: "post",success: function (data) {}});
+/*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
         show_btns(2);
@@ -890,7 +841,7 @@ $(document).ready(function () {
         },
         columns: [
             {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '50%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '49%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
             {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
         ]
@@ -2861,11 +2812,11 @@ function initGridListado(id_usuario) {
         localization: getLocalization(),
         columns: [
             {text: 'OPERATORIA', datafield: 'ID_OPERATORIA', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'TITULAR', datafield: 'TITULAR', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'CUIT', datafield: 'CUIT', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'N° VIÑEDO', datafield: 'NUM_VINEDO', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'LITROS OFRECIDOS', datafield: 'LITROS_OFRECIDOS', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'NUM. INV BODEGA', datafield: 'NUM_INV_BODEGA', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+//            {text: 'TITULAR', datafield: 'TITULAR', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+//            {text: 'CUIT', datafield: 'CUIT', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+//            {text: 'N° VIÑEDO', datafield: 'NUM_VINEDO', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+//            {text: 'LITROS OFRECIDOS', datafield: 'LITROS_OFRECIDOS', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+//            {text: 'NUM. INV BODEGA', datafield: 'NUM_INV_BODEGA', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
             {text: 'NOMBRE ', datafield: 'NOMBRE_OPE', width: '32%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
             {text: 'COORDINADOR', datafield: 'ID_COORDINADOR_OPE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
             {text: 'JEFE', datafield: 'ID_JEFE_OPE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: true}
