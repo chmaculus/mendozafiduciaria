@@ -58,10 +58,16 @@
             </div>
         </div>
     <?php endif; ?>
-    <div class="elem elem_med_cond">
+    <div class="elem elem_med">
         <label class="der">Litros Máximo:</label>
         <div class="indent formtext">
             <input type="text" title="Litros maximo" id="listrosMax" >
+        </div>
+    </div>
+    <div class="elem elem_med">
+        <label class="der">Máximo en Pesos:</label>
+        <div class="indent formtext">
+            <input type="text" title="Máximo en pesos" id="maxPesos" >
         </div>
     </div>
     <div class="elem elem_med">

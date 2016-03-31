@@ -335,49 +335,26 @@ class compravino extends main_controller {
     }
     
     function x_sendOperatoria() {
-        $nuevoID = $_POST['nuevoID'];
-        $opeNombre = $_POST['opeNombre'];
-        $opeDescripcion = $_POST['opeDescripcion'];
-        $opeCoordinador = $_POST['opeCoordinador'];
-        $opeJefe = $_POST['opeJefe'];
-        $listrosMax = $_POST['listrosMax'];
-//        $formaPago = $_POST['formaPago'];
-//        $cantCuotas = $_POST['cantCuotas'];
-        $tipoPersona = $_POST['tipoPersona'];
-        $opePrecio1 = $_POST['opePrecio1'];
-        $opePrecio2 = $_POST['opePrecio2'];
-        $opePrecio3 = $_POST['opePrecio3'];
-        $opePrecio4 = $_POST['opePrecio4'];
-        $opePrecio5 = $_POST['opePrecio5'];
-        $opePrecio6 = $_POST['opePrecio6'];
-        $opeTitular = $_POST['opeTitular'];
-        $opeCuit = $_POST['opeCuit'];
-        $numVinedo = $_POST['numVinedo'];
-        $litrosOfrecidos = $_POST['litrosOfrecidos'];
-        $hectDeclaradas = $_POST['hectDeclaradas'];
-        $bgaDep = $_POST['bgaDep'];
-        $deptBodega = $_POST['deptBodega'];
-        $numINVBodega = $_POST['numINVBodega'];
-        $opetelefono = $_POST['opetelefono'];
-        $opeCorreo = $_POST['opeCorreo'];
-
-        $rtn = $this->mod->sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona,
-                $opePrecio1,$opePrecio2,$opePrecio3,$opePrecio4,$opePrecio5,$opePrecio6,$opeTitular,$opeCuit,$numVinedo,$litrosOfrecidos,
-                $hectDeclaradas,$bgaDep,$deptBodega,$numINVBodega,$opetelefono,$opeCorreo);
-        echo trim(json_encode($rtn ? $rtn : array()));
+        $rtn = $this->mod->sendOperatoria($_POST);
+        echo trim(json_encode($rtn));
     }
     
     function x_updateOperatoria() {
-        $nuevoID = $_POST['nuevoID'];
-        $opeNombre = $_POST['opeNombre'];
-        $opeDescripcion = $_POST['opeDescripcion'];
-        $opeCoordinador = $_POST['opeCoordinador'];
-        $opeJefe = $_POST['opeJefe'];
-        $listrosMax = $_POST['listrosMax'];
-//        $formaPago = $_POST['formaPago'];
-//        $cantCuotas = $_POST['cantCuotas'];
-        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax);
-        echo trim(json_encode($rtn ? $rtn : array()));
+//<<<<<<< HEAD
+//        $nuevoID = $_POST['nuevoID'];
+//        $opeNombre = $_POST['opeNombre'];
+//        $opeDescripcion = $_POST['opeDescripcion'];
+//        $opeCoordinador = $_POST['opeCoordinador'];
+//        $opeJefe = $_POST['opeJefe'];
+//        $listrosMax = $_POST['listrosMax'];
+////        $formaPago = $_POST['formaPago'];
+////        $cantCuotas = $_POST['cantCuotas'];
+//        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax);
+//        echo trim(json_encode($rtn ? $rtn : array()));
+//=======
+        $rtn = $this->mod->updateOperatoria($_POST);
+        echo trim(json_encode($rtn));
+//>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
     }
 
     function x_sendProveedores() {
