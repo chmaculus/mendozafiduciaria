@@ -52,8 +52,8 @@ function guardar_factura() {
     var formula = $("#formula").val();
 //Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
     var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
-    
-   iid = id ? id : 0;
+
+    iid = id ? id : 0;
 
 //validar campos
 //    if (numero == '') {
@@ -173,11 +173,11 @@ function guardar_factura() {
                     url: _compravino.URL + "/x_sendobj",
                     data: {
                         obj: objsave,
-                        cambio_titularidad:cambio_titularidad,
+                        cambio_titularidad: cambio_titularidad,
                     },
                     dataType: "json",
                     type: "post",
-                    async:"false",
+                    async: "false",
                     success: function (data) {
 //                        console.dir(data);
                         if (data.result > 0) {
@@ -410,7 +410,7 @@ $(document).ready(function () {
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
 //        $.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
 //            dataType: "json",type: "post",success: function (data) {}});
-/*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
+        /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
         show_btns(2);
@@ -457,17 +457,17 @@ $(document).ready(function () {
 //            cantCuotas = $("#cantCuotas").val();
 //        }
 
-
-        var opeTitular = $("#opeTitular").val();
-        var opeCuit = $("#opeCuit").val();
-        var numVinedo = $("#numVinedo").val();
-        var litrosOfrecidos = $("#litrosOfrecidos").val();
-        var hectDeclaradas = $("#hectDeclaradas").val();
-        var bgaDep = $("#bgaDep").val();
-        var deptBodega = $("#deptBodega").val();
-        var numINVBodega = $("#numINVBodega").val();
-        var opetelefono = $("#opetelefono").val();
-        var opeCorreo = $("#opeCorreo").val();
+        /*esto si no va se borra*/
+//        var opeTitular = $("#opeTitular").val();
+//        var opeCuit = $("#opeCuit").val();
+//        var numVinedo = $("#numVinedo").val();
+//        var litrosOfrecidos = $("#litrosOfrecidos").val();
+//        var hectDeclaradas = $("#hectDeclaradas").val();
+//        var bgaDep = $("#bgaDep").val();
+//        var deptBodega = $("#deptBodega").val();
+//        var numINVBodega = $("#numINVBodega").val();
+//        var opetelefono = $("#opetelefono").val();
+//        var opeCorreo = $("#opeCorreo").val();
 //validar campos
 //        if (opeNombre == '') {
 //            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
@@ -526,17 +526,17 @@ $(document).ready(function () {
                         opePrecio3: opePrecio3,
                         opePrecio4: opePrecio4,
                         opePrecio5: opePrecio5,
-                        opePrecio6: opePrecio6,
-                        opeTitular: opeTitular,
-                        opeCuit: opeCuit,
-                        numVinedo: numVinedo,
-                        litrosOfrecidos: litrosOfrecidos,
-                        hectDeclaradas: hectDeclaradas,
-                        bgaDep: bgaDep,
-                        deptBodega: deptBodega,
-                        numINVBodega: numINVBodega,
-                        opetelefono: opetelefono,
-                        opeCorreo: opeCorreo
+                        opePrecio6: opePrecio6
+//                        opeTitular: opeTitular,
+//                        opeCuit: opeCuit,
+//                        numVinedo: numVinedo,
+//                        litrosOfrecidos: litrosOfrecidos,
+//                        hectDeclaradas: hectDeclaradas,
+//                        bgaDep: bgaDep,
+//                        deptBodega: deptBodega,
+//                        numINVBodega: numINVBodega,
+//                        opetelefono: opetelefono,
+//                        opeCorreo: opeCorreo
                     },
                     dataType: "json",
                     type: "post",
@@ -1231,7 +1231,7 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
-    
+
     $("#cbu").focusout(function () {
 //verificar cbu
         var cbu = $(this).val();
@@ -2778,16 +2778,10 @@ function initGridListado(id_usuario) {
             {name: 'ID_OPERATORIA', type: 'int'},
             {name: 'NOMBRE_OPE', type: 'string'},
             {name: 'DESCRIPCION_OPE', type: 'string'},
-            {name: 'ID_COORDINADOR_OPE', type: 'int'},
-            {name: 'ID_JEFE_OPE', type: 'int'},
-            {name: 'TITULAR', type: 'string'},
-            {name: 'CUIT', type: 'string'},
-            {name: 'NUM_VINEDO', type: 'float'},
-            {name: 'LITROS_OFRECIDOS', type: 'float'},
-            {name: 'HECT_DECLARADAS', type: 'float'},
-            {name: 'BGA_DEP', type: 'float'},
-            {name: 'DEPT_BODEGA', type: 'float'},
-            {name: 'NUM_INV_BODEGA', type: 'float'}
+            {name: 'FECHA_CRE', type: 'datetime'},
+            {name: 'FECHA_VEN', type: 'datetime'},
+            {name: 'NOMBRE_COOR', type: 'string'},
+            {name: 'NOMBRE_JEFE', type: 'string'}
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
@@ -2816,15 +2810,13 @@ function initGridListado(id_usuario) {
         columnsresize: true,
         localization: getLocalization(),
         columns: [
-            {text: 'OPERATORIA', datafield: 'ID_OPERATORIA', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-//            {text: 'TITULAR', datafield: 'TITULAR', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CUIT', datafield: 'CUIT', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-//            {text: 'N° VIÑEDO', datafield: 'NUM_VINEDO', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-//            {text: 'LITROS OFRECIDOS', datafield: 'LITROS_OFRECIDOS', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-//            {text: 'NUM. INV BODEGA', datafield: 'NUM_INV_BODEGA', width: '12%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'NOMBRE ', datafield: 'NOMBRE_OPE', width: '32%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'COORDINADOR', datafield: 'ID_COORDINADOR_OPE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'JEFE', datafield: 'ID_JEFE_OPE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: true}
+            {text: 'OPERATORIA', datafield: 'ID_OPERATORIA', width: '9%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'FECHA INICIO', datafield: 'FECHA_CRE', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'FECHA LIMITE', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'NOMBRE', datafield: 'NOMBRE_OPE', width: '22%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'DESCRIPCION', datafield: 'DESCRIPCION_OPE', width: '20%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'COORDINADOR', datafield: 'NOMBRE_COOR', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
+            {text: 'JEFE', datafield: 'NOMBRE_JEFE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: true}
         ]
     });
 }

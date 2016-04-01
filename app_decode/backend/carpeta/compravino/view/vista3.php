@@ -154,6 +154,20 @@
             <input type="text" class="tip-right" title="numOperatoria" id="numOperatoria" value="" readonly maxlength="11">
         </div>
     </div>
+       <div class="elem elem_med">
+        <label class="der">Nro Viñedo:</label>
+        <div class="indent formtext">
+            <input maxlength="12" type="text" class="tip-right" title="" id="numVinedo" data-prompt-position="centerRight" value=""> 
+        </div>
+    </div>
+
+
+    <div class="elem elem_med">
+        <label class="der">Nro. RUT:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="" id="numRut" data-prompt-position="centerRight" value=""> 
+        </div>
+    </div>
 
     <div class="elem elem_med_cond">
         <label class="der">CUIT:</label>
@@ -172,6 +186,7 @@
     <input type="hidden" id="provinciah" value="" />
     <input type="hidden" id="localidadh" value="" />
 
+    
     <div class="elem elem_med">
         <label class="der">Nro Factura:</label>
         <div class="indent formtext">

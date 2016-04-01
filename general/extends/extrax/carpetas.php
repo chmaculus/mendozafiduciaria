@@ -30,12 +30,12 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getProveedoresGrilla') {
 
     $cnn->select("*");
     $rtn = $cnn->get_tabla("fid_clientes", "ID IN($proveedor_ids)");
-    
+
     echo trim(json_encode($rtn ? $rtn : array()));
     die();
 }
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasOpeGrilla') {
-   $idBodegas = $_GET["id_bodegas"];
+    $idBodegas = $_GET["id_bodegas"];
     $bodegas_ids = "";
     foreach ($idBodegas as $value) {
         $bodegas_ids .= $value . ",";
@@ -45,12 +45,12 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasOpeGrilla') {
     $cnn->join("fid_entidades e", "et.id_entidad=e.id");
     $cnn->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
     $rtn = $cnn->get_tabla("fid_entidadestipo et", "ets.ID =24 AND e.ID IN($bodegas_ids)");
-    
+
     echo trim(json_encode($rtn ? $rtn : array()));
     die();
 }
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasDatos') {
-die("Error, no es posible acceder a este sector");
+    die("Error, no es posible acceder a este sector");
     $idBodegas = $_GET["id_bodegas"];
     $bodegas_ids = "";
     foreach ($idBodegas as $value) {
@@ -109,10 +109,23 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
 
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
 
-    $cnn->select("*");
-    $cnn->order_by("ID_OPERATORIA"," DESC");
-    $rtn = $cnn->get_tabla("fid_operatoria_vino");
+//    $cnn->select("*");
+//    $cnn->order_by("ID_OPERATORIA"," DESC");
+//    $rtn = $cnn->get_tabla("fid_operatoria_vino");
+//    SELECT o.`ID_OPERATORIA`, o.`FECHA_CRE`, o.`FECHA_VEN`, o.`NOMBRE_OPE`, o.`DESCRIPCION_OPE`,
+//    u.`NOMBRE`, j.`NOMBRE`
+//    FROM fid_operatoria_vino o
+//    LEFT JOIN fid_usuarios u ON (u.ID = o.`ID_COORDINADOR_OPE`)
+//    LEFT JOIN fid_usuarios j ON (j.ID = o.`ID_JEFE_OPE`)
+//    ORDER BY o.ID_OPERATORIA DESC
+    $cnn->select("o.ID_OPERATORIA AS ID_OPERATORIA, o.FECHA_CRE AS FECHA_CRE, o.FECHA_VEN AS FECHA_VEN, o.NOMBRE_OPE AS NOMBRE_OPE, "
+            . "o.DESCRIPCION_OPE AS DESCRIPCION_OPE,u.NOMBRE AS NOMBRE_COOR, j.NOMBRE AS NOMBRE_JEFE");
+    $cnn->join("fid_usuarios u","u.ID = o.ID_COORDINADOR_OPE","LEFT");
+    $cnn->join("fid_usuarios j","j.ID = o.ID_JEFE_OPE","LEFT");
+    $cnn->order_by("o.ID_OPERATORIA","DESC");
+    $rtn = $cnn->get_tabla("fid_operatoria_vino o");
     
+//    var_dump($rtn);die(" DATOS GRILLA");
 //    $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";
 //    $idope = isset($_GET["idope"]) ? $_GET["idope"] : '0';
 //    $idpro = isset($_GET["idpro"]) ? $_GET["idpro"] : '0';

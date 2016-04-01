@@ -377,7 +377,7 @@ class compravino_model extends main_model {
         $fecha = date('Y-m-j');
         $nueva_limite = strtotime('+1 year', strtotime($fecha));
         $nueva_limite = date('Y-m-j', $nueva_limite);
-        
+
         $ins_ope = array(
             "ID_OPERATORIA" => $arr_post['nuevoID'],
             "FECHA_CRE" => $fecha_creacion,
@@ -397,16 +397,17 @@ class compravino_model extends main_model {
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "TITULAR" => $arr_post['opeTitular'],
-            "CUIT" => $arr_post['opeCuit'],
-            "NUM_VINEDO" => $arr_post['numVinedo'],
-            "LITROS_OFRECIDOS" => $arr_post['litrosOfrecidos'],
-            "HECT_DECLARADAS" => $arr_post['hectDeclaradas'],
-            "BGA_DEP" => $arr_post['bgaDep'],
-            "DEPT_BODEGA" => $arr_post['deptBodega'],
-            "NUM_INV_BODEGA" => $arr_post['numINVBodega'],
-            "TELEFONO" => $arr_post['opetelefono'],
-            "CORREO" => $arr_post['opeCorreo'],
+            /* Si los campos no van se elimina todo lo comentado */
+//            "TITULAR" => $arr_post['opeTitular'],
+//            "CUIT" => $arr_post['opeCuit'],
+//            "NUM_VINEDO" => $arr_post['numVinedo'],
+//            "LITROS_OFRECIDOS" => $arr_post['litrosOfrecidos'],
+//            "HECT_DECLARADAS" => $arr_post['hectDeclaradas'],
+//            "BGA_DEP" => $arr_post['bgaDep'],
+//            "DEPT_BODEGA" => $arr_post['deptBodega'],
+//            "NUM_INV_BODEGA" => $arr_post['numINVBodega'],
+//            "TELEFONO" => $arr_post['opetelefono'],
+//            "CORREO" => $arr_post['opeCorreo'],
             "HECT_MAX" => ''
         );
         if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
@@ -444,7 +445,7 @@ class compravino_model extends main_model {
 //>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
             "HECT_MAX" => ''
         );
-        
+
         if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
             return TRUE;
         } else {
@@ -601,24 +602,24 @@ class compravino_model extends main_model {
 
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
-            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=".$obj['NUMERO']);
+            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=" . $obj['NUMERO']);
             if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == false) {//no esta activado y tampoco se ha activado
             } else if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == true) {//no esta activado y se ha activado
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $obj['NUMERO'],
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => '',
-                        "CHECK_ESTADO" => 1,
-                    );
-            $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_USUARIO" => $_SESSION['USERADM'],
+                    "FECHA" => '',
+                    "CHECK_ESTADO" => 1,
+                );
+                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
             } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == true) {//esta activado y sigue activado
             } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == false) {//esta activado y se ha desactivado
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $obj['NUMERO'],
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => '',
-                        "CHECK" => 0,
-                    );
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_USUARIO" => $_SESSION['USERADM'],
+                    "FECHA" => '',
+                    "CHECK" => 0,
+                );
             }
             //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "edit";
@@ -910,23 +911,24 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-//    function getbodegas_vino() {
-    function getbodegas_vino($id_operatoria) {
+    function getbodegas_vino() {
+//    function getbodegas_vino($id_operatoria) {
 //SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
 //JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
 //JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
 //WHERE b.ID_OPERATORIA=20
 //ORDER BY b.ID_OPERATORIA DESC
 //        print_r($_SESSION);die("ESTE ES EL SESSION");
-        if ($id_operatoria == '') {
-            echo "ACA NO DEBE";
-            return false;
-        }
+//        if ($id_operatoria == '') {
+//            echo "ACA NO DEBE";
+//            return false;
+//        }
         $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
         $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
         $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
 //        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
-        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
+//        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
+        $rtn = $this->_db->get_tabla("fid_entidades e");
         return $rtn;
     }
 
@@ -957,6 +959,15 @@ class compravino_model extends main_model {
     }
 
     function getDatoProveedor($ids_proveedores, $firstColumnData) {
+//        if(empty($firstColumnData)){
+//            echo "vacio";
+//        }else{
+//            
+//            echo "algo";
+//        }
+//        var_dump($firstColumnData);
+//        var_dump($ids_proveedores);die("dieeeeeee");
+//        
         if (count($ids_proveedores) > count($firstColumnData)) {
             $array_resultado = array();
             $i = 0;
@@ -1019,8 +1030,11 @@ class compravino_model extends main_model {
                 $j++;
             }
             return $n_rtn;
-        } else {
-            die("NADA");
+        } else if (count($firstColumnData) > 0 && $ids_proveedores == 'null') {
+            $n_rtn[0]['ID'] = $firstColumnData[0];
+            $n_rtn[0]['RAZON_SOCIAL'] = '';
+            $n_rtn[0]['ACCION'] = 'ELIMINAR';
+            return $n_rtn;
         }
     }
 
@@ -1113,8 +1127,11 @@ class compravino_model extends main_model {
                 $j++;
             }
             return $n_rtn;
-        } else {
-            die("NADA");
+        } else if (count($firstColumnData) > 0 && $ids_bodegas == 'null') {
+            $n_rtn[0]['ID'] = $firstColumnData[0];
+            $n_rtn[0]['NOMBRE'] = '';
+            $n_rtn[0]['ACCION'] = 'ELIMINAR';
+            return $n_rtn;
         }
     }
 

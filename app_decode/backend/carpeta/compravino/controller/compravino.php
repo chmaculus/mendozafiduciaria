@@ -187,8 +187,9 @@ class compravino extends main_controller {
         return $tmp;
     }
     function x_getbodegas_vino() {
-        $id_operatoria = $_SESSION['OPERATORIA'];
-        $obj = $this->mod->getbodegas_vino($id_operatoria);
+//        $id_operatoria = $_SESSION['OPERATORIA'];
+//        $obj = $this->mod->getbodegas_vino($id_operatoria);
+        $obj = $this->mod->getbodegas_vino();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
