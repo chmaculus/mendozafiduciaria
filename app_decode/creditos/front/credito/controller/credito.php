@@ -373,8 +373,15 @@ class credito extends main_controller{
                 $cuota['CUOTA'] = number_format($pagos, 2, ",", "");
                 
                 $pagos += $item['PUNITORIO']['TOTAL'] + $item['IVA_PUNITORIO']['TOTAL'] + $item['MORATORIO']['TOTAL'] + $item['IVA_MORATORIO']['TOTAL'];
-                $cuota['SALDO_MORA'] = number_format($pagos, 2, ",", "");
-                $total_saldo_mora += $pagos;
+                
+                $saldo_mora = $item['CAPITAL']['SALDO'] + $item['COMPENSATORIO']['SALDO'] + $item['IVA_COMPENSATORIO']['SALDO'];
+                $saldo_mora += $item['PUNITORIO']['SALDO'] + $item['IVA_PUNITORIO']['SALDO'] + $item['MORATORIO']['SALDO'] + $item['IVA_MORATORIO']['SALDO'];
+                
+                $saldo_mora = ($saldo_mora > 0.2 && $item['DIAS_MORAS'] > 0) ? $saldo_mora : 0;
+                //print_r($item);die;
+                
+                $cuota['SALDO_MORA'] = number_format($saldo_mora, 2, ",", "");
+                $total_saldo_mora += $saldo_mora;
                 
                 $_saldo = $item['CAPITAL']['SALDO'] + $item['COMPENSATORIO']['SALDO'] + $item['IVA_COMPENSATORIO']['SALDO'];
                 $_saldo += $item['PUNITORIO']['SALDO'] + $item['IVA_PUNITORIO']['SALDO'] + $item['MORATORIO']['SALDO'] + $item['IVA_MORATORIO']['SALDO'];
