@@ -116,7 +116,6 @@
         </div>
     </div>
 
-
     <div class="elem elem_med">
         <label class="der">Teléfono:</label>
         <div class="indent formtext">
@@ -138,84 +137,70 @@
         </div>
     </div>
 
-    <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
+    <!--<input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">-->
+    <input id="send_cliente" name="send" type="submit" class="button-a blue send_cliente" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 
 </div>
 
 <div class="nuevafact_form">
-
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
-
-
     <div class="elem elem_med_cond">
         <label class="der">N° Operatoria:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="numOperatoria" id="numOperatoria" value="" readonly maxlength="11">
         </div>
     </div>
-       <div class="elem elem_med">
+    <div class="elem elem_med">
         <label class="der">Nro Viñedo:</label>
         <div class="indent formtext">
             <input maxlength="12" type="text" class="tip-right" title="" id="numVinedo" data-prompt-position="centerRight" value=""> 
         </div>
     </div>
-
-
     <div class="elem elem_med">
         <label class="der">Nro. RUT:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="numRut" data-prompt-position="centerRight" value=""> 
         </div>
     </div>
-
     <div class="elem elem_med_cond">
         <label class="der">CUIT:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="nombre" id="cuitform" value="" readonly maxlength="11">
         </div>
     </div>
-
     <div class="elem elem_med_cond">
         <label class="der">Nombre/Razón Social:</label>
         <div class="indent formtext">
             <input type="text" title="nombre" id="nombre2" readonly>
         </div>
     </div>
-
     <input type="hidden" id="provinciah" value="" />
     <input type="hidden" id="localidadh" value="" />
-
-    
     <div class="elem elem_med">
         <label class="der">Nro Factura:</label>
         <div class="indent formtext">
             <input maxlength="12" type="text" class="tip-right" title="" id="numero" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO']) ? $entidad['MONTO_SOLICITADO'] : "" ) ?>" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>> 
         </div>
     </div>
-
-
     <div class="elem elem_med">
         <label class="der">Fecha:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO']) ? $entidad['MONTO_SOLICITADO'] : "" ) ?>" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>> 
         </div>
     </div>
-
     <div class="elem elem_med">
         <label class="der">CAI:</label>
         <div class="indent formtext">
             <input maxlength="14" type="text" class="validate[required] tip-right" title="Ingrese CAI" id="cai" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
-
     <div class="elem elem_med">
         <label class="der">Fecha Vto:</label>
         <div class="indent formtext">
             <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
-
     <?php if (isset($lst_bodegas_vino) && is_array($lst_bodegas_vino)): ?>
         <div class="elem elem_med">
             <label>Bodega:</label>
@@ -239,7 +224,7 @@
     <!--    <div class="elem elem_med">
                 <label class="der">Departamento:</label>
                 <div class="indent formtext">
-                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>" readonly>
+                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )   ?>" readonly>
                 </div>
         </div>-->
     <div class="elem elem_med">
@@ -248,22 +233,18 @@
             <input type="text" class="tip-right" title="" id="ltros" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
         </div>
     </div>
-
-
     <div class="elem elem_med">
         <label class="der">Azucar:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="azucar" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
         </div>
     </div>
-
     <div class="elem elem_med">
         <label class="der">Precio:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="precio" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
         </div>
     </div>
-
     <div class="elem elem_med">
         <label class="der">Neto:</label>
         <div class="indent formtext">
@@ -312,28 +293,22 @@
             <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
         </div>
     </div>
-    
+
     <br><br><br>
-            <div style="margin-top:10px;" class="clear"></div>
-        <div class="elem elem_med">
-                      <label>Cambio de Titularidad:</label>
-                      <div class="indent formtext">
-                          <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
-                      </div>
+    <div style="margin-top:10px;" class="clear"></div>
+    <div class="elem elem_med">
+        <label>Cambio de Titularidad:</label>
+        <div class="indent formtext">
+            <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
         </div>
+    </div>
     <br><br>
-    <!--    <div class="div_cius" id="frm_cargacius">
-            <div class="cabezera_frm_ciu"><div class="titulo_cius">Cargar CIUs</div><div class="elem elem_med"><label class="der">Numero CIU:</label>
-                        <div class="indent formtext"><input type="text" class="tip-right" title="" id="ciu_num" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>">
-                        </div></div>
-                <div class="elem elem_med"><label class="der">Kgrs:</label><div class="indent formtext"><input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>">
-                        </div></div><div class="elem elem_med"><label class="der">Azucar:</label><div class="indent formtext">
-                            <input type="text" class="tip-right" title="" id="ciu_azucar" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>">
-                        </div></div><div class="elem elem_med"><label class="der">Inscripcion Inv:</label><div class="indent formtext">
-                            <input type="text" class="tip-right" title="" id="ciu_insc" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )  ?>">
-                        </div></div><input id="add_cius" name="add_cius" type="submit" class="button-a blue send" value="Agregar CIU">
-            </div><div data-gridname="jqxgridcius" class="refresgrid">Refresh Grid</div><div id="jqxgridcius"></div>
-            <div class="suma_aportes"><span></span><span id="suma_aporte"></span><span id="suma_aporte1">$222</span></div></div>-->
+    <br><br>
+    <div id="titularidadHistorial">
+    <label>Historial Cambio de Titularidad:</label>
+    <div id="jqxgridtitularidad">
+    </div>
+    </div>
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 

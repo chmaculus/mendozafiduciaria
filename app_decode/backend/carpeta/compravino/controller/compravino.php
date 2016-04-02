@@ -255,6 +255,12 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobj($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+    
+    function x_getTitularidad() {
+        $id_objeto = $_POST['num_factura'];
+        $rtn = $this->mod->getTitularidad($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
 
     function x_getoperatoria() {
         $id_objeto = $_POST['id_objeto'];

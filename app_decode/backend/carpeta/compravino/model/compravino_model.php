@@ -237,18 +237,19 @@ class compravino_model extends main_model {
     }
 
     function getobj($id_objeto) {
-
         //$this->_db->select("DATE_FORMAT(), c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,f.*");
         $this->_db->select("c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,f.*");
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-
         //log_this();
-
-
-        $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
-
+//        $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
+        $this->_db->select("CHECK_ESTADO");
+        $this->_db->order_by("FECHA", "DESC");
+        $array_Check = $this->_db->get_tabla('fid_cambio_titularidad', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
+//        echo $array_Check[0]['CHECK_ESTADO'];
+//        var_dump($array_Check);die();
+        $rtn["CHECK_TITULARIDAD"] = $array_Check[0]['CHECK_ESTADO'];
         return $rtn;
     }
 
@@ -539,16 +540,9 @@ class compravino_model extends main_model {
         }
     }
 
-//    function sendJuridica($obj, $nuevoID) {
-//        $array_checklist = explode(",", $obj);
-//        foreach ($obj as $value) {
-//            $ins_check = array(
-//                "ID_OPERATORIA" => $nuevoID,
-//                "ID_JURIDICA" => $value,
-//            );
-//            $this->_db->insert('fid_operatoria_juridica', $ins_check);
-//        }
-//    }
+//    function sendJuridica($obj, $nuevoID) {//        $array_checklist = explode(",", $obj);//        foreach ($obj as $value) {
+//            $ins_check = array(//                "ID_OPERATORIA" => $nuevoID,//                "ID_JURIDICA" => $value,
+//            );//            $this->_db->insert('fid_operatoria_juridica', $ins_check);//        }//    }
 
     function updateBodegas($obj, $nuevoID) {
         $this->_db->delete("fid_operatoria_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
@@ -566,71 +560,89 @@ class compravino_model extends main_model {
 
     function sendobj($obj, $cambio_titularidad) {
         //log_this('log/xxxxx.log',print_r($obj,1));
+        $numero_factura = $obj['NUMERO'];
         $iid = $obj["id"];
         $cuit = $obj["CUIT"];
-        $cli = $this->_db->get_tabla('fid_clientes', 'CUIT=' . $cuit);
-
+        $cli = $this->_db->get_tabla("fid_clientes", "CUIT='" . $cuit . "'");
         $valor_actual = 0;
         $valor_nuevo = 0;
-
-
         $cod_cli = $cli[0]['ID'];
         $obj["ID_CLIENTE"] = $cod_cli;
         $cuit_tmp = $obj["CUIT"];
-
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
 
-        if ($iid == 0)://agregar
+        if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
-            if ($cambio_titularidad == true) {
+            if ($cambio_titularidad == 'true') {
                 $arr_cambio_titu = array(
-                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_FACTURA" => $numero_factura,
                     "ID_USUARIO" => $_SESSION['USERADM'],
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 1,
                 );
-//                var_dump($arr_cambio_titu);
-//                die("ES ES EL ARRAY Q VA A GUARDAR");
+                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+            } else {
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $numero_factura,
+                    "ID_USUARIO" => $_SESSION['USERADM'],
+                    "FECHA" => date("Y-m-d H:i:s"),
+                    "CHECK_ESTADO" => 0,
+                );
                 $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
             }
-            $this->_db->insert('fid_traza', $arr_traza);
-            //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "add";
             $id_new = $resp;
-        else://editar
+        } else {//editar
             $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "'");
-
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
-            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=" . $obj['NUMERO']);
-            if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == false) {//no esta activado y tampoco se ha activado
-            } else if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == true) {//no esta activado y se ha activado
+            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=" . $numero_factura);
+            if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
                 $arr_cambio_titu = array(
-                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_FACTURA" => $numero_factura,
                     "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => '',
+                    "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 1,
                 );
                 $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
-            } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == true) {//esta activado y sigue activado
-            } else if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == false) {//esta activado y se ha desactivado
+            } else
+            if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
                 $arr_cambio_titu = array(
-                    "ID_FACTURA" => $obj['NUMERO'],
+                    "ID_FACTURA" => $numero_factura,
                     "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => '',
-                    "CHECK" => 0,
+                    "FECHA" => date("Y-m-d H:i:s"),
+                    "CHECK_ESTADO" => 0,
                 );
+                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
             }
-            //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "edit";
             $id_new = $iid;
-        endif;
-
+        }
         $rtn = array(
             "accion" => $acc,
-            "result" => $resp
+            "result" => $id_new
         );
+        //log_this('log/aaaaa.log', $this->_db->last_query());
         return $rtn;
+    }
+
+    function getTitularidad($id) {
+        $this->_db->select("t.ID_FACTURA,u.NOMBRE,t.FECHA,t.CHECK_ESTADO");
+        $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID");
+        $this->_db->order_by("t.FECHA", "DESC");
+        $this->_db->where("t.ID_FACTURA=" . $id);
+        $rtn = $this->_db->get_tabla("fid_cambio_titularidad t");
+        //log_this('xxxxx.log', $this->_db->last_query() );
+        $rtn_check = array();
+        foreach ($rtn as $value) {
+            if ($value['CHECK_ESTADO'] == 0) {
+                $value['CHECK_ESTADO'] = 'Se desactivo';
+            } else if ($value['CHECK_ESTADO'] == 1) {
+                $value['CHECK_ESTADO'] = 'Se activo';
+            }
+            $rtn_check[] = $value;
+        }
+        return $rtn_check;
     }
 
     function delobj($id) {

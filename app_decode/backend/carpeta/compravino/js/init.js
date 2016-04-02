@@ -52,9 +52,7 @@ function guardar_factura() {
     var formula = $("#formula").val();
 //Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
     var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
-
     iid = id ? id : 0;
-
 //validar campos
 //    if (numero == '') {
 //        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -62,7 +60,6 @@ function guardar_factura() {
 //        });
 //        return false;
 //    }
-//
 //    if (fecha == '') {
 //        jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
 //            $("#fecha").focus();
@@ -89,21 +86,18 @@ function guardar_factura() {
 //        });
 //        return false;
 //    }
-//
 //    if (azucar == '') {
 //        jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function () {
 //            $("#azucar").focus();
 //        });
 //        return false;
 //    }
-//
 //    if (precio == '') {
 //        jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function () {
 //            $("#precio").focus();
 //        });
 //        return false;
 //    }
-
     var tmp_ope, tmp_fid;
     var local = 1;
     if (_provincia == '12') {
@@ -113,10 +107,8 @@ function guardar_factura() {
         tmp_ope = 41;
         tmp_fid = 32;
     }
-
     var nolocal = 1;
     if (nolocal == 1) {
-
         if (_provincia == '12') {
             tmp_ope = _ope_mendoza;
             tmp_fid = _fid_mendoza;
@@ -125,7 +117,6 @@ function guardar_factura() {
             tmp_fid = _fid_sanjuan;
         }
     }
-
     objsave = {
         id: iid,
         NUMERO: numero,
@@ -371,6 +362,8 @@ $(document).ready(function () {
                 if (data.ID > 0) {
                     $.unblockUI();
                     llenar_form(data);
+                    console.log(" -- data --");
+                    console.log(data);
                     //$("#nuevafactura").show();
                     show_btns(1);
                     $("#send").hide();
@@ -416,13 +409,52 @@ $(document).ready(function () {
         show_btns(2);
     });
     refresGridevent();
+
+
+    $('#send_cliente').on('click', function (e) {
+//        e.preventDefault();
+    alert("GuardarCliente");
+        var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
+        var rowscount_proveedores = rows_proveedores.length;
+        var data_proveedores = [];
+        for (var i = 0; i < rowscount_proveedores; i++) {
+            data_proveedores[i] = $('#jqxgrid_proveedores').jqxGrid('getrowdata', i);
+        }
+//        if (opeDescripcion == '') {
+//            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
+//            return false;
+//        }
+//        if (opeCoordinador == '') {
+//            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
+//            return false;
+//        }
+//        if (opeJefe == '') {
+//            jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
+//            return false;
+//        }
+//        if (listrosMax == '') {
+//            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
+//            return false;
+//        }
+//        if (maxHectareas == '') {
+//            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;
+//        }
+//        if (opeProveedores == '') {
+//            jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;
+//        }
+//        if (opeBodega == '') {
+//            jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;
+//        }
+    });
+
     $('#send').on('click', function (e) {
         e.preventDefault();
 //var selected = '';    
-//alert($('#listbox_humana').val());
-//        $('#listbox_humana').each(function(){
-//            if (this.checked) {selected += $(this).val()+', ';}}); 
-//        if ($('#listbox_humana').val() != '') alert('Has seleccionado: '+selected);  elsealert('Debes seleccionar al menos una opción.');
+//$('#listbox_humana').each(function(){if (this.checked) {selected += $(this).val()+', ';}}); 
+//if ($('#listbox_humana').val() != '') alert('Has seleccionado: '+selected);  elsealert('Debes seleccionar al menos una opción.');
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
         var opeCoordinador = $("#opeCoordinador").val();
@@ -453,57 +485,27 @@ $(document).ready(function () {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
         var tipoPersona = $("#tipoPersona").val();
-//if (formaPago == 'Cuotas') {
-//            cantCuotas = $("#cantCuotas").val();
-//        }
-
-        /*esto si no va se borra*/
-//        var opeTitular = $("#opeTitular").val();
-//        var opeCuit = $("#opeCuit").val();
-//        var numVinedo = $("#numVinedo").val();
-//        var litrosOfrecidos = $("#litrosOfrecidos").val();
-//        var hectDeclaradas = $("#hectDeclaradas").val();
-//        var bgaDep = $("#bgaDep").val();
-//        var deptBodega = $("#deptBodega").val();
-//        var numINVBodega = $("#numINVBodega").val();
-//        var opetelefono = $("#opetelefono").val();
+//if (formaPago == 'Cuotas') {cantCuotas = $("#cantCuotas").val();}
+//        var opeTitular = $("#opeTitular").val();var opeCuit = $("#opeCuit").val();var numVinedo = $("#numVinedo").val();
+//        var litrosOfrecidos = $("#litrosOfrecidos").val();var hectDeclaradas = $("#hectDeclaradas").val();var bgaDep = $("#bgaDep").val();
+//        var deptBodega = $("#deptBodega").val();var numINVBodega = $("#numINVBodega").val();var opetelefono = $("#opetelefono").val();
 //        var opeCorreo = $("#opeCorreo").val();
-//validar campos
-//        if (opeNombre == '') {
-//            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#opeNombre").focus();
-//            });
-//            return false;
-//        }
-//        if (opeDescripcion == '') {
-//            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
-//            return false;
-//        }
-//        if (opeCoordinador == '') {
-//            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
-//            return false;
-//        }
-//        if (opeJefe == '') {
-//            jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
-//            return false;
-//        }
-//        if (listrosMax == '') {
-//            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
-//            return false;
-//        }
-//        if (maxHectareas == '') {
-//            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
-//        if (opeProveedores == '') {
-//            jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
-//        if (opeBodega == '') {
-//            jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
-
+//        if (opeNombre == '') {jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
+//            return false;}
+//        if (opeDescripcion == '') {jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
+//            return false;}
+//        if (opeCoordinador == '') {jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
+//            return false;}
+//        if (opeJefe == '') {jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
+//            return false;}
+//        if (listrosMax == '') {jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
+//            return false;}
+//        if (maxHectareas == '') {jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;}
+//        if (opeProveedores == '') {jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;}
+//        if (opeBodega == '') {jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+//            return false;}
         $.ajax({
             url: _compravino.URL + "/x_getIdOperatoria",
             dataType: "json",
@@ -527,40 +529,20 @@ $(document).ready(function () {
                         opePrecio4: opePrecio4,
                         opePrecio5: opePrecio5,
                         opePrecio6: opePrecio6
-//                        opeTitular: opeTitular,
-//                        opeCuit: opeCuit,
-//                        numVinedo: numVinedo,
-//                        litrosOfrecidos: litrosOfrecidos,
-//                        hectDeclaradas: hectDeclaradas,
-//                        bgaDep: bgaDep,
-//                        deptBodega: deptBodega,
-//                        numINVBodega: numINVBodega,
-//                        opetelefono: opetelefono,
-//                        opeCorreo: opeCorreo
+//                        opeTitular: opeTitular,opeCuit: opeCuit,numVinedo: numVinedo,litrosOfrecidos: litrosOfrecidos,
+//                        hectDeclaradas: hectDeclaradas,bgaDep: bgaDep,deptBodega: deptBodega,numINVBodega: numINVBodega,
+//                        opetelefono: opetelefono,opeCorreo: opeCorreo
                     },
-                    dataType: "json",
-                    type: "post",
-                });
+                    dataType: "json",type: "post"});
                 $.ajax({
                     url: _compravino.URL + "/x_sendProveedores",
-                    data: {
-                        data_proveedores: data_proveedores,
-                        nuevoID: nuevoID
-                    },
-                    dataType: "json",
-                    type: "post",
-                });
+                    data: {data_proveedores: data_proveedores,nuevoID: nuevoID},
+                    dataType: "json",type: "post",});
                 $.ajax({
                     url: _compravino.URL + "/x_sendBodegas",
-                    data: {
-                        data_bodegas: data_bodegas,
-                        nuevoID: nuevoID
-                    },
-                    dataType: "json",
-                    type: "post",
-                });
+                    data: {data_bodegas: data_bodegas,nuevoID: nuevoID},
+                    dataType: "json",type: "post",});
                 if (tipoPersona == 'Humana') {
-
                     var array_humana = new Array();
                     $("#humana tr.op").each(function () {
                         var data_p = {
@@ -812,6 +794,14 @@ $(document).ready(function () {
             });
             $('#opeProveedores').on('change', function () {
                 var datarow = generaterow_proveedores();
+
+                /* AGREGAR AQUI
+                 * VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
+                 * 
+                 * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
+                 * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
+                 * 
+                 * */
                 if (accion_proveedores_new == 'AGREGAR') {
                     var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
                 } else if (accion_proveedores_new == 'ELIMINAR') {
@@ -1178,15 +1168,12 @@ $(document).ready(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
-    //$("#ciu_num").numeric({negative: false});
-//    $("#ciu_azucar").numeric({negative: false});
-//    $("#ciu_kgrs").numeric({negative: false});
+//$("#ciu_num").numeric({negative: false});//$("#ciu_azucar").numeric({negative: false});//$("#ciu_kgrs").numeric({negative: false});
     $("#precio").keyup(function () {
         if ($(this).val() == 0) {
             $("#neto").val(0);
         } else {
-//var porc = var_cliente.VALOR;
-//condicioniva_g
+//var porc = var_cliente.VALOR;//condicioniva_g
             var factor = 0;
             if (condicioniva_g >= 0) {
                 factor = condicioniva_g;
@@ -1227,7 +1214,6 @@ $(document).ready(function () {
         factor = $('#porcentaje_iva').val();
         var iva = factor * $("#neto").val() / 100;
         $("#iva").val(dec(iva, 2));
-
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
@@ -1321,7 +1307,8 @@ function editar_formulario() {
         type: "post",
         success: function (rtn) {
 
-            var arr_cius = rtn.cius;
+//            var arr_cius = rtn.cius;
+            var arr_check = rtn.CHECK_TITULARIDAD;
             data = rtn.factura;
             console.dir(data);
             $("#idh").val(data.ID);
@@ -1347,23 +1334,44 @@ function editar_formulario() {
             $("#neto").val(data.NETO).attr("readonly", "readonly");
             $("#iva").val(data.IVA).attr("readonly", "readonly");
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
-            if (arr_cius.length > 0) {
-                //colocar
-                $.each(arr_cius, function (k, v) {
-                    var data = {
-                        'NUM': v.NUMERO,
-                        'KGRS': v.KGRS,
-                        'AZUCAR': v.AZUCAR,
-                        'CHEQUEO': v.VERIFICADO,
-                        'INSC': v.INSC,
-                        'ID': 'DDDDDDD',
-                        'uid': 1
-                    }
-                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                });
+
+            if (arr_check == 1) {
+                $("#cambio_titularidad").attr('checked', true);
+            } else {
+                $("#cambio_titularidad").attr('checked', false);
             }
+            $("#titularidadHistorial").show();
+            var sourceope_titularidad = {
+                datatype: "json",
+                type: "post",
+                datafields: [
+                    {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
+                    {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
+                ],
+                url: _compravino.URL + "/x_getTitularidad",
+                data: {num_factura: $("#numero").val()},
+                async: false
+            };
+            var dataAdapterope_titularidad = new $.jqx.dataAdapter(sourceope_titularidad,
+                    {formatData: function (data) {
+                            data.name_startsWith = $("#searchField").val();
+                            return data;
+                        }}
+            );
+            $("#jqxgridtitularidad").jqxGrid({
+                width: '50%',
+                height: '200px',
+                source: dataAdapterope_titularidad,
+                theme: 'energyblue',
+                selectionmode: 'singlerows',
+                localization: getLocalization(),
+                columns: [
+                    {text: 'ID_FACTURA', datafield: 'ID_FACTURA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+                    {text: 'USUARIO', datafield: 'NOMBRE', width: '25%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+                    {text: 'FECHA', datafield: 'FECHA', cellsalign: 'left', width: '50%', filtercondition: 'starts_with', editable: true},
+                    {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+                ]
+            });
         }
     });
 }
