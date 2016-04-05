@@ -5,6 +5,8 @@
     <li class="tb_pagos" data-top='pago'><div>Lote de Pago</div></li>
     <!--<li class="tb_exp" data-top='export'><div>Exportar</div></li>-->
 </ul>
+<br>   
+<!--<input id="sincronizar_grillas" name="sincronizar" type="submit" class="button-a blue sincronizar_grillas" style="margin-top: 25px;" value="Sincronizar Datos">-->
 <div id="jqxgrid_listado"></div>
 
 <div id="wpopup"></div>
