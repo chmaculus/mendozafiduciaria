@@ -285,7 +285,6 @@ $(document).ready(function () {
     $("#opeJefe").chosen({width: "250px"});
     $("#opeProveedores").chosen({width: "400px"});
     $("#opeBodega").chosen({width: "400px"});
-    $("#tipoPersona").chosen({width: "180px", disable_search_threshold: 10});
 //    $("#listbox_juridica").hide();
     $("#juridica").hide();
     $('#send').show();
@@ -438,7 +437,6 @@ $(document).ready(function () {
         var opePrecio4 = $("#opeP4").val();
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
-        var tipoPersona = $("#tipoPersona").val();
         var nuevoID = 0;
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
         var rowscount_proveedores = rows_proveedores.length;
@@ -452,7 +450,10 @@ $(document).ready(function () {
         for (var i = 0; i < rowscount_bodegas; i++) {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
-        var tipoPersona = $("#tipoPersona").val();
+        var data_checklists_persona = [];
+        $('.op input:checked').each(function () {
+            data_checklists_persona.push($(this).val());
+        })
 //if (formaPago == 'Cuotas') {
 //            cantCuotas = $("#cantCuotas").val();
 //        }
@@ -520,7 +521,7 @@ $(document).ready(function () {
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
                         maxPesos: maxPesos,
-                        tipoPersona: tipoPersona,
+                        checklistsPersona: data_checklists_persona,
                         opePrecio1: opePrecio1,
                         opePrecio2: opePrecio2,
                         opePrecio3: opePrecio3,
@@ -559,7 +560,7 @@ $(document).ready(function () {
                     dataType: "json",
                     type: "post",
                 });
-                if (tipoPersona == 'Humana') {
+                /*if (tipoPersona == 'Humana') {
 
                     var array_humana = new Array();
                     $("#humana tr.op").each(function () {
@@ -596,7 +597,7 @@ $(document).ready(function () {
                         dataType: "json",
                         type: "post",
                     });
-                }
+                }*/
 
                 jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
@@ -1399,7 +1400,6 @@ function editar_formulario_operatoria() {
             $("#opeP5").val(rtn[0].PRECIO_5);
             $("#opeP6").val(rtn[0].PRECIO_6);
             $("#opePCuota").val(rtn[0].PRECIO_CUOTA);
-            $("#tipoPersona").val(rtn[0].PERSONA);
             $("#opeTitular").val(rtn[0].TITULAR);
             $("#opeCuit").val(rtn[0].CUIT);
             $("#numVinedo").val(rtn[0].NUM_VINEDO);

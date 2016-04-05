@@ -219,16 +219,10 @@
 
 <!-- <div class="elem elem_med_cond"><label>Seleccionar Persona:</label><div class="indent"><select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
 <option value="Humana">Humana</option><option value="Juridica">Juridica</option></select></div></div>-->
-        <div class="elem elem_med_cond">
-            <label>Seleccionar Persona:</label>
-            <div class="indent">
-                <select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
-                    <option value="Humana">Humana</option>
-                    <option value="Juridica">Jurídica</option>
-                </select>   
-            </div>
-        </div>
         <table id="humana">
+            <tr>
+                <th colspan="3">Seleccionar Requerimientos para Persona Humana</th>
+            </tr>
             <tr>
                 <th class="numCheck" style="width: 5%;">N°</th>
                 <th>DATOS</th>
@@ -238,16 +232,12 @@
                 <tr class="op">
                     <td class="numCheck"><?php echo $it['ID']; ?></td>
                     <td><?php echo $it['DESCRIPCION']; ?></td>
-                    <td> <select class="opeOpcion">
-                            <option value="SI">SI</option>
-                            <option value="NO">NO</option>
-                            <option value="NC" selected="selected">N/C</option>
-                        </select>
-                    </td>        
+                    <td><input type="checkbox" class="opeOpcion" value="<?php echo $it['ID']; ?>" /></td>
                 </tr>
             <?php } ?>
-        </table>
-        <table id="juridica">
+            <tr>
+                <th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th>
+            </tr>
             <tr>
                 <th class="numCheck">N°</th>
                 <th>DATOS</th>
@@ -257,12 +247,7 @@
                 <tr class="op">
                     <td class="numCheck"><?php echo $it['ID']; ?></td>
                     <td><?php echo $it['DESCRIPCION']; ?></td>
-                    <td> <select class="opeOpcion">
-                            <option value="SI">SI</option>
-                            <option value="NO">NO</option>
-                            <option value="NC" selected="selected">N/C</option>
-                        </select>
-                    </td>        
+                    <td><input type="checkbox" class="opeOpcion" value="<?php echo $it['ID']; ?>" /></td>
                 </tr>
             <?php } ?>
         </table>

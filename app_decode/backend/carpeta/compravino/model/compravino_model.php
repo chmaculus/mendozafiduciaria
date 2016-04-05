@@ -232,7 +232,7 @@ class compravino_model extends main_model {
     function getNumOpe($id_cliente) {
         $this->_db->select("ID_OPERATORIA");
         $this->_db->order_by("ID_OPERATORIA", "DESC  LIMIT 1");
-        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores', "ID_PROVEEDOR= '" . $id_cliente . "'");
+        $rtn = $this->_db->get_tabla('fid_op_vino_proveedores', "ID_PROVEEDOR= '" . $id_cliente . "'");
         return $rtn;
     }
 
@@ -261,27 +261,27 @@ class compravino_model extends main_model {
 
     function getOperatoriaProveedores($id_objeto) {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores', "ID_OPERATORIA = '" . $id_objeto . "'");
+        $rtn = $this->_db->get_tabla('fid_op_vino_proveedores', "ID_OPERATORIA = '" . $id_objeto . "'");
         return $rtn;
     }
 
     function getOperatoriaBodegas($id_objeto) {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla('fid_operatoria_bodegas', "ID_OPERATORIA = '" . $id_objeto . "'");
+        $rtn = $this->_db->get_tabla('fid_op_vino_bodegas', "ID_OPERATORIA = '" . $id_objeto . "'");
         return $rtn;
     }
 
     function getProveedoresEdit($id_objeto) {
         $this->_db->select("p.ID_OPERATORIA,c.RAZON_SOCIAL AS RAZON_SOCIAL,p.ID_PROVEEDOR AS ID, p.LIMITE_OPE AS LIMLTRS, p.LIM_OPE_HECT AS MAXHECTAREAS ");
         $this->_db->join("fid_clientes c ", "p.ID_PROVEEDOR=c.ID");
-        $rtn = $this->_db->get_tabla('fid_operatoria_proveedores p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
+        $rtn = $this->_db->get_tabla('fid_op_vino_proveedores p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
         return $rtn;
     }
 
     function getBodegasEdit($id_objeto) {
         $this->_db->select("p.ID_OPERATORIA,e.NOMBRE AS NOMBRE,p.ID_BODEGA AS ID, p.LIMITE_OPE AS LIMLTRS ");
         $this->_db->join("fid_entidades e ", "p.ID_BODEGA=e.ID");
-        $rtn = $this->_db->get_tabla('fid_operatoria_bodegas p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
+        $rtn = $this->_db->get_tabla('fid_op_vino_bodegas p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
         return $rtn;
     }
 
@@ -367,12 +367,7 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-//<<<<<<< HEAD
-//    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona, $opePrecio1, $opePrecio2, $opePrecio3, $opePrecio4, $opePrecio5, $opePrecio6, $opeTitular, $opeCuit, $numVinedo, $litrosOfrecidos, $hectDeclaradas, $bgaDep, $deptBodega, $numINVBodega, $opetelefono, $opeCorreo) {
-//=======
     function sendOperatoria($arr_post) {
-//>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
-        $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
         $nueva_limite = strtotime('+1 year', strtotime($fecha));
@@ -388,26 +383,13 @@ class compravino_model extends main_model {
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
             "MAX_PESOS" => $arr_post['maxPesos'],
-//            "FPAGO" => $formaPago,
-//            "CANT_CUOTAS" => $cantCuotas,
-            "PERSONA" => $arr_post['tipoPersona'],
+            "CHECKLIST_PERSONA" => implode(',', $arr_post['checklistsPersona']),
             "PRECIO_1" => $arr_post['opePrecio1'],
             "PRECIO_2" => $arr_post['opePrecio2'],
             "PRECIO_3" => $arr_post['opePrecio3'],
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            /* Si los campos no van se elimina todo lo comentado */
-//            "TITULAR" => $arr_post['opeTitular'],
-//            "CUIT" => $arr_post['opeCuit'],
-//            "NUM_VINEDO" => $arr_post['numVinedo'],
-//            "LITROS_OFRECIDOS" => $arr_post['litrosOfrecidos'],
-//            "HECT_DECLARADAS" => $arr_post['hectDeclaradas'],
-//            "BGA_DEP" => $arr_post['bgaDep'],
-//            "DEPT_BODEGA" => $arr_post['deptBodega'],
-//            "NUM_INV_BODEGA" => $arr_post['numINVBodega'],
-//            "TELEFONO" => $arr_post['opetelefono'],
-//            "CORREO" => $arr_post['opeCorreo'],
             "HECT_MAX" => ''
         );
         if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
@@ -475,12 +457,12 @@ class compravino_model extends main_model {
                 "LIMITE_OPE" => $value['LIMLTRS'],
                 "LIM_OPE_HECT" => $value['MAXHECTAREAS']
             );
-            $this->_db->insert('fid_operatoria_proveedores', $ins_proveedor);
+            $this->_db->insert('fid_op_vino_proveedores', $ins_proveedor);
         }
     }
 
     function updateProveedores($obj, $nuevoID) {
-        $this->_db->delete("fid_operatoria_proveedores", "ID_OPERATORIA='" . $nuevoID . "'");
+        $this->_db->delete("fid_op_vino_proveedores", "ID_OPERATORIA='" . $nuevoID . "'");
         foreach ($obj as $value) {
             $ins_proveedor = array(
                 "ID_OPERATORIA" => $nuevoID,
@@ -488,7 +470,7 @@ class compravino_model extends main_model {
                 "LIMITE_OPE" => $value['LIMLTRS'],
                 "LIM_OPE_HECT" => $value['MAXHECTAREAS']
             );
-            $this->_db->insert('fid_operatoria_proveedores', $ins_proveedor);
+            $this->_db->insert('fid_op_vino_proveedores', $ins_proveedor);
         }
     }
 
@@ -499,7 +481,7 @@ class compravino_model extends main_model {
                 "ID_BODEGA" => $value['ID'],
                 "LIMITE_OPE" => $value['LIMLTRS']
             );
-            $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+            $this->_db->insert('fid_op_vino_bodegas', $ins_bodegas);
         }
     }
 
@@ -551,7 +533,7 @@ class compravino_model extends main_model {
 //    }
 
     function updateBodegas($obj, $nuevoID) {
-        $this->_db->delete("fid_operatoria_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
+        $this->_db->delete("fid_op_vino_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
         if ($obj && count($obj) > 0) {
             foreach ($obj as $value) {
                 $ins_bodegas = array(
@@ -559,7 +541,7 @@ class compravino_model extends main_model {
                     "ID_BODEGA" => $value['ID'],
                     "LIMITE_OPE" => $value['LIMLTRS']
                 );
-                $this->_db->insert('fid_operatoria_bodegas', $ins_bodegas);
+                $this->_db->insert('fid_op_vino_bodegas', $ins_bodegas);
             }
         }
     }
@@ -901,20 +883,20 @@ class compravino_model extends main_model {
 
     function getChecklistHumana() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_checklist_humana");
+        $rtn = $this->_db->get_tabla("fid_op_vino_checklist", "JURIDICA=0 AND ESTADO=1");
         return $rtn;
     }
 
     function getChecklistJuridica() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_checklist_juridica");
+        $rtn = $this->_db->get_tabla("fid_op_vino_checklist", "JURIDICA=1 AND ESTADO=1");
         return $rtn;
     }
 
     function getbodegas_vino() {
 //    function getbodegas_vino($id_operatoria) {
 //SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
-//JOIN fid_operatoria_bodegas b ON(e.ID=b.ID_BODEGA)
+//JOIN fid_op_vino_bodegas b ON(e.ID=b.ID_BODEGA)
 //JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
 //WHERE b.ID_OPERATORIA=20
 //ORDER BY b.ID_OPERATORIA DESC
@@ -924,7 +906,7 @@ class compravino_model extends main_model {
 //            return false;
 //        }
         $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
-        $this->_db->join("fid_operatoria_bodegas b", "e.ID=b.ID_BODEGA");
+        $this->_db->join("fid_op_vino_bodegas b", "e.ID=b.ID_BODEGA");
         $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
 //        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
 //        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
