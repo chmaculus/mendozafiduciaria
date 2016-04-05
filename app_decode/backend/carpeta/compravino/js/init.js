@@ -509,10 +509,7 @@ $(document).ready(function () {
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-//if (formaPago == 'Cuotas') {
-//            cantCuotas = $("#cantCuotas").val();
-//        }
-
+//if (formaPago == 'Cuotas') {cantCuotas = $("#cantCuotas").val();}
         /*esto si no va se borra*/
 //        var opeTitular = $("#opeTitular").val();
 //        var opeCuit = $("#opeCuit").val();
@@ -586,45 +583,45 @@ $(document).ready(function () {
                     type: "post",
                 });
                 /*if (tipoPersona == 'Humana') {
-                    data: {data_bodegas: data_bodegas, nuevoID: nuevoID},
-                    dataType: "json", type: "post", });
-                if (tipoPersona == 'Humana') {
-                    var array_humana = new Array();
-                    $("#humana tr.op").each(function () {
-                        var data_p = {
-                            'numcheck': $(this).children("td.numCheck").text(),
-                            'valor': $(this).children("td").children('select').val()
-                        }
-                        array_humana.push(data_p);
-                    });
-                    $.ajax({
-                        url: _compravino.URL + "/x_sendHumana",
-                        data: {
-                            checks_humana: array_humana,
-                            nuevoID: nuevoID
-                        },
-                        dataType: "json",
-                        type: "post",
-                    });
-                } else if (tipoPersona == 'Juridica') {
-                    var array_juridica = new Array();
-                    $("#juridica tr.op").each(function () {
-                        var data_p = {
-                            'numcheck': $(this).children("td.numCheck").text(),
-                            'valor': $(this).children("td").children('select').val()
-                        }
-                        array_juridica.push(data_p);
-                    });
-                    $.ajax({
-                        url: _compravino.URL + "/x_sendJuridica",
-                        data: {
-                            array_juridica: array_juridica,
-                            nuevoID: nuevoID
-                        },
-                        dataType: "json",
-                        type: "post",
-                    });
-                }*/
+                 data: {data_bodegas: data_bodegas, nuevoID: nuevoID},
+                 dataType: "json", type: "post", });
+                 if (tipoPersona == 'Humana') {
+                 var array_humana = new Array();
+                 $("#humana tr.op").each(function () {
+                 var data_p = {
+                 'numcheck': $(this).children("td.numCheck").text(),
+                 'valor': $(this).children("td").children('select').val()
+                 }
+                 array_humana.push(data_p);
+                 });
+                 $.ajax({
+                 url: _compravino.URL + "/x_sendHumana",
+                 data: {
+                 checks_humana: array_humana,
+                 nuevoID: nuevoID
+                 },
+                 dataType: "json",
+                 type: "post",
+                 });
+                 } else if (tipoPersona == 'Juridica') {
+                 var array_juridica = new Array();
+                 $("#juridica tr.op").each(function () {
+                 var data_p = {
+                 'numcheck': $(this).children("td.numCheck").text(),
+                 'valor': $(this).children("td").children('select').val()
+                 }
+                 array_juridica.push(data_p);
+                 });
+                 $.ajax({
+                 url: _compravino.URL + "/x_sendJuridica",
+                 data: {
+                 array_juridica: array_juridica,
+                 nuevoID: nuevoID
+                 },
+                 dataType: "json",
+                 type: "post",
+                 });
+                 }*/
 
                 jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
@@ -1563,6 +1560,41 @@ function editar_formulario_operatoria() {
             $("#numINVBodega").val(rtn[0].NUM_INV_BODEGA);
             $("#opetelefono").val(rtn[0].TELEFONO);
             $("#opeCorreo").val(rtn[0].CORREO);
+
+            var data_checklists_persona = [];
+            var listado_checklist = rtn[0].CHECKLIST_PERSONA;
+            data_checklists_persona = listado_checklist.split(',');
+
+//            var cantidad_check =  data_checklists_persona.length;
+//            for(var j=0; j< cantidad_check;j++){}
+//var selected = '';    
+//$('#listbox_humana').each(function(){if (this.checked) {selected += $(this).val()+', ';}}); 
+//if ($('#listbox_humana').val() != '') alert('Has seleccionado: '+selected);  elsealert('Debes seleccionar al menos una opción.');
+//            $('.op input:checked').each(function () {
+//                data_checklists_persona.push($(this).val());
+//            })
+//   var data_checklists_persona = [];
+//        $('.op input:checked').each(function () {
+//                var firstInput = getElementsByTagName('op')[10];
+//                firstInput.checked = !firstInput.checked;
+////            $(this).val().is('checked',true);
+//        })
+
+
+            var data_checklists_persona = [];
+            $('.op input:checked').each(function () {
+
+            var checkbox = $(this).find("input[type='checkbox']");
+            checkbox.attr('checked', !checkbox.attr('checked'));
+            })
+
+
+
+
+
+            console.log("LLLLLASLASDLALSDLASD");
+            console.log(data_checklists_persona);
+
             $.ajax({
                 url: _compravino.URL + "/x_getOperatoriaProveedores",
                 data: {
@@ -1591,8 +1623,7 @@ function editar_formulario_operatoria() {
                         data: {
                             id_operatoria: el_id
                         },
-                        async: false,
-                        addrow: function (rowid, rowdata, position, commit) {
+                        async: false, addrow: function (rowid, rowdata, position, commit) {
                             commit(true);
                         },
                         deleterow: function (rowid, commit) {
@@ -2258,7 +2289,6 @@ function addEventsRequerimientos(idnr) {
             REMITENTE: req_remitente,
             PROPIETARIO: propietario
         }
-
 //console.dir( obj_req );
 
         $.ajax({
@@ -2911,7 +2941,7 @@ function initGridListado(id_usuario) {
             {text: 'FACTURA', datafield: 'NUMERO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'FECHA FACTURA', datafield: 'FECHA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false},
             {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false,hidden:true},
+            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
             {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},

@@ -20,7 +20,7 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla('fid_entidadestipo');
         return $rtn;
     }
-
+    
 //    function getclientessql() {
 //        //$rtn = $this->_db->get_tabla('fid_usuarios');
 //        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
@@ -28,10 +28,8 @@ class compravino_model extends main_model {
 //    }
 
     function sincronizarVino($datosBuscar) {
-
 //        var_dump($datosBuscar);
 //        die("DATOOOOOOS");
-
         foreach ($datosBuscar as $value) {
             $this->_dbsql->select("ESTADO");
             $solicitud_adm = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] . " AND NUMFACTURA=" . $value['NUMERO'] . ""
@@ -43,12 +41,8 @@ class compravino_model extends main_model {
                 }
             }
         }
-
-
         var_dump($solicitud_adm);
         die("NO MAS");
-
-
 
         $id_lote_new = 0;
         if ($arr_obj):
