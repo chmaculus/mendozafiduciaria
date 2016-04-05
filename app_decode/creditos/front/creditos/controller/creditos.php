@@ -326,15 +326,19 @@ class creditos extends main_controller{
                 
                 if ($item['CUOTAS']) {
                     foreach($item['CUOTAS'] as $cuota) {
-                        if ($cuota['FECHA_VENCIMIENTO'] < time() && $cuota['CUOTA_AL_DIA'] > 0.2) {
-                            $monto_mora += $cuota['CUOTA_AL_DIA'];
+                        if ($cuota['FECHA_VENCIMIENTO'] < time()) {
+                            if ($cuota['CUOTA_AL_DIA'] > 0.2) {
+                                $monto_mora += $cuota['CUOTA_AL_DIA'];
+                                ++$cuotas_mora;
+                            }
+                            $total_monto_vencido += $cuota['CUOTA_TOTAL'];
                         }
                         
                         if ($cuota['INT_MORATORIO'] > 0.5 || (isset($arr_pagos[$cuota['CUOTAS_RESTANTES']]['TIENE_MORA']) && $arr_pagos[$cuota['CUOTAS_RESTANTES']]['TIENE_MORA'])) {
-                            $total_monto_vencido += $cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] +  + $cuota['INT_COMPENSATORIO_IVA'];
+                            //$total_monto_vencido += $cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] +  + $cuota['INT_COMPENSATORIO_IVA'];
                             
                             if (!($cuota['CUOTA_AL_DIA'] < 0.50)) {
-                                ++$cuotas_mora;
+                                //++$cuotas_mora;
                             }
                         }
                         $total_credito += $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA'];
