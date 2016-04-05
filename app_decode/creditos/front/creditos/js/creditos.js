@@ -164,6 +164,16 @@ $(document).ready(function(){
     
 });
 
+$.fn.setTooltipsOnColumnHeader = function () {
+    jQuery("#jqxgrid").find('.jqx-grid-column-header').children('div').each(function (index, element) {;
+        $(this).attr('title', $(this).find('span').text());
+    });
+};
+/*var  = function (grid, iColumn, text) {
+    var thd = jQuery("thead:first", grid[0].grid.hDiv)[0];
+    jQuery("tr.ui-jqgrid-labels th:eq(" + iColumn + ")", thd).attr("title", text);
+};*/
+
 function get_opciones(){
     var selectedrowindexes = $('#jqxgrid').jqxGrid('getselectedrowindexes'); 
     
@@ -339,7 +349,7 @@ function init_grid(id_usuario,tipo){
         ]
     });
     
-    
+    $("#jqxgrid").setTooltipsOnColumnHeader();
 }
 
 function reporte1() {
@@ -351,7 +361,7 @@ function reporte1() {
         datafields: [
             { name: 'DEUDOR', type: 'string' },
             { name: 'CUIT', type: 'string' },
-            { name: 'ID', type: 'number' },
+            { name: 'ID', type: 'integer' },
             { name: 'DIRECCION', type: 'string' },
             { name: 'PROVINCIA', type: 'string' },
             { name: 'LOCALIDAD', type: 'string' },
@@ -405,6 +415,7 @@ function reporte1() {
         localization: getLocalization(),
         sortable: true,
         filterable: true,
+        enabletooltips: true,
         showfilterrow: false,
         columns: [
             { text: 'DEUDOR', datafield: 'DEUDOR', width: '10%', groupable:false, filterable: false },
@@ -425,6 +436,8 @@ function reporte1() {
             { text: 'ESTADO', datafield: 'ESTADO', width: '5%', hidden : false, filterable : false }
         ]
     });
+    
+    $("#jqxgrid").setTooltipsOnColumnHeader();
     
     $('#jqxgrid').show();
     $("#jqxgrid").before('<div id="jqxgrid2"></div>');
@@ -489,6 +502,8 @@ function reporte1b() {
             { text: 'Eficiencia por caso', datafield: 'CREDITOS_EFICIENCIA', width: '25%', groupable:false, filterable: false }
         ]
     });
+    
+    $("#jqxgrid2").setTooltipsOnColumnHeader();
     $("#jqxgrid2").show();
     
 }
@@ -503,7 +518,7 @@ function reporte2() {
         datafields: [
             { name: 'DEUDOR', type: 'string' },
             { name: 'CUIT', type: 'string' },
-            { name: 'ID', type: 'number' },
+            { name: 'ID', type: 'integer' },
             { name: 'FIDEICOMISO', type: 'string' },
             { name: 'CUOTA_VENCE', type: 'number' },
             { name: 'FECHA_VENCE', type: 'date' },
@@ -572,6 +587,7 @@ function reporte2() {
         ]
     });
     
+    $("#jqxgrid").setTooltipsOnColumnHeader();
     $('#jqxgrid').show();
 }
 
@@ -635,7 +651,7 @@ function reporte4() {
         datafields: [
             { name: 'DEUDOR', type: 'string' },
             { name: 'CUIT', type: 'string' },
-            { name: 'ID', type: 'number' },
+            { name: 'ID', type: 'integer' },
             { name: 'DIRECCION', type: 'string' },
             { name: 'COD_POSTAL', type: 'string' },
             { name: 'PROVINCIA', type: 'string' },
@@ -706,6 +722,7 @@ function reporte4() {
         ]
     });
     
+    $("#jqxgrid").setTooltipsOnColumnHeader();
     $('#jqxgrid').show();
 }
 

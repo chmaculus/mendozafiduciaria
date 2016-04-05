@@ -251,6 +251,7 @@ class creditos extends main_controller{
         $_total_creditos = 0;
         $_montos_vencidos = 0;
         $_monto_mora = 0;
+        $_creditos_vencidos = 0;
         
         $arr_reporte = array();
         
@@ -315,28 +316,36 @@ class creditos extends main_controller{
                         }
                     }
                     
-                    foreach ($arr_pagos as $arr_pg) {
+                    /*foreach ($arr_pagos as $arr_pg) {
                         if ($arr_pg['TIENE_MORA']) {
                             $monto_mora += $arr_pg['MONTO'];
                         }
-                    }
+                    }*/
                 }
                 
                 
                 if ($item['CUOTAS']) {
                     foreach($item['CUOTAS'] as $cuota) {
+                        if ($cuota['FECHA_VENCIMIENTO'] < time()) {
+                            if ($cuota['CUOTA_AL_DIA'] > 0.2) {
+                                $monto_mora += $cuota['CUOTA_AL_DIA'];
+                                ++$cuotas_mora;
+                            }
+                            $total_monto_vencido += $cuota['CUOTA_TOTAL'];
+                        }
+                        
                         if ($cuota['INT_MORATORIO'] > 0.5 || (isset($arr_pagos[$cuota['CUOTAS_RESTANTES']]['TIENE_MORA']) && $arr_pagos[$cuota['CUOTAS_RESTANTES']]['TIENE_MORA'])) {
-                            $total_monto_vencido += $cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] +  + $cuota['INT_COMPENSATORIO_IVA'];
+                            //$total_monto_vencido += $cuota['CAPITAL_CUOTA'] + $cuota['INT_COMPENSATORIO'] +  + $cuota['INT_COMPENSATORIO_IVA'];
                             
                             if (!($cuota['CUOTA_AL_DIA'] < 0.50)) {
-                                ++$cuotas_mora;
+                                //++$cuotas_mora;
                             }
                         }
                         $total_credito += $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA'];
                     }
                 }
                 
-                if ($_moratoria) {
+                if ($monto_mora) {
                     ++$_cantidad_creditos_mora;
                 }
                 
@@ -348,13 +357,12 @@ class creditos extends main_controller{
                 $arr['LOCALIDAD'] = $item['LOCALIDAD'];
                 $arr['FECHA_DESEMB'] = $item['DESEMBOLSO'] ? date('Y-m-d', $item['DESEMBOLSO'][0]['FECHA']) : '';
                 $arr['MONTO_CREDITO'] = $item['MONTO_CREDITO'];
-                $arr['SALDO_CAPITAL'] = $_moratoria ? 'Mora' : 'Al Día';
-                $arr['SITUACION'] = $_moratoria ? 'Mora' : 'Al Día';
+                $arr['SITUACION'] = $monto_mora ? 'Mora' : 'Al Día';
                 $arr['SALDO_CAPITAL'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
                 $arr['COBRANZAS'] = number_format($cobranzas, 2, ".", "");
                 $arr['CANTIDAD_CUOTAS_MORAS'] = $cuotas_mora;
                 $arr['MONTO_VENCIDO'] = number_format($total_monto_vencido, 2, ".", "");
-                $arr['MONTO_MORA'] = number_format($total_credito + $total_moratoria + $total_punitorio - $cobranzas, 2, ".", "");
+                $arr['MONTO_MORA'] = number_format($monto_mora, 2, ".", "");
                 $arr['PORCENTAJE_MORA'] = number_format($cuotas_mora * 100 / $cant_cuotas, 2, ",", ".") . "%";
                 $arr['ESTADO'] = '?';
                 
@@ -362,11 +370,14 @@ class creditos extends main_controller{
                 
                 $_monto_mora += $monto_mora;
                 $_montos_vencidos += $total_monto_vencido;
+                
+                $_creditos_vencidos += $total_monto_vencido ? 1 : 0;
             }
             
         }
         
         $_SESSION['cantidad_creditos'] = $_cantidad_creditos;
+        $_SESSION['creditos_vencidos'] = $_creditos_vencidos;
         $_SESSION['cantidad_creditos_mora'] = $_cantidad_creditos_mora;
         $_SESSION['total_creditos'] = $_total_creditos;
         $_SESSION['montos_vencidos'] = $_montos_vencidos;
@@ -380,16 +391,16 @@ class creditos extends main_controller{
         $res_mor = array();
         $res_mor[] = array(
             'TOTAL_CREDITOS' => $_SESSION['cantidad_creditos'],
-            'MONTOS_VENCIDOS' => "",
+            'MONTOS_VENCIDOS' => $_SESSION['creditos_vencidos'],
             'TOTAL_CREDITOS_MORA' => $_SESSION['cantidad_creditos_mora'],
-            'CREDITOS_EFICIENCIA' => number_format($_SESSION['cantidad_creditos_mora'] / $_SESSION['cantidad_creditos'] * 100, 2) . "%"
+            'CREDITOS_EFICIENCIA' => number_format(($_SESSION['cantidad_creditos'] - $_SESSION['cantidad_creditos_mora']) / $_SESSION['cantidad_creditos'] * 100, 2) . "%"
                 );
         
         $res_mor[] = array(
             'TOTAL_CREDITOS' => number_format($_SESSION['total_creditos'], 2, ",", "."),
             'MONTOS_VENCIDOS' => number_format($_SESSION['montos_vencidos'], 2, ",", "."),
             'TOTAL_CREDITOS_MORA' => number_format($_SESSION['montos_mora'], 2, ",", "."),
-            'CREDITOS_EFICIENCIA' => number_format($_SESSION['montos_mora']  / $_SESSION['total_creditos'] * 100, 2) . "%"
+            'CREDITOS_EFICIENCIA' => number_format(($_SESSION['montos_vencidos'] - $_SESSION['montos_mora']) / $_SESSION['total_creditos'] * 100, 2) . "%"
                 );
         
         echo trim(json_encode($res_mor));
@@ -499,6 +510,9 @@ class creditos extends main_controller{
                 if (count($item['CUOTAS']) > 0) {
                     
                     foreach ($item['CUOTAS'] as $kkk => $cc) {
+                        if ($cc['FECHA_VENCIMIENTO'] < time() && $cc['CUOTA_AL_DIA'] > 0.2) {
+                            $monto_mora += $cc['CUOTA_AL_DIA'];
+                        }
                         //$monto_a_cobrar += ($cc['CAPITAL_CUOTA'] + $cc['INT_COMPENSATORIO'] + $cc['INT_COMPENSATORIO_IVA']);
                         $pago_cuota = 0;
                         
@@ -515,7 +529,7 @@ class creditos extends main_controller{
                         $_monto_sin_pagar = $tt_cuota - $pago_cuota;
                         if ($_monto_mora > 0.5) {
                             if ($cc['INT_MORATORIO']) {
-                                $monto_mora += $_monto_mora;
+                                //$monto_mora += $_monto_mora;
                             } else {
                                 //si no tiene int_moratorio es xq no está vencido
                             }
