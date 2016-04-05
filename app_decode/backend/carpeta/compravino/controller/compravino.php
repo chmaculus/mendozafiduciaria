@@ -165,11 +165,12 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
-    
+
     function x_getChecklistHumana() {
         $obj = $this->mod->getChecklistHumana();
         return $obj;
     }
+
     function x_getChecklistJuridica() {
         $obj = $this->mod->getChecklistJuridica();
         return $obj;
@@ -186,6 +187,7 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
+
     function x_getbodegas_vino() {
 //        $id_operatoria = $_SESSION['OPERATORIA'];
 //        $obj = $this->mod->getbodegas_vino($id_operatoria);
@@ -243,11 +245,19 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobjcliente($cuit);
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
+
     function x_getNumOpe() {
         $id_cliente = $_POST['id_cliente'];
         $rtn = $this->mod->getNumOpe($id_cliente);
-        $_SESSION['OPERATORIA']= $rtn[0]['ID_OPERATORIA'];
+        $_SESSION['OPERATORIA'] = $rtn[0]['ID_OPERATORIA'];
         echo trim(json_encode($rtn ? $rtn[0] : array()));
+    }
+    
+    function x_sincronizarVino() {
+        $datosBuscar = $_POST['datosBuscar'];
+        $rtn = $this->mod->sincronizarVino($datosBuscar);
+//        $_SESSION['OPERATORIA'] = $rtn[0]['ID_OPERATORIA'];
+//        echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
 
     function x_getobj() {
@@ -255,7 +265,7 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobj($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-    
+
     function x_getTitularidad() {
         $id_objeto = $_POST['num_factura'];
         $rtn = $this->mod->getTitularidad($id_objeto);
@@ -301,12 +311,12 @@ class compravino extends main_controller {
     function x_getDatoBodega() {
         $ids_bodegas = $_POST['ids_bodegas'];
         if (empty($_POST['firstColumnData'])) {
-        $rtn = $this->mod->getDatoBodegaNueva($ids_bodegas);
-        echo trim(json_encode($rtn ? $rtn : array()));
-        }else {
-        $firstColumnData = $_POST['firstColumnData'];
-        $rtn = $this->mod->getDatoBodega($ids_bodegas, $firstColumnData);
-        echo trim(json_encode($rtn ? $rtn : array()));
+            $rtn = $this->mod->getDatoBodegaNueva($ids_bodegas);
+            echo trim(json_encode($rtn ? $rtn : array()));
+        } else {
+            $firstColumnData = $_POST['firstColumnData'];
+            $rtn = $this->mod->getDatoBodega($ids_bodegas, $firstColumnData);
+            echo trim(json_encode($rtn ? $rtn : array()));
         }
     }
 
@@ -316,11 +326,16 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
+    function x_sendCliente() {
+        $rtn = $this->mod->sendCliente($_POST);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
     function x_sendobj() {
         $obj = $_POST['obj'];
-        $cambio_titularidad=false;
+        $cambio_titularidad = false;
         $cambio_titularidad = $_POST['cambio_titularidad'];
-        $rtn = $this->mod->sendobj($obj,$cambio_titularidad);
+        $rtn = $this->mod->sendobj($obj, $cambio_titularidad);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
@@ -340,12 +355,12 @@ class compravino extends main_controller {
         $rtn = $this->mod->getIdOperatoria();
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-    
+
     function x_sendOperatoria() {
         $rtn = $this->mod->sendOperatoria($_POST);
         echo trim(json_encode($rtn));
     }
-    
+
     function x_updateOperatoria() {
 //<<<<<<< HEAD
 //        $nuevoID = $_POST['nuevoID'];
@@ -370,6 +385,7 @@ class compravino extends main_controller {
         $rtn = $this->mod->sendProveedores($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+
     function x_updateProveedores() {
         $obj = $_POST['data_proveedores'];
         $nuevoID = $_POST['nuevoID'];
@@ -383,18 +399,21 @@ class compravino extends main_controller {
         $rtn = $this->mod->sendBodegas($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+
     function x_sendHumana() {
         $obj = $_POST['checks_humana'];
         $nuevoID = $_POST['nuevoID'];
         $rtn = $this->mod->sendHumana($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+
     function x_sendJuridica() {
         $obj = $_POST['checks_juridica'];
         $nuevoID = $_POST['nuevoID'];
         $rtn = $this->mod->sendJuridica($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+
     function x_updateBodegas() {
         $obj = $_POST['data_bodegas'];
         $nuevoID = $_POST['nuevoID'];

@@ -138,7 +138,7 @@
     </div>
 
     <!--<input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">-->
-    <input id="send_cliente" name="send" type="submit" class="button-a blue send_cliente" value="Guardar">
+    <!--<input id="send_cliente" name="send" type="submit" class="button-a blue send_cliente" value="Guardar">-->
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 
 </div>

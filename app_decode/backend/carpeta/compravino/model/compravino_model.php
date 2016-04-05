@@ -27,6 +27,81 @@ class compravino_model extends main_model {
 //        return $rtn;
 //    }
 
+    function sincronizarVino($datosBuscar) {
+
+//        var_dump($datosBuscar);
+//        die("DATOOOOOOS");
+
+        foreach ($datosBuscar as $value) {
+            $this->_dbsql->select("ESTADO");
+            $solicitud_adm = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] . " AND NUMFACTURA=" . $value['NUMERO'] . ""
+                    . "AND BODEGA=" . $value['ID_BODEGA']);
+            if ($solicitud_adm) {
+                if ($solicitud_adm[0]['ESTADO']==9) {
+                    die("ESTE SCRIPT ACTUALIZA");
+                    $this->_db->update('fid_cu_factura',array("ID_ESTADO"=>'5'),"ID=".$value['ID']." AND NUMERO=".$value['NUMERO']. "AND ID_BODEGA=".$value['ID_BODEGA']);
+                }
+            }
+        }
+
+
+        var_dump($solicitud_adm);
+        die("NO MAS");
+
+
+
+        $id_lote_new = 0;
+        if ($arr_obj):
+            $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
+            foreach ($arr_obj as $ciu):
+                $id_factura = $ciu["IID"];
+                $arr_ins = array(
+                    "ID_FACTURA" => $id_factura,
+                    "ID_LOTE" => $id_lote_new,
+                    "NUMERO_FACTURA" => $ciu["NUMERO"]
+                );
+                $this->_db->insert('fid_cu_lotespago', $arr_ins);
+                //log_this('log/qqqqqqq.log', $this->_db->last_query() );
+                $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
+
+
+                $this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
+                $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE", 'left');
+                $cuit_cli = $this->_db->get_tabla('fid_cu_factura f', "f.ID='" . $id_factura . "'");
+
+                //mendoza fideicomiso 1 y san juan en 26 
+                $arra_ins = array(
+                    "CUIT" => $cuit_cli[0]['CUIT'],
+                    "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
+                    "OPERATORIA" => "2",
+                    "IMPORTE" => $cuit_cli[0]['TOTAL'],
+                    "LOTE" => $id_lote_new,
+                    "IDFACTURAINT" => $id_factura,
+                    "NUMFACTURA" => $ciu["NUMERO"],
+                    "CODIGO_DEBO" => "",
+                    "TIPO" => "OP",
+                    "FECHA_PASADO" => date('Ymd h:i:s'),
+                    "FECHA_PROCESADO" => "19010101 00:00",
+                    "ESTADO" => "1",
+                    "BODEGA" => $cuit_cli[0]['ID_BODEGA'],
+                    "FORMULA" => $ciu["FORMULA"]
+                );
+                if ($_POST['provincia'] == 12)
+                    $arra_ins["FIDEICOMISO"] = "1";
+                else if ($_POST['provincia'] == 17)
+                    $arra_ins["FIDEICOMISO"] = "26";
+                $return = $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
+                //file_put_contents("loggg.txt", $return, FILE_APPEND);
+                //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
+
+            endforeach;
+            $this->actualizarTablasW();
+
+
+        endif;
+        return $id_lote_new;
+    }
+
     function guardarlote($arr_obj) {
 
         $id_lote_new = 0;
@@ -368,11 +443,7 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-//<<<<<<< HEAD
-//    function sendOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax, $tipoPersona, $opePrecio1, $opePrecio2, $opePrecio3, $opePrecio4, $opePrecio5, $opePrecio6, $opeTitular, $opeCuit, $numVinedo, $litrosOfrecidos, $hectDeclaradas, $bgaDep, $deptBodega, $numINVBodega, $opetelefono, $opeCorreo) {
-//=======
     function sendOperatoria($arr_post) {
-//>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
         $nuevoID = $nuevoID;
         $fecha_creacion = date('Y-m-d');
         $fecha = date('Y-m-j');
@@ -389,8 +460,6 @@ class compravino_model extends main_model {
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
             "MAX_PESOS" => $arr_post['maxPesos'],
-//            "FPAGO" => $formaPago,
-//            "CANT_CUOTAS" => $cantCuotas,
             "PERSONA" => $arr_post['tipoPersona'],
             "PRECIO_1" => $arr_post['opePrecio1'],
             "PRECIO_2" => $arr_post['opePrecio2'],
@@ -418,17 +487,30 @@ class compravino_model extends main_model {
         }
     }
 
-//<<<<<<< HEAD
-//    function updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax) {
-//        $ins_ope = array(
-//            "NOMBRE_OPE" => $opeNombre,
-//            "DESCRIPCION_OPE" => $opeDescripcion,
-//            "ID_COORDINADOR_OPE" => $opeCoordinador,
-//            "ID_JEFE_OPE" => $opeJefe,
-//            "LTRS_MAX" => $listrosMax,
-////            "FPAGO" => $formaPago,
-////            "CANT_CUOTAS" => $cantCuotas,
-////=======
+    function sendCliente($arr_post) {
+        $fecha_creacion = date('Y-m-d');
+        $fecha = date('Y-m-j');
+        $ins_cli = array(
+            "RAZON_SOCIAL" => $arr_post['nombre'],
+            "FECHA_ALTA" => $fecha_creacion,
+            "CUIT" => $arr_post['cuit'],
+            "CBU" => $arr_post['cbu'],
+            "ID_CONDICION_IVA" => $arr_post['condicioniva'],
+            "ID_CONDICION_IIBB" => $arr_post['condicioniibb'],
+            "INSCRIPCION_IIBB" => $arr_post['insciibb'],
+            "DIRECCION" => $arr_post['direccion'],
+            "ID_PROVINCIA" => $arr_post['provincia'],
+            "ID_DEPARTAMENTO" => $arr_post['subrubro'],
+            "TELEFONO" => $arr_post['telefono'],
+            "CORREO" => $arr_post['correo'],
+            "OBSERVACION" => $arr_post['observacion']
+        );
+
+        $rtn = $this->_db->insert('fid_clientes', $ins_cli);
+
+        return $rtn;
+    }
+
     function updateOperatoria($arr_post) {
         $ins_ope = array(
             "NOMBRE_OPE" => $arr_post['opeNombre'],
@@ -443,7 +525,6 @@ class compravino_model extends main_model {
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-//>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
             "HECT_MAX" => ''
         );
 
