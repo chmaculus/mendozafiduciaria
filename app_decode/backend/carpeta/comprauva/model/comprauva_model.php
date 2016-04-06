@@ -800,7 +800,7 @@ class comprauva_model extends main_model {
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
 
         $objReader = new PHPExcel_Reader_Excel2007();
-        $objPHPExcel = $objReader->load("_tmp/importar/imp_fact.xlsx");
+        $objPHPExcel = $objReader->load("_tmp/importar/imp_fact_uva.xlsx");
         $objPHPExcel->setActiveSheetIndex(0);
 
         $i = 2;
@@ -1029,7 +1029,7 @@ class comprauva_model extends main_model {
               break;
               } */
         }
-        rename("_tmp/importar/imp_fact.xlsx", "_tmp/importar/imp_fact_procesado.xlsx");
+        rename("_tmp/importar/imp_fact_uva.xlsx", "_tmp/importar/imp_fact_uva_procesado_". date('Ymd') .".xlsx");
         return $res;
     }
 

@@ -619,24 +619,9 @@ class compravino extends main_controller {
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
             $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
-            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
-            if ($preg1 > 0) {
-                $obj = $this->mod->importar_ciu();
-                $this->mod->validar_azucar();
-                echo trim(json_encode(isset($obj) ? $obj : array()));
-            } else {
-                echo -1; //advertencia no existe cius
-            }
         } else {
             //echo -1;
             $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
-            if ($preg1 > 0) {
-                $obj = $this->mod->importar_ciu();
-                $this->mod->validar_azucar();
-                echo trim(json_encode(isset($obj) ? $obj : array()));
-            } else {
-                echo -2; //no existen archivos a procesar
-            }
         }
     }
 
@@ -687,20 +672,26 @@ class compravino extends main_controller {
             }
 
             if ($subir == true) {
+                $file_name = FALSE;
 
-                $resultado = stripos($archivo['name'], 'ciu');
+                $resultado = stripos($archivo['name'], 'vino_ciu');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_cius.xlsx';
+                    $file_name = 'imp_vino_cius.xlsx';
                 }
 
-                $resultado = stripos($archivo['name'], 'fact');
+                $resultado = stripos($archivo['name'], 'vino_fact');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_fact.xlsx';
+                    $file_name = 'imp_vino_fact.xlsx';
                 }
 
                 $extencion = substr($archivo['name'], -3);
                 $uploaded = TEMP_PATH . "importar/" . $file_name; //.".".$extencion;
-                if (file_exists($uploaded)) {
+                if (!$file_name) {
+                    echo '<script>
+                                var nombre = "' . $archivo['name'] . '";
+                                parent.jAlert("El archivo tiene nombre incorrecto");
+                            </script>'; 
+                } elseif (file_exists($uploaded)) {
                     echo '
                             <script>
                                 var nombre = "' . $archivo['name'] . '";
