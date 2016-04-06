@@ -110,6 +110,8 @@ class compravino extends main_controller {
         $data['lst_proveedores'] = $this->x_getProveedores();
         $data['lst_checkHumana'] = $this->x_getChecklistHumana();
         $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
+        $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
+        $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
 //        $data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
 //        $data['clientes_sql'] = $this->x_getclientessql();
@@ -172,6 +174,15 @@ class compravino extends main_controller {
     }
 
     function x_getChecklistJuridica() {
+        $obj = $this->mod->getChecklistJuridica();
+        return $obj;
+    }
+    function x_getChecklistHumanaFact() {
+        $obj = $this->mod->getChecklistHumana();
+        return $obj;
+    }
+
+    function x_getChecklistJuridicaFact() {
         $obj = $this->mod->getChecklistJuridica();
         return $obj;
     }

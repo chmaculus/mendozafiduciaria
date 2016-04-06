@@ -419,6 +419,7 @@ $(document).ready(function () {
         /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
+//        alert("Aqui");
         show_btns(2);
     });
     refresGridevent();

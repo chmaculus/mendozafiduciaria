@@ -301,36 +301,7 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-<!--    <div id="check_datos" style="width: 100%;">
-        <table id="humana">
-            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
-            <tr>
-                <th class="numCheck" style="width: 5%;">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-            </tr>
-            <?php // foreach ($lst_checkHumana as $it) { ?>
-                <tr class="op">
-                    <td class="numCheck"><?php // echo $it['ID']; ?></td>
-                    <td><?php // echo $it['DESCRIPCION']; ?></td>
-                    <td><input type="checkbox" class="opeOpcion" value="<?php // echo $it['ID']; ?>" /></td>
-                </tr>
-            <?php // } ?>
-            <tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
-            <tr>
-                <th class="numCheck">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-            </tr>
-            <?php // foreach ($lst_checkJuridica as $it) { ?>
-                <tr class="op">
-                    <td class="numCheck"><?php // echo $it['ID']; ?></td>
-                    <td><?php // echo $it['DESCRIPCION']; ?></td>
-                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="<?php // echo $it['ID']; ?>" /></td>
-                </tr>
-            <?php // } ?>
-        </table>
-    </div>-->
+   
     <br><br>
     <br><br>
      <div class="elem elem_med">
