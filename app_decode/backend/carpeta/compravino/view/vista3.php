@@ -1,3 +1,10 @@
+<style>
+    table {border-collapse: collapse;width: 100%;margin-top: 25px;}
+    th{text-align: center;padding: 8px;}
+    td {text-align: left;padding: 8px;}
+    tr:nth-child(even){background-color: #f2f2f2}
+    th {background-color: #a4bed4;color: white;}
+</style>
 <ul class="toolbar">
     <li class="tb_atras" data-top="lis_editar"><div>Regresar</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
@@ -224,7 +231,7 @@
     <!--    <div class="elem elem_med">
                 <label class="der">Departamento:</label>
                 <div class="indent formtext">
-                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )   ?>" readonly>
+                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )    ?>" readonly>
                 </div>
         </div>-->
     <div class="elem elem_med">
@@ -293,10 +300,40 @@
             <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
         </div>
     </div>
-
-    <br><br><br>
     <div style="margin-top:10px;" class="clear"></div>
-    <div class="elem elem_med">
+<!--    <div id="check_datos" style="width: 100%;">
+        <table id="humana">
+            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
+            <tr>
+                <th class="numCheck" style="width: 5%;">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>
+            <?php // foreach ($lst_checkHumana as $it) { ?>
+                <tr class="op">
+                    <td class="numCheck"><?php // echo $it['ID']; ?></td>
+                    <td><?php // echo $it['DESCRIPCION']; ?></td>
+                    <td><input type="checkbox" class="opeOpcion" value="<?php // echo $it['ID']; ?>" /></td>
+                </tr>
+            <?php // } ?>
+            <tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
+            <tr>
+                <th class="numCheck">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>
+            <?php // foreach ($lst_checkJuridica as $it) { ?>
+                <tr class="op">
+                    <td class="numCheck"><?php // echo $it['ID']; ?></td>
+                    <td><?php // echo $it['DESCRIPCION']; ?></td>
+                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="<?php // echo $it['ID']; ?>" /></td>
+                </tr>
+            <?php // } ?>
+        </table>
+    </div>-->
+    <br><br>
+    <br><br>
+     <div class="elem elem_med">
         <label>Cambio de Titularidad:</label>
         <div class="indent formtext">
             <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
@@ -305,14 +342,12 @@
     <br><br>
     <br><br>
     <div id="titularidadHistorial">
-    <label>Historial Cambio de Titularidad:</label>
-    <div id="jqxgridtitularidad">
-    </div>
+        <label>Historial Cambio de Titularidad:</label>
+        <div id="jqxgridtitularidad">
+        </div>
     </div>
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 
 </div>
-
 <div id="wpopup"></div>
-

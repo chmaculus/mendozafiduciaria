@@ -20,7 +20,7 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla('fid_entidadestipo');
         return $rtn;
     }
-
+    
 //    function getclientessql() {
 //        //$rtn = $this->_db->get_tabla('fid_usuarios');
 //        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
@@ -28,10 +28,8 @@ class compravino_model extends main_model {
 //    }
 
     function sincronizarVino($datosBuscar) {
-
 //        var_dump($datosBuscar);
 //        die("DATOOOOOOS");
-
         foreach ($datosBuscar as $value) {
             $this->_dbsql->select("ESTADO");
             $solicitud_adm = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] . " AND NUMFACTURA=" . $value['NUMERO'] . ""
@@ -43,12 +41,8 @@ class compravino_model extends main_model {
                 }
             }
         }
-
-
         var_dump($solicitud_adm);
         die("NO MAS");
-
-
 
         $id_lote_new = 0;
         if ($arr_obj):
@@ -466,7 +460,8 @@ class compravino_model extends main_model {
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "HECT_MAX" => ''
+            "HECT_MAX" => '',
+            "ESTADO_OP" => 1
         );
         if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
             return TRUE;
@@ -507,6 +502,7 @@ class compravino_model extends main_model {
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
             "MAX_PESOS" => $arr_post['maxPesos'],
+            "CHECKLIST_PERSONA" => implode(',', $arr_post['checklistsPersona']),
             "PRECIO_1" => $arr_post['opePrecio1'],
             "PRECIO_2" => $arr_post['opePrecio2'],
             "PRECIO_3" => $arr_post['opePrecio3'],
@@ -515,7 +511,6 @@ class compravino_model extends main_model {
             "PRECIO_6" => $arr_post['opePrecio6'],
             "HECT_MAX" => ''
         );
-
         if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
             return TRUE;
         } else {
