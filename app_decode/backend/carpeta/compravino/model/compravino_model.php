@@ -1297,12 +1297,15 @@ class compravino_model extends main_model {
     }
 
     function importar_xls($fid_sanjuan, $ope_sanjuan) {
+        if (!is_file("_tmp/importar/imp_vino_fact.xlsx")) {
+            return -1;
+        }
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
 
         $objReader = new PHPExcel_Reader_Excel2007();
-        $objPHPExcel = $objReader->load("_tmp/importar/imp_fact.xlsx");
+        $objPHPExcel = $objReader->load("_tmp/importar/imp_vino_fact.xlsx");
         $objPHPExcel->setActiveSheetIndex(0);
 
         $i = 2;
@@ -1310,51 +1313,69 @@ class compravino_model extends main_model {
 
         $k = 0;
 
+        $id_tipoentidad_bodega = $this->_db->get_tabla('fid_settings', "variable='compra_uva_id_tipo_entidad'");
+        if ($id_tipoentidad_bodega) {
+            $id_tipoentidad_bodega = $id_tipoentidad_bodega[0]['valor'];
+        } else {
+            die("Falta configurar sistema");
+        }
 
-
-        while ($objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue() != '') {
+        while ($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue() != '') {
 
             $iid = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
-            $cuit = $objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue();
+            $cuit = $objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue();
+            
+            //$cbu = substr($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue(), 0, 22);
+            $correo = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue();
+            $razonsocial = $objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue();
 
-            $cbu = substr($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue(), 0, 22);
-            $correo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
-            $razonsocial = $objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue();
+            //$direccion = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
+            $telefono = $objPHPExcel->getActiveSheet()->getCell("K" . $i)->getValue();
 
-            $direccion = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
-            $telefono = $objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue();
+            $observacion = $objPHPExcel->getActiveSheet()->getCell("T" . $i)->getValue();
+            //$id_provincia = $objPHPExcel->getActiveSheet()->getCell("M" . $i)->getValue();
+            //$id_departamento = $objPHPExcel->getActiveSheet()->getCell("N" . $i)->getValue();
 
-            $observacion = $objPHPExcel->getActiveSheet()->getCell("K" . $i)->getValue();
-            $id_provincia = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue();
-            $id_departamento = $objPHPExcel->getActiveSheet()->getCell("M" . $i)->getValue();
-
-            $id_condicion_iva = $objPHPExcel->getActiveSheet()->getCell("N" . $i)->getValue();
-            $id_condicion_iibb = $objPHPExcel->getActiveSheet()->getCell("O" . $i)->getValue();
+            $id_condicion_iva = $objPHPExcel->getActiveSheet()->getCell("Z" . $i)->getValue();
+            $id_condicion_iibb = $objPHPExcel->getActiveSheet()->getCell("AA" . $i)->getValue();
             //$inscripcion_iibb   = $objPHPExcel->getActiveSheet()->getCell("O".$i)->getValue();
-
-            $cuit = strval($cuit);
+            
+            $litros = $objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue();
+            $cuit = str_replace('-', '', strval($cuit));
             //$cbu = exp_to_dec($cbu);
-            $cbu = $cbu;
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-
+            
+            
 
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
             } else {
+                if ($id_condicion_iva && $condicion_iva = $this->_db->get_tabla('fid_cliente_condicion_iva', 'CONDICION LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $id_condicion_iva) . '%\'')) {
+                    $id_condicion_iva = (int) $condicion_iva[0]['ID'];
+                }
+                if (!$id_condicion_iva || !is_int($id_condicion_iva)) {
+                    $i++;
+                    $k++;
+                    continue;
+                }
+                if ($id_condicion_iibb && $condicion_iibb = $this->_db->get_tabla('fid_cliente_condicion_iibb', 'CONDICION LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $id_condicion_iibb) . '%\'')) {
+                    $id_condicion_iibb = $condicion_iibb[0]['ID'];
+                }
+                
                 $arr_ins = array(
                     "CUIT" => $cuit,
                     "RAZON_SOCIAL" => $razonsocial,
                     "FECHA_ALTA" => "",
-                    "DIRECCION" => $direccion,
+                    //"DIRECCION" => $direccion,
                     "TELEFONO" => $telefono,
                     "OBSERVACION" => $observacion,
-                    "ID_PROVINCIA" => $id_provincia,
-                    "ID_DEPARTAMENTO" => $id_departamento,
+                    "ID_PROVINCIA" => 0,
+                    "ID_DEPARTAMENTO" => 0,
                     "ID_CONDICION_IVA" => $id_condicion_iva,
                     "ID_CONDICION_IIBB" => $id_condicion_iibb,
                     "INSCRIPCION_IIBB" => "",
-                    "CBU" => $cbu,
+                    //"CBU" => $cbu,
                     "CORREO" => $correo,
                     "CU" => 2
                 );
@@ -1362,32 +1383,47 @@ class compravino_model extends main_model {
                 //log_this('log/aaaaaa.log', $this->_db->last_query() );
             }
 
-            $idbodega_xls = $objPHPExcel->getActiveSheet()->getCell("P" . $i)->getValue();
-            $existebod = $this->_db->get_tabla('fid_bodegas', 'ID="' . $idbodega_xls . '"');
-            if ($existebod) {
+            $bodega_xls = $objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue();
+            $this->_db->select("*");
+            $this->_db->join("fid_entidadestipo t", "t.ID_ENTIDAD=e.ID AND t.ID_TIPO=$id_tipoentidad_bodega");
+        
+            $idbodega_xls = $this->_db->get_tabla('fid_entidades e', 'NOMBRE LIKE \'' . str_replace(array(' ', '.'), array('%', '%'), $bodega_xls) . '\'');
+            
+            if ($idbodega_xls) {
                 //nada
-                $id_bodega = $existebod[0]['ID'];
+                $id_bodega = $idbodega_xls[0]['ID'];
             } else {
                 //insertar
-                $nombrebodega = $objPHPExcel->getActiveSheet()->getCell("Q" . $i)->getValue();
-                $provinciabodega = $objPHPExcel->getActiveSheet()->getCell("R" . $i)->getValue();
-                $localidadbodega = $objPHPExcel->getActiveSheet()->getCell("S" . $i)->getValue();
+                $provinciabodega = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
+                $localidadbodega = $objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue();
+                if ($provinciabodega && $id_provinciabodega = $this->_db->get_tabla('fid_provincias', 'PROVINCIA LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $provinciabodega) . '%\'')) {
+                    $id_provinciabodega = $id_provinciabodega[0]['ID'];
+                } else {
+                    $id_provinciabodega = 0;
+                }
+                
+                if ($localidadbodega && $id_localidadbodega = $this->_db->get_tabla('fid_localidades', 'ID_PROVINCIA = ' . $id_provinciabodega . ' AND LOCALIDAD LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $localidadbodega) . '%\'')) {
+                    $id_localidadbodega = $id_localidadbodega[0]['ID'];
+                } else {
+                    $id_localidadbodega = 0;
+                }
 
                 $arr_bod = array(
-                    "NOMBRE" => $nombrebodega,
-                    "ID_PROVINCIA" => $provinciabodega,
-                    "ID_DEPARTAMENTO" => $localidadbodega,
+                    "NOMBRE" => $bodega_xls,
+                    "ID_PROVINCIA" => $id_provinciabodega,
+                    //"ID_DEPARTAMENTO" => $id_localidadbodega,
                     "ESTADO" => "0"
                 );
-                $id_bodega = $this->_db->insert('fid_bodegas', $arr_bod);
+                
+                $id_bodega = $this->_db->insert('fid_entidades', $arr_bod);
+                $this->_db->insert('fid_entidadestipo', array('ID_ENTIDAD' => $id_bodega, 'ID_TIPO' => $id_tipoentidad_bodega));
             }
 
             // idfactura
-            $numero = $objPHPExcel->getActiveSheet()->getCell("T" . $i)->getValue();
-
+            $numero = $objPHPExcel->getActiveSheet()->getCell("Y" . $i)->getValue();
 
             //validar numero de factura
-            $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente);
+            $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente) : FALSE;
 
             if ($existe_fact) {
                 $i++;
@@ -1395,18 +1431,16 @@ class compravino_model extends main_model {
                 continue;
             }
 
-
-            $fecha = $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue();
-            $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
-            $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();
-            $kgrs = $objPHPExcel->getActiveSheet()->getCell("Y" . $i)->getValue();
-            $azucar = $objPHPExcel->getActiveSheet()->getCell("Z" . $i)->getValue();
-            $precio = $objPHPExcel->getActiveSheet()->getCell("AA" . $i)->getValue();
+            $fecha = $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue(); //??
+            $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
+            $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
+            
+            //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
             $neto = $objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue();
             $iva = $objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue();
             $total = $objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue();
-            $observaciones = $objPHPExcel->getActiveSheet()->getCell("AE" . $i)->getValue();
-            $formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
+            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue() . ' / ' . $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
+            //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
 
             if (trim($fecha) == "-   -") {
                 $fecha = '';
@@ -1436,38 +1470,38 @@ class compravino_model extends main_model {
                 $_ope_mendoza = 16;
             }
 
-            if ($id_provincia == '17') {
+            /*if ($id_provincia == '17') {
                 $save_ope = $_ope_sanjuan;
                 $save_fid = $_fid_sanjuan;
-            } else {
+            } else {*/
                 $save_ope = $_ope_mendoza;
                 $save_fid = $_fid_mendoza;
-            }
+            //}
 
             $arr_fact = array(
                 "NUMERO" => $numero,
-                "FECHA" => $fecha,
-                "FECHAVTO" => $fechavto,
-                "CAI" => $cai,
+                //"FECHA" => $fecha,
+                //"FECHAVTO" => $fechavto,
+                //"CAI" => $cai,
                 "ID_ESTADO" => "1",
                 "TIPO" => "1",
-                "KGRS" => $kgrs,
+               // "LITROS" => $litros,
                 "ID_OPERATORIA" => $save_ope,
                 "ID_FIDEICOMISO" => $save_fid,
-                "AZUCAR" => $azucar,
-                "PRECIO" => $precio,
+                //"AZUCAR" => $azucar,
+                //"PRECIO" => $precio,
                 "NETO" => $neto,
                 "IVA" => $iva,
                 "TOTAL" => $total,
                 "OBSERVACIONES" => $observaciones,
                 "ID_CLIENTE" => $id_cliente,
                 "ID_BODEGA" => $id_bodega,
-                "ID_PROVINCIA" => $id_provincia,
+                "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
 
-            if (intval($formula) > 0) {
+            /*if (intval($formula) > 0) {
                 $arr_fact["FORMULA"] = $formula;
-            }
+            }*/
 
             //validaciones
 
@@ -1499,11 +1533,11 @@ class compravino_model extends main_model {
             }
 
             //verificar cbu
-            $existe_cbu = $this->verificar_cbu($cbu);
+            /*$existe_cbu = $this->verificar_cbu($cbu);
             if ($existe_cbu['error']) {
                 $sw_error = 1;
                 $arr_error[] = $existe_cbu['result'];
-            }
+            }*/
 
             //verificar largo cuit
             if (strlen($cuit) != 11) {
@@ -1523,7 +1557,7 @@ class compravino_model extends main_model {
                     $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
                 }
             }
-
+            
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
             //log_this('log/aaaaaa.log', $this->_db->last_query() );
             $res[] = $resp;
@@ -1535,7 +1569,7 @@ class compravino_model extends main_model {
               break;
               } */
         }
-        rename("_tmp/importar/imp_fact.xlsx", "_tmp/importar/imp_fact_procesado.xlsx");
+        //rename("_tmp/importar/imp_vino_fact.xlsx", "_tmp/importar/imp_vino_fact_procesado_" . date('Ymd') . ".xlsx");
 
         return $res;
     }

@@ -520,14 +520,14 @@ class comprauva extends main_controller {
                     $subir = true;
             }
             if ($subir == true) {
-                $resultado = stripos($archivo['name'], 'ciu');
+                $resultado = stripos($archivo['name'], 'uva_ciu');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_cius.xlsx';
+                    $file_name = 'imp_uva_cius.xlsx';
                 }
 
-                $resultado = stripos($archivo['name'], 'fact');
+                $resultado = stripos($archivo['name'], 'uva_fact');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_fact.xlsx';
+                    $file_name = 'imp_uva_fact.xlsx';
                 }
 
                 $extencion = substr($archivo['name'], -3);
