@@ -301,17 +301,15 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-   
-    <br><br>
-    <br><br>
+  
+    <br><br><br><br>
      <div class="elem elem_med">
         <label>Cambio de Titularidad:</label>
         <div class="indent formtext">
             <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
         </div>
     </div>
-    <br><br>
-    <br><br>
+    <br><br><br><br>
     <div id="titularidadHistorial">
         <label>Historial Cambio de Titularidad:</label>
         <div id="jqxgridtitularidad">
@@ -319,6 +317,5 @@
     </div>
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
-
 </div>
 <div id="wpopup"></div>

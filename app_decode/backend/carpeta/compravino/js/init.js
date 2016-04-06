@@ -414,8 +414,8 @@ $(document).ready(function () {
             });
         } 
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
-//        $.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
-//            dataType: "json",type: "post",success: function (data) {}});
+//$.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
+//dataType: "json",type: "post",success: function (data) {}});
         /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);

@@ -112,9 +112,9 @@ class compravino extends main_controller {
         $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
         $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
         $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
-//        $data['lst_formulas'] = $this->x_getformulas();
+        //$data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
-//        $data['clientes_sql'] = $this->x_getclientessql();
+        //$data['clientes_sql'] = $this->x_getclientessql();
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
         //$data['provincia'] = $this->x_getbodegas();
         //$data['opcion'] = $this->x_getbodegas();
@@ -122,7 +122,6 @@ class compravino extends main_controller {
         $this->_js_var['_provincia'] = $provincia;
         $this->_js_var['_opcion'] = $opcion;
         $this->_js_var['_id_objeto'] = $id_objeto;
-
 
         //return $this->view("notas", $data);
         /* permiso mostrar */
