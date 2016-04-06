@@ -313,6 +313,4 @@
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 
 </div>
-
 <div id="wpopup"></div>
-

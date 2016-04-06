@@ -407,16 +407,12 @@ $(document).ready(function () {
                 $("#numOperatoria").val(data.ID_OPERATORIA);
             }
         });
-        if(trae_operatoria == 0){
-            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo),function(){
-              var urlh = "backend/carpeta/compravino/init/12/7";
-                    $(location).attr('href', urlh);
+        if (trae_operatoria == 0) {
+            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
+                var urlh = "backend/carpeta/compravino/init/12/7";
+                $(location).attr('href', urlh);
             });
-        }else{
-            alert("si trae operatoria, continuar");
-        }
-//        alert($("#id_buscar").val());
-//        alert("No deberia haber entrado");
+        } 
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
 //        $.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
 //            dataType: "json",type: "post",success: function (data) {}});
@@ -426,23 +422,11 @@ $(document).ready(function () {
         show_btns(2);
     });
     refresGridevent();
-
-
-//    $('#send_cliente').on('click', function (e) {
-////        e.preventDefault();
-//        alert("GuardarCliente");
-//        var nombre = $('#nombre').val();
-//        var cuit = $('#cuit').val();
-//        var cbu = $('#cbu').val();
-//        var condicioniva = $('#condicioniva').val();
-//        var condicioniibb = $('#condicioniibb').val();
-//        var insciibb = $('#insciibb').val();
-//        var direccion = $('#direccion').val();
-//        var provincia = $('#provincia').val();
-//        var subrubro = $('#subrubro').val();
-//        var telefono = $('#telefono').val();
-//        var correo = $('#correo').val();
-//        var observacion = $('#observacion').val();
+//    $('#send_cliente').on('click', function (e) {e.preventDefault();
+//        var nombre = $('#nombre').val();var cuit = $('#cuit').val();var cbu = $('#cbu').val();var condicioniva = $('#condicioniva').val();
+//        var condicioniibb = $('#condicioniibb').val();var insciibb = $('#insciibb').val();var direccion = $('#direccion').val();
+//        var provincia = $('#provincia').val();var subrubro = $('#subrubro').val();var telefono = $('#telefono').val();
+//        var correo = $('#correo').val();var observacion = $('#observacion').val();
 //
 ////        if (opeDescripcion == '') {jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
 ////            return false;}
@@ -463,30 +447,11 @@ $(document).ready(function () {
 //            dataType: "json",
 //            type: "post",
 //            data: {
-//                nombre: nombre,
-//                cuit: cuit,
-//                cbu: cbu,
-//                condicioniva: condicioniva,
-//                condicioniibb: condicioniibb,
-//                insciibb: insciibb,
-//                direccion: direccion,
-//                provincia: provincia,
-//                subrubro: subrubro,
-//                telefono: telefono,
-//                correo: correo,
-//                observacion: observacion
-//            },
+//                nombre: nombre,cuit: cuit,cbu: cbu,condicioniva: condicioniva,condicioniibb: condicioniibb,insciibb: insciibb,
+//                direccion: direccion,provincia: provincia,subrubro: subrubro,telefono: telefono,correo: correo,observacion: observacion},
 //            success: function (data) {
-//                console.log("VER SI DEL INSERT SE SACA ALGO");
-//                console.log(data);
 //                jAlert('Se guardo Cliente correctamente.', $.ucwords(_etiqueta_modulo), function () {
-//                    $.unblockUI();
-////                    var urlh = "backend/carpeta/compravino/init/12/7";
-////                    $(location).attr('href', urlh);
-//                });
-//            }
-//        });
-//    });
+//                    $.unblockUI();var urlh = "backend/carpeta/compravino/init/12/7";$(location).attr('href', urlh);});}});});
 
     $('#send').on('click', function (e) {
         e.preventDefault();
@@ -650,7 +615,6 @@ $(document).ready(function () {
         var opePrecio4 = $("#opeP4").val();
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
-//        var nuevoID = 0;
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
         var rowscount_proveedores = rows_proveedores.length;
         var data_proveedores = [];
@@ -667,8 +631,6 @@ $(document).ready(function () {
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-
-
 //validar campos
 //        if (opeNombre == '') {
 //            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
@@ -722,10 +684,7 @@ $(document).ready(function () {
                 opePrecio6: opePrecio6
             },
             dataType: "json",
-            type: "post",
-            success: function (data) {
-            }
-        });
+            type: "post"});
         $.ajax({
             url: _compravino.URL + "/x_updateProveedores",
             data: {
@@ -733,10 +692,7 @@ $(document).ready(function () {
                 nuevoID: el_id
             },
             dataType: "json",
-            type: "post",
-            success: function (data) {
-            }
-        });
+            type: "post"});
         $.ajax({
             url: _compravino.URL + "/x_updateBodegas",
             data: {
@@ -744,9 +700,11 @@ $(document).ready(function () {
                 nuevoID: el_id
             },
             dataType: "json",
-            type: "post",
-            success: function (data) {
-            }
+            type: "post"});
+        jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
+            $.unblockUI();
+            var urlh = "backend/carpeta/compravino/init/12/7";
+            $(location).attr('href', urlh);
         });
     });
     var accion_proveedores_new = '';
@@ -1112,7 +1070,8 @@ $(document).ready(function () {
                     observacion: observacion
                 },
                 success: function (data) {
-                    console.log("VER SI DEL INSERT SE SACA ALGO");console.log(data);
+                    console.log("VER SI DEL INSERT SE SACA ALGO");
+                    console.log(data);
 //if (data.result > 0) {$('#nuevafactura').off().on('click', function (e) {e.preventDefault();limpiar_form_nf();
 //$('.env_form').hide();$('.nuevafact_form').show();$("#cuitform").val(cuit);$("#nombre2").val($("#nombre").val());show_btns(2);});
                     jAlert('Operacion Exitosa.\n Recuerde agregar Cliente desde la operatoria para la carga de factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -1549,15 +1508,18 @@ function editar_formulario_operatoria() {
 //})
 //alert(data_checklists_persona.length);
 //alert(data_checklists_persona[0]);
-            for (var j = 0; j < data_checklists_persona.length; j++) {
-//    data_checklists_persona[j].val().checked;
-//    $('.op input:checked').val(10)
-//  var checkEmpresas = $(".op input[name='opeOpcion']:checked").val();
-            }
+//            for (var j = 0; j < data_checklists_persona.length; j++) {
+//data_checklists_persona[j].val().checked;
+//$('.op input:checked').val(10)
+//var checkEmpresas = $(".op input[name='opeOpcion']:checked").val();
+//            }
 // var data_checklists_persona = [];
-//        $('.op input:checked').each(function () {
-//            data_checklists_persona.push($(this).val());
-//        })
+            console.log(data_checklists_persona);
+            $('.op input').each(function () {
+                if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+                    $(this).prop('checked', true);
+                }
+            });
             $.ajax({
                 url: _compravino.URL + "/x_getOperatoriaProveedores",
                 data: {
