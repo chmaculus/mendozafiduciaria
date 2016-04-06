@@ -50,6 +50,8 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
+    var numVinedo = $("#numVinedo").val();
+    var numRut = $("#numRut").val();
 //Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
     var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
     iid = id ? id : 0;
@@ -130,6 +132,8 @@ function guardar_factura() {
         LITROS: ltros,
         AZUCAR: azucar,
         PRECIO: precio,
+        VINEDO: numVinedo,
+        RUT: numRut,
         ID_ESTADO: 1,
         USU_CARGA: _USUARIO_SESION_ACTUAL,
         NETO: neto,
@@ -387,6 +391,7 @@ $(document).ready(function () {
         $("#porcentaje_iva").val('10.5');
         $('.env_form').hide();
         $('.nuevafact_form').show();
+        var trae_operatoria = 0;
         $.ajax({
             url: _compravino.URL + "/x_getNumOpe",
             data: {
@@ -396,11 +401,22 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (data) {
+                trae_operatoria = 1;
                 console.log("Numero de operatoria que me trae es");
                 console.log("--> " + data.ID_OPERATORIA + " <--");
                 $("#numOperatoria").val(data.ID_OPERATORIA);
             }
         });
+        if(trae_operatoria == 0){
+            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo),function(){
+              var urlh = "backend/carpeta/compravino/init/12/7";
+                    $(location).attr('href', urlh);
+            });
+        }else{
+            alert("si trae operatoria, continuar");
+        }
+//        alert($("#id_buscar").val());
+//        alert("No deberia haber entrado");
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
 //        $.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
 //            dataType: "json",type: "post",success: function (data) {}});
@@ -582,32 +598,13 @@ $(document).ready(function () {
                     dataType: "json",
                     type: "post",
                 });
-                /*if (tipoPersona == 'Humana') {
-                 data: {data_bodegas: data_bodegas, nuevoID: nuevoID},
-                 dataType: "json", type: "post", });
-                 if (tipoPersona == 'Humana') {
-                 var array_humana = new Array();
-                 $("#humana tr.op").each(function () {
-                 var data_p = {
-                 'numcheck': $(this).children("td.numCheck").text(),
-                 'valor': $(this).children("td").children('select').val()
-                 }
-                 array_humana.push(data_p);
-                 });
-                 $.ajax({
-                 url: _compravino.URL + "/x_sendHumana",
-                 data: {
-                 checks_humana: array_humana,
-                 nuevoID: nuevoID
-                 },
-                 dataType: "json",
-                 type: "post",
-                 });
-                 } else if (tipoPersona == 'Juridica') {
-                 var array_juridica = new Array();
-                 $("#juridica tr.op").each(function () {
-                 var data_p = {
-                 'numcheck': $(this).children("td.numCheck").text(),
+                /*if (tipoPersona == 'Humana') {data: {data_bodegas: data_bodegas, nuevoID: nuevoID},dataType: "json", type: "post", });
+                 if (tipoPersona == 'Humana') {var array_humana = new Array();$("#humana tr.op").each(function () {
+                 var data_p = {'numcheck': $(this).children("td.numCheck").text(),'valor': $(this).children("td").children('select').val()}
+                 array_humana.push(data_p);});
+                 $.ajax({url: _compravino.URL + "/x_sendHumana",data: {checks_humana: array_humana,nuevoID: nuevoID},
+                 dataType: "json",type: "post",});} else if (tipoPersona == 'Juridica') {var array_juridica = new Array();
+                 $("#juridica tr.op").each(function () {var data_p = {'numcheck': $(this).children("td.numCheck").text(),
                  'valor': $(this).children("td").children('select').val()
                  }
                  array_juridica.push(data_p);
@@ -696,6 +693,14 @@ $(document).ready(function () {
         for (var i = 0; i < rowscount_bodegas; i++) {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
+        var data_checklists_persona = [];
+        $('.op input:checked').each(function () {
+            data_checklists_persona.push($(this).val());
+        })
+
+
+
+
 //validar campos
 //        if (opeNombre == '') {
 //            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
@@ -740,6 +745,7 @@ $(document).ready(function () {
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
                 maxPesos: maxPesos,
+                checklistsPersona: data_checklists_persona,
                 opePrecio1: opePrecio1,
                 opePrecio2: opePrecio2,
                 opePrecio3: opePrecio3,
@@ -1138,29 +1144,19 @@ $(document).ready(function () {
                     observacion: observacion
                 },
                 success: function (data) {
-                    console.log("VER SI DEL INSERT SE SACA ALGO");
-                    console.log(data);
-//                    if (data.result > 0) {
-                    $('#nuevafactura').off().on('click', function (e) {
-                        e.preventDefault();
-                        limpiar_form_nf();
-                        $('.env_form').hide();
-                        $('.nuevafact_form').show();
-                        $("#cuitform").val(cuit);
-                        $("#nombre2").val($("#nombre").val());
-                        show_btns(2);
-                    });
-                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                        show_btns(1);
-                        limpiar_form_fact();
-                        $('#send').hide();
+                    console.log("VER SI DEL INSERT SE SACA ALGO");console.log(data);
+//if (data.result > 0) {$('#nuevafactura').off().on('click', function (e) {e.preventDefault();limpiar_form_nf();
+//$('.env_form').hide();$('.nuevafact_form').show();$("#cuitform").val(cuit);$("#nombre2").val($("#nombre").val());show_btns(2);});
+                    jAlert('Operacion Exitosa.\n Recuerde agregar Cliente desde la operatoria para la carga de factura.', $.ucwords(_etiqueta_modulo), function () {
+//                        show_btns(1);limpiar_form_fact();$('#send').hide();
+                        var urlh = "backend/carpeta/compravino/init/" + _provincia + "/7";
+                        $(location).attr('href', urlh);
                     });
 //} else {jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {$.unblockUI();});
 //}jAlert('Se guardo Cliente correctamente.', $.ucwords(_etiqueta_modulo), function () {$.unblockUI();var urlh = "backend/carpeta/compravino/init/12/1";
 //$(location).attr('href', urlh);});
                 }
             });
-
         } else if (top == 'lis_guardar_fact') {
             guardar_factura();
         } else if (top == 'lis_mendoza') {
@@ -1473,6 +1469,8 @@ function editar_formulario() {
             $("#kgrs").val(data.KGRS);
             $("#azucar").val(data.AZUCAR);
             $("#precio").val(data.PRECIO);
+            $("#numVinedo").val(data.VINEDO);
+            $("#numRut").val(data.RUT);
             $("#observacion_fact").val(data.OBSERVACIONES);
             $("#neto").val(data.NETO).attr("readonly", "readonly");
             $("#iva").val(data.IVA).attr("readonly", "readonly");
@@ -1564,37 +1562,34 @@ function editar_formulario_operatoria() {
             var data_checklists_persona = [];
             var listado_checklist = rtn[0].CHECKLIST_PERSONA;
             data_checklists_persona = listado_checklist.split(',');
-
-//            var cantidad_check =  data_checklists_persona.length;
-//            for(var j=0; j< cantidad_check;j++){}
+//console.log("LOS CAMPOS CON LOS CHECK MARCADOS");
+//console.log(data_checklists_persona);
+//var cantidad_check =  data_checklists_persona.length;
+//for(var j=0; j< cantidad_check;j++){}
 //var selected = '';    
 //$('#listbox_humana').each(function(){if (this.checked) {selected += $(this).val()+', ';}}); 
 //if ($('#listbox_humana').val() != '') alert('Has seleccionado: '+selected);  elsealert('Debes seleccionar al menos una opción.');
-//            $('.op input:checked').each(function () {
-//                data_checklists_persona.push($(this).val());
-//            })
-//   var data_checklists_persona = [];
+//$('.op input:checked').each(function () {
+//data_checklists_persona.push($(this).val());})
+//var data_checklists_persona = [];
+//$('.op input:checked').each(function () {
+//var firstInput = getElementsByTagName('op')[10];
+//firstInput.checked = !firstInput.checked;
+////$(this).val().is('checked',true);})
+//var data_checklists_persona = [];
+//$('.op input:checked').each(function(){var checkbox=$(this).find("input[type='checkbox']");checkbox.attr('checked',!checkbox.attr('checked'));
+//})
+//alert(data_checklists_persona.length);
+//alert(data_checklists_persona[0]);
+            for (var j = 0; j < data_checklists_persona.length; j++) {
+//    data_checklists_persona[j].val().checked;
+//    $('.op input:checked').val(10)
+//  var checkEmpresas = $(".op input[name='opeOpcion']:checked").val();
+            }
+// var data_checklists_persona = [];
 //        $('.op input:checked').each(function () {
-//                var firstInput = getElementsByTagName('op')[10];
-//                firstInput.checked = !firstInput.checked;
-////            $(this).val().is('checked',true);
+//            data_checklists_persona.push($(this).val());
 //        })
-
-
-            var data_checklists_persona = [];
-            $('.op input:checked').each(function () {
-
-            var checkbox = $(this).find("input[type='checkbox']");
-            checkbox.attr('checked', !checkbox.attr('checked'));
-            })
-
-
-
-
-
-            console.log("LLLLLASLASDLALSDLASD");
-            console.log(data_checklists_persona);
-
             $.ajax({
                 url: _compravino.URL + "/x_getOperatoriaProveedores",
                 data: {

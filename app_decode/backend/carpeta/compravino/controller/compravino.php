@@ -362,21 +362,8 @@ class compravino extends main_controller {
     }
 
     function x_updateOperatoria() {
-//<<<<<<< HEAD
-//        $nuevoID = $_POST['nuevoID'];
-//        $opeNombre = $_POST['opeNombre'];
-//        $opeDescripcion = $_POST['opeDescripcion'];
-//        $opeCoordinador = $_POST['opeCoordinador'];
-//        $opeJefe = $_POST['opeJefe'];
-//        $listrosMax = $_POST['listrosMax'];
-////        $formaPago = $_POST['formaPago'];
-////        $cantCuotas = $_POST['cantCuotas'];
-//        $rtn = $this->mod->updateOperatoria($nuevoID, $opeNombre, $opeDescripcion, $opeCoordinador, $opeJefe, $listrosMax);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-//=======
         $rtn = $this->mod->updateOperatoria($_POST);
         echo trim(json_encode($rtn));
-//>>>>>>> 229f0c203d922b82a0fe038587cb4d1bba773739
     }
 
     function x_sendProveedores() {

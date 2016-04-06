@@ -155,68 +155,6 @@
     <div class="clear"></div>
     <hr style="margin-top:20px; margin-left: auto; margin-right: auto; height: 0; width: 60%;">
     <div id="check_datos" style="width: 100%;">
-<!--        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-            <label class="der">Titular:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="titular" id="opeTitular" value=""  maxlength="64">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-            <label class="der">Cuit:</label>
-            <div class="indent formtext">
-                <input type="text" title="Cuit" id="opeCuit" maxlength="100">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-            <label class="der">N° Viñedo:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="numVinedo" id="numVinedo" value=""  maxlength="64">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-            <label class="der">Litros Ofrecidos:</label>
-            <div class="indent formtext">
-                <input type="text" title="Listros Ofrecidos" id="litrosOfrecidos" maxlength="100">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-            <label class="der">Hectareas Declaradas:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="Hectareas Declaradas" id="hectDeclaradas" value=""  maxlength="64">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-            <label class="der">BGA Depositaria:</label>
-            <div class="indent formtext">
-                <input type="text" title="BGA Depositaria" id="bgaDep" maxlength="100">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-            <label class="der">Dept. Bodega:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="Dept. Bodega" id="deptBodega" value=""  maxlength="64">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-            <label class="der">N° INV(Bodega):</label>
-            <div class="indent formtext">
-                <input type="text" title="N INV Bodega" id="numINVBodega" maxlength="100">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 420px;float: left;clear: none!important;">
-            <label class="der">Telefono:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="telefono" id="opetelefono" value=""  maxlength="64">
-            </div>
-        </div>
-        <div class="elem elem_med_cond" style="width: 370px;float: left;clear: none!important;">
-            <label class="der">Correo Electronico:</label>
-            <div class="indent formtext">
-                <input type="text" title="correo electronico" id="opeCorreo" maxlength="100">
-            </div>
-        </div>-->
-
-
 <!-- <div class="elem elem_med_cond"><label>Seleccionar Persona:</label><div class="indent"><select class="chzn-select medium-select select" id="tipoPersona" onchange="verPersona()" data-placeholder="Persona">
 <option value="Humana">Humana</option><option value="Juridica">Juridica</option></select></div></div>-->
         <table id="humana">
@@ -247,7 +185,7 @@
                 <tr class="op">
                     <td class="numCheck"><?php echo $it['ID']; ?></td>
                     <td><?php echo $it['DESCRIPCION']; ?></td>
-                    <td><input type="checkbox" class="opeOpcion" value="<?php echo $it['ID']; ?>" /></td>
+                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="<?php echo $it['ID']; ?>" /></td>
                 </tr>
             <?php } ?>
         </table>

@@ -460,7 +460,8 @@ class compravino_model extends main_model {
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "HECT_MAX" => ''
+            "HECT_MAX" => '',
+            "ESTADO_OP" => 1
         );
         if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
             return TRUE;
@@ -501,6 +502,7 @@ class compravino_model extends main_model {
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
             "MAX_PESOS" => $arr_post['maxPesos'],
+            "CHECKLIST_PERSONA" => $arr_post['checklistsPersona'],
             "PRECIO_1" => $arr_post['opePrecio1'],
             "PRECIO_2" => $arr_post['opePrecio2'],
             "PRECIO_3" => $arr_post['opePrecio3'],
