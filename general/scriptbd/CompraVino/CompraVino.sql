@@ -116,3 +116,11 @@ CREATE TABLE `fid_cambio_titularidad` (
 
 ALTER TABLE `fid_cu_factura` ADD `VINEDO` INT( 11 ) NOT NULL AFTER `ID_CLIENTE` ,
 ADD `RUT` INT( 11 ) NOT NULL AFTER `VINEDO`;
+
+
+/*07/04/2016*/
+/*Agrego campo para guardar los checklist en las facturas*/
+ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL
+
+/*Agrego campo para guardar el id de la operatoria en las facturas*/
+ALTER TABLE  `fid_cu_factura` ADD  `ID_OPE` INT NOT NULL

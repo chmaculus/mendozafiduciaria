@@ -102,7 +102,7 @@ class compravino extends main_controller {
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_bodegas'] = $this->x_getbodegas();
         //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
+//        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
         //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
         $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
         $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
@@ -110,15 +110,14 @@ class compravino extends main_controller {
         $data['lst_proveedores'] = $this->x_getProveedores();
         $data['lst_checkHumana'] = $this->x_getChecklistHumana();
         $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
-        $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
-        $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
+//        $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
+//        $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
         //$data['lst_formulas'] = $this->x_getformulas();
         //$this->x_actualizarT_tmp();
         //$data['clientes_sql'] = $this->x_getclientessql();
         //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
         //$data['provincia'] = $this->x_getbodegas();
         //$data['opcion'] = $this->x_getbodegas();
-
         $this->_js_var['_provincia'] = $provincia;
         $this->_js_var['_opcion'] = $opcion;
         $this->_js_var['_id_objeto'] = $id_objeto;
@@ -136,7 +135,12 @@ class compravino extends main_controller {
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 3)):
                 return $this->view("vista3", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 1)):
+//                $id_operatoria = $_SESSION['OPERATORIA']
+//                if($_SESSION['OPERATORIA']){
+//                $data['lst_bodegas_vino'] = $this->x_getbodegas_vino($_SESSION['OPERATORIA']);
                 return $this->view("vista3", $data);
+//                }
+//                ;
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 2)):
                 return $this->view("vista4_listado", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
@@ -153,6 +157,18 @@ class compravino extends main_controller {
             return $this->view("error404", array(), "backend/dashboard");
         /* permiso mostrar */
         endif;
+    }
+
+    function x_getAlgunasBodegas() {
+        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
+        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
+                <option value="">Elegir Bodega</option>';
+        foreach ($data_bodega as $value) {
+            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
+                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
+        }
+        $html .= '</select>';
+        echo $html;
     }
 
     function x_actualizarT_tmp() {
@@ -176,13 +192,58 @@ class compravino extends main_controller {
         $obj = $this->mod->getChecklistJuridica();
         return $obj;
     }
+
     function x_getChecklistHumanaFact() {
-        $obj = $this->mod->getChecklistHumana();
-        return $obj;
+        $list_check = $this->mod->getChecklistOp($_POST['id']);
+        $html = '';
+        if ($list_check[0]['CHECKLIST_PERSONA']) {
+            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
+            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
+
+            $html = '<table id="humana">';
+
+            if ($data_check_humana) {
+                $html .= '
+            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
+            <tr>
+            <th class="numCheck" style="width: 5%;">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>';
+                foreach ($data_check_humana as $valueH) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueH['ID'] . '</td>
+                    <td>' . $valueH['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+
+            if ($data_check_juridica) {
+                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
+                <tr>
+                <th class="numCheck">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+                </tr>';
+                foreach ($data_check_juridica as $valueJ) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueJ['ID'] . '</td>
+                    <td>' . $valueJ['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+            $html .= '</table>';
+        }
+
+        echo $html;
     }
 
     function x_getChecklistJuridicaFact() {
-        $obj = $this->mod->getChecklistJuridica();
+        $obj = $this->mod->getChecklistJuridicaFact();
         return $obj;
     }
 
@@ -199,9 +260,9 @@ class compravino extends main_controller {
     }
 
     function x_getbodegas_vino() {
-//        $id_operatoria = $_SESSION['OPERATORIA'];
-//        $obj = $this->mod->getbodegas_vino($id_operatoria);
-        $obj = $this->mod->getbodegas_vino();
+        $id_operatoria = $_SESSION['OPERATORIA'];
+        $obj = $this->mod->getbodegas_vino($id_operatoria);
+//        $obj = $this->mod->getbodegas_vino();
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
@@ -257,12 +318,13 @@ class compravino extends main_controller {
     }
 
     function x_getNumOpe() {
+//        $_SESSION['OPERATORIA']=0;
         $id_cliente = $_POST['id_cliente'];
         $rtn = $this->mod->getNumOpe($id_cliente);
         $_SESSION['OPERATORIA'] = $rtn[0]['ID_OPERATORIA'];
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
-    
+
     function x_sincronizarVino() {
         $datosBuscar = $_POST['datosBuscar'];
         $rtn = $this->mod->sincronizarVino($datosBuscar);
@@ -689,7 +751,7 @@ class compravino extends main_controller {
                     echo '<script>
                                 var nombre = "' . $archivo['name'] . '";
                                 parent.jAlert("El archivo tiene nombre incorrecto");
-                            </script>'; 
+                            </script>';
                 } elseif (file_exists($uploaded)) {
                     echo '
                             <script>

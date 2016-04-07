@@ -208,20 +208,14 @@
             <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
-    <?php if (isset($lst_bodegas_vino) && is_array($lst_bodegas_vino)): ?>
+    
         <div class="elem elem_med">
             <label>Bodega:</label>
-            <div class="indent">
-                <select class="chzn-select medium-select select" id="bodega">
-                    <option value="">Elegir Bodega</option>
-                    <?php // foreach($lst_bodegas as $rs_iva): ?>
-                    <?php foreach ($lst_bodegas_vino as $rs_iva): ?>
-                        <option data-local="<?php echo $rs_iva["PROVINCIA"] ?>" data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["NOMBRE"] ?></option>
-                    <?php endforeach; ?>
-                </select>   
+            <div class="indent" id="indent_prueba">
             </div>
         </div>
-    <?php endif; ?>
+    
+    
     <div class="elem elem_med">
         <label class="der">Provincia:</label>
         <div class="indent formtext">
@@ -301,7 +295,11 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-  
+   <div id="check_datos" style="width: 100%;">
+        
+    </div>
+
+
     <br><br><br><br>
      <div class="elem elem_med">
         <label>Cambio de Titularidad:</label>

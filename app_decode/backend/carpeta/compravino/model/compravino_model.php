@@ -20,7 +20,7 @@ class compravino_model extends main_model {
         $rtn = $this->_db->get_tabla('fid_entidadestipo');
         return $rtn;
     }
-    
+
 //    function getclientessql() {
 //        //$rtn = $this->_db->get_tabla('fid_usuarios');
 //        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
@@ -35,9 +35,9 @@ class compravino_model extends main_model {
             $solicitud_adm = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] . " AND NUMFACTURA=" . $value['NUMERO'] . ""
                     . "AND BODEGA=" . $value['ID_BODEGA']);
             if ($solicitud_adm) {
-                if ($solicitud_adm[0]['ESTADO']==9) {
+                if ($solicitud_adm[0]['ESTADO'] == 9) {
                     die("ESTE SCRIPT ACTUALIZA");
-                    $this->_db->update('fid_cu_factura',array("ID_ESTADO"=>'5'),"ID=".$value['ID']." AND NUMERO=".$value['NUMERO']. "AND ID_BODEGA=".$value['ID_BODEGA']);
+                    $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5'), "ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . "AND ID_BODEGA=" . $value['ID_BODEGA']);
                 }
             }
         }
@@ -635,6 +635,11 @@ class compravino_model extends main_model {
         $cuit_tmp = $obj["CUIT"];
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
 
+        if($obj['CHECKLIST_PERSONA']){
+           $armando_array =  implode(',', $obj['CHECKLIST_PERSONA']);
+           $obj['CHECKLIST_PERSONA'] = $armando_array;
+        }
+
         if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
             if ($cambio_titularidad == 'true') {
@@ -975,9 +980,21 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
+    function getChecklistOp($id) {
+        $this->_db->select("CHECKLIST_PERSONA");
+        $rtn = $this->_db->get_tabla("fid_operatoria_vino", "ID_OPERATORIA=$id");
+        return $rtn;
+    }
+
     function getChecklistHumana() {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla("fid_op_vino_checklist", "JURIDICA=0 AND ESTADO=1");
+        return $rtn;
+    }
+
+    function getChecklistHumanaFact($ids) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_op_vino_checklist", "JURIDICA=0 AND ESTADO=1 AND ID IN ($ids)");
         return $rtn;
     }
 
@@ -987,24 +1004,17 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function getbodegas_vino() {
-//    function getbodegas_vino($id_operatoria) {
-//SELECT e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA FROM fid_entidades e    
-//JOIN fid_op_vino_bodegas b ON(e.ID=b.ID_BODEGA)
-//JOIN fid_provincias p ON (e.ID_PROVINCIA=p.ID)
-//WHERE b.ID_OPERATORIA=20
-//ORDER BY b.ID_OPERATORIA DESC
-//        print_r($_SESSION);die("ESTE ES EL SESSION");
-//        if ($id_operatoria == '') {
-//            echo "ACA NO DEBE";
-//            return false;
-//        }
+    function getChecklistJuridicaFact($ids) {
+        $this->_db->select("*");
+        $rtn = $this->_db->get_tabla("fid_op_vino_checklist", "JURIDICA=1 AND ESTADO=1 AND ID IN ($ids)");
+        return $rtn;
+    }
+
+    function getbodegas_vino($id_operatoria) {
         $this->_db->select("e.ID, e.NOMBRE,b.ID_OPERATORIA,b.LIMITE_OPE,p.PROVINCIA");
         $this->_db->join("fid_op_vino_bodegas b", "e.ID=b.ID_BODEGA");
         $this->_db->join("fid_provincias p", "e.ID_PROVINCIA=p.ID");
-//        $rtn = $this->_db->get_tabla("fid_entidades e","b.ID_OPERATORIA=20");
-//        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
-        $rtn = $this->_db->get_tabla("fid_entidades e");
+        $rtn = $this->_db->get_tabla("fid_entidades e", "b.ID_OPERATORIA=$id_operatoria");
         return $rtn;
     }
 
@@ -1038,7 +1048,6 @@ class compravino_model extends main_model {
 //        if(empty($firstColumnData)){
 //            echo "vacio";
 //        }else{
-//            
 //            echo "algo";
 //        }
 //        var_dump($firstColumnData);
@@ -1319,7 +1328,7 @@ class compravino_model extends main_model {
 
             $iid = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
             $cuit = $objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue();
-            
+
             //$cbu = substr($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue(), 0, 22);
             $correo = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue();
             $razonsocial = $objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue();
@@ -1334,13 +1343,13 @@ class compravino_model extends main_model {
             $id_condicion_iva = $objPHPExcel->getActiveSheet()->getCell("Z" . $i)->getValue();
             $id_condicion_iibb = $objPHPExcel->getActiveSheet()->getCell("AA" . $i)->getValue();
             //$inscripcion_iibb   = $objPHPExcel->getActiveSheet()->getCell("O".$i)->getValue();
-            
+
             $litros = $objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue();
             $cuit = str_replace('-', '', strval($cuit));
             //$cbu = exp_to_dec($cbu);
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-            
-            
+
+
 
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
@@ -1357,7 +1366,7 @@ class compravino_model extends main_model {
                 if ($id_condicion_iibb && $condicion_iibb = $this->_db->get_tabla('fid_cliente_condicion_iibb', 'CONDICION LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $id_condicion_iibb) . '%\'')) {
                     $id_condicion_iibb = $condicion_iibb[0]['ID'];
                 }
-                
+
                 $arr_ins = array(
                     "CUIT" => $cuit,
                     "RAZON_SOCIAL" => $razonsocial,
@@ -1381,9 +1390,9 @@ class compravino_model extends main_model {
             $bodega_xls = $objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue();
             $this->_db->select("*");
             $this->_db->join("fid_entidadestipo t", "t.ID_ENTIDAD=e.ID AND t.ID_TIPO=$id_tipoentidad_bodega");
-        
+
             $idbodega_xls = $this->_db->get_tabla('fid_entidades e', 'NOMBRE LIKE \'' . str_replace(array(' ', '.'), array('%', '%'), $bodega_xls) . '\'');
-            
+
             if ($idbodega_xls) {
                 //nada
                 $id_bodega = $idbodega_xls[0]['ID'];
@@ -1396,7 +1405,7 @@ class compravino_model extends main_model {
                 } else {
                     $id_provinciabodega = 0;
                 }
-                
+
                 if ($localidadbodega && $id_localidadbodega = $this->_db->get_tabla('fid_localidades', 'ID_PROVINCIA = ' . $id_provinciabodega . ' AND LOCALIDAD LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $localidadbodega) . '%\'')) {
                     $id_localidadbodega = $id_localidadbodega[0]['ID'];
                 } else {
@@ -1409,7 +1418,7 @@ class compravino_model extends main_model {
                     //"ID_DEPARTAMENTO" => $id_localidadbodega,
                     "ESTADO" => "0"
                 );
-                
+
                 $id_bodega = $this->_db->insert('fid_entidades', $arr_bod);
                 $this->_db->insert('fid_entidadestipo', array('ID_ENTIDAD' => $id_bodega, 'ID_TIPO' => $id_tipoentidad_bodega));
             }
@@ -1429,7 +1438,6 @@ class compravino_model extends main_model {
             $fecha = $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue(); //??
             $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
             $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
-            
             //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
             $neto = $objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue();
             $iva = $objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue();
@@ -1465,12 +1473,12 @@ class compravino_model extends main_model {
                 $_ope_mendoza = 16;
             }
 
-            /*if ($id_provincia == '17') {
-                $save_ope = $_ope_sanjuan;
-                $save_fid = $_fid_sanjuan;
-            } else {*/
-                $save_ope = $_ope_mendoza;
-                $save_fid = $_fid_mendoza;
+            /* if ($id_provincia == '17') {
+              $save_ope = $_ope_sanjuan;
+              $save_fid = $_fid_sanjuan;
+              } else { */
+            $save_ope = $_ope_mendoza;
+            $save_fid = $_fid_mendoza;
             //}
 
             $arr_fact = array(
@@ -1480,7 +1488,7 @@ class compravino_model extends main_model {
                 //"CAI" => $cai,
                 "ID_ESTADO" => "1",
                 "TIPO" => "1",
-               // "LITROS" => $litros,
+                // "LITROS" => $litros,
                 "ID_OPERATORIA" => $save_ope,
                 "ID_FIDEICOMISO" => $save_fid,
                 //"AZUCAR" => $azucar,
@@ -1494,9 +1502,9 @@ class compravino_model extends main_model {
                 "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
 
-            /*if (intval($formula) > 0) {
-                $arr_fact["FORMULA"] = $formula;
-            }*/
+            /* if (intval($formula) > 0) {
+              $arr_fact["FORMULA"] = $formula;
+              } */
 
             //validaciones
 
@@ -1528,11 +1536,11 @@ class compravino_model extends main_model {
             }
 
             //verificar cbu
-            /*$existe_cbu = $this->verificar_cbu($cbu);
-            if ($existe_cbu['error']) {
-                $sw_error = 1;
-                $arr_error[] = $existe_cbu['result'];
-            }*/
+            /* $existe_cbu = $this->verificar_cbu($cbu);
+              if ($existe_cbu['error']) {
+              $sw_error = 1;
+              $arr_error[] = $existe_cbu['result'];
+              } */
 
             //verificar largo cuit
             if (strlen($cuit) != 11) {
@@ -1552,7 +1560,7 @@ class compravino_model extends main_model {
                     $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
                 }
             }
-            
+
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
             //log_this('log/aaaaaa.log', $this->_db->last_query() );
             $res[] = $resp;
