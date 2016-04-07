@@ -1401,6 +1401,7 @@ function editar_formulario() {
             $("#neto").val(data.NETO).attr("readonly", "readonly");
             $("#iva").val(data.IVA).attr("readonly", "readonly");
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
+            $("#porcentaje_iva").val(data.PORC_IVA);
 
             if (arr_check == 1) {
                 $("#cambio_titularidad").attr('checked', true);

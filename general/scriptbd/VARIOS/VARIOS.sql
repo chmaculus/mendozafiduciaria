@@ -17,7 +17,7 @@ ALTER TABLE `fid_cu_factura` CHANGE `ID_BODEGA` `ID_BODEGA` VARCHAR( 50 ) NULL D
 /****** Agregar LITROS  a fid_cu_factura ******/
 ALTER TABLE `fid_cu_factura` ADD `LITROS` VARCHAR( 20 ) NOT NULL;
 /****** Agregar PORC_IVA  a fid_cu_factura  asi almacenamos el porcentaje para despues mostrarlo ******/
-ALTER TABLE `fid_cu_factura` ADD `PORC_IVA` VARCHAR( 20 ) NOT NULL
+ALTER TABLE `fid_cu_factura` ADD `PORC_IVA` VARCHAR( 20 ) NOT NULL;
 /****** 16/03  ******/
 /****** Crear  la tabla fid_cu_analisis para la carga de factura del proceso de compra vino. ******/
 CREATE TABLE `fid_cu_analisis` (

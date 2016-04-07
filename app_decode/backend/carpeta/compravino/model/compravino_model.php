@@ -315,10 +315,10 @@ class compravino_model extends main_model {
 //        $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
         $this->_db->select("CHECK_ESTADO");
         $this->_db->order_by("FECHA", "DESC");
-        $array_Check = $this->_db->get_tabla('fid_cambio_titularidad', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
+        $array_Check = $this->_db->get_tabla('fid_op_vino_cambio_tit', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
 //        echo $array_Check[0]['CHECK_ESTADO'];
 //        var_dump($array_Check);die();
-        $rtn["CHECK_TITULARIDAD"] = $array_Check[0]['CHECK_ESTADO'];
+        $rtn["CHECK_TITULARIDAD"] = isset($array_Check[0]['CHECK_ESTADO']) ? $array_Check[0]['CHECK_ESTADO'] : 0;
         return $rtn;
     }
 
@@ -522,14 +522,8 @@ class compravino_model extends main_model {
         $this->_db->select("ID_OPERATORIA");
         $this->_db->order_by("ID_OPERATORIA", "DESC LIMIT 1");
         $rtn = $this->_db->get_tabla("fid_operatoria_vino");
-        $valor = 0;
-        $sumar = 1;
-        $devolver = 1;
-        if ($rtn) {
-            $valor = (int) $rtn[0]['ID_OPERATORIA'];
-            $devolver = $valor + $sumar;
-        }
-        return $devolver;
+        
+        return $rtn ? (int) $rtn[0]['ID_OPERATORIA'] + 1 : 1;
     }
 
     function sendProveedores($obj, $nuevoID) {
@@ -644,7 +638,7 @@ class compravino_model extends main_model {
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 1,
                 );
-                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
             } else {
                 $arr_cambio_titu = array(
                     "ID_FACTURA" => $numero_factura,
@@ -652,7 +646,7 @@ class compravino_model extends main_model {
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 0,
                 );
-                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
             }
             $acc = "add";
             $id_new = $resp;
@@ -660,7 +654,7 @@ class compravino_model extends main_model {
             $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "'");
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
-            $titu = $this->_db->get_tabla("fid_cambio_titularidad", "ID_FACTURA=" . $numero_factura);
+            $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
             if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
                 $arr_cambio_titu = array(
                     "ID_FACTURA" => $numero_factura,
@@ -668,7 +662,7 @@ class compravino_model extends main_model {
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 1,
                 );
-                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
             } else
             if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
                 $arr_cambio_titu = array(
@@ -677,7 +671,7 @@ class compravino_model extends main_model {
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 0,
                 );
-                $this->_db->insert('fid_cambio_titularidad', $arr_cambio_titu);
+                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
             }
             $acc = "edit";
             $id_new = $iid;
@@ -695,7 +689,7 @@ class compravino_model extends main_model {
         $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID");
         $this->_db->order_by("t.FECHA", "DESC");
         $this->_db->where("t.ID_FACTURA=" . $id);
-        $rtn = $this->_db->get_tabla("fid_cambio_titularidad t");
+        $rtn = $this->_db->get_tabla("fid_op_vino_cambio_tit t");
         //log_this('xxxxx.log', $this->_db->last_query() );
         $rtn_check = array();
         foreach ($rtn as $value) {
@@ -1012,7 +1006,7 @@ class compravino_model extends main_model {
         $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
         $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
         $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
-        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID =24");
+        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID = (SELECT valor FROM fid_settings WHERE variable='compra_uva_id_tipo_entidad')");
         return $rtn;
     }
 
@@ -1314,6 +1308,20 @@ class compravino_model extends main_model {
         } else {
             die("Falta configurar sistema");
         }
+        
+        $id_operatoria = $this->getIdOperatoria();
+        
+        $arr_ope = array(
+            'ID_OPERATORIA' => $id_operatoria,
+            'FECHA_CRE' => date('Y-m-d'),
+            'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria
+        );
+        
+        $this->_db->insert('fid_operatoria_vino', $arr_ope);
+        
+        $arr_proveedores = $arr_bodegas = array();
+        $total_litros = 0;
+        $precios_cuotas = array();
 
         while ($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue() != '') {
 
@@ -1420,7 +1428,7 @@ class compravino_model extends main_model {
             //validar numero de factura
             $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente) : FALSE;
 
-            if ($existe_fact) {
+            if ($numero && $existe_fact) {
                 $i++;
                 $k++;
                 continue;
@@ -1432,9 +1440,21 @@ class compravino_model extends main_model {
             
             //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
             $neto = $objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue();
+            $precio = $litros ? $neto / $litros : 0;
             $iva = $objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue();
             $total = $objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue();
-            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue() . ' / ' . $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
+            $porc_iva = 0;
+            if ($total && $neto) {
+                $porc_iva = $iva * 100 / $neto;
+            }
+            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue() . ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue();
+            $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
+            if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
+                $precios_cuotas[$cuotas] = $precio;
+            }
+            
+            $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
+            $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
             //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
 
             if (trim($fecha) == "-   -") {
@@ -1442,7 +1462,7 @@ class compravino_model extends main_model {
             } else {
                 $fecha = loadDate_excel($fecha);
             }
-
+            
             if (trim($fechavto) == "-   -") {
                 $fechavto = '';
             } else {
@@ -1480,19 +1500,26 @@ class compravino_model extends main_model {
                 //"CAI" => $cai,
                 "ID_ESTADO" => "1",
                 "TIPO" => "1",
-               // "LITROS" => $litros,
-                "ID_OPERATORIA" => $save_ope,
-                "ID_FIDEICOMISO" => $save_fid,
+                "LITROS" => $litros,
+                "FORMA_PAGO" => $cuotas,
+                "VINEDO" => $nro_vinedo,
+                "RUT" => $nro_inv,
+                "ID_OPERATORIA" => $id_operatoria,
                 //"AZUCAR" => $azucar,
-                //"PRECIO" => $precio,
+                "PRECIO" => $precio,
                 "NETO" => $neto,
                 "IVA" => $iva,
                 "TOTAL" => $total,
+                "PORC_IVA" => $porc_iva,
                 "OBSERVACIONES" => $observaciones,
                 "ID_CLIENTE" => $id_cliente,
                 "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
+            
+            $arr_bodegas[] = $id_bodega;
+            $arr_proveedores[] = $id_cliente;
+            $total_litros += $litros;
 
             /*if (intval($formula) > 0) {
                 $arr_fact["FORMULA"] = $formula;
@@ -1509,10 +1536,10 @@ class compravino_model extends main_model {
                 $factor = $arr_factor[0]['VALOR'];
             }
 
-            if (0 and ( $neto != $kgrs * $precio)) {
+            /*if (0 and ( $neto != $litros * $precio)) {
                 $sw_error = 1; //
                 $arr_error[] = "Neto observado";
-            }
+            }*/
 
             $iva = round($iva * 1, 2);
             $factor = round(($factor * $neto / 100) * 1, 2);
@@ -1564,7 +1591,40 @@ class compravino_model extends main_model {
               break;
               } */
         }
+        
+        if ($arr_bodegas) {
+            $temp_arr = array(
+                'ID_OPERATORIA' => $id_operatoria
+                    );
+            foreach ($arr_bodegas as $bod) {
+                $temp_arr['ID_BODEGA'] = $bod;
+                $this->_db->insert('fid_op_vino_bodegas', $temp_arr);
+            }
+            
+            $temp_arr = array(
+                'ID_OPERATORIA' => $id_operatoria
+                    );
+            foreach ($arr_proveedores as $prov) {
+                $temp_arr['ID_PROVEEDOR'] = $prov;
+                $this->_db->insert('fid_op_vino_proveedores', $temp_arr);
+            }
+        }
+        
+        $arr_update_factura = array("LTRS_MAX" => $total_litros);
+        if (count($precios_cuotas)) {
+            $temp_arr = array();
+            $arr_precios = array('PRECIO_1', 'PRECIO_2', 'PRECIO_3', 'PRECIO_4', 'PRECIO_5', 'PRECIO_6');
+            foreach ($precios_cuotas as $cuota => $precio) {
+                if (in_array('PRECIO_' . $cuota, $arr_precios)) {
+                    $arr_update_factura['PRECIO_' . $cuota] = $precio;
+                }
+            }
+        }
+        
+        $this->_db->update("fid_operatoria_vino", $arr_update_factura, "ID_OPERATORIA = " . $id_operatoria);
         //rename("_tmp/importar/imp_vino_fact.xlsx", "_tmp/importar/imp_vino_fact_procesado_" . date('Ymd') . ".xlsx");
+        
+        //TRUNCATE TABLE `fid_cu_factura`;TRUNCATE TABLE `fid_operatoria_vino`;TRUNCATE TABLE `fid_op_vino_bodegas`;TRUNCATE TABLE `fid_op_vino_proveedores`;
 
         return $res;
     }

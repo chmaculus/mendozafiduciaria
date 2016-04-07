@@ -1096,6 +1096,8 @@ function validarFecha(field, rules, i, options) {
 
 
 function formattedDate(date) {
+    if (date == null)
+        return '';
     
     var arr = date.split("/");
     dia = arr[0];
