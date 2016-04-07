@@ -1,17 +1,3 @@
-
- /****** Script  para crear la tabla fid_operatoria_vino_check ******/
-CREATE TABLE `fid_operatoria_vino_check` (
-`ID_OPERATORIA` INT( 11 ) NOT NULL ,
-`ID_CHECKLIST_VINO` INT( 11 ) NOT NULL
-) ENGINE = INNODB;
-
-/****** Script  para crear la tabla fid_checklist_vino ******/
-CREATE TABLE `fid_checklist_vino` (
-`ID` INT( 11 ) NOT NULL ,
-`DESCRIPCION` VARCHAR( 250 ) NOT NULL ,
-`ESTADO` INT( 11 ) NOT NULL
-) ENGINE = INNODB;
-
 /****** Script  para crear la tabla fid_operatoria_vino ******/
 CREATE TABLE IF NOT EXISTS `fid_operatoria_vino` (
   `ID_OPERATORIA` int(11) NOT NULL,
@@ -21,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `fid_operatoria_vino` (
   `DESCRIPCION_OPE` varchar(120) NOT NULL,
   `ID_COORDINADOR_OPE` int(11) NOT NULL,
   `ID_JEFE_OPE` int(11) NOT NULL,
-  `PERSONA` VARCHAR( 64 ) NOT NULL AFTER,
+  `PERSONA` VARCHAR( 64 ) NOT NULL,
   `LTRS_MAX` float NOT NULL,
   `MAX_PESOS` float NOT NULL,
   `HECT_MAX` int(11) NOT NULL,
@@ -51,22 +37,6 @@ CREATE TABLE IF NOT EXISTS `fid_op_vino_bodegas` (
   `LIMITE_OPE` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-/****** Script  para crear la tabla fid_operatoria_humana ******/
-
-CREATE TABLE `fid_operatoria_humana` (
-`ID_OPERATORIA` INT NOT NULL ,
-`ID_HUMANA` INT NOT NULL,
-`ESTADO` INT( 11 ) NOT NULL
-) ENGINE = INNODB;
-
-/****** Script  para crear la tabla fid_operatoria_juridica ******/
-
-CREATE TABLE `fid_operatoria_juridica` (
-`ID_OPERATORIA` INT NOT NULL ,
-`ID_JURIDICA` INT NOT NULL,
-`ESTADO` INT( 11 ) NOT NULL
-) ENGINE = INNODB;
 
 CREATE TABLE IF NOT EXISTS `fid_op_vino_checklist` (
   `ID` int(11) NOT NULL,
@@ -105,7 +75,7 @@ INSERT INTO `fid_op_vino_checklist` (`ID`, `JURIDICA`, `DESCRIPCION`, `ESTADO`) 
 
 /*SCRIPT PARA TABLA QUE ALMACENA LOS USUARIOS QUE ACTIVAN EL TILDE DE CAMBIO DE TITULARIDAD EN FACTURAS*/
 
-CREATE TABLE `fid_cambio_titularidad` (
+CREATE TABLE `fid_op_vino_cambio_tit` (
 `ID_FACTURA` INT NOT NULL ,
 `ID_USUARIO` INT NOT NULL ,
 `FECHA` DATETIME NOT NULL ,
@@ -114,13 +84,10 @@ CREATE TABLE `fid_cambio_titularidad` (
 
 /* Script  para agregar campos a la tabla fid_cu_factura */
 
-ALTER TABLE `fid_cu_factura` ADD `VINEDO` INT( 11 ) NOT NULL AFTER `ID_CLIENTE` ,
-ADD `RUT` INT( 11 ) NOT NULL AFTER `VINEDO`;
-
+ALTER TABLE `fid_cu_factura` ADD `VINEDO` VARCHAR( 20 ) NOT NULL AFTER `ID_CLIENTE` ,
+ADD `RUT` VARCHAR( 20 ) NOT NULL AFTER `VINEDO`,
+ADD `FORMA_PAGO` INT( 1 ) NOT NULL AFTER `RUT`;
 
 /*07/04/2016*/
 /*Agrego campo para guardar los checklist en las facturas*/
-ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL
-
-/*Agrego campo para guardar el id de la operatoria en las facturas*/
-ALTER TABLE  `fid_cu_factura` ADD  `ID_OPE` INT NOT NULL
+ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL;
