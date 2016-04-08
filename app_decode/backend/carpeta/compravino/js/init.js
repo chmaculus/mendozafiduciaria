@@ -527,6 +527,7 @@ $(document).ready(function () {
         var opePrecio4 = $("#opeP4").val();
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
+        var formaPago = $("#fpago-select").val();
         var nuevoID = 0;
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
         var rowscount_proveedores = rows_proveedores.length;
@@ -541,25 +542,11 @@ $(document).ready(function () {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
         var data_checklists_persona = [];
+        
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-        /*esto si no va se borra*/
-//var opeTitular = $("#opeTitular").val();var opeCuit = $("#opeCuit").val();var numVinedo = $("#numVinedo").val();
-//var litrosOfrecidos = $("#litrosOfrecidos").val();var hectDeclaradas = $("#hectDeclaradas").val();var bgaDep = $("#bgaDep").val();
-//var deptBodega = $("#deptBodega").val();var numINVBodega = $("#numINVBodega").val();var opetelefono = $("#opetelefono").val();
-//var opeTitular = $("#opeTitular").val();var opeCuit = $("#opeCuit").val();var numVinedo = $("#numVinedo").val();
-//var litrosOfrecidos = $("#litrosOfrecidos").val();var hectDeclaradas = $("#hectDeclaradas").val();var bgaDep = $("#bgaDep").val();
-//var deptBodega = $("#deptBodega").val();var numINVBodega = $("#numINVBodega").val();var opetelefono = $("#opetelefono").val();
-//var opeCorreo = $("#opeCorreo").val();
-//if (opeNombre == '') {jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});return false;}
-//if (opeDescripcion == '') {jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});return false;}
-//if (opeCoordinador == '') {jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});return false;}
-//if (opeJefe == '') {jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});return false;}
-//if (listrosMax == '') {jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});return false;}
-//if (maxHectareas == '') {jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});return false;}
-//if (opeProveedores == '') {jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});return false;}
-//if (opeBodega == '') {jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});return false;}
+        
         if (opeNombre == '') {
             jAlert('Ingrese el nombre de la operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -575,6 +562,18 @@ $(document).ready(function () {
         if (maxPesos == '') {
             jAlert('Ingrese el maximo de pesos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#maxPesos").focus();
+            });
+            return false;
+        }
+        if (opePrecio1 == '') {
+            jAlert('Ingrese el precio de contado para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeP1").focus();
+            });
+            return false;
+        }
+        if(data_checklists_persona==''){
+            jAlert('Seleccione requerimientos para los tipo de personas a presentar.', $.ucwords(_etiqueta_modulo), function () {
+                $("#humana").focus();
             });
             return false;
         }
@@ -600,7 +599,8 @@ $(document).ready(function () {
                         opePrecio3: opePrecio3,
                         opePrecio4: opePrecio4,
                         opePrecio5: opePrecio5,
-                        opePrecio6: opePrecio6
+                        opePrecio6: opePrecio6,
+                        formaPago: formaPago
                     },
                     dataType: "json", type: "post"});
                 $.ajax({
@@ -1470,7 +1470,7 @@ function editar_formulario() {
             $("#numero").val(data.NUMERO).attr("readonly", "readonly");
             $("#cai").val(data.CAI).attr("readonly", "readonly");
             $("#bodega").chosen({width: "220px"});
-            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+//            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
             $("#bodega").trigger('change');
             $("#formula").chosen({width: "220px"});
             $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
@@ -1498,7 +1498,7 @@ function editar_formulario() {
                     $("#bodega-jquery").chosen({width: "220px"});
                 }
             })
-
+                $("#bodega-jquery").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
             $.ajax({
                 url: _compravino.URL + "/x_getChecklistHumanaFact",
                 datatype: 'html',
@@ -1509,6 +1509,21 @@ function editar_formulario() {
                     $('#check_datos').html(data);
                 }
             })
+            
+            $.ajax({
+                    url: _compravino.URL + "/x_getFormasPago",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#fpago').html(data);
+                        $("#fpago-select").chosen({width: "220px"});
+                    }
+                })
+                console.log("FFFF PAGO");
+                console.log(data.FORMA_PAGO);
+            $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
 
             var data_checklists_persona = [];
             var listado_checklist = data.CHECKLIST_PERSONA;

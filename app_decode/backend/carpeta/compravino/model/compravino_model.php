@@ -460,6 +460,7 @@ class compravino_model extends main_model {
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
+            "FORMA_PAGO" => $arr_post['formaPago'],
             "HECT_MAX" => '',
             "ESTADO_OP" => 1
         );

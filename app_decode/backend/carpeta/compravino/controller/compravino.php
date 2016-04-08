@@ -244,30 +244,32 @@ class compravino extends main_controller {
     function x_getFormasPago() {
         $forma_pago = $this->mod->getPagos($_POST['id']);
 //        print_r($forma_pago);die("SXXS");
+        $j=1;
         $html = '';
         $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
                 <option value="">Seleccione forma pago</option>';
         foreach ($forma_pago[0] as $key => $value) {
             $nombre_ver ='';
             if($key == 'PRECIO_1'){
-                $nombre_ver = 'Contado';
+                $nombre_ver = '1 PAGO';
             }
             if($key== 'PRECIO_2'){
-                $nombre_ver = '2 Cuotas';
+                $nombre_ver = '2 PAGOS';
             }
             if($key== 'PRECIO_3'){
-                $nombre_ver = '3 Cuotas';
+                $nombre_ver = '3 PAGOS';
             }
             if($key== 'PRECIO_4'){
-                $nombre_ver = '4 Cuotas';
+                $nombre_ver = '4 PAGOS';
             }
             if($key== 'PRECIO_5'){
-                $nombre_ver = '5 Cuotas';
+                $nombre_ver = '5 PAGOS';
             }
             if($key== 'PRECIO_6'){
-                $nombre_ver = '6 Cuotas';
+                $nombre_ver = '6 PAGOS';
             }
-            $html .= '<option id="precio_fp" value="'.$value.'" data-precio="'. $value.'">' . $nombre_ver . '</option>';
+            $html .= '<option id="precio_fp" value="'.$j.'" data-precio="'. $value.'">' . $nombre_ver . '</option>';
+            $j++;
         }
         $html .= '</select>';
         echo $html;
