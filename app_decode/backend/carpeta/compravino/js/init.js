@@ -696,14 +696,14 @@ $(document).ready(function () {
             data_checklists_persona.push($(this).val());
         })
 //validar campos
-//        if (opeNombre == '') {
-//            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
-//            return false;
-//        }
-//        if (opeDescripcion == '') {
-//            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
-//            return false;
-//        }
+        if (opeNombre == '') {
+            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
+            return false;
+        }
+        if (opeDescripcion == '') {
+            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
+            return false;
+        }
 //        if (opeCoordinador == '') {
 //            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
 //            return false;
@@ -712,14 +712,14 @@ $(document).ready(function () {
 //            jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
 //            return false;
 //        }
-//        if (listrosMax == '') {
-//            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
-//            return false;
-//        }
-//        if (maxHectareas == '') {
-//            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
+        if (listrosMax == '') {
+            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
+            return false;
+        }
+        if (maxHectareas == '') {
+            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+            return false;
+        }
 //        if (opeProveedores == '') {
 //            jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
 //            return false;
@@ -1321,27 +1321,6 @@ $(document).ready(function () {
             $("#total").val(dec(total, 2));
         }
     });
-//     $("#precio").keyup(function () {
-//        if ($(this).val() == 0) {
-//            $("#neto").val(0);
-//        } else {
-//            //var porc = var_cliente.VALOR;
-//            //condicioniva_g
-//            var factor = 0;
-//            if (condicioniva_g >= 0) {
-//                factor = condicioniva_g;
-//            } else {
-//                factor = var_cliente.VALOR;
-//            }
-//            var neto = $("#kgrs").val() * $(this).val();
-//            $("#neto").val(dec(neto, 2));
-//            factor = $('#porcentaje_iva').val();
-//            var iva = factor * $("#neto").val() / 100;
-//            $("#iva").val(dec(iva, 2));
-//            var total = 1 * $("#neto").val() + 1 * $("#iva").val();
-//            $("#total").val(dec(total, 2));
-//        }
-//    });
 
     $("#porcentaje_iva").keyup(function () {
         factor = $('#porcentaje_iva').val();
@@ -1498,7 +1477,7 @@ function editar_formulario() {
                     $("#bodega-jquery").chosen({width: "220px"});
                 }
             })
-                $("#bodega-jquery").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
             $.ajax({
                 url: _compravino.URL + "/x_getChecklistHumanaFact",
                 datatype: 'html',
@@ -1523,7 +1502,7 @@ function editar_formulario() {
                 })
                 console.log("FFFF PAGO");
                 console.log(data.FORMA_PAGO);
-            $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+            $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
 
             var data_checklists_persona = [];
             var listado_checklist = data.CHECKLIST_PERSONA;
