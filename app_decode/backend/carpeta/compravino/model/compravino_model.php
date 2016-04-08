@@ -26,74 +26,28 @@ class compravino_model extends main_model {
 //        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
 //        return $rtn;
 //    }
-
     function sincronizarVino($datosBuscar) {
-//        var_dump($datosBuscar);
-//        die("DATOOOOOOS");
+        $j = 0;
         foreach ($datosBuscar as $value) {
-            $this->_dbsql->select("ESTADO");
-            $solicitud_adm = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] . " AND NUMFACTURA=" . $value['NUMERO'] . ""
-                    . "AND BODEGA=" . $value['ID_BODEGA']);
-            if ($solicitud_adm) {
-                if ($solicitud_adm[0]['ESTADO'] == 9) {
-                    die("ESTE SCRIPT ACTUALIZA");
-                    $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5'), "ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . "AND ID_BODEGA=" . $value['ID_BODEGA']);
+            if ($value['ID'] != '' && $value['NUMERO'] != '' && $value['ID_BODEGA'] != '') {
+                $this->_dbsql->select("CUIT,OPERATORIA,LOTE,IDFACTURAINT,NUMFACTURA,TIPO,ESTADO,BODEGA,ORDEN_PAGO,FECHA_PROCESADO");
+                $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
+                        " AND NUMFACTURA=" . $value['NUMERO'] . ""
+                        . "AND BODEGA=" . $value['ID_BODEGA']);
+//            log_this('log/qqqqqqq.log', $this->_dbsql->last_query() );
+               
+                if ($solicitud_adm[$j]) {
+                    if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
+                        $arr_ins = array("ID_ESTADO" => '9',
+                            "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+$this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=".$value['NUMERO']." AND ID_BODEGA=".$value['ID_BODEGA']);
+//            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
+//                var_dump($solicitud_adm[$j]);
+                    }
                 }
             }
+            $j++;
         }
-        var_dump($solicitud_adm);
-        die("NO MAS");
-
-        $id_lote_new = 0;
-        if ($arr_obj):
-            $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
-            foreach ($arr_obj as $ciu):
-                $id_factura = $ciu["IID"];
-                $arr_ins = array(
-                    "ID_FACTURA" => $id_factura,
-                    "ID_LOTE" => $id_lote_new,
-                    "NUMERO_FACTURA" => $ciu["NUMERO"]
-                );
-                $this->_db->insert('fid_cu_lotespago', $arr_ins);
-                //log_this('log/qqqqqqq.log', $this->_db->last_query() );
-                $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
-
-
-                $this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
-                $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE", 'left');
-                $cuit_cli = $this->_db->get_tabla('fid_cu_factura f', "f.ID='" . $id_factura . "'");
-
-                //mendoza fideicomiso 1 y san juan en 26 
-                $arra_ins = array(
-                    "CUIT" => $cuit_cli[0]['CUIT'],
-                    "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-                    "OPERATORIA" => "2",
-                    "IMPORTE" => $cuit_cli[0]['TOTAL'],
-                    "LOTE" => $id_lote_new,
-                    "IDFACTURAINT" => $id_factura,
-                    "NUMFACTURA" => $ciu["NUMERO"],
-                    "CODIGO_DEBO" => "",
-                    "TIPO" => "OP",
-                    "FECHA_PASADO" => date('Ymd h:i:s'),
-                    "FECHA_PROCESADO" => "19010101 00:00",
-                    "ESTADO" => "1",
-                    "BODEGA" => $cuit_cli[0]['ID_BODEGA'],
-                    "FORMULA" => $ciu["FORMULA"]
-                );
-                if ($_POST['provincia'] == 12)
-                    $arra_ins["FIDEICOMISO"] = "1";
-                else if ($_POST['provincia'] == 17)
-                    $arra_ins["FIDEICOMISO"] = "26";
-                $return = $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-                //file_put_contents("loggg.txt", $return, FILE_APPEND);
-                //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
-
-            endforeach;
-            $this->actualizarTablasW();
-
-
-        endif;
-        return $id_lote_new;
     }
 
     function guardarlote($arr_obj) {
@@ -645,16 +599,7 @@ class compravino_model extends main_model {
                     "CHECK_ESTADO" => 1,
                 );
                 $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-            } 
-//            else {
-//                $arr_cambio_titu = array(
-//                    "ID_FACTURA" => $numero_factura,
-//                    "ID_USUARIO" => $_SESSION['USERADM'],
-//                    "FECHA" => date("Y-m-d H:i:s"),
-//                    "CHECK_ESTADO" => 0,
-//                );
-//                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-//            }
+            }
             $acc = "add";
             $id_new = $resp;
         } else {//editar

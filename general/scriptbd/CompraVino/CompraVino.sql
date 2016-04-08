@@ -91,3 +91,7 @@ ADD `FORMA_PAGO` INT( 1 ) NOT NULL AFTER `RUT`;
 /*07/04/2016*/
 /*Agrego campo para guardar los checklist en las facturas*/
 ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL;
+
+/*08/04/2016*/
+/*Agrego campo en la tabla de las facturas para almacenar la orden de pago generada en el debo*/
+ALTER TABLE  `fid_cu_factura` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL;

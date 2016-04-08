@@ -304,7 +304,7 @@ $(document).ready(function () {
 //    $("#listbox_juridica").hide();
     $("#juridica").hide();
     $('#send').show();
-        
+
     $('.tb_atras_ope').on('click', function (e) {
         var urlh = "backend/carpeta/compravino/init/12/7";
         $(location).attr('href', urlh);
@@ -542,11 +542,11 @@ $(document).ready(function () {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
         var data_checklists_persona = [];
-        
+
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-        
+
         if (opeNombre == '') {
             jAlert('Ingrese el nombre de la operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -571,7 +571,7 @@ $(document).ready(function () {
             });
             return false;
         }
-        if(data_checklists_persona==''){
+        if (data_checklists_persona == '') {
             jAlert('Seleccione requerimientos para los tipo de personas a presentar.', $.ucwords(_etiqueta_modulo), function () {
                 $("#humana").focus();
             });
@@ -645,18 +645,23 @@ $(document).ready(function () {
                 ID_BODEGA: rows[i].ID_BODEGA
             });
         }
+//        console.log("OBTENIENDO TODOS LOS ID DE CADA");
+//        console.log(datosBuscar);
         $.ajax({
             url: _compravino.URL + "/x_sincronizarVino",
             data: {
                 datosBuscar: datosBuscar
             },
-            dataType: "json",
+//            dataType: "json",
             type: "post",
-            success: function (data) {
+            async: false,
+            success: function () {
+                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
+                    var urlh = "backend/carpeta/compravino/init/12/2";
+                    $(location).attr('href', urlh);
+                });
             }
         });
-        console.log("OBTENIENDO TODOS LOS ID DE CADA");
-        console.log(firstColumnDataID);
     });
 
     $('#send_edit').on('click', function (e) {
@@ -697,11 +702,15 @@ $(document).ready(function () {
         })
 //validar campos
         if (opeNombre == '') {
-            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeNombre").focus();});
+            jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeNombre").focus();
+            });
             return false;
         }
         if (opeDescripcion == '') {
-            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {$("#opeDescripcion").focus();});
+            jAlert('Ingrese Descripcion.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeDescripcion").focus();
+            });
             return false;
         }
 //        if (opeCoordinador == '') {
@@ -713,11 +722,15 @@ $(document).ready(function () {
 //            return false;
 //        }
         if (listrosMax == '') {
-            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
+            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
+                $("#listrosMax").focus();
+            });
             return false;
         }
         if (maxHectareas == '') {
-            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
+            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
+                $("#maxHectareas").focus();
+            });
             return false;
         }
 //        if (opeProveedores == '') {
@@ -865,7 +878,6 @@ $(document).ready(function () {
             });
             $('#opeProveedores').on('change', function () {
                 var datarow = generaterow_proveedores();
-
                 /* AGREGAR AQUI
                  * VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
                  * 
@@ -1300,7 +1312,7 @@ $(document).ready(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
-    
+
 //$("#ciu_num").numeric({negative: false});//$("#ciu_azucar").numeric({negative: false});//$("#ciu_kgrs").numeric({negative: false});
     $("#precio").keyup(function () {
         if ($(this).val() == 0) {
@@ -1477,7 +1489,7 @@ function editar_formulario() {
                     $("#bodega-jquery").chosen({width: "220px"});
                 }
             })
-                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
+            $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
             $.ajax({
                 url: _compravino.URL + "/x_getChecklistHumanaFact",
                 datatype: 'html',
@@ -1488,20 +1500,20 @@ function editar_formulario() {
                     $('#check_datos').html(data);
                 }
             })
-            
+
             $.ajax({
-                    url: _compravino.URL + "/x_getFormasPago",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#fpago').html(data);
-                        $("#fpago-select").chosen({width: "220px"});
-                    }
-                })
-                console.log("FFFF PAGO");
-                console.log(data.FORMA_PAGO);
+                url: _compravino.URL + "/x_getFormasPago",
+                datatype: 'html',
+                type: 'post',
+                async: false,
+                data: {id: data.ID_OPERATORIA},
+                success: function (data) {
+                    $('#fpago').html(data);
+                    $("#fpago-select").chosen({width: "220px"});
+                }
+            })
+            console.log("FFFF PAGO");
+            console.log(data.FORMA_PAGO);
             $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
 
             var data_checklists_persona = [];
@@ -3267,18 +3279,18 @@ function importar_procesar() {
 }
 
 
-function cambiarPrecio(){
-        var precioAsignado = $('#fpago-select').find(':selected').attr('data-precio');
-        $('#precio').val(precioAsignado);
-        
-         if ($('#precio').val() == 0) {
-            $("#neto").val(0);
-        } else {
-            var neto = $("#ltros").val() * $('#precio').val();
-            $("#neto").val(dec(neto, 2));
-            var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
-            $("#iva").val(dec(iva, 2));
-            var total = 1 * $("#neto").val() + 1 * $("#iva").val();
-            $("#total").val(dec(total, 2));
-        }
+function cambiarPrecio() {
+    var precioAsignado = $('#fpago-select').find(':selected').attr('data-precio');
+    $('#precio').val(precioAsignado);
+
+    if ($('#precio').val() == 0) {
+        $("#neto").val(0);
+    } else {
+        var neto = $("#ltros").val() * $('#precio').val();
+        $("#neto").val(dec(neto, 2));
+        var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
+        $("#iva").val(dec(iva, 2));
+        var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+        $("#total").val(dec(total, 2));
+    }
 }
