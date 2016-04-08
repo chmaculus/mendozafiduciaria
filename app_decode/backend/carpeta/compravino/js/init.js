@@ -39,7 +39,8 @@ function guardar_factura() {
     var cai = $("#cai").val();
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
-    var bodega = $("#bodega").val();
+//    var bodega = $("#bodega").val();
+    var bodega = $("#bodega-jquery").val();
 //    var kgrs = $("#kgrs").val();
     var ltros = $("#ltros").val();
     var cuitform = $("#cuitform").val();
@@ -66,38 +67,38 @@ function guardar_factura() {
         data_checklists_persona = '';
     }
 //validar campos
-//    if (numero == '') {
-//        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#numero").focus();
-//        });
-//        return false;
-//    }
-//    if (fecha == '') {
-//        jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#fecha").focus();
-//        });
-//        return false;
-//    }
-//    if (cai !== '') {
-//        if (fechavto < fecha) {
-//            jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#fechavto").focus();
-//            });
-//            return false;
-//        }
-//    }
-//    if (bodega == '') {
-//        jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#bodega").focus();
-//        });
-//        return false;
-//    }
-//    if (ltros == '') {
-//        jAlert('Ingrese el valor de los Ltros.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#ltros").focus();
-//        });
-//        return false;
-//    }
+    if (numero == '') {
+        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
+            $("#numero").focus();
+        });
+        return false;
+    }
+    if (fecha == '') {
+        jAlert('Ingrese fecha.', $.ucwords(_etiqueta_modulo), function () {
+            $("#fecha").focus();
+        });
+        return false;
+    }
+    if (cai !== '') {
+        if (fechavto < fecha) {
+            jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
+                $("#fechavto").focus();
+            });
+            return false;
+        }
+    }
+    if (bodega == '') {
+        jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
+            $("#bodega-jquery").focus();
+        });
+        return false;
+    }
+    if (ltros == '') {
+        jAlert('Ingrese el valor de los Ltros.', $.ucwords(_etiqueta_modulo), function () {
+            $("#ltros").focus();
+        });
+        return false;
+    }
 //    if (azucar == '') {
 //        jAlert('Ingrese el valor de Azúcar.', $.ucwords(_etiqueta_modulo), function () {
 //            $("#azucar").focus();
@@ -303,6 +304,7 @@ $(document).ready(function () {
 //    $("#listbox_juridica").hide();
     $("#juridica").hide();
     $('#send').show();
+        
     $('.tb_atras_ope').on('click', function (e) {
         var urlh = "backend/carpeta/compravino/init/12/7";
         $(location).attr('href', urlh);
@@ -419,16 +421,18 @@ $(document).ready(function () {
             dataType: "json",
             type: "post",
             async: false,
-            success: function (data) {
-//                pause(10);
+            success: function (data_op) {
+                console.log("ver si vienen los pagos");
+                console.log(data_op);
+
                 trae_operatoria = 1;
-                $("#numOperatoria").val(data.ID_OPERATORIA);
+                $("#numOperatoria").val(data_op.ID_OPERATORIA);
                 $.ajax({
                     url: _compravino.URL + "/x_getAlgunasBodegas",
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {id: data.ID_OPERATORIA},
+                    data: {id: data_op.ID_OPERATORIA},
                     success: function (data) {
                         $('#indent_prueba').html(data);
                         $("#bodega-jquery").chosen({width: "220px"});
@@ -439,9 +443,20 @@ $(document).ready(function () {
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {id: data.ID_OPERATORIA},
+                    data: {id: data_op.ID_OPERATORIA},
                     success: function (data) {
                         $('#check_datos').html(data);
+                    }
+                })
+                $.ajax({
+                    url: _compravino.URL + "/x_getFormasPago",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data_op.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#fpago').html(data);
+                        $("#fpago-select").chosen({width: "220px"});
                     }
                 })
 
@@ -460,7 +475,6 @@ $(document).ready(function () {
         /*AQUI TERMINARIA EL PROCESO DE CARGA DEL COMBO*/
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val(cc);
-
         show_btns(2);
     });
     refresGridevent();
@@ -1286,6 +1300,7 @@ $(document).ready(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
+    
 //$("#ciu_num").numeric({negative: false});//$("#ciu_azucar").numeric({negative: false});//$("#ciu_kgrs").numeric({negative: false});
     $("#precio").keyup(function () {
         if ($(this).val() == 0) {
@@ -3255,4 +3270,21 @@ function importar_procesar() {
             });
         }
     });
+}
+
+
+function cambiarPrecio(){
+        var precioAsignado = $('#fpago-select').find(':selected').attr('data-precio');
+        $('#precio').val(precioAsignado);
+        
+         if ($('#precio').val() == 0) {
+            $("#neto").val(0);
+        } else {
+            var neto = $("#ltros").val() * $('#precio').val();
+            $("#neto").val(dec(neto, 2));
+            var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
+            $("#iva").val(dec(iva, 2));
+            var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+            $("#total").val(dec(total, 2));
+        }
 }

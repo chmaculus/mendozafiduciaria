@@ -228,16 +228,28 @@
                     <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )    ?>" readonly>
                 </div>
         </div>-->
-    <div class="elem elem_med">
+    <div class="elem elem_med" style="margin-top:30px;">
         <label class="der">Litros:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="ltros" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
         </div>
     </div>
-    <div class="elem elem_med">
+    <div style="margin-top:10px;" class="clear"></div>
+<!--    <div class="elem elem_med">
         <label class="der">Azucar:</label>
         <div class="indent formtext">
-            <input type="text" class="tip-right" title="" id="azucar" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
+            <input type="text" class="tip-right" title="" id="azucar" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
+        </div>
+    </div>-->
+    <div class="elem elem_med">
+        <label class="der">Forma de pago:</label>
+        <div class="indent" id="fpago">
+              <select class="chzn-select medium-select select" id="fpago-select">
+                    <option value="">Seleccione forma pago</option>
+                    <?php // foreach ($lst_provincias as $rs_prov): ?>
+                        <option data-connection="<?php // echo $rs_prov["ID"] ?>" value="<?php // echo $rs_prov["ID"] ?>"><?php // echo $rs_prov["PROVINCIA"] ?></option>
+                    <?php // endforeach; ?>
+                </select>   
         </div>
     </div>
     <div class="elem elem_med">
@@ -296,7 +308,6 @@
     </div>
     <div style="margin-top:10px;" class="clear"></div>
    <div id="check_datos" style="width: 100%;">
-        
     </div>
 
 

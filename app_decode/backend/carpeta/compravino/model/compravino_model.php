@@ -522,7 +522,7 @@ class compravino_model extends main_model {
         $this->_db->select("ID_OPERATORIA");
         $this->_db->order_by("ID_OPERATORIA", "DESC LIMIT 1");
         $rtn = $this->_db->get_tabla("fid_operatoria_vino");
-        
+
         return $rtn ? (int) $rtn[0]['ID_OPERATORIA'] + 1 : 1;
     }
 
@@ -629,9 +629,9 @@ class compravino_model extends main_model {
         $cuit_tmp = $obj["CUIT"];
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
 
-        if($obj['CHECKLIST_PERSONA']){
-           $armando_array =  implode(',', $obj['CHECKLIST_PERSONA']);
-           $obj['CHECKLIST_PERSONA'] = $armando_array;
+        if ($obj['CHECKLIST_PERSONA']) {
+            $armando_array = implode(',', $obj['CHECKLIST_PERSONA']);
+            $obj['CHECKLIST_PERSONA'] = $armando_array;
         }
 
         if ($iid == 0) {//agregar
@@ -644,15 +644,16 @@ class compravino_model extends main_model {
                     "CHECK_ESTADO" => 1,
                 );
                 $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-            } else {
-                $arr_cambio_titu = array(
-                    "ID_FACTURA" => $numero_factura,
-                    "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => date("Y-m-d H:i:s"),
-                    "CHECK_ESTADO" => 0,
-                );
-                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-            }
+            } 
+//            else {
+//                $arr_cambio_titu = array(
+//                    "ID_FACTURA" => $numero_factura,
+//                    "ID_USUARIO" => $_SESSION['USERADM'],
+//                    "FECHA" => date("Y-m-d H:i:s"),
+//                    "CHECK_ESTADO" => 0,
+//                );
+//                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+//            }
             $acc = "add";
             $id_new = $resp;
         } else {//editar
@@ -1240,6 +1241,36 @@ class compravino_model extends main_model {
         return $n_rtn;
     }
 
+    function getPagos($id_pagos) {
+        $this->_db->select("PRECIO_1,PRECIO_2,PRECIO_3,PRECIO_4,PRECIO_5,PRECIO_6");
+        $rtn = $this->_db->get_tabla("fid_operatoria_vino", "ID_OPERATORIA=$id_pagos");
+        $n_rtn = array();
+
+        $j = 0;
+        foreach ($rtn as $value) {
+            if ($value['PRECIO_1'] != 0) {
+                $n_rtn[$j]['PRECIO_1'] = $value['PRECIO_1'];
+            }
+            if ($value['PRECIO_2'] != 0) {
+                $n_rtn[$j]['PRECIO_2'] = $value['PRECIO_2'];
+            }
+            if ($value['PRECIO_3'] != 0) {
+                $n_rtn[$j]['PRECIO_3'] = $value['PRECIO_3'];
+            }
+            if ($value['PRECIO_4'] != 0) {
+                $n_rtn[$j]['PRECIO_4'] = $value['PRECIO_4'];
+            }
+            if ($value['PRECIO_5'] != 0) {
+                $n_rtn[$j]['PRECIO_5'] = $value['PRECIO_5'];
+            }
+            if ($value['PRECIO_6'] != 0) {
+                $n_rtn[$j]['PRECIO_6'] = $value['PRECIO_6'];
+            }
+            $j++;
+        }
+        return $n_rtn;
+    }
+
 //    function getformulassql(){
 //        $this->_dbsql->order_by('idFormula');
 //        $rtn = $this->_dbsql->get_tabla('pcobypag_pagos');
@@ -1317,17 +1348,17 @@ class compravino_model extends main_model {
         } else {
             die("Falta configurar sistema");
         }
-        
+
         $id_operatoria = $this->getIdOperatoria();
-        
+
         $arr_ope = array(
             'ID_OPERATORIA' => $id_operatoria,
             'FECHA_CRE' => date('Y-m-d'),
             'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria
         );
-        
+
         $this->_db->insert('fid_operatoria_vino', $arr_ope);
-        
+
         $arr_proveedores = $arr_bodegas = array();
         $total_litros = 0;
         $precios_cuotas = array();
@@ -1460,7 +1491,7 @@ class compravino_model extends main_model {
             if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
                 $precios_cuotas[$cuotas] = $precio;
             }
-            
+
             $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
             $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
             //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
@@ -1470,7 +1501,7 @@ class compravino_model extends main_model {
             } else {
                 $fecha = loadDate_excel($fecha);
             }
-            
+
             if (trim($fechavto) == "-   -") {
                 $fechavto = '';
             } else {
@@ -1508,7 +1539,7 @@ class compravino_model extends main_model {
                 //"CAI" => $cai,
                 "ID_ESTADO" => "1",
                 "TIPO" => "1",
-                 "LITROS" => $litros,
+                "LITROS" => $litros,
                 "FORMA_PAGO" => $cuotas,
                 "VINEDO" => $nro_vinedo,
                 "RUT" => $nro_inv,
@@ -1524,7 +1555,7 @@ class compravino_model extends main_model {
                 "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
-            
+
             $arr_bodegas[] = $id_bodega;
             $arr_proveedores[] = $id_cliente;
             $total_litros += $litros;
@@ -1544,10 +1575,10 @@ class compravino_model extends main_model {
                 $factor = $arr_factor[0]['VALOR'];
             }
 
-            /*if (0 and ( $neto != $litros * $precio)) {
-                $sw_error = 1; //
-                $arr_error[] = "Neto observado";
-            }*/
+            /* if (0 and ( $neto != $litros * $precio)) {
+              $sw_error = 1; //
+              $arr_error[] = "Neto observado";
+              } */
 
             $iva = round($iva * 1, 2);
             $factor = round(($factor * $neto / 100) * 1, 2);
@@ -1599,25 +1630,25 @@ class compravino_model extends main_model {
               break;
               } */
         }
-        
+
         if ($arr_bodegas) {
             $temp_arr = array(
                 'ID_OPERATORIA' => $id_operatoria
-                    );
+            );
             foreach ($arr_bodegas as $bod) {
                 $temp_arr['ID_BODEGA'] = $bod;
                 $this->_db->insert('fid_op_vino_bodegas', $temp_arr);
             }
-            
+
             $temp_arr = array(
                 'ID_OPERATORIA' => $id_operatoria
-                    );
+            );
             foreach ($arr_proveedores as $prov) {
                 $temp_arr['ID_PROVEEDOR'] = $prov;
                 $this->_db->insert('fid_op_vino_proveedores', $temp_arr);
             }
         }
-        
+
         $arr_update_factura = array("LTRS_MAX" => $total_litros);
         if (count($precios_cuotas)) {
             $temp_arr = array();
@@ -1628,10 +1659,9 @@ class compravino_model extends main_model {
                 }
             }
         }
-        
+
         $this->_db->update("fid_operatoria_vino", $arr_update_factura, "ID_OPERATORIA = " . $id_operatoria);
         //rename("_tmp/importar/imp_vino_fact.xlsx", "_tmp/importar/imp_vino_fact_procesado_" . date('Ymd') . ".xlsx");
-        
         //TRUNCATE TABLE `fid_cu_factura`;TRUNCATE TABLE `fid_operatoria_vino`;TRUNCATE TABLE `fid_op_vino_bodegas`;TRUNCATE TABLE `fid_op_vino_proveedores`;
 
         return $res;

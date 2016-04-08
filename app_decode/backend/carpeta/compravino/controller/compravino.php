@@ -241,6 +241,37 @@ class compravino extends main_controller {
 
         echo $html;
     }
+    function x_getFormasPago() {
+        $forma_pago = $this->mod->getPagos($_POST['id']);
+//        print_r($forma_pago);die("SXXS");
+        $html = '';
+        $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
+                <option value="">Seleccione forma pago</option>';
+        foreach ($forma_pago[0] as $key => $value) {
+            $nombre_ver ='';
+            if($key == 'PRECIO_1'){
+                $nombre_ver = 'Contado';
+            }
+            if($key== 'PRECIO_2'){
+                $nombre_ver = '2 Cuotas';
+            }
+            if($key== 'PRECIO_3'){
+                $nombre_ver = '3 Cuotas';
+            }
+            if($key== 'PRECIO_4'){
+                $nombre_ver = '4 Cuotas';
+            }
+            if($key== 'PRECIO_5'){
+                $nombre_ver = '5 Cuotas';
+            }
+            if($key== 'PRECIO_6'){
+                $nombre_ver = '6 Cuotas';
+            }
+            $html .= '<option id="precio_fp" value="'.$value.'" data-precio="'. $value.'">' . $nombre_ver . '</option>';
+        }
+        $html .= '</select>';
+        echo $html;
+    }
 
     function x_getChecklistJuridicaFact() {
         $obj = $this->mod->getChecklistJuridicaFact();
