@@ -518,7 +518,7 @@ $(document).ready(function () {
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
-        var maxHectareas = $("#maxHectareas").val();
+        var maxHectareas = $("#hectMax").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
         var opePrecio1 = $("#opeP1").val();
@@ -600,7 +600,8 @@ $(document).ready(function () {
                         opePrecio4: opePrecio4,
                         opePrecio5: opePrecio5,
                         opePrecio6: opePrecio6,
-                        formaPago: formaPago
+                        formaPago: formaPago,
+                        maxHectareas : maxHectareas
                     },
                     dataType: "json", type: "post"});
                 $.ajax({
@@ -752,6 +753,7 @@ $(document).ready(function () {
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
                 maxPesos: maxPesos,
+                maxHectareas: maxHectareas,
                 checklistsPersona: data_checklists_persona,
                 opePrecio1: opePrecio1,
                 opePrecio2: opePrecio2,
@@ -1588,6 +1590,7 @@ function editar_formulario_operatoria() {
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#maxPesos").val(rtn[0].MAX_PESOS);
+            $("#maxHectareas").val(rtn[0].HECT_MAX);
             $("#opeCoordinador").val(rtn[0].ID_COORDINADOR_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeJefe").val(rtn[0].ID_JEFE_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeP1").val(rtn[0].PRECIO_1);
@@ -2895,6 +2898,7 @@ function initGridListado(id_usuario) {
             {name: 'IVA', type: 'number'},
             {name: 'TOTAL', type: 'number'},
             {name: 'CREATEDON', type: 'string'},
+            {name: 'ORDEN_PAGO', type: 'string'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
 
@@ -2976,6 +2980,7 @@ function initGridListado(id_usuario) {
             {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
+            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
             {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IID', datafield: 'IID', width: '0%'}
         ]

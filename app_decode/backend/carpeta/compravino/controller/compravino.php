@@ -303,6 +303,7 @@ class compravino extends main_controller {
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
         $tmp = $obj ? $obj : array();
+//        var_dump($tmp);die();
         return $tmp;
     }
 

@@ -89,9 +89,6 @@
         </div>
     </div>
 
-
-
-
     <div class="elem elem_med_cond">
         <label class="der">Domicilio:</label>
         <div class="indent formtext">

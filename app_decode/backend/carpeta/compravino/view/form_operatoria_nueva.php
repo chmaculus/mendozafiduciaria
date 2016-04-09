@@ -70,6 +70,13 @@
             <input type="text" title="Máximo en pesos" id="maxPesos" >
         </div>
     </div>
+        <div class="elem elem_med">
+        <label class="der">Máximo Hectareas:</label>
+        <div class="indent formtext">
+            <input type="text" title="Hectareas Maximo" id="hectMax" >
+        </div>
+    </div>
+    <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med">
         <label>Precios por Litro:</label>
         <div class="indent">

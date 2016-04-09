@@ -396,7 +396,6 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
         $fecha = date('Y-m-j');
         $nueva_limite = strtotime('+1 year', strtotime($fecha));
         $nueva_limite = date('Y-m-j', $nueva_limite);
-
         $ins_ope = array(
             "ID_OPERATORIA" => $arr_post['nuevoID'],
             "FECHA_CRE" => $fecha_creacion,
@@ -414,8 +413,8 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "FORMA_PAGO" => $arr_post['formaPago'],
-            "HECT_MAX" => '',
+//            "FORMA_PAGO" => $arr_post['formaPago'],
+            "HECT_MAX" => $arr_post['maxHectareas'],
             "ESTADO_OP" => 1
         );
         if ($this->_db->insert('fid_operatoria_vino', $ins_ope)) {
@@ -464,7 +463,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "HECT_MAX" => ''
+            "HECT_MAX" => $arr_post['maxHectareas']            
         );
         if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
             return TRUE;
@@ -960,11 +959,17 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
     }
 
     function get_ope_bodegas() {
-        $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
-        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
-        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
-        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID = (SELECT valor FROM fid_settings WHERE variable='compra_uva_id_tipo_entidad')");
+        $this->_db->select("e.ID AS ID,e.NOMBRE AS NOMBRE");
+        $this->_db->join("fid_entidadestipo et", "e.ID=et.ID_ENTIDAD");
+        $this->_db->join("fid_entidades_tipos ets", "ets.ID=et.ID_TIPO");
+        $rtn = $this->_db->get_tabla("fid_entidades e", "ets.ID = 24");
         return $rtn;
+/*ASI SE ENCONTRABA*/
+//        $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
+//        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
+//        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
+//        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID = (SELECT valor FROM fid_settings WHERE variable='compra_uva_id_tipo_entidad')");
+//        return $rtn;
     }
 
     function get_coordinadores() {
