@@ -35,12 +35,12 @@ class compravino_model extends main_model {
                         " AND NUMFACTURA=" . $value['NUMERO'] . ""
                         . "AND BODEGA=" . $value['ID_BODEGA']);
 //            log_this('log/qqqqqqq.log', $this->_dbsql->last_query() );
-               
+
                 if ($solicitud_adm[$j]) {
                     if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
                         $arr_ins = array("ID_ESTADO" => '9',
                             "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-$this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=".$value['NUMERO']." AND ID_BODEGA=".$value['ID_BODEGA']);
+                        $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
 //            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
 //                var_dump($solicitud_adm[$j]);
                     }
@@ -299,6 +299,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
         $this->_db->select("p.ID_OPERATORIA,c.RAZON_SOCIAL AS RAZON_SOCIAL,p.ID_PROVEEDOR AS ID, p.LIMITE_OPE AS LIMLTRS, p.LIM_OPE_HECT AS MAXHECTAREAS ");
         $this->_db->join("fid_clientes c ", "p.ID_PROVEEDOR=c.ID");
         $rtn = $this->_db->get_tabla('fid_op_vino_proveedores p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
+//        log_this('log/updateediiiit.log', $this->_db->last_query());
         return $rtn;
     }
 
@@ -306,6 +307,12 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
         $this->_db->select("p.ID_OPERATORIA,e.NOMBRE AS NOMBRE,p.ID_BODEGA AS ID, p.LIMITE_OPE AS LIMLTRS ");
         $this->_db->join("fid_entidades e ", "p.ID_BODEGA=e.ID");
         $rtn = $this->_db->get_tabla('fid_op_vino_bodegas p', "p.ID_OPERATORIA = '" . $id_objeto . "'");
+        return $rtn;
+    }
+
+    function getProvinciaBodega($id_prov) {
+        $this->_db->select("ID,NOMBRE");
+        $rtn = $this->_db->get_tabla("fid_provincias", "ID=$id_prov");
         return $rtn;
     }
 
@@ -449,6 +456,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
     }
 
     function updateOperatoria($arr_post) {
+//        var_dump($arr_post);die();
         $ins_ope = array(
             "NOMBRE_OPE" => $arr_post['opeNombre'],
             "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
@@ -463,13 +471,15 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
             "PRECIO_4" => $arr_post['opePrecio4'],
             "PRECIO_5" => $arr_post['opePrecio5'],
             "PRECIO_6" => $arr_post['opePrecio6'],
-            "HECT_MAX" => $arr_post['maxHectareas']            
+            "HECT_MAX" => $arr_post['maxHectareas']
         );
-        if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        $this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'");
+//        log_this('log/IKKIKIKIKI.log', $this->_db->last_query());
+//        if ($this->_db->update('fid_operatoria_vino', $ins_ope, "ID_OPERATORIA='" . $arr_post['nuevoID'] . "'")) {
+//            return TRUE;updateProveedores
+//        } else {
+//            return FALSE;
+//        }
     }
 
     function getIdOperatoria() {
@@ -502,6 +512,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
                 "LIM_OPE_HECT" => $value['MAXHECTAREAS']
             );
             $this->_db->insert('fid_op_vino_proveedores', $ins_proveedor);
+//            log_this('log/UUUUUUU.log', $this->_db->last_query());
         }
     }
 
@@ -606,23 +617,46 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
             $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
-            if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
-                $arr_cambio_titu = array(
-                    "ID_FACTURA" => $numero_factura,
-                    "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => date("Y-m-d H:i:s"),
-                    "CHECK_ESTADO" => 1,
-                );
-                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-            } else
-            if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
-                $arr_cambio_titu = array(
-                    "ID_FACTURA" => $numero_factura,
-                    "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => date("Y-m-d H:i:s"),
-                    "CHECK_ESTADO" => 0,
-                );
-                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+//            var_dump($titu);
+//            echo isset($titu);
+            if (isset($titu) AND $titu !== '') {
+                if ($cambio_titularidad == 'true') {
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $numero_factura,
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => date("Y-m-d H:i:s"),
+                        "CHECK_ESTADO" => 1,
+                    );
+                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+                } else if ($cambio_titularidad == 'false') {
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $numero_factura,
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => date("Y-m-d H:i:s"),
+                        "CHECK_ESTADO" => 0,
+                    );
+                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+                }
+            } else {
+
+                if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $numero_factura,
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => date("Y-m-d H:i:s"),
+                        "CHECK_ESTADO" => 1,
+                    );
+                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+                } else
+                if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
+                    $arr_cambio_titu = array(
+                        "ID_FACTURA" => $numero_factura,
+                        "ID_USUARIO" => $_SESSION['USERADM'],
+                        "FECHA" => date("Y-m-d H:i:s"),
+                        "CHECK_ESTADO" => 0,
+                    );
+                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+                }
             }
             $acc = "edit";
             $id_new = $iid;
@@ -964,7 +998,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
         $this->_db->join("fid_entidades_tipos ets", "ets.ID=et.ID_TIPO");
         $rtn = $this->_db->get_tabla("fid_entidades e", "ets.ID = 24");
         return $rtn;
-/*ASI SE ENCONTRABA*/
+        /* ASI SE ENCONTRABA */
 //        $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
 //        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
 //        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
@@ -1070,6 +1104,7 @@ $this->_db->update('fid_cu_factura', $arr_ins, " ID=".$value['ID']." AND NUMERO=
     }
 
     function getDatoProveedorNuevo($ids_proveedores) {
+//        var_dump($n_rtn);die("ALALALAL");
         $array_resultado = array();
         $i = 0;
         foreach ($ids_proveedores as $nuevos) {
