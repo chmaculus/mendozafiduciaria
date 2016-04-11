@@ -222,7 +222,7 @@ function limpiar_form() {
     $("#provincia").val(0).trigger("chosen:updated");
     $("#condicioniva").val(0).trigger("chosen:updated");
     $("#condicioniibb").val(0).trigger("chosen:updated");
-    loadChild(0);
+    //loadChild(0);
 }
 
 function limpiar_form_fact() {
@@ -334,7 +334,6 @@ $(document).ready(function () {
             $('.consultar').trigger('click');
         }
     });
-    loadChild(0);
     $('#provincia').bind('change', function (event) {
         event.preventDefault();
         $(this).validationEngine('validate');

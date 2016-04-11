@@ -97,19 +97,21 @@ class compravino extends main_controller {
         $data['hora_actual'] = date('d/m/Y H:i:s');
         $data['hora_mostrar'] = current(explode(' ', $data['hora_actual']));
         $data['hora_bd'] = $data['hora_actual'];
-        $data['lst_provincias'] = $this->x_getprovincias();
-        $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
-        $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
-        $data['lst_bodegas'] = $this->x_getbodegas();
-        //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-//        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
-        //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-        $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
-        $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
-        $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
-        $data['lst_proveedores'] = $this->x_getProveedores();
-        $data['lst_checkHumana'] = $this->x_getChecklistHumana();
-        $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
+        if ($provincia) {
+            $data['lst_provincias'] = $this->x_getprovincias();
+            $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
+            $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
+            $data['lst_bodegas'] = $this->x_getbodegas();
+            //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
+    //        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
+            //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
+            $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
+            $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
+            $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
+            $data['lst_proveedores'] = $this->x_getProveedores();
+            $data['lst_checkHumana'] = $this->x_getChecklistHumana();
+            $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
+        }
 //        $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
 //        $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
         //$data['lst_formulas'] = $this->x_getformulas();
