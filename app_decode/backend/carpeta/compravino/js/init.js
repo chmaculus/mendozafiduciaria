@@ -43,6 +43,7 @@ function guardar_factura() {
     var bodega = $("#bodega-jquery").val();
 //    var kgrs = $("#kgrs").val();
     var ltros = $("#ltros").val();
+    var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
     var azucar = $("#azucar").val();
     var precio = $("#precio").val();
@@ -154,6 +155,7 @@ function guardar_factura() {
         NETO: neto,
         IVA: iva,
         TOTAL: total,
+        FORMA_PAGO: fpago,
         OBSERVACIONES: observacion_fact,
         CHECKLIST_PERSONA: data_checklists_persona,
 //            arr_cius: _arr_cius,
@@ -194,22 +196,27 @@ function guardar_factura() {
                     dataType: "json",
                     type: "post",
                     async: "false",
-                    success: function (data) {
+//                    success: function (data) {
 //                        console.dir(data);
-                        if (data.result > 0) {
-                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                                show_btns();
-                                limpiar_form_fact();
-                                $('#send').hide();
-                                var_cliente = {};
-                            });
-                        } else {
-                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
-                                $.unblockUI();
-                            });
-                        }
-                    }
+//                        if (data.result > 0) {
+//                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+//                                show_btns();
+//                                limpiar_form_fact();
+//                                $('#send').hide();
+//                                var_cliente = {};
+//                            });
+//                        } else {
+//                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+//                                $.unblockUI();
+//                            });
+//                        }
+//                    }
                 });
+                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+//                                show_btns();
+                var urlh = "backend/carpeta/compravino/init/12/2";
+                    $(location).attr('href', urlh);
+                            });
             }
         }
     });
@@ -468,6 +475,24 @@ $(document).ready(function () {
                 $(location).attr('href', urlh);
             });
         }
+//        $('#bodega-jquery').on('change', function () {
+//            var selected = $(this).find('option').eq(this.selectedIndex);
+//            var local = selected.data('local');
+//            if ($('#bodega-jquery').val() != '') {
+//                $.ajax({
+//                    url: _compravino.URL + "/x_getProvinciaBodega",
+//                    datatype: 'html',
+//                    type: 'post',
+//                    async: false,
+//                    data: {id: local},
+//                    success: function (data) {
+//                        console.log("XCXCXC");
+//                        console.log(data);
+//                        $("#prov_bodega").val(data.NOMBRE);
+//                    }
+//                })
+//            }
+//        });
 //ESTO SERIA PARA TRATAR DE LLENAR EL COMBO SOLAMENTE CON LAS BODEGAS QUE SE CARGARON A LA OPERATORIA
 //$.ajax({url: _compravino.URL + "/x_getbodegas_vino",data: {id_operatoria:  $("#numOperatoria").val()},
 //dataType: "json",type: "post",success: function (data) {}});
@@ -517,7 +542,7 @@ $(document).ready(function () {
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
-        var maxHectareas = $("#maxHectareas").val();
+        var maxHectareas = $("#hectMax").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
         var opePrecio1 = $("#opeP1").val();
@@ -599,7 +624,8 @@ $(document).ready(function () {
                         opePrecio4: opePrecio4,
                         opePrecio5: opePrecio5,
                         opePrecio6: opePrecio6,
-                        formaPago: formaPago
+                        formaPago: formaPago,
+                        maxHectareas: maxHectareas
                     },
                     dataType: "json", type: "post"});
                 $.ajax({
@@ -674,7 +700,7 @@ $(document).ready(function () {
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
-        var maxHectareas = $("#maxHectareas").val();
+        var maxHectareas = $("#hectMax").val();
         var opeProveedores = $("#opeProveedores").val();
         var opeBodega = $("#opeBodega").val();
         var opePrecio1 = $("#opeP1").val();
@@ -727,7 +753,7 @@ $(document).ready(function () {
             return false;
         }
         if (maxHectareas == '') {
-            jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('Ingrese el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
                 $("#maxHectareas").focus();
             });
             return false;
@@ -740,7 +766,6 @@ $(document).ready(function () {
 //            jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
 //            return false;
 //        }
-
         $.ajax({
             url: _compravino.URL + "/x_updateOperatoria",
             data: {
@@ -757,7 +782,8 @@ $(document).ready(function () {
                 opePrecio3: opePrecio3,
                 opePrecio4: opePrecio4,
                 opePrecio5: opePrecio5,
-                opePrecio6: opePrecio6
+                opePrecio6: opePrecio6,
+                maxHectareas: maxHectareas
             },
             dataType: "json",
             type: "post"});
@@ -825,6 +851,10 @@ $(document).ready(function () {
         for (var i = 0; i < rows.length; i++) {
             firstColumnData.push(rows[i].ID);
         }
+        console.log("ACA 3");
+        console.log(ids_proveedores);
+        console.log(firstColumnData);
+
         $.ajax({
             url: _compravino.URL + "/x_getDatoProveedor",
             data: {
@@ -835,6 +865,8 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (datos) {
+                console.log("datos");
+                console.log(datos);
                 accion_proveedores_new = datos[0]['ACCION'];
                 console.log("1");
                 for (var i = 0; i < datos.length; i++) {
@@ -1587,6 +1619,7 @@ function editar_formulario_operatoria() {
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#maxPesos").val(rtn[0].MAX_PESOS);
+            $("#hectMax").val(rtn[0].HECT_MAX);
             $("#opeCoordinador").val(rtn[0].ID_COORDINADOR_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeJefe").val(rtn[0].ID_JEFE_OPE).attr('eneable', true).trigger("chosen:updated");
             $("#opeP1").val(rtn[0].PRECIO_1);
@@ -2894,6 +2927,7 @@ function initGridListado(id_usuario) {
             {name: 'IVA', type: 'number'},
             {name: 'TOTAL', type: 'number'},
             {name: 'CREATEDON', type: 'string'},
+            {name: 'ORDEN_PAGO', type: 'string'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
 
@@ -2975,6 +3009,7 @@ function initGridListado(id_usuario) {
             {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
+            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
             {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IID', datafield: 'IID', width: '0%'}
         ]

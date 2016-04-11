@@ -305,6 +305,7 @@ class compravino extends main_controller {
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
         $tmp = $obj ? $obj : array();
+//        var_dump($tmp);die();
         return $tmp;
     }
 
@@ -406,9 +407,11 @@ class compravino extends main_controller {
     function x_getDatoProveedor() {
         $ids_proveedores = $_POST['ids_proveedores'];
         if (empty($_POST['firstColumnData'])) {
+//        var_dump($ids_proveedores);die("ANDA 1");
             $rtn = $this->mod->getDatoProveedorNuevo($ids_proveedores);
             echo trim(json_encode($rtn ? $rtn : array()));
         } else {
+//        var_dump($ids_proveedores);die("ANDA 2");
             $firstColumnData = $_POST['firstColumnData'];
             $rtn = $this->mod->getDatoProveedor($ids_proveedores, $firstColumnData);
             echo trim(json_encode($rtn ? $rtn : array()));
@@ -648,6 +651,13 @@ class compravino extends main_controller {
 
     function x_getprovincias() {
         $obj = $this->mod->get_provincias();
+        $tmp = $obj ? $obj : array();
+        return $tmp;
+    }
+
+    function x_getProvinciaBodega() {
+        $id_prov = $_POST['id'];
+        $obj = $this->mod->getProvinciaBodega($id_prov);
         $tmp = $obj ? $obj : array();
         return $tmp;
     }

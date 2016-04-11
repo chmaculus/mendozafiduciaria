@@ -89,9 +89,6 @@
         </div>
     </div>
 
-
-
-
     <div class="elem elem_med_cond">
         <label class="der">Domicilio:</label>
         <div class="indent formtext">
@@ -216,12 +213,13 @@
         </div>
     
     
-    <div class="elem elem_med">
+<!--    <div class="elem elem_med">
         <label class="der">Provincia:</label>
         <div class="indent formtext">
-            <input type="text" class="tip-right" title="" id="prov_bodega" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
+            <input type="text" class="tip-right" title="" id="prov_bodega" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
         </div>
-    </div>
+    </div>-->
+<div style="margin-top:10px;" class="clear"></div>
     <!--    <div class="elem elem_med">
                 <label class="der">Departamento:</label>
                 <div class="indent formtext">
