@@ -593,12 +593,10 @@ class compravino_model extends main_model {
         $obj["ID_CLIENTE"] = $cod_cli;
         $cuit_tmp = $obj["CUIT"];
         unset($obj["id"], $obj["CUIT"], $obj["arr_cius"], $obj["update_cius"]);
-
         if ($obj['CHECKLIST_PERSONA']) {
             $armando_array = implode(',', $obj['CHECKLIST_PERSONA']);
             $obj['CHECKLIST_PERSONA'] = $armando_array;
         }
-
         if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
             if ($cambio_titularidad == 'true') {
@@ -617,54 +615,46 @@ class compravino_model extends main_model {
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
             $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
-//            var_dump($titu);
-//            echo isset($titu);
             if (isset($titu) AND $titu !== '') {
                 if ($cambio_titularidad == 'true') {
                     $arr_cambio_titu = array(
                         "ID_FACTURA" => $numero_factura,
                         "ID_USUARIO" => $_SESSION['USERADM'],
                         "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 1,
-                    );
+                        "CHECK_ESTADO" => 1);
                     $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                } else if ($cambio_titularidad == 'false') {
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $numero_factura,
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 0,
-                    );
-                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                }
+                } 
+//                else if ($cambio_titularidad == 'false') {
+//                    $arr_cambio_titu = array(
+//                        "ID_FACTURA" => $numero_factura,
+//                        "ID_USUARIO" => $_SESSION['USERADM'],
+//                        "FECHA" => date("Y-m-d H:i:s"),
+//                        "CHECK_ESTADO" => 0);
+//                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+//                }
             } else {
-
                 if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
                     $arr_cambio_titu = array(
                         "ID_FACTURA" => $numero_factura,
                         "ID_USUARIO" => $_SESSION['USERADM'],
                         "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 1,
-                    );
-                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                } else
-                if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $numero_factura,
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 0,
-                    );
+                        "CHECK_ESTADO" => 1);
                     $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
                 }
+//                else
+//                if ($titu[0]['CHECK_ESTADO'] == 1 && $cambio_titularidad == 'false') {//esta activado y se ha desactivado
+//                    $arr_cambio_titu = array(
+//                        "ID_FACTURA" => $numero_factura,
+//                        "ID_USUARIO" => $_SESSION['USERADM'],
+//                        "FECHA" => date("Y-m-d H:i:s"),
+//                        "CHECK_ESTADO" => 0);
+//                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+//                }
             }
             $acc = "edit";
             $id_new = $iid;
         }
-        $rtn = array(
-            "accion" => $acc,
-            "result" => $id_new
-        );
+        $rtn = array("accion" => $acc,"result" => $id_new);
         //log_this('log/aaaaa.log', $this->_db->last_query());
         return $rtn;
     }
@@ -672,20 +662,21 @@ class compravino_model extends main_model {
     function getTitularidad($id) {
         $this->_db->select("t.ID_FACTURA,u.NOMBRE,t.FECHA,t.CHECK_ESTADO");
         $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID");
-        $this->_db->order_by("t.FECHA", "DESC");
+//        $this->_db->order_by("t.FECHA", "DESC");
         $this->_db->where("t.ID_FACTURA=" . $id);
         $rtn = $this->_db->get_tabla("fid_op_vino_cambio_tit t");
         //log_this('xxxxx.log', $this->_db->last_query() );
-        $rtn_check = array();
-        foreach ($rtn as $value) {
-            if ($value['CHECK_ESTADO'] == 0) {
-                $value['CHECK_ESTADO'] = 'Se desactivo';
-            } else if ($value['CHECK_ESTADO'] == 1) {
-                $value['CHECK_ESTADO'] = 'Se activo';
-            }
-            $rtn_check[] = $value;
-        }
-        return $rtn_check;
+//        $rtn_check = array();
+//        foreach ($rtn as $value) {
+//            if ($value['CHECK_ESTADO'] == 0) {
+//                $value['CHECK_ESTADO'] = 'Se desactivo';
+//            } else if ($value['CHECK_ESTADO'] == 1) {
+//                $value['CHECK_ESTADO'] = 'Se activo';
+//            }
+//            $rtn_check[] = $value;
+//        }
+//        return $rtn_check;
+        return $rtn;
     }
 
     function delobj($id) {
