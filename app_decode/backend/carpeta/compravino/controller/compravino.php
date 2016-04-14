@@ -377,7 +377,9 @@ class compravino extends main_controller {
     function x_getTitularidad() {
         $id_objeto = $_POST['num_factura'];
         $rtn = $this->mod->getTitularidad($id_objeto);
-        echo trim(json_encode($rtn ? $rtn : array()));
+//        echo trim(json_encode($rtn ? $rtn : array()));
+        echo "El usuario ".$rtn[0]['NOMBRE']. " activo la casilla. Fecha ".$rtn[0]['FECHA'];
+//        echo $rtn;
     }
 
     function x_getoperatoria() {
