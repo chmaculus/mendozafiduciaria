@@ -996,14 +996,8 @@ class compravino_model extends main_model {
         $this->_db->select("e.ID AS ID,e.NOMBRE AS NOMBRE");
         $this->_db->join("fid_entidadestipo et", "e.ID=et.ID_ENTIDAD");
         $this->_db->join("fid_entidades_tipos ets", "ets.ID=et.ID_TIPO");
-        $rtn = $this->_db->get_tabla("fid_entidades e", "ets.ID = 24");
+        $rtn = $this->_db->get_tabla("fid_entidades e", "ets.ID = (SELECT valor FROM fid_settings WHERE variable='compra_uva_id_tipo_entidad')");
         return $rtn;
-        /* ASI SE ENCONTRABA */
-//        $this->_db->select("e.id AS ID, e.nombre AS NOMBRE");
-//        $this->_db->join("fid_entidades e", "et.id_entidad=e.id");
-//        $this->_db->join("fid_entidades_tipos ets", "et.id_tipo=ets.id");
-//        $rtn = $this->_db->get_tabla("fid_entidadestipo et", "ets.ID = (SELECT valor FROM fid_settings WHERE variable='compra_uva_id_tipo_entidad')");
-//        return $rtn;
     }
 
     function get_coordinadores() {
