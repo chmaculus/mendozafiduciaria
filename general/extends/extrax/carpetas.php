@@ -83,30 +83,30 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     $cad_like = substr($cad_like, 0, -2);
 
 //    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, "
-//            . "f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, "
-//            . "f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, d.LOCALIDAD AS DEPARTAMENTO,"
-//            . "f.ID_BODEGA AS ID_BODEGA, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, c.RAZON_SOCIAL AS CLIENTE,"
-//            . "c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, date(f.CREATEDON) as CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO");
-//    $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
-//    $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
-//    $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
-//    $cnn->join("fid_bodegas b", "b.ID=f.ID_BODEGA", "left");
-//    $cnn->join("fid_localidades d", "d.ID=b.ID_DEPARTAMENTO", "left");
-//    $cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
-//    $cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
-//    $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
-    //Se cambio la tabla bodegas por entidades, y se quito el join con la tabla departamente y el id de departamento del select
+//. "f.ID as IID,f.ID as ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, "
+//. "f.OBSERVACIONES as OBSERVACIONES, f.IMP_ERROR_TEXTO as IMP_ERROR_TEXTO, f.KGRS AS KGRS, d.LOCALIDAD AS DEPARTAMENTO,"
+//. "f.ID_BODEGA AS ID_BODEGA, b.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') as FECHA, c.RAZON_SOCIAL AS CLIENTE,"
+//. "c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, date(f.CREATEDON) as CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO");
+//$cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
+//$cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
+//$cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
+//$cnn->join("fid_bodegas b", "b.ID=f.ID_BODEGA", "left");
+//$cnn->join("fid_localidades d", "d.ID=b.ID_DEPARTAMENTO", "left");
+//$cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
+//$cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
+//$cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+  
+//Se cambio la tabla bodegas por entidades, y se quito el join con la tabla departamente y el id de departamento del select
+    $array_cuotas = array();
     $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
                 f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
                 f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, 
                 ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
                 c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
-                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA, of.PRECIO_1 AS CUOTA_1,of.PRECIO_2 AS CUOTA_2,
-                of.PRECIO_3 AS CUOTA_3,of.PRECIO_4 AS CUOTA_4,of.PRECIO_5 AS CUOTA_5,of.PRECIO_6 AS CUOTA_6");
+                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO");
     $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
     $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
     $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
-//    $cnn->join("fid_bodegas b", "b.ID=f.ID_BODEGA", "left");
     $cnn->join("fid_entidades ent", "ent.ID=f.ID_BODEGA", "left");
 //    $cnn->join("fid_localidades d", "d.ID=b.ID_DEPARTAMENTO", "left");
     $cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
@@ -124,13 +124,58 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
 //        file_put_contents('OBTENERLOTESFACTURAS.log',$cnn->last_query() );
-
-    echo trim(json_encode($rtn ? $rtn : array()));
+    
+    foreach ($rtn as $value) {
+        if ($value['FORMA_PAGO'] == '1' || $value['FPAGO'] == '0') {
+            $value['CUOTA_1'] = 0;
+            $value['CUOTA_2'] = 0;
+            $value['CUOTA_3'] = 0;
+            $value['CUOTA_4'] = 0;
+            $value['CUOTA_5'] = 0;
+            $value['CUOTA_6'] = 0;
+        } else if ($value['FORMA_PAGO'] == '2') {
+            $value['CUOTA_1'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']) + (float)$value['IVA'];
+            $value['CUOTA_2'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_3'] = 0;
+            $value['CUOTA_4'] = 0;
+            $value['CUOTA_5'] = 0;
+            $value['CUOTA_6'] = 0;
+        } else if ($value['FORMA_PAGO'] == '3') {
+            $value['CUOTA_1'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']) + (float)$value['IVA'];
+            $value['CUOTA_2'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_4'] = 0;
+            $value['CUOTA_5'] = 0;
+            $value['CUOTA_6'] = 0;
+        } else if ($value['FORMA_PAGO'] == '4') {
+            $value['CUOTA_1'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']) + (float)$value['IVA'];
+            $value['CUOTA_2'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_4'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_5'] = 0;
+            $value['CUOTA_6'] = 0;
+        } else if ($value['FORMA_PAGO'] == '5') {
+            $value['CUOTA_1'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']) + (float)$value['IVA'];
+            $value['CUOTA_2'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_4'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_5'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_6'] = 0;
+        } else if ($value['FORMA_PAGO'] == '6') {
+            $value['CUOTA_1'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']) + (float)$value['IVA'];
+            $value['CUOTA_2'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_4'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_5'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+            $value['CUOTA_6'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
+        }
+        $array_cuotas[] = $value;
+    }
+    echo trim(json_encode($array_cuotas ? $array_cuotas : array()));
     die();
 }
 
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
-
 //    $cnn->select("*");
 //    $cnn->order_by("ID_OPERATORIA"," DESC");
 //    $rtn = $cnn->get_tabla("fid_operatoria_vino");
