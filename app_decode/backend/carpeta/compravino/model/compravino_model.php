@@ -1354,7 +1354,7 @@ class compravino_model extends main_model {
             $id_condicion_iibb = $objPHPExcel->getActiveSheet()->getCell("AA" . $i)->getValue();
             //$inscripcion_iibb   = $objPHPExcel->getActiveSheet()->getCell("O".$i)->getValue();
 
-            $litros = $objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue();
+            $litros = floatval($objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue());
             $cuit = str_replace('-', '', strval($cuit));
             //$cbu = exp_to_dec($cbu);
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
@@ -1449,10 +1449,10 @@ class compravino_model extends main_model {
             $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
             $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
             //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
-            $neto = $objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue();
+            $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
             $precio = $litros ? $neto / $litros : 0;
-            $iva = $objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue();
-            $total = $objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue();
+            $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
+            $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue());
             $porc_iva = 0;
             if ($total && $neto) {
                 $porc_iva = $iva * 100 / $neto;
@@ -1731,7 +1731,7 @@ class compravino_model extends main_model {
 
     function validar_archivos_imp_f() {
 
-        $num_files = contar_archivos_imp_f();
+        $num_files = contar_archivos_imp_f("_tmp/importar/imp_vino_fact.xlsx");
         if ($num_files == 1) {
             return 1;
         } else {
