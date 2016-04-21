@@ -2910,7 +2910,7 @@ function initGridListado(id_usuario) {
             {name: 'FECHA', type: 'string'},
             {name: 'BODEGA', type: 'string'},
             {name: 'ID_BODEGA', type: 'int'},
-            {name: 'DEPARTAMENTO', type: 'string'},
+//            {name: 'DEPARTAMENTO', type: 'string'},
 //            {name: 'KGRS', type: 'string'},
             {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
