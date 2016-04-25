@@ -1282,11 +1282,13 @@ function editar_formulario() {
             $("#numOperatoria").val(data.ID_OPERATORIA);
             $("#cuitform").val(data.CUIT);
             $("#nombre2").val(data.RAZ);
-//            $("#fecha").val(formattedDate(data.FECHA));$("#fecha").val(data.FECHA);cadena.substr(start[, length])
-//            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);$("#kgrs").val(data.KGRS);
-//            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+//            $("#fecha").val(formattedDate(data.FECHA));
+//            $("#fecha").val(data.FECHA);
+//            cadena.substr(start[, length])
             var fecha_string = data.FECHA;
             $("#fecha").val(fecha_string.substr(0, 10));
+//            $("#fechavto").val(formattedDate(data.FECHAVTO));
+//            $("#fechavto").val(data.FECHAVTO);
             var fecha_vto_string = data.FECHAVTO;
             $("#fechavto").val(fecha_vto_string.substr(0, 10));
             $("#fecha").datepicker('disable');
@@ -1295,7 +1297,7 @@ function editar_formulario() {
             num_fact_buscar = data.NUMERO;
             $("#cai").val(data.CAI).attr("readonly", "readonly");
             $("#bodega").chosen({width: "220px"});
-            $("#bodega").trigger('change');
+            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
             $("#formula").chosen({width: "220px"});
             $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
             $("#formula").trigger('change');
@@ -1309,13 +1311,17 @@ function editar_formulario() {
             $("#iva").val(data.IVA).attr("readonly", "readonly");
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
             $("#porcentaje_iva").val(data.PORC_IVA);
+
             $.ajax({
                 url: _compravino.URL + "/x_getAlgunasBodegas",
                 datatype: 'html',
                 type: 'post',
-//                async: false,
+                async: false,
                 data: {id: data.ID_OPERATORIA},
-                success: function (data) {$('#indent_prueba').html(data);$("#bodega-jquery").chosen({width: "220px"});}
+                success: function (data) {
+                    $('#indent_prueba').html(data);
+                    $("#bodega-jquery").chosen({width: "220px"});
+                }
             })
             $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
             $.ajax({
@@ -1324,15 +1330,20 @@ function editar_formulario() {
                 type: 'post',
                 async: false,
                 data: {id: data.ID_OPERATORIA},
-                success: function (data) {$('#check_datos').html(data);}
+                success: function (data) {
+                    $('#check_datos').html(data);
+                }
             })
             $.ajax({
                 url: _compravino.URL + "/x_getFormasPago",
                 datatype: 'html',
                 type: 'post',
-//                async: false,
+                async: false,
                 data: {id: data.ID_OPERATORIA},
-                success: function (data) {$('#fpago').html(data);$("#fpago-select").chosen({width: "220px"});}
+                success: function (data) {
+                    $('#fpago').html(data);
+                    $("#fpago-select").chosen({width: "220px"});
+                }
             })
             $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
 
@@ -1350,7 +1361,7 @@ function editar_formulario() {
                     url: _compravino.URL + "/x_getTitularidad",
                     datatype: 'html',
                     type: 'post',
-//                    async: false,
+                    async: false,
                     data: {num_factura: num_fact_buscar},
                     success: function (datos) {
                         $("#cambio_titularidad").hide();
@@ -1370,24 +1381,13 @@ function editar_formulario() {
 ////                        $("#comentario-titularidad").text(datos);
 //                    }})
             } else {
-//                     $.ajax({
-//                url: _compravino.URL + "/x_getChecklistHumanaFact",
-//                datatype: 'html',
-//                type: 'post',
-//                async: false,
-//                data: {id: data.ID_OPERATORIA},
-//                success: function (data) {
-//                    $('#check_datos').html(data);
-                    $("#cambio_titularidad").attr('checked', false);
-//                }
-//            })
-/*                $.ajax({
-                    url: _compravino.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {$('#check_datos').html(data);
+//                $.ajax({
+//                    url: _compravino.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
+//                    data: {id: data.ID_OPERATORIA},
+//                    success: function (data) {$('#check_datos').html(data);
                         $("#cambio_titularidad").attr('checked', false);
-                    }})
-  */          }
+//                    }})
+            }
 
             var sourceope_titularidad = {
                 datatype: "json",
@@ -1435,15 +1435,15 @@ function editar_formulario_operatoria() {
     $('#fecha_ven_edit').show();
     $.ajax({
         url: _compravino.URL + "/x_getoperatoria",
-        data: {
-            id_objeto: el_id
-        },
+        data: {id_objeto: el_id},
         dataType: "json",
         type: "post",
         success: function (rtn) {
             $("#opeNombre").val(rtn[0].NOMBRE_OPE);
             $("#fechavto").datepicker('enable');
-            $("#fechavto").val(formattedDate(rtn[0].FECHA_VEN));
+//          $("#fechavto").val(formattedDate(data.FECHAVTO));
+//          $("#fechavto").val(data.FECHAVTO);
+            $("#fechavto").val(rtn[0].FECHA_VEN);
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#maxPesos").val(rtn[0].MAX_PESOS);
@@ -1467,12 +1467,9 @@ function editar_formulario_operatoria() {
             $("#numINVBodega").val(rtn[0].NUM_INV_BODEGA);
             $("#opetelefono").val(rtn[0].TELEFONO);
             $("#opeCorreo").val(rtn[0].CORREO);
-
             var data_checklists_persona = [];
             var listado_checklist = rtn[0].CHECKLIST_PERSONA;
             data_checklists_persona = listado_checklist.split(',');
-
-//            console.log(data_checklists_persona);
             $('.op input').each(function () {
                 if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
                     $(this).prop('checked', true);
@@ -1480,16 +1477,12 @@ function editar_formulario_operatoria() {
             });
             $.ajax({
                 url: _compravino.URL + "/x_getOperatoriaProveedores",
-                data: {
-                    id_operatoria: el_id
-                },
+                data: {id_operatoria: el_id},
                 dataType: "json",
                 type: "post",
                 success: function (rtn_proveedores) {
                     var cadena_ids = [];
-                    for (var i = 0; i < rtn_proveedores.length; i++) {
-                        cadena_ids.push(rtn_proveedores[i]['ID_PROVEEDOR']);
-                    }
+                    for (var i = 0; i < rtn_proveedores.length; i++) {cadena_ids.push(rtn_proveedores[i]['ID_PROVEEDOR']);}
                     $("#opeProveedores").val(cadena_ids).attr('eneable', true).trigger("chosen:updated");
                     $("#info-proveedores").show();
                     $("#jqxgrid_proveedores").show();
@@ -1553,8 +1546,6 @@ function editar_formulario_operatoria() {
                             var me = this;
                             var container = $("<div style='margin: 5px;'></div>");
                             toolbar.append(container);
-//                            container.append('<input id="addrowbutton" type="button" value="Agregar Nuevos" />');
-//                            container.append('<input style="margin-left: 5px;" id="deleterowbutton" type="button" value="Eliminar Seleccion" />');
                             $("#addrowbutton").jqxButton();
                             $("#addmultiplerowsbutton").jqxButton();
                             $("#deleterowbutton").jqxButton();
@@ -1667,7 +1658,6 @@ function editar_formulario_operatoria() {
                             async: false,
                             success: function (datos) {
                                 accion_bodegas = datos[0]['ACCION'];
-                                
                                 for (var i = 0; i < datos.length; i++) {
                                     row['ID'] = datos[i]['ID'];
                                     row['NOMBRE'] = datos[i]['NOMBRE'];
@@ -1689,8 +1679,6 @@ function editar_formulario_operatoria() {
                             var me = this;
                             var container = $("<div style='margin: 5px;'></div>");
                             toolbar.append(container);
-//                            container.append('<input id="addrowbutton" type="button" value="Agregar Nuevos" />');
-//                            container.append('<input style="margin-left: 5px;" id="deleterowbutton" type="button" value="Eliminar Seleccion" />');
                             $("#addrowbutton").jqxButton();
                             $("#addmultiplerowsbutton").jqxButton();
                             $("#deleterowbutton").jqxButton();
@@ -2931,7 +2919,6 @@ function limpiar_form_nf() {
 }
 
 function lote_pago() {
-
     var rowindexes = $('#jqxgrid_listado').jqxGrid('getselectedrowindexes');
     var _arr_sel = [];
     if (rowindexes.length > 0) {
@@ -2948,7 +2935,6 @@ function lote_pago() {
             });
             return false;
         }
-
         jConfirm('Esta seguro de generar este lote de pago??.', $.ucwords(_etiqueta_modulo), function (r) {
             if (r == true) {
                 $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
@@ -2964,7 +2950,6 @@ function lote_pago() {
                         console.dir(data);
                         if (data > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-
                                 imprimir_listado_seleccionado();
                                 show_btns();
                                 limpiar_form_fact();

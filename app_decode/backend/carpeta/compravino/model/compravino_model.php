@@ -574,9 +574,20 @@ class compravino_model extends main_model {
 //    function sendJuridica($obj, $nuevoID) {//        $array_checklist = explode(",", $obj);//        foreach ($obj as $value) {
 //            $ins_check = array(//                "ID_OPERATORIA" => $nuevoID,//                "ID_JURIDICA" => $value,
 //            );//            $this->_db->insert('fid_operatoria_juridica', $ins_check);//        }//    }
-//    function updateBodegas($obj, $nuevoID) {$this->_db->delete("fid_op_vino_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
-//        if ($obj && count($obj) > 0) {foreach ($obj as $value) {$ins_bodegas = array("ID_OPERATORIA" => $nuevoID,"ID_BODEGA" => $value['ID'],
-//                    "LIMITE_OPE" => $value['LIMLTRS']);$this->_db->insert('fid_op_vino_bodegas', $ins_bodegas);}}}
+
+//    function updateBodegas($obj, $nuevoID) {
+//        $this->_db->delete("fid_op_vino_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
+//        if ($obj && count($obj) > 0) {
+//            foreach ($obj as $value) {
+//                $ins_bodegas = array(
+//                    "ID_OPERATORIA" => $nuevoID,
+//                    "ID_BODEGA" => $value['ID'],
+//                    "LIMITE_OPE" => $value['LIMLTRS']
+//                );
+//                $this->_db->insert('fid_op_vino_bodegas', $ins_bodegas);
+//            }
+//        }
+//    }
 
     function sendobj($obj, $cambio_titularidad) {
         //log_this('log/xxxxx.log',print_r($obj,1));
@@ -598,7 +609,9 @@ class compravino_model extends main_model {
             $resp = $this->_db->insert('fid_cu_factura', $obj);
 //            log_this('cargando_factura.log', $this->_db->last_query());
             if ($cambio_titularidad == 'true') {
-                $arr_cambio_titu = array("ID_FACTURA" => $numero_factura,"ID_USUARIO" => $_SESSION['USERADM'],
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $numero_factura,
+                    "ID_USUARIO" => $_SESSION['USERADM'],
                     "FECHA" => date("Y-m-d H:i:s"),
                     "CHECK_ESTADO" => 1,
                 );
@@ -786,6 +799,7 @@ class compravino_model extends main_model {
         $obj['PROPIETARIO'] = $_SESSION["USERADM"];
         $iid = $obj["idreqh"];
         unset($obj["idreqh"]);
+
         //$fecha_actual = date("Y-m-d H:i:s");
         //$fecha_actual = date("Y-m-d H:i:s",  strtotime($obj['FCREA']));
         $id_new = $iid;
@@ -901,6 +915,12 @@ class compravino_model extends main_model {
     }
 
     function get_bodegas() {
+        /*
+          select l.LOCALIDAD,b.ID as ID, b.NOMBRE AS NOMBRE
+          from fid_bodegas b
+          inner join fid_localidades l on l.ID=b.ID_DEPARTAMENTO
+         */
+
         $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
         $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
         $rtn = $this->_db->get_tabla("fid_bodegas b");
@@ -972,6 +992,10 @@ class compravino_model extends main_model {
     }
 
     function getDatoProveedor($ids_proveedores, $firstColumnData) {
+//        if(empty($firstColumnData)){echo "vacio";
+//        }else{echo "algo";}
+//        var_dump($firstColumnData);
+//        var_dump($ids_proveedores);die("dieeeeeee");
         if (count($ids_proveedores) > count($firstColumnData)) {
             $array_resultado = array();
             $i = 0;
@@ -1043,6 +1067,7 @@ class compravino_model extends main_model {
     }
 
     function getDatoProveedorNuevo($ids_proveedores) {
+//        var_dump($n_rtn);die("ALALALAL");
         $array_resultado = array();
         $i = 0;
         foreach ($ids_proveedores as $nuevos) {

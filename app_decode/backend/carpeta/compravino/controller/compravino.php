@@ -297,7 +297,6 @@ class compravino extends main_controller {
         $html = '';
         if ($list_check[0]['CHECKLIST_PERSONA']) {
             $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
-//            var_dump($data_check_humana );die(" CHECKED HUMANA.");
             $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
             $html = '<table id="humana">';
             if ($data_check_humana) {
@@ -353,7 +352,6 @@ class compravino extends main_controller {
         $html = '';
         if ($list_check[0]['CHECKLIST_PERSONA']) {
             $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
-//                        var_dump($data_check_humana );die(" Quiero ver el checked como es.");
             $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
             $html = '<table id="humana">';
             if ($data_check_humana) {
