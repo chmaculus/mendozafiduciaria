@@ -102,7 +102,7 @@ verfoto img{
 .tb_per{
     background: url('../../general/css/images/32x32/permisos.png') no-repeat 50% 6px !important;
 }
-.tb_atras,.tb_atras_ope{
+.tb_atras,.tb_atras_ope, .tb_regresar_ope{
     background: url('../../general/css/images/32x32/Back.png') no-repeat 50% 6px !important;
 }
 .tb_chist{
