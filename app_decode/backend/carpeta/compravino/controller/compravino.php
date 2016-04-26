@@ -790,7 +790,7 @@ class compravino extends main_controller {
 
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
-            $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
+            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
         } else {
             //echo -1;
             $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius

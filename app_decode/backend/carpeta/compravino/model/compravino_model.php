@@ -1688,11 +1688,33 @@ class compravino_model extends main_model {
             //$inscripcion_iibb   = $objPHPExcel->getActiveSheet()->getCell("O".$i)->getValue();
 
             $litros = floatval($objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue());
+            if (!$litros) {
+                $litros = floatval($objPHPExcel->getActiveSheet()->getCell("E" . $i)->getCalculatedValue());
+            }
             $cuit = str_replace('-', '', strval($cuit));
             //$cbu = exp_to_dec($cbu);
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
 
+            $estado_fact = $objPHPExcel->getActiveSheet()->getCell("AE" . $i)->getValue();
 
+            switch ($estado_fact) {
+                case 'DESISTIDO':
+                    $estado_fact = 2;
+                    break;
+                case 'DESISTIDO':
+                    $estado_fact = 2;
+                    break;
+                case 'RECHAZADO':
+                    $estado_fact = 3;
+                    break;
+                case 'APROBADO':
+                case 'APROBADA':
+                    $estado_fact = 1;
+                    break;
+                default:
+                    $estado_fact = 1;
+                    break;
+            }
 
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
@@ -1778,14 +1800,23 @@ class compravino_model extends main_model {
                 continue;
             }
 
-            $fecha = $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue(); //??
+            $fecha = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue(); //??
             $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
             $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
             //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
             $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
+            if (!$neto) {
+                $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());
+            }
             $precio = $litros ? $neto / $litros : 0;
             $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
+            if (!$iva) {
+                $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());
+            }
             $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue());
+            if (!$total) {
+                $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getCalculatedValue());
+            }
             $porc_iva = 0;
             if ($total && $neto) {
                 $porc_iva = $iva * 100 / $neto;
@@ -1835,13 +1866,12 @@ class compravino_model extends main_model {
             $save_ope = $_ope_mendoza;
             $save_fid = $_fid_mendoza;
             //}
-
+            
             $arr_fact = array(
                 "NUMERO" => $numero,
-                //"FECHA" => $fecha,
                 //"FECHAVTO" => $fechavto,
                 //"CAI" => $cai,
-                "ID_ESTADO" => "1",
+                "ID_ESTADO" => $estado_fact,
                 "TIPO" => "1",
                 "LITROS" => $litros,
                 "FORMA_PAGO" => $cuotas,
@@ -1859,6 +1889,10 @@ class compravino_model extends main_model {
                 "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
+            
+            if ($fecha) {
+                $arr_fact['FECHA'] = $fecha;
+            }
 
             $arr_bodegas[] = $id_bodega;
             $arr_proveedores[] = $id_cliente;
@@ -1887,10 +1921,10 @@ class compravino_model extends main_model {
             $iva = round($iva * 1, 2);
             $factor = round(($factor * $neto / 100) * 1, 2);
             //log_this("iv-factor.txt", $iva . " - " . $factor);
-            if ((abs($iva - $factor) > 1)) {
+            /*if ((abs($iva - $factor) > 1)) {
                 $sw_error = 1;
                 $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
-            }
+            }*/
 
             if ($total - ($neto + $iva) > 1) {
                 $sw_error = 1;
@@ -1965,10 +1999,10 @@ class compravino_model extends main_model {
         }
 
         $this->_db->update("fid_operatoria_vino", $arr_update_factura, "ID_OPERATORIA = " . $id_operatoria);
-        //rename("_tmp/importar/imp_vino_fact.xlsx", "_tmp/importar/imp_vino_fact_procesado_" . date('Ymd') . ".xlsx");
+        rename("_tmp/importar/imp_vino_fact.xlsx", "_tmp/importar/imp_vino_fact_procesado_" . date('Ymd') . ".xlsx");
         //TRUNCATE TABLE `fid_cu_factura`;TRUNCATE TABLE `fid_operatoria_vino`;TRUNCATE TABLE `fid_op_vino_bodegas`;TRUNCATE TABLE `fid_op_vino_proveedores`;
 
-        return $res;
+        return 1;
     }
 
     function importar_ciu() {

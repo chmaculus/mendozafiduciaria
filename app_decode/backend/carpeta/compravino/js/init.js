@@ -3060,10 +3060,10 @@ function importar_procesar() {
                                 }
                             });
                         });
-                    } else {
+                    } else if (dat == 1) {
                         jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
                             //actualizar el listado
-                            $.ajax({
+                            /*$.ajax({
                                 url: _compravino.URL + "/x_actualizarLista",
                                 data: {
                                 },
@@ -3074,7 +3074,8 @@ function importar_procesar() {
                                     $('.lista_arch').html(data);
                                     evento_lista_arch();
                                 }
-                            });
+                            });*/
+                            window.location.href = "backend/carpeta/compravino/init/12/2";
                         });
                     }
                 }

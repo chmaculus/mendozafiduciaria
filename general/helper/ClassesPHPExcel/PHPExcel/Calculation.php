@@ -1917,7 +1917,7 @@ class PHPExcel_Calculation {
 						$returnValue = $this->_calculationCache[$wsTitle][$cellID]['data'];
 //						echo 'Retrieving data value of '.$returnValue.' for '.$cellID.' from cache<br />';
 						if (is_array($returnValue)) {
-							return array_shift(PHPExcel_Calculation_Functions::flattenArray($returnValue));
+							return @array_shift(@PHPExcel_Calculation_Functions::flattenArray($returnValue));
 						}
 						return $returnValue;
 					} else {
