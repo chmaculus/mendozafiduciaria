@@ -88,7 +88,7 @@ $(document).ready(function(){
         setInterval(function(){
             actualizaNotif();
 //            inter();
-        },15000);
+        },30000);
     }
         
     if ( _this_app.URL!='main' && _this_app.URL!='backend/cambiarpassword' )

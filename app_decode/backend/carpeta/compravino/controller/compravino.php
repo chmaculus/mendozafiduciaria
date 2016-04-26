@@ -103,7 +103,7 @@ class compravino extends main_controller {
             $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
             $data['lst_bodegas'] = $this->x_getbodegas();
             //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-    //        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
+            //        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
             //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
             $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
             $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
@@ -161,18 +161,6 @@ class compravino extends main_controller {
         endif;
     }
 
-    function x_getAlgunasBodegas() {
-        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
-        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
-                <option value="">Elegir Bodega</option>';
-        foreach ($data_bodega as $value) {
-            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
-        }
-        $html .= '</select>';
-        echo $html;
-    }
-
     function x_actualizarT_tmp() {
         $obj = $this->mod->actualizarT_tmp();
         $tmp = $obj ? $obj : array();
@@ -193,88 +181,6 @@ class compravino extends main_controller {
     function x_getChecklistJuridica() {
         $obj = $this->mod->getChecklistJuridica();
         return $obj;
-    }
-
-    function x_getChecklistHumanaFact() {
-        $list_check = $this->mod->getChecklistOp($_POST['id']);
-        $html = '';
-        if ($list_check[0]['CHECKLIST_PERSONA']) {
-            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
-            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
-
-            $html = '<table id="humana">';
-
-            if ($data_check_humana) {
-                $html .= '
-            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
-            <tr>
-            <th class="numCheck" style="width: 5%;">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-            </tr>';
-                foreach ($data_check_humana as $valueH) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueH['ID'] . '</td>
-                    <td>' . $valueH['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-
-            if ($data_check_juridica) {
-                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
-                <tr>
-                <th class="numCheck">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-                </tr>';
-                foreach ($data_check_juridica as $valueJ) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueJ['ID'] . '</td>
-                    <td>' . $valueJ['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-            $html .= '</table>';
-        }
-
-        echo $html;
-    }
-    function x_getFormasPago() {
-        $forma_pago = $this->mod->getPagos($_POST['id']);
-//        print_r($forma_pago);die("SXXS");
-        $j=1;
-        $html = '';
-        $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
-                <option value="">Seleccione forma pago</option>';
-        foreach ($forma_pago[0] as $key => $value) {
-            $nombre_ver ='';
-            if($key == 'PRECIO_1'){
-                $nombre_ver = '1 PAGO';
-            }
-            if($key== 'PRECIO_2'){
-                $nombre_ver = '2 PAGOS';
-            }
-            if($key== 'PRECIO_3'){
-                $nombre_ver = '3 PAGOS';
-            }
-            if($key== 'PRECIO_4'){
-                $nombre_ver = '4 PAGOS';
-            }
-            if($key== 'PRECIO_5'){
-                $nombre_ver = '5 PAGOS';
-            }
-            if($key== 'PRECIO_6'){
-                $nombre_ver = '6 PAGOS';
-            }
-            $html .= '<option id="precio_fp" value="'.$j.'" data-precio="'. $value.'">' . $nombre_ver . '</option>';
-            $j++;
-        }
-        $html .= '</select>';
-        echo $html;
     }
 
     function x_getChecklistJuridicaFact() {
@@ -374,11 +280,168 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
+    function x_getAlgunasBodegas() {
+        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
+        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
+                <option value="">Elegir Bodega</option>';
+        foreach ($data_bodega as $value) {
+            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
+                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
+        }
+        $html .= '</select>';
+        echo $html;
+    }
+
+    function x_getChecklistHumanaFact() {
+        $list_check = $this->mod->getChecklistOp($_POST['id']);
+        $html = '';
+        if ($list_check[0]['CHECKLIST_PERSONA']) {
+            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
+            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
+            $html = '<table id="humana">';
+            if ($data_check_humana) {
+                $html .= '
+            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
+            <tr>
+            <th class="numCheck" style="width: 5%;">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>';
+                foreach ($data_check_humana as $valueH) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueH['ID'] . '</td>
+                    <td>' . $valueH['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+            if ($data_check_juridica) {
+                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
+                <tr>
+                <th class="numCheck">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+                </tr>';
+                foreach ($data_check_juridica as $valueJ) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueJ['ID'] . '</td>
+                    <td>' . $valueJ['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+//            $html .= '</table>';
+            $html .= '</table><br><br><br><br>
+                <div id="trar-todo">
+                <div class="elem elem_med">
+                <label>Cambio de Titularidad:</label>
+                <div class="indent formtext">
+                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
+                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
+                <label id="comentario-titularidad"></label></div></div><br><br><br><br>
+                <div id="activo-titularidad"></div></div>';
+        }
+        echo $html;
+    }
+
+    function x_getChecklistHumanaFactTitu() {
+        $list_check = $this->mod->getChecklistOp($_POST['id']);
+        $id_objeto = $_POST['num_factura'];
+        $html = '';
+        if ($list_check[0]['CHECKLIST_PERSONA']) {
+            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
+            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
+            $html = '<table id="humana">';
+            if ($data_check_humana) {
+                $html .= '
+            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
+            <tr>
+            <th class="numCheck" style="width: 5%;">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+            </tr>';
+                foreach ($data_check_humana as $valueH) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueH['ID'] . '</td>
+                    <td>' . $valueH['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+            if ($data_check_juridica) {
+                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
+                <tr>
+                <th class="numCheck">N°</th>
+                <th>DATOS</th>
+                <th>OPCION</th>
+                </tr>';
+                foreach ($data_check_juridica as $valueJ) {
+                    $html .= '
+                <tr class="op">
+                    <td class="numCheck">' . $valueJ['ID'] . '</td>
+                    <td>' . $valueJ['DESCRIPCION'] . '</td>
+                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
+                </tr>';
+                }
+            }
+            $rtn_titu = $this->mod->getTitularidad($id_objeto);
+            $agregar_mensaje = "El usuario " . $rtn_titu[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn_titu[0]['FECHA'];
+            $html .= '</table><br><br><br><br>
+                <div id="trar-todo">
+                <div class="elem elem_med">
+                <label>Cambio de Titularidad:</label>
+                <div class="indent formtext">
+                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
+                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
+                <label id="comentario-titularidad"> ' . $agregar_mensaje . ' </label>
+                </div></div><br><br><br><br>
+                <div id="activo-titularidad"></div></div>';
+        }
+        echo $html;
+    }
+
+    function x_getFormasPago() {
+        $forma_pago = $this->mod->getPagos($_POST['id']);
+//        print_r($forma_pago);die("SXXS");
+        $j = 1;
+        $html = '';
+        $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
+                <option value="">Seleccione forma pago</option>';
+        foreach ($forma_pago[0] as $key => $value) {
+            $nombre_ver = '';
+            if ($key == 'PRECIO_1') {
+                $nombre_ver = '1 PAGO';
+            }
+            if ($key == 'PRECIO_2') {
+                $nombre_ver = '2 PAGOS';
+            }
+            if ($key == 'PRECIO_3') {
+                $nombre_ver = '3 PAGOS';
+            }
+            if ($key == 'PRECIO_4') {
+                $nombre_ver = '4 PAGOS';
+            }
+            if ($key == 'PRECIO_5') {
+                $nombre_ver = '5 PAGOS';
+            }
+            if ($key == 'PRECIO_6') {
+                $nombre_ver = '6 PAGOS';
+            }
+            $html .= '<option id="precio_fp" value="' . $j . '" data-precio="' . $value . '">' . $nombre_ver . '</option>';
+            $j++;
+        }
+        $html .= '</select>';
+        echo $html;
+    }
+
     function x_getTitularidad() {
         $id_objeto = $_POST['num_factura'];
         $rtn = $this->mod->getTitularidad($id_objeto);
 //        echo trim(json_encode($rtn ? $rtn : array()));
-        echo "El usuario ".$rtn[0]['NOMBRE']. " activo la casilla. Fecha ".$rtn[0]['FECHA'];
+        echo "El usuario " . $rtn[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn[0]['FECHA'];
 //        echo $rtn;
     }
 
@@ -486,9 +549,10 @@ class compravino extends main_controller {
     }
 
     function x_updateProveedores() {
-        $obj = $_POST['data_proveedores'];
+        $obj_bod = $_POST['data_bodegas'];
+        $obj_prov = $_POST['data_proveedores'];
         $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->updateProveedores($obj, $nuevoID);
+        $rtn = $this->mod->updateProveedores($obj_bod, $obj_prov, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 

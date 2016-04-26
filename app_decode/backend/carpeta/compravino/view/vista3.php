@@ -8,6 +8,7 @@
 </style>
 <ul class="toolbar">
     <li class="tb_atras" data-top="lis_editar"><div>Regresar</div></li>
+    <li class="tb_regresar_ope" data-top="ope_volver"><div>Regresar</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
     <li class="tb_search" data-top='search'><div>Buscar Cuit</div></li>
     <li class="tb_fil" data-top='nueva_f'><div>Nueva Factura</div></li>
@@ -217,14 +218,14 @@
     <!--    <div class="elem elem_med">
             <label class="der">Provincia:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="prov_bodega" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )  ?>" readonly>
+                <input type="text" class="tip-right" title="" id="prov_bodega" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )   ?>" readonly>
             </div>
         </div>-->
     <div style="margin-top:10px;" class="clear"></div>
     <!--    <div class="elem elem_med">
                 <label class="der">Departamento:</label>
                 <div class="indent formtext">
-                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )     ?>" readonly>
+                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )      ?>" readonly>
                 </div>
         </div>-->
     <div class="elem elem_med" style="margin-top:30px;">
@@ -234,20 +235,11 @@
         </div>
     </div>
     <div style="margin-top:10px;" class="clear"></div>
-    <!--    <div class="elem elem_med">
-            <label class="der">Azucar:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="azucar" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )  ?>" >
-            </div>
-        </div>-->
     <div class="elem elem_med">
         <label class="der">Forma de pago:</label>
         <div class="indent" id="fpago">
             <select class="chzn-select medium-select select" id="fpago-select">
                 <option value="">Seleccione forma pago</option>
-                <?php // foreach ($lst_provincias as $rs_prov): ?>
-                <option data-connection="<?php // echo $rs_prov["ID"]  ?>" value="<?php // echo $rs_prov["ID"]  ?>"><?php // echo $rs_prov["PROVINCIA"]  ?></option>
-                <?php // endforeach; ?>
             </select>   
         </div>
     </div>
@@ -284,20 +276,14 @@
             <input type="text" class="tip-right" title="" id="total" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
         </div>
     </div>
-
-    <?php if (isset($lst_formulas) && is_array($lst_formulas)): ?>
-        <div class="elem elem_med">
-            <label>Formula:</label>
-            <div class="indent">
-                <select class="chzn-select medium-select select" id="formula">
-                    <option value="">Elegir Formula</option>
-                    <?php foreach ($lst_formulas as $rs_form): ?>
-                        <option value="<?php echo $rs_form["idFormula"] ?>"><?php echo "Fórmula" . $rs_form["idFormula"] ?></option>
-                    <?php endforeach; ?>
-                </select>   
-            </div>
-        </div>
-    <?php endif; ?>
+    <?php // if (isset($lst_formulas) && is_array($lst_formulas)): ?>
+    <!--        <div class="elem elem_med"><label>Formula:</label><div class="indent">
+                    <select class="chzn-select medium-select select" id="formula">
+                        <option value="">Elegir Formula</option>
+                <?php // foreach ($lst_formulas as $rs_form): ?>
+                        <option value="<?php // echo $rs_form["idFormula"]  ?>"><?php // echo "Fórmula" . $rs_form["idFormula"]  ?></option>
+    <?php // endforeach; ?>
+                    </select></div></div>--><?php //endif; ?>
 
     <div class="elem">
         <label class="ancho100">Observaciones:</label>
@@ -308,24 +294,26 @@
     <div style="margin-top:10px;" class="clear"></div>
     <div id="check_datos" style="width: 100%;">
     </div>
-    <br><br><br><br>
-    <div class="elem elem_med">
-        <label>Cambio de Titularidad:</label>
-        <div class="indent formtext">
-            <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
-            <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
-            <label id="comentario-titularidad"></label>
+<!--    <br><br><br><br>-->
+<!--    <div id="trar-todo">
+        <div class="elem elem_med">
+            <label>Cambio de Titularidad:</label>
+            <div class="indent formtext">
+                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
+                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
+                <label id="comentario-titularidad"></label>
+            </div>
         </div>
-    </div>
-    <br><br><br><br>
-    <div id="activo-titularidad">
-    </div>
-    <!--<br><br><br><br>-->
-<!--    <div id="titularidadHistorial">
-        <label>Historial Cambio de Titularidad:</label>
-        <div id="jqxgridtitularidad">
+        <br><br><br><br>
+        <div id="activo-titularidad">
         </div>
     </div>-->
+    <!--<br><br><br><br>-->
+    <!--    <div id="titularidadHistorial">
+            <label>Historial Cambio de Titularidad:</label>
+            <div id="jqxgridtitularidad">
+            </div>
+        </div>-->
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 </div>
