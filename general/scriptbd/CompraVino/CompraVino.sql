@@ -95,3 +95,14 @@ ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL;
 /*08/04/2016*/
 /*Agrego campo en la tabla de las facturas para almacenar la orden de pago generada en el debo*/
 ALTER TABLE  `fid_cu_factura` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL;
+
+
+/*25/04/2016*/
+/*Creo tabla para agregar los pagos con las cuotas y fechas de vencimiento*/
+CREATE TABLE `fid_cu_pagos` (
+`ID_PAGO` INT NOT NULL ,
+`ID_FACTURA` INT NOT NULL ,
+`NUM_CUOTA` FLOAT NOT NULL ,
+`VALOR_CUOTA` FLOAT NOT NULL ,
+`FECHA_VEN` DATE NOT NULL
+) ENGINE = InnoDB;

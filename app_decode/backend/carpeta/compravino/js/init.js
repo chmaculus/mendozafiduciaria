@@ -663,14 +663,7 @@ $(document).ready(function () {
             },
             dataType: "json",
             type: "post"});
-//        $.ajax({
-//            url: _compravino.URL + "/x_updateBodegas",
-//            data: {
-//                data_bodegas: data_bodegas,
-//                nuevoID: el_id
-//            },
-//            dataType: "json",
-//            type: "post"});
+//        $.ajax({url: _compravino.URL + "/x_updateBodegas",data: {data_bodegas: data_bodegas,nuevoID: el_id},dataType: "json",type: "post"});
         jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
             var urlh = "backend/carpeta/compravino/init/12/7";
@@ -770,12 +763,10 @@ $(document).ready(function () {
             });
             $('#opeProveedores').on('change', function () {
                 var datarow = generaterow_proveedores();
-                /* AGREGAR AQUI
-                 * VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
+                /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
                  * 
                  * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
                  * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
-                 * 
                  * */
                 if (accion_proveedores_new == 'AGREGAR') {
                     var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
@@ -831,15 +822,9 @@ $(document).ready(function () {
             id_bodega: id_bodega,
         },
         async: false,
-        addrow: function (rowid, rowdata, position, commit) {
-            commit(true);
-        },
-        deleterow: function (rowid, commit) {
-            commit(true);
-        },
-        updaterow: function (rowid, newdata, commit) {
-            commit(true);
-        }
+        addrow: function (rowid, rowdata, position, commit) {commit(true);},
+        deleterow: function (rowid, commit) {commit(true);},
+        updaterow: function (rowid, newdata, commit) {commit(true);}
     };
     var dataAdapterope = new $.jqx.dataAdapter(sourceope,
             {
@@ -1298,10 +1283,10 @@ function editar_formulario() {
             $("#cai").val(data.CAI).attr("readonly", "readonly");
             $("#bodega").chosen({width: "220px"});
             $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
-            $("#formula").chosen({width: "220px"});
-            $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
-            $("#formula").trigger('change');
-            $("#ltros").val(data.LITROS);
+//            $("#formula").chosen({width: "220px"});
+//            $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
+//            $("#formula").trigger('change');
+            $("#ltros").val(data.LITROS).attr("readonly", "readonly");;
             $("#azucar").val(data.AZUCAR);
             $("#precio").val(data.PRECIO).attr("readonly", "readonly");
             $("#numVinedo").val(data.VINEDO);
@@ -1310,7 +1295,7 @@ function editar_formulario() {
             $("#neto").val(data.NETO).attr("readonly", "readonly");
             $("#iva").val(data.IVA).attr("readonly", "readonly");
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
-            $("#porcentaje_iva").val(data.PORC_IVA);
+            $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
 
             $.ajax({
                 url: _compravino.URL + "/x_getAlgunasBodegas",
@@ -1345,7 +1330,7 @@ function editar_formulario() {
                     $("#fpago-select").chosen({width: "220px"});
                 }
             })
-            $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
+            $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
 
             var data_checklists_persona = [];
             var listado_checklist = data.CHECKLIST_PERSONA;
