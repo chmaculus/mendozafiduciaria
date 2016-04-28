@@ -1274,7 +1274,7 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function importar_xls($fid_sanjuan, $ope_sanjuan) {
+    function importar_xls($fid_sanjuan, $ope_sanjuan, $id_op_vino) {
         if (!is_file("_tmp/importar/imp_vino_fact.xlsx")) {
             return -1;
         }
@@ -1297,7 +1297,7 @@ class compravino_model extends main_model {
         } else {
             die("Falta configurar sistema");
         }
-
+/*
         $id_operatoria = $this->getIdOperatoria();
 
         $arr_ope = array(
@@ -1306,7 +1306,8 @@ class compravino_model extends main_model {
             'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria
         );
 
-        $this->_db->insert('fid_operatoria_vino', $arr_ope);
+        $this->_db->insert('fid_operatoria_vino', $arr_ope);*/
+        $id_operatoria = $id_op_vino;
 
         $arr_proveedores = $arr_bodegas = array();
         $total_litros = 0;
@@ -1466,7 +1467,8 @@ class compravino_model extends main_model {
             if ($total && $neto) {
                 $porc_iva = $iva * 100 / $neto;
             }
-            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue() . ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue();
+            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue();
+            $observaciones .=  $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
             $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
             if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
                 $precios_cuotas[$cuotas] = $precio;
@@ -1759,6 +1761,16 @@ class compravino_model extends main_model {
         } else {
             return 0;
         }
+    }
+    
+    function get_operatorias() {
+        $this->_db->select("ID_OPERATORIA, FECHA_CRE, NOMBRE_OPE, FECHA_CRE");
+        return $this->_db->get_tabla("fid_operatoria_vino");
+    }
+    
+    function get_operatorias_importacion() {
+        $this->_db->select("ID_OPERATORIA, FECHA_CRE, NOMBRE_OPE, FECHA_CRE");
+        return $this->_db->get_tabla("fid_operatoria_vino", "ESTADO_OP=1", "FECHA_CRE DESC");
     }
 
 }

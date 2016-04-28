@@ -518,3 +518,12 @@ iframe{
 #titularidadHistorial{
     display: none;
 }
+#lst_op_vino ul{
+    padding:10px 0;
+}
+#lst_op_vino li {
+    padding:2px 5px;
+}
+#lst_op_vino li.sel-op{
+    background-color: #ccc;
+}

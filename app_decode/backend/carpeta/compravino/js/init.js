@@ -3041,7 +3041,37 @@ function post_upload(nombre, nombre_tmp, etapa) {
 }
 
 function importar_procesar() {
+    if ($("#op_vino").length > 0) {
+        $.fancybox(
+            $("#op_vino").html(),
+            {
+                'padding'   :  15,
+                'autoScale' :true,
+                'scrolling' : 'auto'
+            }
+        );
 
+        $("#lst_op_vino li").on('click', function() {
+            $("#lst_op_vino li").each(function() {
+                $(this).removeClass('sel-op');
+            });
+            
+            $(this).addClass('sel-op');
+        });
+    } else {
+        jAlert('No existen operatorias, debe crear una operatoria para procesar la solicitud', $.ucwords(_etiqueta_modulo));
+    }
+}
+
+function imp_procesar() {
+    if ($("#lst_op_vino li.sel-op").length > 0) {
+        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
+    } else {
+        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
+    }
+}
+
+function _imp_procesar(id_op_vino) {
     jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
 // llamar ajax
@@ -3050,7 +3080,8 @@ function importar_procesar() {
                 url: _compravino.URL + "/x_importar_xls",
                 data: {
                     fid_sanjuan: _fid_sanjuan,
-                    ope_sanjuan: _ope_sanjuan
+                    ope_sanjuan: _ope_sanjuan,
+                    id_op_vino: id_op_vino
                 },
                 dataType: "json",
                 type: "post",
