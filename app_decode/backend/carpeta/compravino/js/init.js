@@ -248,6 +248,7 @@ function llenar_form(cliente) {
 }
 
 $(document).ready(function () {
+    $("#opeFideicomiso").chosen({width: "250px"});
     $("#opeCoordinador").chosen({width: "250px"});
     $("#opeJefe").chosen({width: "250px"});
     $("#opeProveedores").chosen({width: "400px"});
@@ -418,6 +419,7 @@ $(document).ready(function () {
         e.preventDefault();
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
+        var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
@@ -457,6 +459,12 @@ $(document).ready(function () {
             });
             return false;
         }
+        if (opeFideicomiso == '') {
+            jAlert('Ingrese el Fideicomiso.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeFideicomiso").focus();
+            });
+            return false;
+        }
         if (listrosMax == '') {
             jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#listrosMax").focus();
@@ -493,6 +501,7 @@ $(document).ready(function () {
                         nuevoID: nuevoID,
                         opeNombre: opeNombre,
                         opeDescripcion: opeDescripcion,
+                        opeFideicomiso: opeFideicomiso,
                         opeCoordinador: opeCoordinador,
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
@@ -563,6 +572,7 @@ $(document).ready(function () {
         var el_id = ultimo_id[ultimo_id.length - 1];
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
+        var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
@@ -605,6 +615,12 @@ $(document).ready(function () {
             });
             return false;
         }
+        if (opeFideicomiso == '') {
+            jAlert('Ingrese el Fideicomiso.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeFideicomiso").focus();
+            });
+            return false;
+        }
 //        if (opeCoordinador == '') {
 //            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
 //            return false;
@@ -639,6 +655,7 @@ $(document).ready(function () {
                 nuevoID: el_id,
                 opeNombre: opeNombre,
                 opeDescripcion: opeDescripcion,
+                opeFideicomiso: opeFideicomiso,
                 opeCoordinador: opeCoordinador,
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
@@ -1445,6 +1462,7 @@ function editar_formulario_operatoria() {
 //          $("#fechavto").val(data.FECHAVTO);
             $("#fechavto").val(rtn[0].FECHA_VEN);
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
+            $("#opeFideicomiso").val(rtn[0].ID_FIDEICOMISO).trigger("chosen:updated");
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#maxPesos").val(rtn[0].MAX_PESOS);
             $("#hectMax").val(rtn[0].HECT_MAX);

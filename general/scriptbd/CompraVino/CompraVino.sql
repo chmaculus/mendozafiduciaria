@@ -95,3 +95,6 @@ ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL;
 /*08/04/2016*/
 /*Agrego campo en la tabla de las facturas para almacenar la orden de pago generada en el debo*/
 ALTER TABLE  `fid_cu_factura` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL;
+
+/*28/04/2016*/
+ALTER TABLE `fid_operatoria_vino` ADD `ID_FIDEICOMISO` INT NOT NULL AFTER `ID_OPERATORIA`;

@@ -32,6 +32,20 @@
             <input type="text" title="descripcion" id="opeDescripcion" maxlength="100">
         </div>
     </div>
+    <?php if (isset($lst_fideicomisos) && is_array($lst_fideicomisos)): ?>
+        <div class="elem elem_med">
+            <label>Fideicomiso:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" data-placeholder="Seleccione fideicomiso de la operatoria" id="opeFideicomiso">
+                    <option value=""></option>
+                    <?php foreach ($lst_fideicomisos as $value): ?>
+                        <option data-local="<?php echo $value["ID"] ?>" data-connection="<?php echo $value["ID"] ?>" value="<?php echo $value["ID"] ?>"><?php echo $value["NOMBRE"] ?></option>
+                    <?php endforeach; ?>
+                </select>   
+            </div>
+        </div>
+    <div class="elem elem_med"><br /><br /></div>
+    <?php endif; ?>
     <?php if (isset($lst_usu_coordinadores) && is_array($lst_usu_coordinadores)): ?>
         <div class="elem elem_med">
             <label>Coordinador:</label>

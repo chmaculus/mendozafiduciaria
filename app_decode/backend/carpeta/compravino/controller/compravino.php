@@ -149,8 +149,10 @@ class compravino extends main_controller {
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
                 return $this->view("vista7_operatoria", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 8)):
+                $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
                 return $this->view("form_operatoria_nueva", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 9)):
+                $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
                 return $this->view("form_operatoria_nueva", $data);
             elseif ($provincia == 12 || $provincia == 17):
                 return $this->view("vista2", $data);

@@ -407,6 +407,7 @@ class compravino_model extends main_model {
             "FECHA_VEN" => $nueva_limite,
             "NOMBRE_OPE" => $arr_post['opeNombre'],
             "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
+            "ID_FIDEICOMISO" => $arr_post['opeFideicomiso'],
             "ID_COORDINADOR_OPE" => $arr_post['opeCoordinador'],
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
@@ -457,6 +458,7 @@ class compravino_model extends main_model {
         $ins_ope = array(
             "NOMBRE_OPE" => $arr_post['opeNombre'],
             "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
+            "ID_FIDEICOMISO" => $arr_post['opeFideicomiso'],
             "ID_COORDINADOR_OPE" => $arr_post['opeCoordinador'],
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
