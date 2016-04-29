@@ -106,3 +106,14 @@ CREATE TABLE `fid_cu_pagos` (
 `VALOR_CUOTA` FLOAT NOT NULL ,
 `FECHA_VEN` DATE NOT NULL
 ) ENGINE = InnoDB;
+
+
+/*28/04/2016*/
+/*Campos que agrego en la base sql del debo para pasarle otros valores*/
+ /*
+ alter table solicitud_adm
+  add NETO float not null default 0,
+  IVA float not null default 0,
+  CCU INT not null default 0,
+  UCU INT not null default 0;
+  */

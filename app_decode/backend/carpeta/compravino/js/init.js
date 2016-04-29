@@ -1251,6 +1251,10 @@ function evento_lista_arch() {
 
 
 function editar_formulario() {
+    
+    $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
+                                  
+								
     $("#send").hide();
     $('.tb_regresar_ope').show();
     $('.tb_atras').hide();
@@ -1405,11 +1409,14 @@ function editar_formulario() {
                     {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
                 ]
             });
+            $.unblockUI();
         }
     });
 }
 
 function editar_formulario_operatoria() {
+    $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
+								
     var accion_proveedores = '';
     var accion_bodegas = '';
     var url_con_id = document.location.href;
@@ -1585,6 +1592,7 @@ function editar_formulario_operatoria() {
                             {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
                         ]
                     });
+                  
                 }
             });
             $.ajax({
@@ -1708,6 +1716,7 @@ function editar_formulario_operatoria() {
                                         firstColumnData.push(rows[i].ID);
                                     }
                                     $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
+                                  
                                 }
                             });
                         },
@@ -1717,6 +1726,7 @@ function editar_formulario_operatoria() {
                             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '30%', filtercondition: 'starts_with', editable: true}
                         ]
                     });
+                      $.unblockUI();
                 }
             });
         }
