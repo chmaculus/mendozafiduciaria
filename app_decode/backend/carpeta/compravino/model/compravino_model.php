@@ -70,8 +70,6 @@ class compravino_model extends main_model {
 //                $this->_db->insert('fid_cu_lotespago', $arr_ins);
                 //log_this('log/qqqqqqq.log', $this->_db->last_query() );
 //                $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
-
-
                 $this->_db->select("F.ID_OPERATORIA AS ID_OPERATOIRA ,F.ID_CLIENTE AS IDCLIENTE,
                             F.NETO AS NETO,F.IVA AS IVA, F.FORMA_PAGO AS FORMA_PAGO ,F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
 //                $this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
@@ -129,55 +127,42 @@ class compravino_model extends main_model {
                         $arra_ins["FIDEICOMISO"] = "1";
                     else if ($_POST['provincia'] == 17)
                         $arra_ins["FIDEICOMISO"] = "26";
-                    
-//                    var_dump($arra_ins);die("ESTEEEEEE");
-                    $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-                    
-                    log_this('INSER_Q_NO_HACE2.log', $this->_dbsql->last_query());
-                    
-                }else 
-//                 var_dump($cuit_cli);die("primer dump");
-                    if ((int) $cuit_cli[0]['FORMA_PAGO'] >= 1) {
-                $arra_ins = array(
-                    "CUIT" => $cuit_cli[0]['CUIT'],
-                    "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-                    "OPERATORIA" => "2",
-                    "IDFACTURAINT" => $id_factura,
-                    "NUMFACTURA" => $ciu["NUMERO"],
-                    "CODIGO_DEBO" => "",
-                    "TIPO" => "FT",
-                    "FECHA_PASADO" => date('Ymd h:i:s'),
-                    "FECHA_PROCESADO" => "19010101 00:00",
-                    "NETO" => (float) $cuit_cli[0]['NETO'],
-                    "IVA" => (float) $cuit_cli[0]['IVA'],
-                    "IMPORTE" => $cuit_cli[0]['TOTAL'],
-                    "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
-                    "UCU" => 0, // numero de la cuota a pagar
-                    "LOTE" => $id_lote_new,
-                    "ESTADO" => "1",
-                    "BODEGA" => $cuit_cli[0]['ID_BODEGA']
-                );
 
-                if ($_POST['provincia'] == 12)
-                    $arra_ins["FIDEICOMISO"] = "1";
-                else if ($_POST['provincia'] == 17)
-                    $arra_ins["FIDEICOMISO"] = "26";
-
-                    var_dump($arra_ins);die(" Primero 1");
-                    log_this('inserqhacee2.log', $this->_dbsql->last_query());
                     $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
 
-//                $this->_dbsql->query("INSERT INTO SOLICITUD_ADM (CUIT, CODIGO_WEB, OPERATORIA, IDFACTURAINT, NUMFACTURA, CODIGO_DEBO
-//, TIPO, FECHA_PASADO, FECHA_PROCESADO, NETO, IVA, IMPORTE, CCU, UCU, LOTE, ESTADO, BODEGA, FIDEICOMISO) 
-//VALUES ('30708217480', '2', '2', '1333', '0000000103', '', 'FT', '20160428 03:27:01', '19010101 00:00', '40000', '4200', '44200.00',
-//'2', '0', '122', '1', '78', '1')");
+                }else if ((int) $cuit_cli[0]['FORMA_PAGO'] >= 1) {
+                    $arra_ins = array(
+                        "CUIT" => $cuit_cli[0]['CUIT'],
+                        "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
+                        "OPERATORIA" => "2",
+                        "NETO" => (float) $cuit_cli[0]['NETO'],
+                        "IVA" => (float) $cuit_cli[0]['IVA'],
+                        "IMPORTE" => $cuit_cli[0]['TOTAL'],
+                        "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
+                        "UCU" => 0, // numero de la cuota a pagar
+                        "IDFACTURAINT" => $id_factura,
+                        "NUMFACTURA" => $ciu["NUMERO"],
+                        "CODIGO_DEBO" => "",
+                        "TIPO" => "FT",
+                        "FECHA_PASADO" => date('Ymd h:i:s'),
+                        "FECHA_PROCESADO" => "19010101 00:00",
+                        "LOTE" => $id_lote_new,
+                        "ESTADO" => "1",
+                        "BODEGA" => $cuit_cli[0]['ID_BODEGA']
+                    );
+
+                    if ($_POST['provincia'] == 12)
+                        $arra_ins["FIDEICOMISO"] = "1";
+                    else if ($_POST['provincia'] == 17)
+                        $arra_ins["FIDEICOMISO"] = "26";
+                    $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
 
                     $arra_ins_cuota = array(
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                         "OPERATORIA" => "2",
-                        "NETO" => (float)$cuit_cli[0]['NETO'],
-                        "IVA" => (float)$cuit_cli[0]['IVA'],
+                        "NETO" => (float) $cuit_cli[0]['NETO'],
+                        "IVA" => (float) $cuit_cli[0]['IVA'],
                         "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
                         "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
                         "UCU" => 1, // numero de la cuota a pagar
@@ -186,7 +171,7 @@ class compravino_model extends main_model {
                         "NUMFACTURA" => $ciu["NUMERO"],
                         "CODIGO_DEBO" => "",
                         "TIPO" => "OP",
-//                        "FECHA_PASADO" => date('Ymd h:i:s'),
+                        "FECHA_PASADO" => date('Ymd h:i:s'),
                         "FECHA_PROCESADO" => "19010101 00:00",
                         "ESTADO" => "1",
                         "BODEGA" => $cuit_cli[0]['ID_BODEGA']
@@ -195,17 +180,14 @@ class compravino_model extends main_model {
                         $arra_ins_cuota["FIDEICOMISO"] = "1";
                     else if ($_POST['provincia'] == 17)
                         $arra_ins_cuota["FIDEICOMISO"] = "26";
-//                    var_dump($arra_ins_cuota);die(" Segundo 2");
-//                    $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
+
+                    $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
                 }
                 die("ver que guardo");
-
                 //file_put_contents("loggg.txt", $return, FILE_APPEND);
                 //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
-
             endforeach;
             $this->actualizarTablasW();
-
 
         endif;
         return $id_lote_new;
@@ -1739,16 +1721,16 @@ class compravino_model extends main_model {
         } else {
             die("Falta configurar sistema");
         }
-/*
-        $id_operatoria = $this->getIdOperatoria();
+        /*
+          $id_operatoria = $this->getIdOperatoria();
 
-        $arr_ope = array(
-            'ID_OPERATORIA' => $id_operatoria,
-            'FECHA_CRE' => date('Y-m-d'),
-            'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria
-        );
+          $arr_ope = array(
+          'ID_OPERATORIA' => $id_operatoria,
+          'FECHA_CRE' => date('Y-m-d'),
+          'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria
+          );
 
-        $this->_db->insert('fid_operatoria_vino', $arr_ope);*/
+          $this->_db->insert('fid_operatoria_vino', $arr_ope); */
         $id_operatoria = $id_op_vino;
 
         $arr_proveedores = $arr_bodegas = array();
@@ -1910,7 +1892,7 @@ class compravino_model extends main_model {
                 $porc_iva = $iva * 100 / $neto;
             }
             $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue();
-            $observaciones .=  $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
+            $observaciones .= $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
             $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
             if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
                 $precios_cuotas[$cuotas] = $precio;
@@ -2204,12 +2186,12 @@ class compravino_model extends main_model {
             return 0;
         }
     }
-    
+
     function get_operatorias() {
         $this->_db->select("ID_OPERATORIA, FECHA_CRE, NOMBRE_OPE, FECHA_CRE");
         return $this->_db->get_tabla("fid_operatoria_vino");
     }
-    
+
     function get_operatorias_importacion() {
         $this->_db->select("ID_OPERATORIA, FECHA_CRE, NOMBRE_OPE, FECHA_CRE");
         return $this->_db->get_tabla("fid_operatoria_vino", "ESTADO_OP=1", "FECHA_CRE DESC");

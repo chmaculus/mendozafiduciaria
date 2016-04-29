@@ -108,43 +108,90 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
 //        file_put_contents('OBTENERLOTESFACTURAS.log',$cnn->last_query() );
-    
+
+
     foreach ($rtn as $value) {
-        if ($value['FORMA_PAGO'] == '1' || $value['FPAGO'] == '0') {
-              $value['VALORPAGAR'] = (float)$value['NETO'];
-//$value['VALORPAGAR'] = (float)$value['TOTAL'];//$value['CUOTA_1'] = 0;//$value['CUOTA_2'] = 0;
-////$value['CUOTA_3'] = 0;//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
-        } else if ($value['FORMA_PAGO'] == '2') {
-            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
-//$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];
-//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
-//$value['CUOTA_3'] = 0;//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
-        } else if ($value['FORMA_PAGO'] == '3') {
-            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
-//$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];
-//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3']=((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
-//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
-        } else if ($value['FORMA_PAGO'] == '4') {
-            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
-//$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];
-//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
-//$value['CUOTA_4'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
-//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
-        } else if ($value['FORMA_PAGO'] == '5') {
-            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
-//$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO'])+(float)$value['IVA'];
-//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
-//$value['CUOTA_4'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_5'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
-//            $value['CUOTA_6'] = 0;
-        } else if ($value['FORMA_PAGO'] == '6') {
-            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
-//$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];
-//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
-//$value['CUOTA_4'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_5'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);
-//$value['CUOTA_6'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
+
+        $cnn->select("*"); //$rtn_cuota = $cnn->get_tabla("fid_cu_pagos","NUM_FACTURA='".$value['NUMERO']."' AND ID_PAGO=0");
+        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "'");
+        $facNum = '';
+        foreach ($rtn_cuota as $value_cuota) {
+
+            if ($value_cuota['ID_PAGO'] == '0' && $facNum!=$value['NUMERO']) {
+                $facNum = $value['NUMERO'];
+                $value['CANT_CUOTAS'] = (string) $value_cuota['NUM_CUOTA'] . "/" . (string) $value['FORMA_PAGO'];
+                if ($value['FORMA_PAGO'] == '1' || $value['FPAGO'] == '0') {
+                    $value['VALORPAGAR'] = (float) $value['TOTAL'];
+                } else if ($value['FORMA_PAGO'] == '2') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 2) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '3') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 2) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 3) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '4') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '5') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '6') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                    }
+                }
+            }
+
+//            else {
+//                echo "NADA " . $value_cuota['ID_PAGO'];
+//                die("LLEGA");
+//            }
+//            else if ($value_cota['ID_PAGO'] == 1) {
+//                break;
+//            }else if ($value_cota['ID_PAGO'] == 2) {
+//                break;
+//            }
         }
+//        
+//        var_dump($value);
+//    die(" VER NUM FACVUTRA");
+//        if ($value['FORMA_PAGO'] == '1' || $value['FPAGO'] == '0') {
+//              $value['VALORPAGAR'] = (float)$value['NETO'];
+////$value['VALORPAGAR'] = (float)$value['TOTAL'];//$value['CUOTA_1'] = 0;//$value['CUOTA_2'] = 0;////$value['CUOTA_3'] = 0;//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
+//        } else if ($value['FORMA_PAGO'] == '2') {
+//            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
+////$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = 0;//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
+//        } else if ($value['FORMA_PAGO'] == '3') {
+//            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
+////$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3']=((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_4'] = 0;//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
+//        } else if ($value['FORMA_PAGO'] == '4') {
+//            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
+////$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_4'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);//$value['CUOTA_5'] = 0;//$value['CUOTA_6'] = 0;
+//        } else if ($value['FORMA_PAGO'] == '5') {
+//            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
+////$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO'])+(float)$value['IVA'];//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_4'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_5'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//            $value['CUOTA_6'] = 0;
+//        } else if ($value['FORMA_PAGO'] == '6') {
+//            $value['VALORPAGAR'] = (float)$value['NETO'] / (float)$value['FORMA_PAGO'];
+////$value['CUOTA_1'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']) + (float)$value['IVA'];//$value['CUOTA_2'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_3'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);//$value['CUOTA_4'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);//$value['CUOTA_5'] = ((float)$value['TOTAL'] / (float)$value['FORMA_PAGO']);//$value['CUOTA_6'] = ((float)$value['TOTAL']/(float)$value['FORMA_PAGO']);
+//        }
         $array_cuotas[] = $value;
     }
+//    die("SSS");
     echo trim(json_encode($array_cuotas ? $array_cuotas : array()));
     die();
 }
