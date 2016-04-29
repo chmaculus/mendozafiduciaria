@@ -248,6 +248,7 @@ function llenar_form(cliente) {
 }
 
 $(document).ready(function () {
+    $("#opeFideicomiso").chosen({width: "250px"});
     $("#opeCoordinador").chosen({width: "250px"});
     $("#opeJefe").chosen({width: "250px"});
     $("#opeProveedores").chosen({width: "400px"});
@@ -418,6 +419,7 @@ $(document).ready(function () {
         e.preventDefault();
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
+        var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
@@ -457,6 +459,12 @@ $(document).ready(function () {
             });
             return false;
         }
+        if (opeFideicomiso == '') {
+            jAlert('Ingrese el Fideicomiso.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeFideicomiso").focus();
+            });
+            return false;
+        }
         if (listrosMax == '') {
             jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#listrosMax").focus();
@@ -493,6 +501,7 @@ $(document).ready(function () {
                         nuevoID: nuevoID,
                         opeNombre: opeNombre,
                         opeDescripcion: opeDescripcion,
+                        opeFideicomiso: opeFideicomiso,
                         opeCoordinador: opeCoordinador,
                         opeJefe: opeJefe,
                         listrosMax: listrosMax,
@@ -563,6 +572,7 @@ $(document).ready(function () {
         var el_id = ultimo_id[ultimo_id.length - 1];
         var opeNombre = $("#opeNombre").val();
         var opeDescripcion = $("#opeDescripcion").val();
+        var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
         var listrosMax = $("#listrosMax").val();
@@ -605,6 +615,12 @@ $(document).ready(function () {
             });
             return false;
         }
+        if (opeFideicomiso == '') {
+            jAlert('Ingrese el Fideicomiso.', $.ucwords(_etiqueta_modulo), function () {
+                $("#opeFideicomiso").focus();
+            });
+            return false;
+        }
 //        if (opeCoordinador == '') {
 //            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
 //            return false;
@@ -639,6 +655,7 @@ $(document).ready(function () {
                 nuevoID: el_id,
                 opeNombre: opeNombre,
                 opeDescripcion: opeDescripcion,
+                opeFideicomiso: opeFideicomiso,
                 opeCoordinador: opeCoordinador,
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
@@ -1437,6 +1454,7 @@ function editar_formulario_operatoria() {
 //          $("#fechavto").val(data.FECHAVTO);
             $("#fechavto").val(rtn[0].FECHA_VEN);
             $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
+            $("#opeFideicomiso").val(rtn[0].ID_FIDEICOMISO).trigger("chosen:updated");
             $("#listrosMax").val(rtn[0].LTRS_MAX);
             $("#maxPesos").val(rtn[0].MAX_PESOS);
             $("#hectMax").val(rtn[0].HECT_MAX);
@@ -3036,7 +3054,37 @@ function post_upload(nombre, nombre_tmp, etapa) {
 }
 
 function importar_procesar() {
+    if ($("#op_vino").length > 0) {
+        $.fancybox(
+            $("#op_vino").html(),
+            {
+                'padding'   :  15,
+                'autoScale' :true,
+                'scrolling' : 'auto'
+            }
+        );
 
+        $("#lst_op_vino li").on('click', function() {
+            $("#lst_op_vino li").each(function() {
+                $(this).removeClass('sel-op');
+            });
+            
+            $(this).addClass('sel-op');
+        });
+    } else {
+        jAlert('No existen operatorias, debe crear una operatoria para procesar la solicitud', $.ucwords(_etiqueta_modulo));
+    }
+}
+
+function imp_procesar() {
+    if ($("#lst_op_vino li.sel-op").length > 0) {
+        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
+    } else {
+        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
+    }
+}
+
+function _imp_procesar(id_op_vino) {
     jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
 // llamar ajax
@@ -3045,7 +3093,8 @@ function importar_procesar() {
                 url: _compravino.URL + "/x_importar_xls",
                 data: {
                     fid_sanjuan: _fid_sanjuan,
-                    ope_sanjuan: _ope_sanjuan
+                    ope_sanjuan: _ope_sanjuan,
+                    id_op_vino: id_op_vino
                 },
                 dataType: "json",
                 type: "post",

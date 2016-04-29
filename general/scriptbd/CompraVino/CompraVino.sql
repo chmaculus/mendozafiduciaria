@@ -97,6 +97,7 @@ ALTER TABLE  `fid_cu_factura` ADD  `CHECKLIST_PERSONA` TINYTEXT NOT NULL;
 ALTER TABLE  `fid_cu_factura` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL;
 
 
+
 /*25/04/2016*/
 /*Creo tabla para agregar los pagos con las cuotas y fechas de vencimiento*/
 CREATE TABLE `fid_cu_pagos` (
@@ -106,6 +107,10 @@ CREATE TABLE `fid_cu_pagos` (
 `VALOR_CUOTA` FLOAT NOT NULL ,
 `FECHA_VEN` DATE NOT NULL
 ) ENGINE = InnoDB;
+
+
+/*28/04/2016*/
+ALTER TABLE `fid_operatoria_vino` ADD `ID_FIDEICOMISO` INT NOT NULL AFTER `ID_OPERATORIA`;
 
 
 /*28/04/2016*/

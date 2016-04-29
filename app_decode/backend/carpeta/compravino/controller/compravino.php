@@ -131,6 +131,7 @@ class compravino extends main_controller {
             if ($provincia == 4):
                 return $this->view("vista6_revision", $data);
             elseif ($provincia == 3):
+                $data['lst_operatorias'] = $this->mod->get_operatorias_importacion();
                 return $this->view("vista5_importar", $data);
             elseif ($provincia == 0):
                 return $this->view("vista1", $data);
@@ -148,8 +149,10 @@ class compravino extends main_controller {
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
                 return $this->view("vista7_operatoria", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 8)):
+                $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
                 return $this->view("form_operatoria_nueva", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 9)):
+                $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
                 return $this->view("form_operatoria_nueva", $data);
             elseif ($provincia == 12 || $provincia == 17):
                 return $this->view("vista2", $data);
@@ -787,10 +790,11 @@ class compravino extends main_controller {
     function x_importar_xls() {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];
+        $id_op_vino = $_POST['id_op_vino'];
 
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
-            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
+            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan, $id_op_vino);
         } else {
             //echo -1;
             $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
