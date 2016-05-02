@@ -101,7 +101,7 @@ ALTER TABLE  `fid_cu_factura` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL;
 /*25/04/2016*/
 /*Creo tabla para agregar los pagos con las cuotas y fechas de vencimiento*/
 CREATE TABLE `fid_cu_pagos` (
-`ID_PAGO` INT NOT NULL ,
+`ESTADO_CUOTA` INT NOT NULL ,
 `ID_FACTURA` INT NOT NULL ,
 `NUM_CUOTA` FLOAT NOT NULL ,
 `VALOR_CUOTA` FLOAT NOT NULL ,
@@ -114,11 +114,13 @@ ALTER TABLE `fid_operatoria_vino` ADD `ID_FIDEICOMISO` INT NOT NULL AFTER `ID_OP
 
 
 /*28/04/2016*/
-/*Campos que agrego en la base sql del debo para pasarle otros valores*/
- /*
+/*Campos que agrego en la base MICROSOFTSQL del debo para pasarle otros valores*/
  alter table solicitud_adm
   add NETO float not null default 0,
   IVA float not null default 0,
   CCU INT not null default 0,
   UCU INT not null default 0;
-  */
+
+/*02/05/2016*/
+/*Se agrega la columna orden de pago para guardar la orden de cada cuota*/
+ALTER TABLE  `fid_cu_pagos` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL

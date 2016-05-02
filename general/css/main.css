@@ -146,6 +146,9 @@ verfoto img{
 .tb_pagos{
     background: url('../../general/css/images/32x32/monedas.jpg') no-repeat 50% 6px !important;
 }
+.tb_detalle_cu{
+    background: url('../../general/css/images/32x32/zoom-cu.png') no-repeat 50% 6px !important;
+}
 
 
 .tb_uncheck{

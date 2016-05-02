@@ -282,6 +282,12 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobj($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+    
+    function x_getDetalleCu() {
+        $id_fac = $_POST['num_fat'];
+        $rtn = $this->mod->getDetalleCu($id_fac);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
 
     function x_getAlgunasBodegas() {
         $data_bodega = $this->mod->getbodegas_vino($_POST['id']);

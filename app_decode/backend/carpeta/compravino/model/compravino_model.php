@@ -14,6 +14,34 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
+    function getDetalleCu($id_fac) {
+
+        if (!$id_fac)
+            return array();
+
+
+        $this->_db->where("NUM_FACTURA ='" . $id_fac . "'");
+        $rtn = $this->_db->get_tabla("fid_cu_pagos");
+        $rtn_n = array();
+        $i = 0;
+        foreach ($rtn as $value) {
+
+            if ($value['ESTADO_CUOTA'] == '0') {
+                $value['ESTADO_CUOTA'] = 'No enviado';
+            } else if ($value['ESTADO_CUOTA'] == '1') {
+                $value['ESTADO_CUOTA'] = 'Enviado';
+            } else if ($value['ESTADO_CUOTA'] == '2') {
+                $value['ESTADO_CUOTA'] = 'Pagado';
+            } else {
+                $value['ESTADO_CUOTA'] = '';
+            }
+
+            $rtn_n[$i] = $value;
+            $i++;
+        }
+        return $rtn_n;
+    }
+
     function get_entidades($id) {
         $this->_db->select("ID_TIPO");
         $this->_db->where("ID_ENTIDAD = '" . $id . "'");
@@ -28,25 +56,60 @@ class compravino_model extends main_model {
 //    }
     function sincronizarVino($datosBuscar) {
         $j = 0;
-        foreach ($datosBuscar as $value) {
-            if ($value['ID'] != '' && $value['NUMERO'] != '' && $value['ID_BODEGA'] != '') {
-                $this->_dbsql->select("CUIT,OPERATORIA,LOTE,IDFACTURAINT,NUMFACTURA,TIPO,ESTADO,BODEGA,ORDEN_PAGO,FECHA_PROCESADO");
-                $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
-                        " AND NUMFACTURA=" . $value['NUMERO'] . ""
-                        . "AND BODEGA=" . $value['ID_BODEGA']);
-//            log_this('log/qqqqqqq.log', $this->_dbsql->last_query() );
+        $this->_db->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, 
+            IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, 
+            f.NETO AS NETO, f.PRECIO AS PRECIO, cu.ESTADO_CUOTA,cu.NUM_CUOTA, fe.NOMBRE AS ESTADO, f.OBSERVACIONES AS OBSERVACIONES, 
+            f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS, ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, 
+            f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, 
+            civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, 
+            of.ID_OPERATORIA,f.FORMA_PAGO");
+        $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
+        $this->_db->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
+        $this->_db->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
+        $this->_db->join("fid_entidades ent", "ent.ID=f.ID_BODEGA", "left");
+        $this->_db->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
+        $this->_db->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
+        $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+        $this->_db->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
+        $this->_db->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
+        $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
+            AND f.ID_PROVINCIA='12' AND TIPO=1 AND f.ID_ESTADO='5'");
 
-                if ($solicitud_adm[$j]) {
-                    if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
-                        $arr_ins = array("ID_ESTADO" => '9',
-                            "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                        $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
+        foreach ($fact_enviadas as $value) {
+            if (is_null($value['NUM_CUOTA'])) {
+                //No debe hacer nada si es null
+            } else {
+                if ($value['ID'] != '' && $value['NUMERO'] != '' && $value['ID_BODEGA'] != '') {
+
+                    $this->_dbsql->select("CUIT,OPERATORIA,LOTE,IDFACTURAINT,NUMFACTURA,TIPO,ESTADO,CCU,UCU,BODEGA,ORDEN_PAGO,FECHA_PROCESADO");
+                    $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
+                            " AND NUMFACTURA=" . $value['NUMERO'] . "" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
+                            . "AND BODEGA=" . $value['ID_BODEGA']);
+
+                    if ($solicitud_adm[$j]) {
+
+                        if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
+                            if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
+                                $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
+                                $arr_act_fact = array("ID_ESTADO" => 1);
+                                $this->_db->update('fid_cu_factura', $arr_act_fact, " NUMERO='" . $value['NUMERO'] . "'");
+//                                log_this('log/UPDATE111.log', $this->_db->last_query());
+                            }
+
 //            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
-//                var_dump($solicitud_adm[$j]);
+                        } else if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] == $solicitud_adm[$j][0]['CCU']) {
+
+                            $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+                            $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
+                            $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+                            $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
+//                            log_this('log/UPDATE111.log', $this->_db->last_query());
+                        }
                     }
                 }
+                $j++;
             }
-            $j++;
         }
     }
 
@@ -55,7 +118,6 @@ class compravino_model extends main_model {
         $id_lote_new = 0;
         if ($arr_obj):
             //insert cabezera
-
             $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
 
             foreach ($arr_obj as $ciu):
@@ -67,39 +129,14 @@ class compravino_model extends main_model {
                     "ID_LOTE" => $id_lote_new,
                     "NUMERO_FACTURA" => $ciu["NUMERO"]
                 );
-//                $this->_db->insert('fid_cu_lotespago', $arr_ins);
+                $this->_db->insert('fid_cu_lotespago', $arr_ins);
                 //log_this('log/qqqqqqq.log', $this->_db->last_query() );
-//                $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
-                $this->_db->select("F.ID_OPERATORIA AS ID_OPERATOIRA ,F.ID_CLIENTE AS IDCLIENTE,
-                            F.NETO AS NETO,F.IVA AS IVA, F.FORMA_PAGO AS FORMA_PAGO ,F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
-//                $this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
+                $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
+                $this->_db->select("F.ID_OPERATORIA AS ID_OPERATORIA ,F.ID_CLIENTE AS IDCLIENTE,F.NETO AS NETO,F.IVA AS IVA, F.FORMA_PAGO AS FORMA_PAGO ,
+                    F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA,OP.ID_FIDEICOMISO AS FIDEICOMISO"); //$this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
                 $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE", 'left');
+                $this->_db->join("fid_operatoria_vino OP", "OP.ID_OPERATORIA=F.ID_OPERATORIA", 'left');
                 $cuit_cli = $this->_db->get_tabla('fid_cu_factura f', "f.ID='" . $id_factura . "'");
-                //mendoza fideicomiso 1 y san juan en 26 
-//                $arra_ins = array(
-//                    "CUIT" => $cuit_cli[0]['CUIT'],
-//                    "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-//                    "OPERATORIA" => "2",
-//                    "IMPORTE" => $cuit_cli[0]['TOTAL'],
-//                    "LOTE" => $id_lote_new,
-//                    "IDFACTURAINT" => $id_factura,
-//                    "NUMFACTURA" => $ciu["NUMERO"],
-//                    "CODIGO_DEBO" => "",
-//                    "TIPO" => "OP",
-//                    "FECHA_PASADO" => date('Ymd h:i:s'),
-//                    "FECHA_PROCESADO" => "19010101 00:00",
-//                    "ESTADO" => "1",
-//                    "BODEGA" => $cuit_cli[0]['ID_BODEGA']
-////                    "FORMULA" => $ciu["FORMULA"]
-//                );
-//                if ($_POST['provincia'] == 12)
-//                    $arra_ins["FIDEICOMISO"] = "1";
-//                else if ($_POST['provincia'] == 17)
-//                    $arra_ins["FIDEICOMISO"] = "26";
-////                $return = $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-//                $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-//                
-//                log_this('INSER_Q_NO_HACE.log', $this->_dbsql->last_query());
 
                 /* Se hacen dos insert, si se envia la factura por primera vez, se pasa la factura y el valor de la cuota
                  * En caso que ya se haya enviado anteriormente, se pasa solamente la cuota */
@@ -107,7 +144,8 @@ class compravino_model extends main_model {
                     $arra_ins = array(
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-                        "OPERATORIA" => "2",
+                        "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
+                        "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
                         "NETO" => $cuit_cli[0]['NETO'],
                         "IVA" => $cuit_cli[0]['IVA'],
                         "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -123,49 +161,18 @@ class compravino_model extends main_model {
                         "ESTADO" => "1",
                         "BODEGA" => $cuit_cli[0]['ID_BODEGA']
                     );
-                    if ($_POST['provincia'] == 12)
-                        $arra_ins["FIDEICOMISO"] = "1";
-                    else if ($_POST['provincia'] == 17)
-                        $arra_ins["FIDEICOMISO"] = "26";
-
-                    $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-
-                }else if ((int) $cuit_cli[0]['FORMA_PAGO'] >= 1) {
-                    $arra_ins = array(
-                        "CUIT" => $cuit_cli[0]['CUIT'],
-                        "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-                        "OPERATORIA" => "2",
-                        "NETO" => (float) $cuit_cli[0]['NETO'],
-                        "IVA" => (float) $cuit_cli[0]['IVA'],
-                        "IMPORTE" => $cuit_cli[0]['TOTAL'],
-                        "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
-                        "UCU" => 0, // numero de la cuota a pagar
-                        "IDFACTURAINT" => $id_factura,
-                        "NUMFACTURA" => $ciu["NUMERO"],
-                        "CODIGO_DEBO" => "",
-                        "TIPO" => "FT",
-                        "FECHA_PASADO" => date('Ymd h:i:s'),
-                        "FECHA_PROCESADO" => "19010101 00:00",
-                        "LOTE" => $id_lote_new,
-                        "ESTADO" => "1",
-                        "BODEGA" => $cuit_cli[0]['ID_BODEGA']
-                    );
-
-                    if ($_POST['provincia'] == 12)
-                        $arra_ins["FIDEICOMISO"] = "1";
-                    else if ($_POST['provincia'] == 17)
-                        $arra_ins["FIDEICOMISO"] = "26";
                     $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
 
                     $arra_ins_cuota = array(
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
-                        "OPERATORIA" => "2",
+                        "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
+                        "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
                         "NETO" => (float) $cuit_cli[0]['NETO'],
                         "IVA" => (float) $cuit_cli[0]['IVA'],
-                        "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
+                        "IMPORTE" => $cuit_cli[0]['TOTAL'],
                         "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
-                        "UCU" => 1, // numero de la cuota a pagar
+                        "UCU" => (int) $ciu['NUMCUOTA'], // numero de la cuota a pagar
                         "LOTE" => $id_lote_new,
                         "IDFACTURAINT" => $id_factura,
                         "NUMFACTURA" => $ciu["NUMERO"],
@@ -176,14 +183,76 @@ class compravino_model extends main_model {
                         "ESTADO" => "1",
                         "BODEGA" => $cuit_cli[0]['ID_BODEGA']
                     );
-                    if ($_POST['provincia'] == 12)
-                        $arra_ins_cuota["FIDEICOMISO"] = "1";
-                    else if ($_POST['provincia'] == 17)
-                        $arra_ins_cuota["FIDEICOMISO"] = "26";
-
                     $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
+                } else if ((int) $cuit_cli[0]['FORMA_PAGO'] >= 1) {
+                    if ($ciu['NUMCUOTA'] == '1') {
+                        $arra_ins = array(
+                            "CUIT" => $cuit_cli[0]['CUIT'],
+                            "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
+                            "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "NETO" => (float) $cuit_cli[0]['NETO'],
+                            "IVA" => (float) $cuit_cli[0]['IVA'],
+                            "IMPORTE" => $cuit_cli[0]['TOTAL'],
+                            "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
+                            "UCU" => 0, // numero de la cuota a pagar
+                            "IDFACTURAINT" => $id_factura,
+                            "NUMFACTURA" => $ciu["NUMERO"],
+                            "CODIGO_DEBO" => "",
+                            "TIPO" => "FT",
+                            "FECHA_PASADO" => date('Ymd h:i:s'),
+                            "FECHA_PROCESADO" => "19010101 00:00",
+                            "LOTE" => $id_lote_new,
+                            "ESTADO" => "1",
+                            "BODEGA" => $cuit_cli[0]['ID_BODEGA']
+                        );
+                        $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
+                        $arra_ins_cuota = array(
+                            "CUIT" => $cuit_cli[0]['CUIT'],
+                            "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
+                            "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "NETO" => (float) $cuit_cli[0]['NETO'],
+                            "IVA" => (float) $cuit_cli[0]['IVA'],
+                            "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
+                            "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
+                            "UCU" => (int) $ciu['NUMCUOTA'], // numero de la cuota a pagar
+                            "LOTE" => $id_lote_new,
+                            "IDFACTURAINT" => $id_factura,
+                            "NUMFACTURA" => $ciu["NUMERO"],
+                            "CODIGO_DEBO" => "",
+                            "TIPO" => "OP",
+                            "FECHA_PASADO" => date('Ymd h:i:s'),
+                            "FECHA_PROCESADO" => "19010101 00:00",
+                            "ESTADO" => "1",
+                            "BODEGA" => $cuit_cli[0]['ID_BODEGA']
+                        );
+                        $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
+                    } else {
+                        $arra_ins_cuota = array(
+                            "CUIT" => $cuit_cli[0]['CUIT'],
+                            "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
+                            "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "NETO" => (float) $cuit_cli[0]['NETO'],
+                            "IVA" => (float) $cuit_cli[0]['IVA'],
+                            "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
+                            "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
+                            "UCU" => (int) $ciu['NUMCUOTA'], // numero de la cuota a pagar
+                            "LOTE" => $id_lote_new,
+                            "IDFACTURAINT" => $id_factura,
+                            "NUMFACTURA" => $ciu["NUMERO"],
+                            "CODIGO_DEBO" => "",
+                            "TIPO" => "OP",
+                            "FECHA_PASADO" => date('Ymd h:i:s'),
+                            "FECHA_PROCESADO" => "19010101 00:00",
+                            "ESTADO" => "1",
+                            "BODEGA" => $cuit_cli[0]['ID_BODEGA']
+                        );
+                        $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
+                    }
                 }
-                die("ver que guardo");
+                $this->_db->update('fid_cu_pagos', array("ESTADO_CUOTA" => '1'), "NUM_FACTURA='" . $ciu["NUMERO"] . "' AND NUM_CUOTA=" . (int) $ciu['NUMCUOTA']);
                 //file_put_contents("loggg.txt", $return, FILE_APPEND);
                 //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
             endforeach;

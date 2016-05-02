@@ -55,7 +55,6 @@ function guardar_factura() {
 //Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
     var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
     iid = id ? id : 0;
-
     var data_checklists_persona = [];
     $('.op input:checked').each(function () {
         data_checklists_persona.push($(this).val());
@@ -193,7 +192,6 @@ function limpiar_form_fact() {
 
 function show_btns(sw) {
     sw || (sw = '0');
-    
     if (sw == 1) {//busqueda
         $("#nuevafactura").hide();
         $(".tb_fil").show();
@@ -255,7 +253,6 @@ $(document).ready(function () {
     $("#opeBodega").chosen({width: "400px"});
     $("#juridica").hide();
     $('#send').show();
-
     $('.tb_atras_ope').on('click', function (e) {
         var urlh = "backend/carpeta/compravino/init/12/7";
         $(location).attr('href', urlh);
@@ -310,7 +307,6 @@ $(document).ready(function () {
             $("#prov_bodega").val(local);
         }
     });
-
     $('.consultar').on('click', function (e) {
         e.preventDefault();
         $('.env_form').show();
@@ -414,7 +410,6 @@ $(document).ready(function () {
         show_btns(2);
     });
     refresGridevent();
-
     $('#send').on('click', function (e) {
         e.preventDefault();
         var opeNombre = $("#opeNombre").val();
@@ -448,7 +443,6 @@ $(document).ready(function () {
             data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
         }
         var data_checklists_persona = [];
-
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
@@ -465,24 +459,24 @@ $(document).ready(function () {
             });
             return false;
         }
-        if (listrosMax == '') {
-            jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-                $("#listrosMax").focus();
-            });
-            return false;
-        }
-        if (maxPesos == '') {
-            jAlert('Ingrese el maximo de pesos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-                $("#maxPesos").focus();
-            });
-            return false;
-        }
-        if (opePrecio1 == '') {
-            jAlert('Ingrese el precio de contado para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-                $("#opeP1").focus();
-            });
-            return false;
-        }
+//        if (listrosMax == '') {
+//            jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#listrosMax").focus();
+//            });
+//            return false;
+//        }
+//        if (maxPesos == '') {
+//            jAlert('Ingrese el maximo de pesos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#maxPesos").focus();
+//            });
+//            return false;
+//        }
+//        if (opePrecio1 == '') {
+//            jAlert('Ingrese el precio de contado para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#opeP1").focus();
+//            });
+//            return false;
+//        }
         if (data_checklists_persona == '') {
             jAlert('Seleccione requerimientos para los tipo de personas a presentar.', $.ucwords(_etiqueta_modulo), function () {
                 $("#humana").focus();
@@ -564,7 +558,6 @@ $(document).ready(function () {
             }
         });
     });
-
     $('#send_edit').on('click', function (e) {
         e.preventDefault();
         var url_con_id = document.location.href;
@@ -839,9 +832,15 @@ $(document).ready(function () {
             id_bodega: id_bodega,
         },
         async: false,
-        addrow: function (rowid, rowdata, position, commit) {commit(true);},
-        deleterow: function (rowid, commit) {commit(true);},
-        updaterow: function (rowid, newdata, commit) {commit(true);}
+        addrow: function (rowid, rowdata, position, commit) {
+            commit(true);
+        },
+        deleterow: function (rowid, commit) {
+            commit(true);
+        },
+        updaterow: function (rowid, newdata, commit) {
+            commit(true);
+        }
     };
     var dataAdapterope = new $.jqx.dataAdapter(sourceope,
             {
@@ -945,7 +944,6 @@ $(document).ready(function () {
             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
         ]
     });
-
     $(".toolbar li:not(.sub)").click(function (e) {
         e.preventDefault();
         var top = $(this).data('top');
@@ -1105,6 +1103,43 @@ $(document).ready(function () {
                 return false;
             }
             lote_pago();
+        } else if (top == 'detalle_cu') {
+            var rowindexes = $('#jqxgrid_listado').jqxGrid('getselectedrowindexes');
+            mydata = $('#jqxgrid_listado').jqxGrid('getrowdata', rowindexes);
+            if (rowindexes.length == 1) {
+                var armado_detalle = '';
+                $.ajax({
+                    url: _compravino.URL + "/x_getDetalleCu",
+                    data: {num_fat: mydata.NUMERO},
+                    dataType: "json",
+                    type: "post",
+                    async: false,
+                    success: function (data) {
+                        if(data.length>0){
+                        armado_detalle = '<h2 style="font-size:15px">Estado Cuotas Factura N°: ' + data[0].NUM_FACTURA + '</h2>';
+                        armado_detalle += '<ul>';
+                        for (var i = 0; i < data.length; i++) {
+                            armado_detalle += '<li style="list-style:none;margin-top:5px;">Cuota N° ' + data[i].NUM_CUOTA 
+                                    + ' =>  Vencimiento: '+data[i].FECHA_VEN+' </li>'
+                                    +'<li style="margin-left:15px;"> Estado:' + data[i].ESTADO_CUOTA +'</li>'
+                                    + '<li style="margin-left:15px;"> Orden Pago:'+data[i].ORDEN_PAGO+' </li>';
+                        }
+                        armado_detalle += '</ul>';
+                        $.fancybox(
+                                $("#op_cuota").html(armado_detalle),
+                                {'padding': 80, 'autoScale': true, 'scrolling': 'auto'}
+                        );
+                        }else{
+                            jAlert('No posee cuotas.', $.ucwords(_etiqueta_modulo));
+                        }
+                    }
+                });
+            } else if (rowindexes.length >= 2) {
+                jAlert('Se seleccionaron mas de un comprobante, debe seleccionar uno para ver el detalle.', $.ucwords(_etiqueta_modulo));
+            } else {
+                jAlert('No se selecciono comprobante, debe seleccionar un comprobante para ver el detalle.', $.ucwords(_etiqueta_modulo));
+            }
+
         } else if (top == 'export') {
 //imprimir_listado_seleccionado();
         } else if (top == 'lis_importar') {
@@ -1184,7 +1219,6 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
-
     $("#cbu").focusout(function () {
 //verificar cbu
         var cbu = $(this).val();
@@ -1268,10 +1302,8 @@ function evento_lista_arch() {
 
 
 function editar_formulario() {
-    
+
     $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
-                                  
-								
     $("#send").hide();
     $('.tb_regresar_ope').show();
     $('.tb_atras').hide();
@@ -1307,7 +1339,8 @@ function editar_formulario() {
 //            $("#formula").chosen({width: "220px"});
 //            $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
 //            $("#formula").trigger('change');
-            $("#ltros").val(data.LITROS).attr("readonly", "readonly");;
+            $("#ltros").val(data.LITROS).attr("readonly", "readonly");
+            ;
             $("#azucar").val(data.AZUCAR);
             $("#precio").val(data.PRECIO).attr("readonly", "readonly");
             $("#numVinedo").val(data.VINEDO);
@@ -1317,7 +1350,6 @@ function editar_formulario() {
             $("#iva").val(data.IVA).attr("readonly", "readonly");
             $("#total").val(data.TOTAL).attr("readonly", "readonly");
             $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
-
             $.ajax({
                 url: _compravino.URL + "/x_getAlgunasBodegas",
                 datatype: 'html',
@@ -1352,7 +1384,6 @@ function editar_formulario() {
                 }
             })
             $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
-
             var data_checklists_persona = [];
             var listado_checklist = data.CHECKLIST_PERSONA;
             data_checklists_persona = listado_checklist.split(',');
@@ -1391,7 +1422,7 @@ function editar_formulario() {
 //                    url: _compravino.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
 //                    data: {id: data.ID_OPERATORIA},
 //                    success: function (data) {$('#check_datos').html(data);
-                        $("#cambio_titularidad").attr('checked', false);
+                $("#cambio_titularidad").attr('checked', false);
 //                    }})
             }
 
@@ -1433,7 +1464,6 @@ function editar_formulario() {
 
 function editar_formulario_operatoria() {
     $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
-								
     var accion_proveedores = '';
     var accion_bodegas = '';
     var url_con_id = document.location.href;
@@ -1492,7 +1522,9 @@ function editar_formulario_operatoria() {
                 type: "post",
                 success: function (rtn_proveedores) {
                     var cadena_ids = [];
-                    for (var i = 0; i < rtn_proveedores.length; i++) {cadena_ids.push(rtn_proveedores[i]['ID_PROVEEDOR']);}
+                    for (var i = 0; i < rtn_proveedores.length; i++) {
+                        cadena_ids.push(rtn_proveedores[i]['ID_PROVEEDOR']);
+                    }
                     $("#opeProveedores").val(cadena_ids).attr('eneable', true).trigger("chosen:updated");
                     $("#info-proveedores").show();
                     $("#jqxgrid_proveedores").show();
@@ -1507,9 +1539,15 @@ function editar_formulario_operatoria() {
                         ],
                         url: _compravino.URL + "/x_getProveedoresEdit",
                         data: {id_operatoria: el_id},
-                        async: false, addrow: function (rowid, rowdata, position, commit) {commit(true);},
-                        deleterow: function (rowid, commit) {commit(true);},
-                        updaterow: function (rowid, newdata, commit) {commit(true);}
+                        async: false, addrow: function (rowid, rowdata, position, commit) {
+                            commit(true);
+                        },
+                        deleterow: function (rowid, commit) {
+                            commit(true);
+                        },
+                        updaterow: function (rowid, newdata, commit) {
+                            commit(true);
+                        }
                     };
                     var dataAdapterope_proveedores = new $.jqx.dataAdapter(sourceope_proveedores,
                             {formatData: function (data) {
@@ -1610,7 +1648,6 @@ function editar_formulario_operatoria() {
                             {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
                         ]
                     });
-                  
                 }
             });
             $.ajax({
@@ -1638,9 +1675,15 @@ function editar_formulario_operatoria() {
                         data: {
                             id_operatoria: el_id
                         },
-                        async: false,addrow: function (rowid, rowdata, position, commit) {commit(true);},
-                        deleterow: function (rowid, commit) {commit(true);},
-                        updaterow: function (rowid, newdata, commit) {commit(true);}
+                        async: false, addrow: function (rowid, rowdata, position, commit) {
+                            commit(true);
+                        },
+                        deleterow: function (rowid, commit) {
+                            commit(true);
+                        },
+                        updaterow: function (rowid, newdata, commit) {
+                            commit(true);
+                        }
                     };
                     var dataAdapterope_bodegas = new $.jqx.dataAdapter(sourceope_bodegas,
                             {
@@ -1734,7 +1777,6 @@ function editar_formulario_operatoria() {
                                         firstColumnData.push(rows[i].ID);
                                     }
                                     $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                                  
                                 }
                             });
                         },
@@ -1744,7 +1786,7 @@ function editar_formulario_operatoria() {
                             {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '30%', filtercondition: 'starts_with', editable: true}
                         ]
                     });
-                      $.unblockUI();
+                    $.unblockUI();
                 }
             });
         }
@@ -2713,8 +2755,6 @@ function initGridListado(id_usuario) {
             {name: 'FECHA', type: 'string'},
             {name: 'BODEGA', type: 'string'},
             {name: 'ID_BODEGA', type: 'int'},
-//            {name: 'DEPARTAMENTO', type: 'string'},
-//            {name: 'KGRS', type: 'string'},
             {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
             {name: 'USU_CARGA', type: 'string'},
@@ -2726,15 +2766,10 @@ function initGridListado(id_usuario) {
             {name: 'TOTAL', type: 'number'},
             {name: 'CREATEDON', type: 'string'},
             {name: 'ORDEN_PAGO', type: 'string'},
-//            {name: 'FORMA_PAGO', type: 'int'},
             {name: 'CANT_CUOTAS', type: 'string'},
             {name: 'VALORPAGAR', type: 'float'},
-//            {name: 'CUOTA_1', type: 'number'},
-//            {name: 'CUOTA_2', type: 'number'},
-//            {name: 'CUOTA_3', type: 'number'},
-//            {name: 'CUOTA_4', type: 'number'},
-//            {name: 'CUOTA_5', type: 'number'},
-//            {name: 'CUOTA_6', type: 'number'},
+            {name: 'NUMCUOTA', type: 'int'},
+            {name: 'FECHA_VEN', type: 'string'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
         ],
@@ -2793,45 +2828,33 @@ function initGridListado(id_usuario) {
             });
         },
         columns: [
-/*COMENTO PARA PODER VISALIZAR MEJOR*/
-//            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CBU', datafield: 'CBU', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-/* END COMENTO PARA PODER VISALIZAR MEJOR*/
-/*COMENTO PARA PODER VISALIZAR MEJOR*/
-//            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false},
-//            {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-/* ENDCOMENTO PARA PODER VISALIZAR MEJOR*/            
+            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false},
+            {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
 //            {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
 //            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-/*COMENTO PARA PODER VISALIZAR MEJOR*/
-//            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-/* END COMENTO PARA PODER VISALIZAR MEJOR*/
+            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/},
             {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'NETO', datafield: 'NETO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
+            {text: 'NETO', datafield: 'NETO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'VALOR CUOTA', datafield: 'VALORPAGAR', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'Cuotas', datafield: 'CANT_CUOTAS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CANT. PAGOS', datafield: 'FORMA_PAGO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'CUOTA 1', datafield: 'CUOTA_1', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-//            {text: 'CUOTA 2', datafield: 'CUOTA_2', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-//            {text: 'CUOTA 3', datafield: 'CUOTA_3', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-//            {text: 'CUOTA 4', datafield: 'CUOTA_4', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-//            {text: 'CUOTA 5', datafield: 'CUOTA_5', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-//            {text: 'CUOTA 6', datafield: 'CUOTA_6', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
+            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
+            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+            {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
             {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
             {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
-            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
+//            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IID', datafield: 'IID', width: '0%'}
         ]
     });
@@ -3064,19 +3087,17 @@ function post_upload(nombre, nombre_tmp, etapa) {
 function importar_procesar() {
     if ($("#op_vino").length > 0) {
         $.fancybox(
-            $("#op_vino").html(),
-            {
-                'padding'   :  15,
-                'autoScale' :true,
-                'scrolling' : 'auto'
-            }
+                $("#op_vino").html(),
+                {
+                    'padding': 15,
+                    'autoScale': true,
+                    'scrolling': 'auto'
+                }
         );
-
-        $("#lst_op_vino li").on('click', function() {
-            $("#lst_op_vino li").each(function() {
+        $("#lst_op_vino li").on('click', function () {
+            $("#lst_op_vino li").each(function () {
                 $(this).removeClass('sel-op');
             });
-            
             $(this).addClass('sel-op');
         });
     } else {
@@ -3131,17 +3152,17 @@ function _imp_procesar(id_op_vino) {
                         jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
                             //actualizar el listado
                             /*$.ajax({
-                                url: _compravino.URL + "/x_actualizarLista",
-                                data: {
-                                },
-                                //dataType: "json",
-                                type: "post",
-                                success: function (data) {
-                                    console.dir(data);
-                                    $('.lista_arch').html(data);
-                                    evento_lista_arch();
-                                }
-                            });*/
+                             url: _compravino.URL + "/x_actualizarLista",
+                             data: {
+                             },
+                             //dataType: "json",
+                             type: "post",
+                             success: function (data) {
+                             console.dir(data);
+                             $('.lista_arch').html(data);
+                             evento_lista_arch();
+                             }
+                             });*/
                             window.location.href = "backend/carpeta/compravino/init/12/2";
                         });
                     }
