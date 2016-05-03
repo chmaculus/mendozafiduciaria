@@ -13,6 +13,3 @@
 <div id="op_cuota" style="display:none">
 </div>
 <div id="wpopup"></div>
-
-
-

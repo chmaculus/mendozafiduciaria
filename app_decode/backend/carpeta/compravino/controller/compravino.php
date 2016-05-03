@@ -281,7 +281,7 @@ class compravino extends main_controller {
         $rtn = $this->mod->getobj($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-    
+
     function x_getDetalleCu() {
         $id_fac = $_POST['num_fat'];
         $rtn = $this->mod->getDetalleCu($id_fac);
@@ -451,13 +451,23 @@ class compravino extends main_controller {
         echo $html;
     }
 
+    function x_verificarCuotas() {
+        $num_factura = $_POST['numFactura'];
+        $cant_cu = $_POST['cant_cu'];
+        $neto = $_POST['neto'];
+        $iva = $_POST['iva'];
+        $rtn = $this->mod->verificarCuotas($num_factura);
+        if (!$rtn) {
+            $rtn_cuotas = $this->mod->crearCuotas($num_factura,$cant_cu,$neto,$iva);
+        }
+    }
+
     function x_getTitularidad() {
         $id_objeto = $_POST['num_factura'];
         $rtn = $this->mod->getTitularidad($id_objeto);
-        if($rtn){
+        if ($rtn) {
             echo "El usuario " . $rtn[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn[0]['FECHA'];
         }
-
     }
 
     function x_getoperatoria() {

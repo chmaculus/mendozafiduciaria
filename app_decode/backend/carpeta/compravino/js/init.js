@@ -63,6 +63,7 @@ function guardar_factura() {
     if (data_checklists_persona.length == 0) {
         data_checklists_persona = '';
     }
+    
 //validar campos
     if (numero == '') {
         jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -116,6 +117,7 @@ function guardar_factura() {
             tmp_fid = _fid_sanjuan;
         }
     }
+    
     objsave = {
         id: iid,
 //        ID_OPE: numOperatoria,
@@ -165,6 +167,11 @@ function guardar_factura() {
                 $.ajax({
                     url: _compravino.URL + "/x_sendobj",
                     data: {obj: objsave, cambio_titularidad: cambio_titularidad, },
+                    dataType: "json", type: "post", async: "false", });
+                /*Verificar si tiene cuotas sino generar*/
+                $.ajax({
+                    url: _compravino.URL + "/x_verificarCuotas",
+                    data: {numFactura: numero, cant_cu:fpago, neto:neto, iva:iva },
                     dataType: "json", type: "post", async: "false", });
                 jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                     var urlh = "backend/carpeta/compravino/init/12/2";

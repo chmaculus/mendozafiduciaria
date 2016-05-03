@@ -1148,6 +1148,332 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
+    function crearCuotas($num_factura,$cant_cu,$neto,$iva) {
+        if ($cant_cu == 1) {
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $cuota1 = (float)$neto + (float)$iva;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = $cuota1;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+        } else if ($cant_cu == 2) {
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 2) + (float)$iva;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+
+            $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['NUM_CUOTA'] = 2;
+            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 2);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
+        } else if ($cant_cu == 3) {
+
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 3) + (float)$iva;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+
+            $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['NUM_CUOTA'] = 2;
+            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 3);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
+
+            $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['NUM_CUOTA'] = 3;
+            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 3);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+        } else if ($cant_cu == 4) {
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 4) + (float)$iva;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+
+            $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['NUM_CUOTA'] = 2;
+            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
+
+            $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['NUM_CUOTA'] = 3;
+            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
+            $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['NUM_CUOTA'] = 4;
+            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
+        } else if ($cant_cu == 5) {
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 5) + (float)$iva;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+
+            $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['NUM_CUOTA'] = 2;
+            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
+
+            $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['NUM_CUOTA'] = 3;
+            $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 5);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
+            $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['NUM_CUOTA'] = 4;
+            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
+
+            $ins_cuotas5['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas5['NUM_CUOTA'] = 5;
+            $ins_cuotas5['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
+        } else if ($cant_cu == 6) {
+            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 6) + (float)$iva;
+            $fechaActual = strtotime('now');
+            $fechaVen = strtotime('+15 days', $fechaActual);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
+
+            $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['NUM_CUOTA'] = 2;
+            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
+
+            $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['NUM_CUOTA'] = 3;
+            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
+            $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['NUM_CUOTA'] = 4;
+            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
+
+            $ins_cuotas5['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas5['NUM_CUOTA'] = 5;
+            $ins_cuotas5['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
+
+            $ins_cuotas6['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas6['NUM_CUOTA'] = 6;
+            $ins_cuotas6['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $fechaVen = strtotime('+30 days', $fechaVen);
+            $is_saturday = date('l', $fechaVen) == 'Saturday';
+            $is_sunday = date('l', $fechaVen) == 'Sunday';
+            if ($is_saturday) {
+                $fechaVen = strtotime('+2 days', $fechaVen);
+            } else if ($is_sunday) {
+                $fechaVen = strtotime('+1 days', $fechaVen);
+            }
+            $ins_cuotas6['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
+        }
+    }
+
     function getTitularidad($id) {
         $this->_db->select("t.ID_FACTURA,u.NOMBRE,t.FECHA,t.CHECK_ESTADO");
         $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID");
@@ -1366,6 +1692,15 @@ class compravino_model extends main_model {
     function verificarcbu($cbu) {
         $rtn = $this->_db->get_tabla('fid_clientes', "CBU=" . $cbu);
         return $rtn;
+    }
+
+    function verificarCuotas($num_factura) {
+        $rtn = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $num_factura . "'");
+        if (count($rtn) > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     function verificarnumfactura($numero) {
