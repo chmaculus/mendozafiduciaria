@@ -413,18 +413,21 @@ class compravino_model extends main_model {
     }
 
     function getobj($id_objeto) {
-        //$this->_db->select("DATE_FORMAT(), c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,f.*");
         $this->_db->select("c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,f.*");
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-        //log_this();
-//        $rtn["cius"] = $this->_db->get_tabla('fid_cu_ciu', "ID_FACTURA='" . $id_objeto . "'");
-        $this->_db->select("CHECK_ESTADO");
-        $this->_db->order_by("FECHA", "DESC");
-        $array_Check = $this->_db->get_tabla('fid_op_vino_cambio_tit', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
-        $rtn["CHECK_TITULARIDAD"] = isset($array_Check[0]['CHECK_ESTADO']) ? $array_Check[0]['CHECK_ESTADO'] : 0;
-        return $rtn;
+
+        if ($rtn["factura"]["NUMERO"]) {
+            $this->_db->select("CHECK_ESTADO");
+            $this->_db->order_by("FECHA", "DESC");
+            $array_Check = $this->_db->get_tabla('fid_op_vino_cambio_tit', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
+            $rtn["CHECK_TITULARIDAD"] = isset($array_Check[0]['CHECK_ESTADO']) ? $array_Check[0]['CHECK_ESTADO'] : 0;
+            return $rtn;
+        } else {
+            $rtn["CHECK_TITULARIDAD"] = 0;
+            return $rtn;
+        }
     }
 
     function getoperatoria($id_objeto) {
@@ -1485,10 +1488,7 @@ class compravino_model extends main_model {
     }
 
     function getDatoProveedor($ids_proveedores, $firstColumnData) {
-//        if(empty($firstColumnData)){echo "vacio";
-//        }else{echo "algo";}
-//        var_dump($firstColumnData);
-//        var_dump($ids_proveedores);die("dieeeeeee");
+
         if (count($ids_proveedores) > count($firstColumnData)) {
             $array_resultado = array();
             $i = 0;
@@ -1560,7 +1560,6 @@ class compravino_model extends main_model {
     }
 
     function getDatoProveedorNuevo($ids_proveedores) {
-//        var_dump($n_rtn);die("ALALALAL");
         $array_resultado = array();
         $i = 0;
         foreach ($ids_proveedores as $nuevos) {

@@ -1115,21 +1115,21 @@ $(document).ready(function () {
                     type: "post",
                     async: false,
                     success: function (data) {
-                        if(data.length>0){
-                        armado_detalle = '<h2 style="font-size:15px">Estado Cuotas Factura N°: ' + data[0].NUM_FACTURA + '</h2>';
-                        armado_detalle += '<ul>';
-                        for (var i = 0; i < data.length; i++) {
-                            armado_detalle += '<li style="list-style:none;margin-top:5px;">Cuota N° ' + data[i].NUM_CUOTA 
-                                    + ' =>  Vencimiento: '+data[i].FECHA_VEN+' </li>'
-                                    +'<li style="margin-left:15px;"> Estado:' + data[i].ESTADO_CUOTA +'</li>'
-                                    + '<li style="margin-left:15px;"> Orden Pago:'+data[i].ORDEN_PAGO+' </li>';
-                        }
-                        armado_detalle += '</ul>';
-                        $.fancybox(
-                                $("#op_cuota").html(armado_detalle),
-                                {'padding': 80, 'autoScale': true, 'scrolling': 'auto'}
-                        );
-                        }else{
+                        if (data.length > 0) {
+                            armado_detalle = '<h2 style="font-size:15px">Estado Cuotas Factura N°: ' + data[0].NUM_FACTURA + '</h2>';
+                            armado_detalle += '<ul>';
+                            for (var i = 0; i < data.length; i++) {
+                                armado_detalle += '<li style="list-style:none;margin-top:5px;">Cuota N° ' + data[i].NUM_CUOTA
+                                        + ' =>  Vencimiento: ' + data[i].FECHA_VEN + ' </li>'
+                                        + '<li style="margin-left:15px;"> Estado:' + data[i].ESTADO_CUOTA + '</li>'
+                                        + '<li style="margin-left:15px;"> Orden Pago:' + data[i].ORDEN_PAGO + ' </li>';
+                            }
+                            armado_detalle += '</ul>';
+                            $.fancybox(
+                                    $("#op_cuota").html(armado_detalle),
+                                    {'padding': 80, 'autoScale': true, 'scrolling': 'auto'}
+                            );
+                        } else {
                             jAlert('No posee cuotas.', $.ucwords(_etiqueta_modulo));
                         }
                     }
@@ -1302,7 +1302,6 @@ function evento_lista_arch() {
 
 
 function editar_formulario() {
-
     $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
     $("#send").hide();
     $('.tb_regresar_ope').show();
@@ -1322,142 +1321,246 @@ function editar_formulario() {
             $("#nombre2").val(data.RAZ);
 //            $("#fecha").val(formattedDate(data.FECHA));
 //            $("#fecha").val(data.FECHA);
-//            cadena.substr(start[, length])
-            var fecha_string = data.FECHA;
-            $("#fecha").val(fecha_string.substr(0, 10));
-//            $("#fechavto").val(formattedDate(data.FECHAVTO));
-//            $("#fechavto").val(data.FECHAVTO);
-            var fecha_vto_string = data.FECHAVTO;
-            $("#fechavto").val(fecha_vto_string.substr(0, 10));
-            $("#fecha").datepicker('disable');
-            $("#fechavto").datepicker('disable');
-            $("#numero").val(data.NUMERO).attr("readonly", "readonly");
-            num_fact_buscar = data.NUMERO;
-            $("#cai").val(data.CAI).attr("readonly", "readonly");
-            $("#bodega").chosen({width: "220px"});
-            $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
-//            $("#formula").chosen({width: "220px"});
-//            $("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");
-//            $("#formula").trigger('change');
-            $("#ltros").val(data.LITROS).attr("readonly", "readonly");
-            ;
-            $("#azucar").val(data.AZUCAR);
-            $("#precio").val(data.PRECIO).attr("readonly", "readonly");
-            $("#numVinedo").val(data.VINEDO);
-            $("#numRut").val(data.RUT);
-            $("#observacion_fact").val(data.OBSERVACIONES);
-            $("#neto").val(data.NETO).attr("readonly", "readonly");
-            $("#iva").val(data.IVA).attr("readonly", "readonly");
-            $("#total").val(data.TOTAL).attr("readonly", "readonly");
-            $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
-            $.ajax({
-                url: _compravino.URL + "/x_getAlgunasBodegas",
-                datatype: 'html',
-                type: 'post',
-                async: false,
-                data: {id: data.ID_OPERATORIA},
-                success: function (data) {
-                    $('#indent_prueba').html(data);
-                    $("#bodega-jquery").chosen({width: "220px"});
-                }
-            })
-            $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
-            $.ajax({
-                url: _compravino.URL + "/x_getChecklistHumanaFact",
-                datatype: 'html',
-                type: 'post',
-                async: false,
-                data: {id: data.ID_OPERATORIA},
-                success: function (data) {
-                    $('#check_datos').html(data);
-                }
-            })
-            $.ajax({
-                url: _compravino.URL + "/x_getFormasPago",
-                datatype: 'html',
-                type: 'post',
-                async: false,
-                data: {id: data.ID_OPERATORIA},
-                success: function (data) {
-                    $('#fpago').html(data);
-                    $("#fpago-select").chosen({width: "220px"});
-                }
-            })
-            $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
-            var data_checklists_persona = [];
-            var listado_checklist = data.CHECKLIST_PERSONA;
-            data_checklists_persona = listado_checklist.split(',');
-            $('.op input').each(function () {
-                if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-                    $(this).prop('checked', true);
-                }
-            });
-            if (arr_check == 1) {
-                $("#cambio_titularidad").attr('checked', true);
+            if (data.NUMERO) {
+                var fecha_string = data.FECHA;
+                $("#fecha").val(fecha_string.substr(0, 10));
+                var fecha_vto_string = data.FECHAVTO;
+                $("#fechavto").val(fecha_vto_string.substr(0, 10));
+                $("#fecha").datepicker('disable');
+                $("#fechavto").datepicker('disable');
+                $("#numero").val(data.NUMERO).attr("readonly", "readonly");
+                num_fact_buscar = data.NUMERO;
+                $("#cai").val(data.CAI).attr("readonly", "readonly");
+                //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
+                $("#bodega").chosen({width: "220px"});
+                $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+//            $("#formula").chosen({width: "220px"});$("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");$("#formula").trigger('change');$("#azucar").val(data.AZUCAR);
+                $("#ltros").val(data.LITROS).attr("readonly", "readonly");
+                $("#precio").val(data.PRECIO).attr("readonly", "readonly");
+                $("#numVinedo").val(data.VINEDO);
+                $("#numRut").val(data.RUT);
+                $("#observacion_fact").val(data.OBSERVACIONES);
+                $("#neto").val(data.NETO).attr("readonly", "readonly");
+                $("#iva").val(data.IVA).attr("readonly", "readonly");
+                $("#total").val(data.TOTAL).attr("readonly", "readonly");
+                $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
                 $.ajax({
-                    url: _compravino.URL + "/x_getTitularidad",
+                    url: _compravino.URL + "/x_getAlgunasBodegas",
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {num_factura: num_fact_buscar},
-                    success: function (datos) {
-                        $("#cambio_titularidad").hide();
-                        $("#cambio_titularidad_true").show();
-                        $("#cambio_titularidad_true").attr('checked', true);
-                        $("#comentario-titularidad").text(datos);
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#indent_prueba').html(data);
+                        $("#bodega-jquery").chosen({width: "220px"});
                     }
                 })
+                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
+                $.ajax({
+                    url: _compravino.URL + "/x_getChecklistHumanaFact",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#check_datos').html(data);
+                    }
+                })
+                $.ajax({
+                    url: _compravino.URL + "/x_getFormasPago",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#fpago').html(data);
+                        $("#fpago-select").chosen({width: "220px"});
+                    }
+                })
+                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+                var data_checklists_persona = [];
+                var listado_checklist = data.CHECKLIST_PERSONA;
+                data_checklists_persona = listado_checklist.split(',');
+                $('.op input').each(function () {
+                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+                        $(this).prop('checked', true);
+                    }
+                });
+                if (arr_check == 1) {
+                    $("#cambio_titularidad").attr('checked', true);
+                    $.ajax({
+                        url: _compravino.URL + "/x_getTitularidad",
+                        datatype: 'html',
+                        type: 'post',
+                        async: false,
+                        data: {num_factura: num_fact_buscar},
+                        success: function (datos) {
+                            $("#cambio_titularidad").hide();
+                            $("#cambio_titularidad_true").show();
+                            $("#cambio_titularidad_true").attr('checked', true);
+                            $("#comentario-titularidad").text(datos);
+                        }
+                    })
 //                $.ajax({
 //                    url: _compravino.URL + "/x_getChecklistHumanaFactTitu",datatype: 'html',type: 'post',async: false,
 //                    data: {id: data.ID_OPERATORIA, num_factura: num_fact_buscar},
-//                    success: function (data) {
-//                        $('#check_datos').html(data);
-//                        $("#cambio_titularidad").hide();
-//                        $("#cambio_titularidad_true").show();
-//                        $("#cambio_titularidad_true").attr('checked', true);
-////                        $("#comentario-titularidad").text(datos);
-//                    }})
-            } else {
+//                    success: function (data) {$('#check_datos').html(data);$("#cambio_titularidad").hide();$("#cambio_titularidad_true").show();$("#cambio_titularidad_true").attr('checked', true);$("#comentario-titularidad").text(datos);}})
+                } else {
 //                $.ajax({
 //                    url: _compravino.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
 //                    data: {id: data.ID_OPERATORIA},
 //                    success: function (data) {$('#check_datos').html(data);
-                $("#cambio_titularidad").attr('checked', false);
+                    $("#cambio_titularidad").attr('checked', false);
 //                    }})
+                }
+
+                var sourceope_titularidad = {
+                    datatype: "json",
+                    type: "post",
+                    datafields: [
+                        {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
+                        {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
+                    ],
+                    url: _compravino.URL + "/x_getTitularidad",
+                    data: {num_factura: $("#numero").val()},
+                    async: false
+                };
+                var dataAdapterope_titularidad = new $.jqx.dataAdapter(sourceope_titularidad,
+                        {formatData: function (data) {
+                                data.name_startsWith = $("#searchField").val();
+                                return data;
+                            }}
+                );
+                $("#jqxgridtitularidad").jqxGrid({
+                    width: '50%',
+                    height: '200px',
+                    source: dataAdapterope_titularidad,
+                    theme: 'energyblue',
+                    selectionmode: 'singlerows',
+                    localization: getLocalization(),
+                    columns: [
+                        {text: 'ID_FACTURA', datafield: 'ID_FACTURA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+                        {text: 'USUARIO', datafield: 'NOMBRE', width: '25%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+                        {text: 'FECHA', datafield: 'FECHA', cellsalign: 'left', width: '50%', filtercondition: 'starts_with', editable: true},
+                        {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+                    ]
+                });
+                $.unblockUI();
+            } else {
+                $("#fecha").val();
+                $("#fechavto").val();
+                $("#numero").val();
+                $("#cai").val();
+                $("#bodega").chosen({width: "220px"});
+                $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
+                $("#ltros").val(data.LITROS).attr("readonly", "readonly");
+                $("#precio").val(data.PRECIO).attr("readonly", "readonly");
+                $("#numVinedo").val(data.VINEDO);
+                $("#numRut").val(data.RUT);
+                $("#observacion_fact").val(data.OBSERVACIONES);
+                $("#neto").val(data.NETO).attr("readonly", "readonly");
+                $("#iva").val(data.IVA).attr("readonly", "readonly");
+                $("#total").val(data.TOTAL).attr("readonly", "readonly");
+                $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
+                $.ajax({
+                    url: _compravino.URL + "/x_getAlgunasBodegas",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#indent_prueba').html(data);
+                        $("#bodega-jquery").chosen({width: "220px"});
+                    }
+                })
+                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
+                $.ajax({
+                    url: _compravino.URL + "/x_getChecklistHumanaFact",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#check_datos').html(data);
+                    }
+                })
+//                var cant_pagos = 0;
+                $.ajax({
+                    url: _compravino.URL + "/x_getFormasPago",
+                    datatype: 'html',
+                    type: 'post',
+                    async: false,
+                    data: {id: data.ID_OPERATORIA},
+                    success: function (data) {
+                        $('#fpago').html(data);
+                        $("#fpago-select").chosen({width: "220px"});
+                    }
+                })
+                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
+                var data_checklists_persona = [];
+                var listado_checklist = data.CHECKLIST_PERSONA;
+                data_checklists_persona = listado_checklist.split(',');
+                $('.op input').each(function () {
+                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+                        $(this).prop('checked', true);
+                    }
+                });
+                if (arr_check == 1) {
+                    $("#cambio_titularidad").attr('checked', true);
+                    $.ajax({
+                        url: _compravino.URL + "/x_getTitularidad",
+                        datatype: 'html',
+                        type: 'post',
+                        async: false,
+                        data: {num_factura: num_fact_buscar},
+                        success: function (datos) {
+                            console.log("VER Q TRAE");
+                            console.log(datos);
+                            $("#cambio_titularidad").hide();
+                            $("#cambio_titularidad_true").show();
+                            $("#cambio_titularidad_true").attr('checked', true);
+                            $("#comentario-titularidad").text(datos);
+                        }
+                    })
+                } else {
+                    $("#cambio_titularidad").attr('checked', false);
+                }
+
+                var sourceope_titularidad = {
+                    datatype: "json",
+                    type: "post",
+                    datafields: [
+                        {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
+                        {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
+                    ],
+                    url: _compravino.URL + "/x_getTitularidad",
+                    data: {num_factura: $("#numero").val()},
+                    async: false
+                };
+                var dataAdapterope_titularidad = new $.jqx.dataAdapter(sourceope_titularidad,
+                        {formatData: function (data) {
+                                data.name_startsWith = $("#searchField").val();
+                                return data;
+                            }}
+                );
+                $("#jqxgridtitularidad").jqxGrid({
+                    width: '50%',
+                    height: '200px',
+                    source: dataAdapterope_titularidad,
+                    theme: 'energyblue',
+                    selectionmode: 'singlerows',
+                    localization: getLocalization(),
+                    columns: [
+                        {text: 'ID_FACTURA', datafield: 'ID_FACTURA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+                        {text: 'USUARIO', datafield: 'NOMBRE', width: '25%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+                        {text: 'FECHA', datafield: 'FECHA', cellsalign: 'left', width: '50%', filtercondition: 'starts_with', editable: true},
+                        {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+                    ]
+                });
+                $.unblockUI();
             }
 
-            var sourceope_titularidad = {
-                datatype: "json",
-                type: "post",
-                datafields: [
-                    {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
-                    {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
-                ],
-                url: _compravino.URL + "/x_getTitularidad",
-                data: {num_factura: $("#numero").val()},
-                async: false
-            };
-            var dataAdapterope_titularidad = new $.jqx.dataAdapter(sourceope_titularidad,
-                    {formatData: function (data) {
-                            data.name_startsWith = $("#searchField").val();
-                            return data;
-                        }}
-            );
-            $("#jqxgridtitularidad").jqxGrid({
-                width: '50%',
-                height: '200px',
-                source: dataAdapterope_titularidad,
-                theme: 'energyblue',
-                selectionmode: 'singlerows',
-                localization: getLocalization(),
-                columns: [
-                    {text: 'ID_FACTURA', datafield: 'ID_FACTURA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-                    {text: 'USUARIO', datafield: 'NOMBRE', width: '25%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-                    {text: 'FECHA', datafield: 'FECHA', cellsalign: 'left', width: '50%', filtercondition: 'starts_with', editable: true},
-                    {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-                ]
-            });
-            $.unblockUI();
+
         }
     });
 }

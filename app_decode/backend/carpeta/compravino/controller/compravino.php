@@ -214,7 +214,6 @@ class compravino extends main_controller {
     function x_getOpeBodegas() {
         $obj = $this->mod->get_ope_bodegas();
         $tmp = $obj ? $obj : array();
-//        var_dump($tmp);die();
         return $tmp;
     }
 
@@ -414,32 +413,38 @@ class compravino extends main_controller {
 
     function x_getFormasPago() {
         $forma_pago = $this->mod->getPagos($_POST['id']);
-//        print_r($forma_pago);die("SXXS");
         $j = 1;
         $html = '';
         $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
                 <option value="">Seleccione forma pago</option>';
         foreach ($forma_pago[0] as $key => $value) {
             $nombre_ver = '';
+            $posicion = 0;
             if ($key == 'PRECIO_1') {
                 $nombre_ver = '1 PAGO';
+                $posicion = 1;
             }
             if ($key == 'PRECIO_2') {
                 $nombre_ver = '2 PAGOS';
+                $posicion = 2;
             }
             if ($key == 'PRECIO_3') {
                 $nombre_ver = '3 PAGOS';
+                $posicion = 3;
             }
             if ($key == 'PRECIO_4') {
                 $nombre_ver = '4 PAGOS';
+                $posicion = 4;
             }
             if ($key == 'PRECIO_5') {
                 $nombre_ver = '5 PAGOS';
+                $posicion = 5;
             }
             if ($key == 'PRECIO_6') {
                 $nombre_ver = '6 PAGOS';
+                $posicion = 6;
             }
-            $html .= '<option id="precio_fp" value="' . $j . '" data-precio="' . $value . '">' . $nombre_ver . '</option>';
+            $html .= '<option id="precio_fp" value="' . $posicion . '" data-precio="' . $value . '">' . $nombre_ver . '</option>';
             $j++;
         }
         $html .= '</select>';
@@ -449,9 +454,10 @@ class compravino extends main_controller {
     function x_getTitularidad() {
         $id_objeto = $_POST['num_factura'];
         $rtn = $this->mod->getTitularidad($id_objeto);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-        echo "El usuario " . $rtn[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn[0]['FECHA'];
-//        echo $rtn;
+        if($rtn){
+            echo "El usuario " . $rtn[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn[0]['FECHA'];
+        }
+
     }
 
     function x_getoperatoria() {
@@ -481,11 +487,9 @@ class compravino extends main_controller {
     function x_getDatoProveedor() {
         $ids_proveedores = $_POST['ids_proveedores'];
         if (empty($_POST['firstColumnData'])) {
-//        var_dump($ids_proveedores);die("ANDA 1");
             $rtn = $this->mod->getDatoProveedorNuevo($ids_proveedores);
             echo trim(json_encode($rtn ? $rtn : array()));
         } else {
-//        var_dump($ids_proveedores);die("ANDA 2");
             $firstColumnData = $_POST['firstColumnData'];
             $rtn = $this->mod->getDatoProveedor($ids_proveedores, $firstColumnData);
             echo trim(json_encode($rtn ? $rtn : array()));
