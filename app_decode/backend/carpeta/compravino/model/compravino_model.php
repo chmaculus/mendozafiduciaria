@@ -99,12 +99,13 @@ class compravino_model extends main_model {
 
 //            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
                         } else if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] == $solicitud_adm[$j][0]['CCU']) {
-
-                            $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                            $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
-                            $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                            $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
+                            if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
+                                $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
+                                $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
+                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
 //                            log_this('log/UPDATE111.log', $this->_db->last_query());
+                            }
                         }
                     }
                 }
@@ -417,7 +418,6 @@ class compravino_model extends main_model {
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-
         if ($rtn["factura"]["NUMERO"]) {
             $this->_db->select("CHECK_ESTADO");
             $this->_db->order_by("FECHA", "DESC");
@@ -1148,10 +1148,10 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function crearCuotas($num_factura,$cant_cu,$neto,$iva) {
+    function crearCuotas($num_factura, $cant_cu, $neto, $iva) {
         if ($cant_cu == 1) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
-            $cuota1 = (float)$neto + (float)$iva;
+            $cuota1 = (float) $neto + (float) $iva;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = $cuota1;
             $fechaActual = strtotime('now');
@@ -1169,7 +1169,7 @@ class compravino_model extends main_model {
         } else if ($cant_cu == 2) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
-            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 2) + (float)$iva;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
             $fechaActual = strtotime('now');
             $fechaVen = strtotime('+15 days', $fechaActual);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
@@ -1185,7 +1185,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
-            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 2);
+            $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1201,7 +1201,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
-            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 3) + (float)$iva;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
             $fechaActual = strtotime('now');
             $fechaVen = strtotime('+15 days', $fechaActual);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
@@ -1216,7 +1216,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
-            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 3);
+            $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1231,7 +1231,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
-            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 3);
+            $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1246,7 +1246,7 @@ class compravino_model extends main_model {
         } else if ($cant_cu == 4) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
-            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 4) + (float)$iva;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
             $fechaActual = strtotime('now');
             $fechaVen = strtotime('+15 days', $fechaActual);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
@@ -1262,7 +1262,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
-            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 4);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1277,7 +1277,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
-            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 4);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1292,7 +1292,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
-            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 4);
+            $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 4);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1307,7 +1307,7 @@ class compravino_model extends main_model {
         } else if ($cant_cu == 5) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
-            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 5) + (float)$iva;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 5) + (float) $iva;
             $fechaActual = strtotime('now');
             $fechaVen = strtotime('+15 days', $fechaActual);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
@@ -1323,7 +1323,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
-            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 5);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1353,7 +1353,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
-            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 5);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1368,7 +1368,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
             $ins_cuotas5['NUM_CUOTA'] = 5;
-            $ins_cuotas5['VALOR_CUOTA'] = ((float)$neto/ 5);
+            $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 5);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1383,7 +1383,7 @@ class compravino_model extends main_model {
         } else if ($cant_cu == 6) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
-            $ins_cuotas1['VALOR_CUOTA'] = ((float)$neto/ 6) + (float)$iva;
+            $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
             $fechaActual = strtotime('now');
             $fechaVen = strtotime('+15 days', $fechaActual);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
@@ -1399,7 +1399,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
-            $ins_cuotas2['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 6);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1414,7 +1414,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
-            $ins_cuotas3['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 6);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1429,7 +1429,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
-            $ins_cuotas4['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 6);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1444,7 +1444,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
             $ins_cuotas5['NUM_CUOTA'] = 5;
-            $ins_cuotas5['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 6);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';
@@ -1459,7 +1459,7 @@ class compravino_model extends main_model {
 
             $ins_cuotas6['NUM_FACTURA'] = $num_factura;
             $ins_cuotas6['NUM_CUOTA'] = 6;
-            $ins_cuotas6['VALOR_CUOTA'] = ((float)$neto/ 6);
+            $ins_cuotas6['VALOR_CUOTA'] = ((float) $neto / 6);
             $fechaVen = strtotime('+30 days', $fechaVen);
             $is_saturday = date('l', $fechaVen) == 'Saturday';
             $is_sunday = date('l', $fechaVen) == 'Sunday';

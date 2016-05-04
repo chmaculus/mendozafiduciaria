@@ -89,7 +89,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                 f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
                 ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
                 c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
-                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO");
+                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO,IFNULL(ti.CHECK_ESTADO,0) AS CHECK_ESTADO");
     $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
     $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
     $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
@@ -98,6 +98,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     $cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
     $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
     $cnn->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
+    $cnn->join("fid_op_vino_cambio_tit ti", "ti.ID_FACTURA=f.NUMERO", "left");
 //    $cnn->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
 
     if ($idestado > 0) {
@@ -219,7 +220,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                 }
             }
         }
-
+        
+        if ($value['CHECK_ESTADO']== '1') {
+            $value['CHECK_ESTADO'] = 'Confirmada';
+        }else{
+            $value['CHECK_ESTADO'] = 'S/Confirmar';
+        }
+        
+        
         $cnn->select("ORDEN_PAGO");
         $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 

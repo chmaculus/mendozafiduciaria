@@ -63,7 +63,7 @@ function guardar_factura() {
     if (data_checklists_persona.length == 0) {
         data_checklists_persona = '';
     }
-    
+
 //validar campos
     if (numero == '') {
         jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
@@ -117,7 +117,7 @@ function guardar_factura() {
             tmp_fid = _fid_sanjuan;
         }
     }
-    
+
     objsave = {
         id: iid,
 //        ID_OPE: numOperatoria,
@@ -171,7 +171,7 @@ function guardar_factura() {
                 /*Verificar si tiene cuotas sino generar*/
                 $.ajax({
                     url: _compravino.URL + "/x_verificarCuotas",
-                    data: {numFactura: numero, cant_cu:fpago, neto:neto, iva:iva },
+                    data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva},
                     dataType: "json", type: "post", async: "false", });
                 jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                     var urlh = "backend/carpeta/compravino/init/12/2";
@@ -1328,13 +1328,20 @@ function editar_formulario() {
             $("#nombre2").val(data.RAZ);
 //            $("#fecha").val(formattedDate(data.FECHA));
 //            $("#fecha").val(data.FECHA);
+
             if (data.NUMERO) {
                 var fecha_string = data.FECHA;
                 $("#fecha").val(fecha_string.substr(0, 10));
-                var fecha_vto_string = data.FECHAVTO;
-                $("#fechavto").val(fecha_vto_string.substr(0, 10));
+                var fecha_vto_string = '';
+                if (data.FECHAVTO != null) {
+                    fecha_vto_string = data.FECHAVTO;
+                    $("#fechavto").val(fecha_vto_string.substr(0, 10));
+                }else{
+                    $("#fechavto").val('');
+                }
+
                 $("#fecha").datepicker('disable');
-                $("#fechavto").datepicker('disable');
+//                $("#fechavto").datepicker('disable');
                 $("#numero").val(data.NUMERO).attr("readonly", "readonly");
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
@@ -2880,6 +2887,7 @@ function initGridListado(id_usuario) {
             {name: 'VALORPAGAR', type: 'float'},
             {name: 'NUMCUOTA', type: 'int'},
             {name: 'FECHA_VEN', type: 'string'},
+            {name: 'CHECK_ESTADO', type: 'string'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
         ],
@@ -2902,6 +2910,22 @@ function initGridListado(id_usuario) {
                 }
             }
     );
+
+    var cellbeginedit = function (row, datafield, columntype, value) {
+        var fila = row;
+        if (row == fila) 
+            return false;
+    }
+    var cellsrenderer = function (row, column, value, defaultHtml) {
+        var fila = row;
+        if (column == 'CHECK_ESTADO' && value=='Confirmada' && row == fila) {
+            var element = $(defaultHtml);
+            element.css({'background-color': '#32CD32', 'width': '100%', 'height': '100%', 'margin': '0px'});
+            return element[0].outerHTML;
+        }
+        return defaultHtml;
+    }
+
     $("#jqxgrid_listado").jqxGrid({
         width: '96%',
         source: dataAdapterope,
@@ -2938,32 +2962,33 @@ function initGridListado(id_usuario) {
             });
         },
         columns: [
-            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false},
-            {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+            {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
 //            {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
 //            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/},
-            {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'NETO', datafield: 'NETO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
-            {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
-            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2'},
+            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'NETO', datafield: 'NETO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
 //            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IID', datafield: 'IID', width: '0%'}
         ]
@@ -3081,11 +3106,24 @@ function lote_pago() {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
             if (reg.ESTADO == 'Pago Solicitado') {
                 swa = 1;
+            }else if(reg.ESTADO == 'Pagada o Pago Rechazado'){
+                swa = 3;
+            }
+        if (reg.CHECK_ESTADO == 'S/Confirmar') {
+                swa = 2;
             }
             _arr_sel.push(reg);
         });
         if (swa == '1') {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        }else if (swa == '2') {
+            jAlert('Todavia no se ha realizado el cambio de titularidad.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        }else if(swa == '3'){
+            jAlert('Ya se han registrado los pagos de la factura.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         }
