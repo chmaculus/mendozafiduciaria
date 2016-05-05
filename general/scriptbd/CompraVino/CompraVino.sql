@@ -125,3 +125,10 @@ ALTER TABLE `fid_operatoria_vino` ADD `ID_FIDEICOMISO` INT NOT NULL AFTER `ID_OP
 /*02/05/2016*/
 /*Se agrega la columna orden de pago para guardar la orden de cada cuota*/
 ALTER TABLE  `fid_cu_pagos` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL
+
+
+/*05/05/2016*/
+/*Se agrega la columna ID_CONTABLE para guardarle el valor de los fideicomisos del debo*/
+ALTER TABLE  `fid_fideicomiso` ADD  `ID_CONTABLE` INT NOT NULL AFTER  `ID`
+
+

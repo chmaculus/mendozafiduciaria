@@ -133,10 +133,11 @@ class compravino_model extends main_model {
                 $this->_db->insert('fid_cu_lotespago', $arr_ins);
                 //log_this('log/qqqqqqq.log', $this->_db->last_query() );
                 $this->_db->update('fid_cu_factura', array("ID_ESTADO" => '5', 'USU_CHEQUEO' => $_SESSION["USERADM"]), "ID='" . $ciu["IID"] . "'");
-                $this->_db->select("F.ID_OPERATORIA AS ID_OPERATORIA ,F.ID_CLIENTE AS IDCLIENTE,F.NETO AS NETO,F.IVA AS IVA, F.FORMA_PAGO AS FORMA_PAGO ,
-                    F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA,OP.ID_FIDEICOMISO AS FIDEICOMISO"); //$this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
+                $this->_db->select("F.ID_OPERATORIA AS ID_OPERATORIA ,IFNULL(fi.ID_CONTABLE,0) AS ID_CONTABLE,F.ID_CLIENTE AS IDCLIENTE,F.NETO AS NETO,F.IVA AS IVA, F.FORMA_PAGO AS FORMA_PAGO ,
+                                F.TOTAL AS TOTAL, c.CUIT, F.ID_BODEGA,OP.ID_FIDEICOMISO AS FIDEICOMISO"); //$this->_db->select("F.ID_CLIENTE AS IDCLIENTE, F.TOTAL AS TOTAL, CUIT, F.ID_BODEGA");
                 $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE", 'left');
                 $this->_db->join("fid_operatoria_vino OP", "OP.ID_OPERATORIA=F.ID_OPERATORIA", 'left');
+                $this->_db->join("fid_fideicomiso fi", "fi.ID = op.ID_FIDEICOMISO", 'left');
                 $cuit_cli = $this->_db->get_tabla('fid_cu_factura f', "f.ID='" . $id_factura . "'");
 
                 /* Se hacen dos insert, si se envia la factura por primera vez, se pasa la factura y el valor de la cuota
@@ -146,7 +147,7 @@ class compravino_model extends main_model {
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                         "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
-                        "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                        "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                         "NETO" => $cuit_cli[0]['NETO'],
                         "IVA" => $cuit_cli[0]['IVA'],
                         "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -168,7 +169,7 @@ class compravino_model extends main_model {
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                         "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
-                        "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                        "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                         "NETO" => (float) $cuit_cli[0]['NETO'],
                         "IVA" => (float) $cuit_cli[0]['IVA'],
                         "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -191,7 +192,7 @@ class compravino_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
-                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -212,7 +213,7 @@ class compravino_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
-                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
@@ -234,7 +235,7 @@ class compravino_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "OPERATORIA" => (int) $cuit_cli[0]['ID_OPERATORIA'],
-                            "FIDEICOMISO" => (int) $cuit_cli[0]['FIDEICOMISO'],
+                            "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
@@ -747,7 +748,6 @@ class compravino_model extends main_model {
 //    }
 
     function sendobj($obj, $cambio_titularidad) {
-        //log_this('log/xxxxx.log',print_r($obj,1));
         $numero_factura = $obj['NUMERO'];
         $iid = $obj["id"];
         $cuit = $obj["CUIT"];
@@ -775,333 +775,537 @@ class compravino_model extends main_model {
         $cuota4 = 0;
         $cuota5 = 0;
         $cuota6 = 0;
-
+//        var_dump($obj);
+//        die("esto trae");
         if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
+
+            $fecha = $obj["FECHA"];
+
             if ($obj["FORMA_PAGO"] == 1) {
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
-                $cuota1 = $obj["TOTAL"];
+                /*                 * *********************************************************************************************
+                 * Forma de pago 1
+                 * ********************************************************************************************* */
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = $cuota1;
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
             } else if ($obj["FORMA_PAGO"] == 2) {
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
+
+                /*                 * *********************************************************************************************
+                 * Forma de pago 2
+                 * ********************************************************************************************* */
+
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = ($obj["NETO"] / 2) + $obj["IVA"];
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
-                $ins_cuotas2['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
-                $ins_cuotas2['VALOR_CUOTA'] = ($obj["NETO"] / 2);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas2['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
             } else if ($obj["FORMA_PAGO"] == 3) {
 
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
+                /*                 * *********************************************************************************************
+                 * Forma de pago 3
+                 * ********************************************************************************************* */
+
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = ($obj["NETO"] / 3) + $obj["IVA"];
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
+
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
-                $ins_cuotas2['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
-                $ins_cuotas2['VALOR_CUOTA'] = ($obj["NETO"] / 3);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas2['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
-                $ins_cuotas3['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
-                $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 3);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas3['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
             } else if ($obj["FORMA_PAGO"] == 4) {
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
+
+                /*                 * *********************************************************************************************
+                 * Forma de pago 4
+                 * ********************************************************************************************* */
+
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = ($obj["NETO"] / 4) + $obj["IVA"];
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
-                $ins_cuotas2['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
-                $ins_cuotas2['VALOR_CUOTA'] = ($obj["NETO"] / 4);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 4);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas2['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
-                $ins_cuotas3['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
-                $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 4);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 4);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas3['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 4);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas4['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
             } else if ($obj["FORMA_PAGO"] == 5) {
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
+
+                /*                 * *********************************************************************************************
+                 * Forma de pago 5
+                 * ********************************************************************************************* */
+
+
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = ($obj["NETO"] / 5) + $obj["IVA"];
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 5) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
-                $ins_cuotas2['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
-                $ins_cuotas2['VALOR_CUOTA'] = ($obj["NETO"] / 5);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 5);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas2['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
-                $ins_cuotas3['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
-                $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 5);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 5);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas3['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 5);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas4['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
                 $ins_cuotas5['VALOR_CUOTA'] = ($obj["NETO"] / 5);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas5['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
             } else if ($obj["FORMA_PAGO"] == 6) {
-                $ins_cuotas1['NUM_FACTURA'] = $obj['NUMERO'];
+
+                /***********************************************************************************************
+                 * Forma de pago 6
+                 * ********************************************************************************************* */
+                $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
-                $ins_cuotas1['VALOR_CUOTA'] = ($obj["NETO"] / 6) + $obj["IVA"];
-                $fechaActual = strtotime('now');
-                $fechaVen = strtotime('+15 days', $fechaActual);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
+                $primerVen = 15;
+                $otrosVen = 30;
+                if (intval($primerVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $primerVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas1['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
-                $ins_cuotas2['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
-                $ins_cuotas2['VALOR_CUOTA'] = ($obj["NETO"] / 6);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 6);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas2['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
-                $ins_cuotas3['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
-                $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 6);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 6);
+
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas3['FECHA_VEN'] = end($ven);
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
+
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 6);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas4['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
                 $ins_cuotas5['VALOR_CUOTA'] = ($obj["NETO"] / 6);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas5['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
+
 
                 $ins_cuotas6['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas6['NUM_CUOTA'] = 6;
                 $ins_cuotas6['VALOR_CUOTA'] = ($obj["NETO"] / 6);
-                $fechaVen = strtotime('+30 days', $fechaVen);
-                $is_saturday = date('l', $fechaVen) == 'Saturday';
-                $is_sunday = date('l', $fechaVen) == 'Sunday';
-                if ($is_saturday) {
-                    $fechaVen = strtotime('+2 days', $fechaVen);
-                } else if ($is_sunday) {
-                    $fechaVen = strtotime('+1 days', $fechaVen);
+                if (intval($otrosVen) <= 0)
+                    return false;
+                $habiles = 0;
+                $selectDias = "";
+                $ven = array();
+                for ($i = 1; $habiles < $otrosVen; $i++) {
+                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                        /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                        $habiles++;
+                        $ven[$habiles] = $diames;
+                    }
                 }
-                $ins_cuotas6['FECHA_VEN'] = date('Y-m-d', $fechaVen);
-
+                $fecha = date('Ymd', strtotime(end($ven)));
+                $ins_cuotas5['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
             }
-
 //            log_this('cargando_factura.log', $this->_db->last_query());
             if ($cambio_titularidad == 'true') {
                 $arr_cambio_titu = array(
@@ -1148,327 +1352,501 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function crearCuotas($num_factura, $cant_cu, $neto, $iva) {
+    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha) {
         if ($cant_cu == 1) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $cuota1 = (float) $neto + (float) $iva;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = $cuota1;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            $primerVen = 15;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
         } else if ($cant_cu == 2) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $primerVen = 15;
+            $otrosVen = 30;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas2['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
         } else if ($cant_cu == 3) {
-
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $primerVen = 15;
+            $otrosVen = 30;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas2['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas3['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
         } else if ($cant_cu == 4) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $primerVen = 15;
+            $otrosVen = 30;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 4);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas2['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 4);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas3['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 4);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas4['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
         } else if ($cant_cu == 5) {
-            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 5) + (float) $iva;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $primerVen = 15;
+            $otrosVen = 30;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 5);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas2['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
-            $ins_cuotas3['VALOR_CUOTA'] = ($obj["NETO"] / 5);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 5);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas3['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 5);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas4['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
             $ins_cuotas5['NUM_CUOTA'] = 5;
             $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 5);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas5['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
         } else if ($cant_cu == 6) {
-            $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
-            $fechaActual = strtotime('now');
-            $fechaVen = strtotime('+15 days', $fechaActual);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            $primerVen = 15;
+            $otrosVen = 30;
+            if (intval($primerVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $primerVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas1['FECHA_VEN'] = date('Y-m-d', $fechaVen);
 
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas1['FECHA_VEN'] = end($ven);
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 6);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas2['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+
+            $fecha = date('Ymd', strtotime(end($ven)));
+            $ins_cuotas2['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 6);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas3['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas3['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 6);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas4['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas4['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
             $ins_cuotas5['NUM_CUOTA'] = 5;
             $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 6);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas5['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas5['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
+
 
             $ins_cuotas6['NUM_FACTURA'] = $num_factura;
             $ins_cuotas6['NUM_CUOTA'] = 6;
             $ins_cuotas6['VALOR_CUOTA'] = ((float) $neto / 6);
-            $fechaVen = strtotime('+30 days', $fechaVen);
-            $is_saturday = date('l', $fechaVen) == 'Saturday';
-            $is_sunday = date('l', $fechaVen) == 'Sunday';
-            if ($is_saturday) {
-                $fechaVen = strtotime('+2 days', $fechaVen);
-            } else if ($is_sunday) {
-                $fechaVen = strtotime('+1 days', $fechaVen);
+            if (intval($otrosVen) <= 0)
+                return false;
+            $habiles = 0;
+            $selectDias = "";
+            $ven = array();
+            for ($i = 1; $habiles < $otrosVen; $i++) {
+                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
+                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
+                    /* Aca se puede agregar un filtrado especifico con dia/mes para feriados. */
+                    $habiles++;
+                    $ven[$habiles] = $diames;
+                }
             }
-            $ins_cuotas6['FECHA_VEN'] = date('Y-m-d', $fechaVen);
+            $fecha = date('Ymd', strtotime(end($ven)));
+
+            $ins_cuotas6['FECHA_VEN'] = end($ven);
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
         }

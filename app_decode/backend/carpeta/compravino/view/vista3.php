@@ -284,7 +284,6 @@
                         <option value="<?php // echo $rs_form["idFormula"]  ?>"><?php // echo "Fórmula" . $rs_form["idFormula"]  ?></option>
     <?php // endforeach; ?>
                     </select></div></div>--><?php //endif; ?>
-
     <div class="elem">
         <label class="ancho100">Observaciones:</label>
         <div class="formtext">
@@ -294,26 +293,6 @@
     <div style="margin-top:10px;" class="clear"></div>
     <div id="check_datos" style="width: 100%;">
     </div>
-<!--    <br><br><br><br>-->
-<!--    <div id="trar-todo">
-        <div class="elem elem_med">
-            <label>Cambio de Titularidad:</label>
-            <div class="indent formtext">
-                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
-                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
-                <label id="comentario-titularidad"></label>
-            </div>
-        </div>
-        <br><br><br><br>
-        <div id="activo-titularidad">
-        </div>
-    </div>-->
-    <!--<br><br><br><br>-->
-    <!--    <div id="titularidadHistorial">
-            <label>Historial Cambio de Titularidad:</label>
-            <div id="jqxgridtitularidad">
-            </div>
-        </div>-->
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 </div>

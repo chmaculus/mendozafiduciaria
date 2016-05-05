@@ -171,7 +171,7 @@ function guardar_factura() {
                 /*Verificar si tiene cuotas sino generar*/
                 $.ajax({
                     url: _compravino.URL + "/x_verificarCuotas",
-                    data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva},
+                    data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha},
                     dataType: "json", type: "post", async: "false", });
                 jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
                     var urlh = "backend/carpeta/compravino/init/12/2";
@@ -1149,6 +1149,8 @@ $(document).ready(function () {
 
         } else if (top == 'export') {
 //imprimir_listado_seleccionado();
+        } else if (top == 'desmarcar_cu') {
+            $('#jqxgrid_listado').jqxGrid('clearselection');
         } else if (top == 'lis_importar') {
             if (_permiso_alta == 0) {
                 jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
@@ -1336,7 +1338,7 @@ function editar_formulario() {
                 if (data.FECHAVTO != null) {
                     fecha_vto_string = data.FECHAVTO;
                     $("#fechavto").val(fecha_vto_string.substr(0, 10));
-                }else{
+                } else {
                     $("#fechavto").val('');
                 }
 
@@ -2888,6 +2890,7 @@ function initGridListado(id_usuario) {
             {name: 'NUMCUOTA', type: 'int'},
             {name: 'FECHA_VEN', type: 'string'},
             {name: 'CHECK_ESTADO', type: 'string'},
+            {name: 'ID_CONTABLE', type: 'int'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
         ],
@@ -2913,12 +2916,12 @@ function initGridListado(id_usuario) {
 
     var cellbeginedit = function (row, datafield, columntype, value) {
         var fila = row;
-        if (row == fila) 
+        if (row == fila)
             return false;
     }
     var cellsrenderer = function (row, column, value, defaultHtml) {
         var fila = row;
-        if (column == 'CHECK_ESTADO' && value=='Confirmada' && row == fila) {
+        if (column == 'CHECK_ESTADO' && value == 'Confirmada' && row == fila) {
             var element = $(defaultHtml);
             element.css({'background-color': '#32CD32', 'width': '100%', 'height': '100%', 'margin': '0px'});
             return element[0].outerHTML;
@@ -2938,8 +2941,8 @@ function initGridListado(id_usuario) {
         showtoolbar: true,
         //sortable: true,
         groupable: true,
-        //filterable: true,
-        //showfilterrow: true,
+        filterable: true,
+        showfilterrow: true,
         localization: getLocalization(),
         rendertoolbar: function (toolbar) {
             var me = this;
@@ -2962,7 +2965,8 @@ function initGridListado(id_usuario) {
             });
         },
         columns: [
-            {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ID_CONTABLE', datafield: 'ID_CONTABLE', hidden: true, width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
@@ -2981,10 +2985,10 @@ function initGridListado(id_usuario) {
             {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'NETO', datafield: 'NETO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'IVA', datafield: 'IVA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
@@ -3106,11 +3110,14 @@ function lote_pago() {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
             if (reg.ESTADO == 'Pago Solicitado') {
                 swa = 1;
-            }else if(reg.ESTADO == 'Pagada o Pago Rechazado'){
+            } else if (reg.ESTADO == 'Pagada o Pago Rechazado') {
                 swa = 3;
             }
-        if (reg.CHECK_ESTADO == 'S/Confirmar') {
+            if (reg.CHECK_ESTADO == 'S/Confirmar') {
                 swa = 2;
+            }
+            if (reg.ID_CONTABLE == 0) {
+                swa = 4;
             }
             _arr_sel.push(reg);
         });
@@ -3118,12 +3125,16 @@ function lote_pago() {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        }else if (swa == '2') {
-            jAlert('Todavia no se ha realizado el cambio de titularidad.', $.ucwords(_etiqueta_modulo), function () {
+        } else if (swa == '2') {
+            jAlert('Comprobantes seleccionados sin el cambio de titularidad realizado.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        }else if(swa == '3'){
-            jAlert('Ya se han registrado los pagos de la factura.', $.ucwords(_etiqueta_modulo), function () {
+        } else if (swa == '3') {
+            jAlert('Comprbantes seleccionados con pagos registrados.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '4') {
+            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso del sector contable.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         }

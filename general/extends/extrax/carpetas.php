@@ -22,7 +22,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getBodegasGrilla') {
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getProveedoresGrilla') {
 
     $idProveedor = $_GET["id_proveedor"];
-    
+
     $proveedor_ids = "";
     foreach ($idProveedor as $value) {
         $proveedor_ids .= $value . ",";
@@ -84,12 +84,13 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     $cad_like = substr($cad_like, 0, -2);
 
     $array_cuotas = array();
-    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
-                f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
-                f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
-                ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
-                c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
-                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO,IFNULL(ti.CHECK_ESTADO,0) AS CHECK_ESTADO");
+    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA,IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
+            f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
+            f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
+            ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
+            c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
+            DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO,IFNULL(ti.CHECK_ESTADO,0) AS CHECK_ESTADO,
+            IFNULL(fi.ID_CONTABLE,0) AS ID_CONTABLE");
     $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
     $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
     $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
@@ -99,6 +100,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
     $cnn->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
     $cnn->join("fid_op_vino_cambio_tit ti", "ti.ID_FACTURA=f.NUMERO", "left");
+    $cnn->join("fid_fideicomiso fi", "fi.ID=of.ID_FIDEICOMISO", "left");
 //    $cnn->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
 
     if ($idestado > 0) {
@@ -111,7 +113,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
 //    file_put_contents('OBTENERLOTESFACTURAS.log', $cnn->last_query());
-
 
     foreach ($rtn as $value) {
 
@@ -220,14 +221,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                 }
             }
         }
-        
-        if ($value['CHECK_ESTADO']== '1') {
+
+        if ($value['CHECK_ESTADO'] == '1') {
             $value['CHECK_ESTADO'] = 'Confirmada';
-        }else{
+        } else {
             $value['CHECK_ESTADO'] = 'S/Confirmar';
         }
-        
-        
+
+
         $cnn->select("ORDEN_PAGO");
         $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 

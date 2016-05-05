@@ -8,7 +8,7 @@ var _array_operatorias = [];
 
 $(document).ready(function(){
     mydata = '';
-    
+
     $(".toolbar li").hover(
         function () {
             $(this).removeClass('li_sel').addClass('li_sel');
@@ -61,6 +61,9 @@ $(document).ready(function(){
                         //$("#cuit").jqxMaskedInput({ mask: '##-########-#', width: 150, height: 22, theme: theme });
                         $("#montom").numeric({ negative: false });
                                                 
+//                        $('#select-fid-contable').show();
+//                        $('#lbl-fidcontables').show();
+//                        $('#fidcontables').show();
                         
                         $("#aporte_aporte").numeric({ negative: false });
                         //$("#aporte_origen").chosen({width: "255px"});
@@ -283,7 +286,8 @@ $(document).ready(function(){
                             var prov = $("#provinciah").val();
                             var loca = $("#localidadh").val();
                             
-                                            
+                            var fidcontables = $('#fidcontables').val();
+                            
                             //adjuntos
                             var _array_uploads = [];
                             $( ".lista_uploads li" ).each(function( index ) {
@@ -307,7 +311,7 @@ $(document).ready(function(){
                                                                      
                             if ( !$("#customForm").validationEngine('validate') )
                                 return false;
-                                                      
+
                             iid = id ? id:0;
                             obj = {
                                 id:iid,
@@ -323,7 +327,8 @@ $(document).ready(function(){
                                 adjuntos:_array_uploads,
                                 operatorias: _array_operatorias,
                                 bancos:_arr_bancos,
-                                aportes:_arr_aportes
+                                aportes:_arr_aportes,
+                                ID_CONTABLE:fidcontables
                             }       
                             $.ajax({
                                 url : _fideicomiso.URL + "/x_sendobj",
@@ -412,8 +417,9 @@ $(document).ready(function(){
                             }
                         });
                         
-                        
-                        
+//                        $('#select-fid-contable').show();
+//                        $('#lbl-fidcontables').show();
+//                        $('#fidcontables').show();
                         
                         $("input[type=file]").change(function(){$(this).parents(".uploader").find(".filename").val($(this).val());});
                         $("input[type=file]").each(function(){
@@ -449,7 +455,13 @@ $(document).ready(function(){
                         var provh1 = $("#provinciah1").val();
                         $("#provincia").val(provh1).trigger("chosen:updated");
                         
+                        
                         loadChild(provh1);
+                        
+                        var fcont = $("#fcontable").val();
+                        $("#fidcontables").val(fcont).trigger("chosen:updated");
+                        
+                        loadChild(fcont);
                         
                         var loch1 = $("#localidadh1").val();
                         $("#subrubro").val(loch1).trigger("chosen:updated");
@@ -691,6 +703,8 @@ $(document).ready(function(){
                             var prov = $("#provinciah").val();
                             var loca = $("#localidadh").val();
                             
+                            var fidcontables = $('#fidcontables').val();
+                                 
                             //adjuntos
                             var _array_uploads = [];
                             $( ".lista_uploads li" ).each(function( index ) {
@@ -736,7 +750,8 @@ $(document).ready(function(){
                                 operatorias: _array_operatorias,
                                 bancos:_arr_bancos,
                                 aportes:_arr_aportes,
-                                adjuntos:_array_uploads
+                                adjuntos:_array_uploads,
+                                ID_CONTABLE:fidcontables
                             }
                            
                             $.ajax({
@@ -879,6 +894,9 @@ $(document).ready(function(){
                 $('#btnClear').trigger('click');
                 $("#jqxgrid").jqxGrid('updatebounddata');
                 _array_entidades = {};
+//                $('#select-fid-contable').hide();
+//                $('#lbl-fidcontables').hide();
+//                $('#fidcontables').hide();
                 $("#jqxgrid").show();
                 $("#wpopup").html('');
             }else if(top=='exp'){

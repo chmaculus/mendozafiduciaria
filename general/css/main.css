@@ -149,7 +149,9 @@ verfoto img{
 .tb_detalle_cu{
     background: url('../../general/css/images/32x32/zoom-cu.png') no-repeat 50% 6px !important;
 }
-
+.tb_desmarcar_cu{
+    background: url('../../general/css/images/32x32/desmarcar.png') no-repeat 50% 6px !important;
+}
 
 .tb_uncheck{
     background: url('../../general/css/images/32x32/uncheckall.png') no-repeat 50% 6px !important;

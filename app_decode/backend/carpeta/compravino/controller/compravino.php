@@ -341,6 +341,7 @@ class compravino extends main_controller {
                 }
             }
 //            $html .= '</table>';
+        }
             $html .= '</table><br><br><br><br>
                 <div id="trar-todo">
                 <div class="elem elem_med">
@@ -350,7 +351,6 @@ class compravino extends main_controller {
                 <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
                 <label id="comentario-titularidad"></label></div></div><br><br><br><br>
                 <div id="activo-titularidad"></div></div>';
-        }
         echo $html;
     }
 
@@ -456,9 +456,10 @@ class compravino extends main_controller {
         $cant_cu = $_POST['cant_cu'];
         $neto = $_POST['neto'];
         $iva = $_POST['iva'];
+        $fecha = $_POST['fecha'];
         $rtn = $this->mod->verificarCuotas($num_factura);
         if (!$rtn) {
-            $rtn_cuotas = $this->mod->crearCuotas($num_factura,$cant_cu,$neto,$iva);
+            $rtn_cuotas = $this->mod->crearCuotas($num_factura,$cant_cu,$neto,$iva,$fecha);
         }
     }
 
