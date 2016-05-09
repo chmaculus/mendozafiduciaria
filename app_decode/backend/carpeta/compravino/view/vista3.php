@@ -202,7 +202,7 @@
         </div>
     </div>
     <div class="elem elem_med">
-        <label class="der">Fecha Vto:</label>
+        <label class="der">Fecha Vto (CAI):</label>
         <div class="indent formtext">
             <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>

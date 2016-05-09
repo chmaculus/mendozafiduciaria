@@ -823,7 +823,7 @@ class compravino_model extends main_model {
                     $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
                     $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
                     if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                         $habiles++;
+                        $habiles++;
                         $ven[$habiles] = $diames;
                     }
                 }
@@ -837,16 +837,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                         $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas2['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
             } else if ($obj["FORMA_PAGO"] == 3) {
 
@@ -879,16 +879,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas2['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -897,21 +897,21 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas3['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas3['FECHA_VEN'] = $fecha;
 
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
             } else if ($obj["FORMA_PAGO"] == 4) {
 
-                /***********************************************************************************************
+                /*                 * *********************************************************************************************
                  * Forma de pago 4
                  * ********************************************************************************************* */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
@@ -940,16 +940,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                         $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas2['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -958,16 +958,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas3['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas3['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
@@ -976,16 +976,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas4['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas4['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
             } else if ($obj["FORMA_PAGO"] == 5) {
 
@@ -1018,16 +1018,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas2['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1036,16 +1036,15 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas3['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+                $ins_cuotas3['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
@@ -1054,17 +1053,18 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                           $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas4['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas4['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
+
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
@@ -1072,20 +1072,19 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas5['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+                $ins_cuotas5['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
             } else if ($obj["FORMA_PAGO"] == 6) {
 
-                /***********************************************************************************************
+                /*                 * *********************************************************************************************
                  * Forma de pago 6
                  * ********************************************************************************************* */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
@@ -1114,16 +1113,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas2['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
@@ -1131,16 +1130,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas3['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas3['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
@@ -1149,16 +1148,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas4['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas4['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
@@ -1167,16 +1166,16 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas5['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+
+                $ins_cuotas5['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
 
                 $ins_cuotas6['NUM_FACTURA'] = $obj['NUMERO'];
@@ -1185,16 +1184,15 @@ class compravino_model extends main_model {
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
-                for ($i = 1; $habiles < $otrosVen; $i++) {
-                    $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                    if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                        $habiles++;
-                        $ven[$habiles] = $diames;
-                    }
+                $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+                $dia = date("w", strtotime($fecha));
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
                 }
-                $fecha = date('Ymd', strtotime(end($ven)));
-                $ins_cuotas5['FECHA_VEN'] = end($ven);
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
+                $ins_cuotas5['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
             }
             if ($cambio_titularidad == 'true') {
@@ -1293,20 +1291,19 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas2['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
-            
         } else if ($cant_cu == 3) {
-            
+
+
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
@@ -1333,16 +1330,16 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas2['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+
+            $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1351,16 +1348,17 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas3['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+
+            $ins_cuotas3['FECHA_VEN'] = $fecha;
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
         } else if ($cant_cu == 4) {
@@ -1390,16 +1388,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas2['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1408,16 +1405,16 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas3['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+
+            $ins_cuotas3['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
@@ -1426,16 +1423,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas4['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas4['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
         } else if ($cant_cu == 5) {
 
@@ -1464,16 +1460,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas2['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1482,16 +1477,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas3['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas3['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
@@ -1500,16 +1494,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas4['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas4['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
@@ -1518,19 +1511,17 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas5['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas5['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
-
-            } else if ($cant_cu == 6) {
+        } else if ($cant_cu == 6) {
 
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
@@ -1558,16 +1549,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas2['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1576,16 +1566,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas3['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas3['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
@@ -1594,16 +1583,15 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas4['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+            $ins_cuotas4['FECHA_VEN'] = $fecha;
 
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
@@ -1613,16 +1601,16 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas5['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+
+            $ins_cuotas5['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
 
             $ins_cuotas6['NUM_FACTURA'] = $num_factura;
@@ -1631,16 +1619,16 @@ class compravino_model extends main_model {
             $habiles = 0;
             $selectDias = "";
             $ven = array();
-            for ($i = 1; $habiles < $otrosVen; $i++) {
-                $date = date('N', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                $diames = date('Y-m-d', mktime(0, 0, 0, date('n', strtotime($fecha)), date('d', strtotime($fecha)) + $i, date('Y', strtotime($fecha))));
-                if ($date != 6 && $date != 7) { // ME FIJO QUE NO SEA SABADO O DOMINGO
-                    $habiles++;
-                    $ven[$habiles] = $diames;
-                }
+            $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
+            $dia = date("w", strtotime($fecha));
+            if ($dia == 6) {
+                $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
             }
-            $fecha = date('Ymd', strtotime(end($ven)));
-            $ins_cuotas6['FECHA_VEN'] = end($ven);
+            if ($dia == 0) {
+                $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+            }
+
+            $ins_cuotas6['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
         }
     }
