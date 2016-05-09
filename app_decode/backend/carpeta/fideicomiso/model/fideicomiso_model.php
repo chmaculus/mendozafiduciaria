@@ -201,15 +201,22 @@ class fideicomiso_model extends main_model {
     }
 
     function get_fideicomiso_contable() {
-        $connect = mssql_connect("SVDESARROLLO\SQL2008R2", "sa", "Xxzz@2014");
-        mssql_select_db("MENDOZA_FID");
-        $consulta = mssql_query("SELECT EMP,DET_LARGO FROM  APAREMP WHERE EMP>0");
-        $array = array();
-        while ($row1 = mssql_fetch_assoc($consulta)) {
-            $row1['DET_LARGO'] = utf8_encode($row1['DET_LARGO']);
-            $array[] = $row1;
+//        $connect = mssql_connect("SVDESARROLLO\SQL2008R2", "sa", "Xxzz@2014");
+//        mssql_select_db("MENDOZA_FID");
+//        $consulta = mssql_query("SELECT EMP,DET_LARGO FROM  APAREMP WHERE EMP>0");
+//        $array = array();
+//        while ($row1 = mssql_fetch_assoc($consulta)) {
+//            $row1['DET_LARGO'] = utf8_encode($row1['DET_LARGO']);
+//            $array[] = $row1;
+//        }
+        $array2 = array();
+        $this->_dbsql->select('EMP,DET_LARGO');
+        $row2 = $this->_dbsql->get_tabla('APAREMP',"EMP>0");
+        foreach ($row2 as $value) {
+            $value['DET_LARGO'] = $value['DET_LARGO'];
+            $array2[] = $row2;
         }
-        return $array;
+        return $array2[0];
     }
 
     function get_condicioniva() {

@@ -78,7 +78,7 @@ class fideicomiso extends main_controller {
         $data['etiqueta_mod'] = "Cliente";
         $data['lst_provincias'] = $this->x_getprovincias();
         $data['lst_fideicomiso_contable'] = $this->x_getfideicomisoContable();
-//        $GLOBALS['lst_fideicomiso_contable'] = $this->x_getfideicomisoContable();
+
         $data['lst_condicioniva'] = $this->x_getcondicioniva();
         $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
         $data['lst_tipobeneficiario'] = $this->x_gettipobeneficiario();

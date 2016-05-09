@@ -1,4 +1,4 @@
- <ul class="toolbar">
+<ul class="toolbar">
     <!--<li class="tb_atras" data-top="lis_editar"><div>Regresar</div></li>-->
     <li class="tb_regresar_ope" data-top="ope_volver"><div>Regresar</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
@@ -10,6 +10,11 @@
 </ul>
 <br>   
 <input id="sincronizar_grillas" name="sincronizar" type="submit" class="button-a blue sincronizar_grillas" style="margin-top: 25px;" value="Sincronizar Datos">
+
+<!--<div style="height: 30px; margin-top: 80px;  float: left;">
+    <label>Fecha Vencimiento</label><input />
+</div>-->
+
 <div id="jqxgrid_listado"></div>
 <div id="op_cuota" style="display:none">
 </div>

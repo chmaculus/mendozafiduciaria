@@ -2940,18 +2940,27 @@ function initGridListado(id_usuario) {
         columnsresize: true,
         showtoolbar: true,
         //sortable: true,
-        groupable: true,
-        filterable: true,
-        showfilterrow: true,
+//        groupable: true,
+//        filterable: true,
+//        showfilterrow: true,
         localization: getLocalization(),
         rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
             var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
+//            var container2 = $("<div style='margin: 5px;'></div>");
+//            var span2 = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'> Fecha: </span>");
+//            var input2 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='fechaField' style='height: 23px; float: left; width: 223px; z-index:999;'/>");
+////            <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value=""> 
             toolbar.append(container);
             container.append(span);
             container.append(input);
+//            toolbar.append(container2);
+//            container.append(span2);
+//            container.append(input2);
+//            $("#fechaField").datepicker();
+            
             if (theme != "") {
                 input.addClass('jqx-widget-content-' + theme);
                 input.addClass('jqx-rc-all-' + theme);
@@ -3134,7 +3143,7 @@ function lote_pago() {
             });
             return false;
         } else if (swa == '4') {
-            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso del sector contable.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         }
