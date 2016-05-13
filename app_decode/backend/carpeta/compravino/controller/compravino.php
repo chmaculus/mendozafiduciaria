@@ -154,6 +154,9 @@ class compravino extends main_controller {
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 9)):
                 $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
                 return $this->view("form_operatoria_nueva", $data);
+            elseif (($provincia == 12 || $provincia == 17) && ($opcion == 10)):
+//                $data['lst_fideicomisos'] = $this->mod->get_fideicomisos();
+                return $this->view("vista8_estado", $data);
             elseif ($provincia == 12 || $provincia == 17):
                 return $this->view("vista2", $data);
             endif;
@@ -342,7 +345,7 @@ class compravino extends main_controller {
             }
 //            $html .= '</table>';
         }
-            $html .= '</table><br><br><br><br>
+        $html .= '</table><br><br><br><br>
                 <div id="trar-todo">
                 <div class="elem elem_med">
                 <label>Cambio de Titularidad:</label>
@@ -459,7 +462,7 @@ class compravino extends main_controller {
         $fecha = $_POST['fecha'];
         $rtn = $this->mod->verificarCuotas($num_factura);
         if (!$rtn) {
-            $rtn_cuotas = $this->mod->crearCuotas($num_factura,$cant_cu,$neto,$iva,$fecha);
+            $rtn_cuotas = $this->mod->crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha);
         }
     }
 
@@ -471,9 +474,39 @@ class compravino extends main_controller {
         }
     }
 
+    function x_sendPago1() {
+        $rtn = $this->mod->sendPago1($_POST);
+    }
+
+    function x_sendPago2() {
+        $rtn = $this->mod->sendPago2($_POST);
+    }
+
+    function x_sendPago3() {
+        $rtn = $this->mod->sendPago3($_POST);
+    }
+
+    function x_sendPago4() {
+        $rtn = $this->mod->sendPago4($_POST);
+    }
+
+    function x_sendPago5() {
+        $rtn = $this->mod->sendPago5($_POST);
+    }
+
+    function x_sendPago6() {
+        $rtn = $this->mod->sendPago6($_POST);
+    }
+
     function x_getoperatoria() {
         $id_objeto = $_POST['id_objeto'];
         $rtn = $this->mod->getoperatoria($id_objeto);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+
+    function x_getfactura() {
+        $id_objeto = $_POST['id_objeto'];
+        $rtn = $this->mod->getfactura($id_objeto);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 

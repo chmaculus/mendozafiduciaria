@@ -438,6 +438,137 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
+    function sendPago1($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+    }
+
+    function sendPago2($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        if ($array_post['ordenPago2'] == 'Sin Orden') {
+            $array_post['ordenPago2'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
+    }
+
+    function sendPago3($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        if ($array_post['ordenPago2'] == 'Sin Orden') {
+            $array_post['ordenPago2'] = '';
+        }
+        if ($array_post['ordenPago3'] == 'Sin Orden') {
+            $array_post['ordenPago3'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=3");
+    }
+
+    function sendPago4($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        if ($array_post['ordenPago2'] == 'Sin Orden') {
+            $array_post['ordenPago2'] = '';
+        }
+        if ($array_post['ordenPago3'] == 'Sin Orden') {
+            $array_post['ordenPago3'] = '';
+        }
+        if ($array_post['ordenPago4'] == 'Sin Orden') {
+            $array_post['ordenPago4'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=3");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=4");
+    }
+
+    function sendPago5($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        if ($array_post['ordenPago2'] == 'Sin Orden') {
+            $array_post['ordenPago2'] = '';
+        }
+        if ($array_post['ordenPago3'] == 'Sin Orden') {
+            $array_post['ordenPago3'] = '';
+        }
+        if ($array_post['ordenPago4'] == 'Sin Orden') {
+            $array_post['ordenPago4'] = '';
+        }
+        if ($array_post['ordenPago5'] == 'Sin Orden') {
+            $array_post['ordenPago5'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=3");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=4");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo5'], "ORDEN_PAGO" => $array_post['ordenPago5']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=5");
+    }
+
+    function sendPago6($array_post) {
+        if ($array_post['ordenPago1'] == 'Sin Orden') {
+            $array_post['ordenPago1'] = '';
+        }
+        if ($array_post['ordenPago2'] == 'Sin Orden') {
+            $array_post['ordenPago2'] = '';
+        }
+        if ($array_post['ordenPago3'] == 'Sin Orden') {
+            $array_post['ordenPago3'] = '';
+        }
+        if ($array_post['ordenPago4'] == 'Sin Orden') {
+            $array_post['ordenPago4'] = '';
+        }
+        if ($array_post['ordenPago5'] == 'Sin Orden') {
+            $array_post['ordenPago5'] = '';
+        }
+        if ($array_post['ordenPago6'] == 'Sin Orden') {
+            $array_post['ordenPago6'] = '';
+        }
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=3");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=4");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo5'], "ORDEN_PAGO" => $array_post['ordenPago5']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=5");
+
+        $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo6'], "ORDEN_PAGO" => $array_post['ordenPago6']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=6");
+    }
+
+    function getfactura($id_objeto) {
+        $this->_db->select("f.ID,f.ID_ESTADO,f.NUMERO,f.FORMA_PAGO,c.NUM_CUOTA,c.VALOR_CUOTA,c.ESTADO_CUOTA,f.ORDEN_PAGO");
+        $this->_db->join("fid_cu_pagos c", "f.NUMERO=c.NUM_FACTURA");
+        $rtn = $this->_db->get_tabla('fid_cu_factura f', "f.ID =" . $id_objeto);
+        $rtn_n = array();
+        foreach ($rtn as $value) {
+            if ($value['ORDEN_PAGO'] == '') {
+                $value['ORDEN_PAGO'] = 'Sin Orden';
+            }
+            $rtn_n[] = $value;
+        }
+        return $rtn_n;
+    }
+
     function getOperatoriaProveedores($id_objeto) {
         $this->_db->select("*");
         $rtn = $this->_db->get_tabla('fid_op_vino_proveedores', "ID_OPERATORIA = '" . $id_objeto . "'");
@@ -1065,7 +1196,6 @@ class compravino_model extends main_model {
                 $ins_cuotas4['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
-
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
                 $ins_cuotas5['VALOR_CUOTA'] = ($obj["NETO"] / 5);
@@ -1083,7 +1213,6 @@ class compravino_model extends main_model {
                 $ins_cuotas5['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
             } else if ($obj["FORMA_PAGO"] == 6) {
-
                 /*                 * *********************************************************************************************
                  * Forma de pago 6
                  * ********************************************************************************************* */
@@ -1121,7 +1250,6 @@ class compravino_model extends main_model {
                 if ($dia == 0) {
                     $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
                 }
-
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;

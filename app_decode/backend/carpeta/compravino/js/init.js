@@ -79,7 +79,7 @@ function guardar_factura() {
     }
     if (cai !== '') {
         if (fechavto < fecha) {
-            jAlert('La fecha de Vencimiento del CAI no puede ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('La fecha de Vencimiento del CAI no puede estar vacia o ser anterior a la fecha de la factura.', $.ucwords(_etiqueta_modulo), function () {
                 $("#fechavto").focus();
             });
             return false;
@@ -268,6 +268,7 @@ $(document).ready(function () {
         var urlh = "backend/carpeta/compravino/init/12";
         $(location).attr('href', urlh);
     });
+    init_datepicker('#fechaBuscarVen', '-3', '+5', '0', 0);
     semmilla = fGetNumUnico();
     mydata = '';
     initGridListado();
@@ -417,6 +418,189 @@ $(document).ready(function () {
         show_btns(2);
     });
     refresGridevent();
+
+    $('#send-estado').on('click', function (e) {
+        var estCuo1, estCuo2, estCuo3, estCuo4, estCuo5, estCuo6 = 0;
+        var ordenPago1, ordenPago2, ordenPago3, ordenPago4, ordenPago5, ordenPago6 = '';
+        var numFactura = $("#numFactura").val();
+        if ($("#cant-cuotas-f").val() == '1') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago1",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }});
+        }
+
+        if ($("#cant-cuotas-f").val() == '2') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            estCuo2 = $("#estadoCuota2").val();
+            ordenPago2 = $("#ordenPago2").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago2",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1,
+                    estCuo2: estCuo2,
+                    ordenPago2: ordenPago2
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }});
+        }
+        if ($("#cant-cuotas-f").val() == '3') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            estCuo2 = $("#estadoCuota2").val();
+            ordenPago2 = $("#ordenPago2").val();
+            estCuo3 = $("#estadoCuota3").val();
+            ordenPago3 = $("#ordenPago3").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago3",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1,
+                    estCuo2: estCuo2,
+                    ordenPago2: ordenPago2,
+                    estCuo3: estCuo3,
+                    ordenPago3: ordenPago3
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }});
+        }
+        if ($("#cant-cuotas-f").val() == '4') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            estCuo2 = $("#estadoCuota2").val();
+            ordenPago2 = $("#ordenPago2").val();
+            estCuo3 = $("#estadoCuota3").val();
+            ordenPago3 = $("#ordenPago3").val();
+            estCuo4 = $("#estadoCuota4").val();
+            ordenPago4 = $("#ordenPago4").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago3",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1,
+                    estCuo2: estCuo2,
+                    ordenPago2: ordenPago2,
+                    estCuo3: estCuo3,
+                    ordenPago3: ordenPago3,
+                    estCuo4: estCuo4,
+                    ordenPago4: ordenPago4
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }});
+        }
+        if ($("#cant-cuotas-f").val() == '5') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            estCuo2 = $("#estadoCuota2").val();
+            ordenPago2 = $("#ordenPago2").val();
+            estCuo3 = $("#estadoCuota3").val();
+            ordenPago3 = $("#ordenPago3").val();
+            estCuo4 = $("#estadoCuota4").val();
+            ordenPago4 = $("#ordenPago4").val();
+            estCuo5 = $("#estadoCuota5").val();
+            ordenPago5 = $("#ordenPago5").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago3",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1,
+                    estCuo2: estCuo2,
+                    ordenPago2: ordenPago2,
+                    estCuo3: estCuo3,
+                    ordenPago3: ordenPago3,
+                    estCuo4: estCuo4,
+                    ordenPago4: ordenPago4,
+                    estCuo5: estCuo5,
+                    ordenPago5: ordenPago5
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }});
+        }
+        if ($("#cant-cuotas-f").val() == '6') {
+            estCuo1 = $("#estadoCuota1").val();
+            ordenPago1 = $("#ordenPago1").val();
+            estCuo2 = $("#estadoCuota2").val();
+            ordenPago2 = $("#ordenPago2").val();
+            estCuo3 = $("#estadoCuota3").val();
+            ordenPago3 = $("#ordenPago3").val();
+            estCuo4 = $("#estadoCuota4").val();
+            ordenPago4 = $("#ordenPago4").val();
+            estCuo5 = $("#estadoCuota5").val();
+            ordenPago5 = $("#ordenPago5").val();
+            estCuo6 = $("#estadoCuota6").val();
+            ordenPago6 = $("#ordenPago6").val();
+            $.ajax({
+                url: _compravino.URL + "/x_sendPago3",
+                data: {
+                    numFactura: numFactura,
+                    estCuo1: estCuo1,
+                    ordenPago1: ordenPago1,
+                    estCuo2: estCuo2,
+                    ordenPago2: ordenPago2,
+                    estCuo3: estCuo3,
+                    ordenPago3: ordenPago3,
+                    estCuo4: estCuo4,
+                    ordenPago4: ordenPago4,
+                    estCuo5: estCuo5,
+                    ordenPago5: ordenPago5,
+                    estCuo6: estCuo6,
+                    ordenPago6: ordenPago6
+                },
+                dataType: "json", type: "post",
+                success: function () {
+                    jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
+                        $.unblockUI();
+                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        $(location).attr('href', urlh);
+                    });
+                }
+            });
+        }
+    });
+
     $('#send').on('click', function (e) {
         e.preventDefault();
         var opeNombre = $("#opeNombre").val();
@@ -564,6 +748,185 @@ $(document).ready(function () {
                 });
             }
         });
+    });
+    $('#buscar-ven').on('click', function () {
+
+        var fechaBuscar = $("#fechaBuscarVen").val();
+        if (fechaBuscar == '') {
+            alert("NADA");
+        }
+        $("#jqxgrid_listado").hide();
+        $("#jqxgrid_listado").show();
+//        id_usuario = id_usuario || '1';
+        var sourceope = {
+            datatype: "json",
+            datafields: [
+                {name: 'ID', type: 'string'},
+                {name: 'CLIENTE', type: 'string'},
+                {name: 'CUIT', type: 'string'},
+                {name: 'CONDIVA', type: 'string'},
+                {name: 'CONDIIBB', type: 'string'},
+                {name: 'CBU', type: 'string'},
+                {name: 'NUMERO', type: 'string'},
+                {name: 'FECHA', type: 'string'},
+                {name: 'BODEGA', type: 'string'},
+                {name: 'ID_BODEGA', type: 'int'},
+                {name: 'LITROS', type: 'string'},
+                {name: 'OBSERVACIONES', type: 'string'},
+                {name: 'USU_CARGA', type: 'string'},
+                {name: 'USU_CHEQUEO', type: 'string'},
+                {name: 'ESTADO', type: 'string'},
+                {name: 'PRECIO', type: 'number'},
+                {name: 'NETO', type: 'number'},
+                {name: 'IVA', type: 'number'},
+                {name: 'TOTAL', type: 'number'},
+                {name: 'CREATEDON', type: 'string'},
+                {name: 'ORDEN_PAGO', type: 'string'},
+                {name: 'CANT_CUOTAS', type: 'string'},
+                {name: 'VALORPAGAR', type: 'float'},
+                {name: 'NUMCUOTA', type: 'int'},
+                {name: 'FECHA_VEN', type: 'string'},
+                {name: 'CHECK_ESTADO', type: 'string'},
+                {name: 'ID_CONTABLE', type: 'int'},
+                {name: 'FORMULA', type: 'string'},
+                {name: 'IID', type: 'string'}
+            ],
+            url: 'general/extends/extra/carpetas.php',
+            data: {
+                accion: "getFacturasCuvaFiltro",
+                idtipo: 1,
+                idpro: _provincia,
+                fechaBuscar: fechaBuscar
+            },
+            async: false,
+            deleterow: function (rowid, commit) {
+                commit(true);
+            }
+        };
+        var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+                {
+                    formatData: function (data) {
+                        data.name_startsWith = $("#searchField").val();
+                        return data;
+                    }
+                }
+        );
+        var cellbeginedit = function (row, datafield, columntype, value) {
+            var fila = row;
+            if (row == fila)
+                return false;
+        }
+        var cellsrenderer = function (row, column, value, defaultHtml) {
+            var fila = row;
+            if (column == 'CHECK_ESTADO' && value == 'Confirmada' && row == fila) {
+                var element = $(defaultHtml);
+                element.css({'background-color': '#32CD32', 'width': '100%', 'height': '100%', 'margin': '0px'});
+                return element[0].outerHTML;
+            }
+            return defaultHtml;
+        }
+
+        $("#jqxgrid_listado").jqxGrid({
+            width: '96%',
+            source: dataAdapterope,
+            theme: 'energyblue',
+            ready: function () {
+                $("#jqxgrid_listado").jqxGrid('hidecolumn', 'IID');
+            },
+            selectionmode: 'multiplerows',
+            columnsresize: true,
+            showtoolbar: true,
+            //sortable: true,
+//        groupable: true,
+//        filterable: true,
+//        showfilterrow: true,
+            localization: getLocalization(),
+            rendertoolbar: function (toolbar) {
+                var me = this;
+                var container = $("<div style='margin: 5px;'></div>");
+                var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
+                var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
+//            var container2 = $("<div style='margin: 5px;'></div>");
+//            var span2 = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'> Fecha: </span>");
+//            var input2 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='fechaField' style='height: 23px; float: left; width: 223px; z-index:999;'/>");
+////            <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value=""> 
+                toolbar.append(container);
+                container.append(span);
+                container.append(input);
+//            toolbar.append(container2);
+//            container.append(span2);
+//            container.append(input2);
+//            $("#fechaField").datepicker();
+
+                if (theme != "") {
+                    input.addClass('jqx-widget-content-' + theme);
+                    input.addClass('jqx-rc-all-' + theme);
+                }
+                input.on('keydown', function (event) {
+                    if (me.timer)
+                        clearTimeout(me.timer);
+                    me.timer = setTimeout(function () {
+                        dataAdapterope.dataBind();
+                    }, 300);
+                });
+            },
+            columns: [
+                {text: 'ID_CONTABLE', datafield: 'ID_CONTABLE', hidden: true, width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+//            {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+//            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
+                {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+//            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
+                {text: 'IID', datafield: 'IID', width: '0%'}
+            ]
+        });
+//        var datosBuscar = [];
+//        var rows = $('#jqxgrid_listado').jqxGrid('getrows');
+//        for (var i = 0; i < rows.length; i++) {
+//            datosBuscar.push({
+//                ID: rows[i].ID,
+//                NUMERO: rows[i].NUMERO,
+//                ID_BODEGA: rows[i].ID_BODEGA
+//            });
+//        }
+//        $.ajax({
+//            url: _compravino.URL + "/x_sincronizarVino",
+//            data: {
+//                datosBuscar: datosBuscar
+//            },
+////            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function () {
+//                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
+//                    var urlh = "backend/carpeta/compravino/init/12/2";
+//                    $(location).attr('href', urlh);
+//                });
+//            }
+//        });
     });
     $('#send_edit').on('click', function (e) {
         e.preventDefault();
@@ -1092,6 +1455,58 @@ $(document).ready(function () {
                 return false;
             }
             editar_operatoria();
+        } else if (top == 'estado_cu') {
+            if (_permiso_modificacion == 0) {
+                jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
+                    $.unblockUI();
+                    switchBarra();
+                });
+                return false;
+            }
+            editar_estado_cu();
+            /* 
+             * 
+             * ESTO VA A MOSTAR EL ESTADO DE LAS CUOTAS
+             * 
+             * */
+            /*   
+             if (rowindexes.length == 1) {
+             var armado_detalle = '';
+             $.ajax({
+             url: _compravino.URL + "/x_getDetalleCu",
+             data: {num_fat: mydata.NUMERO},
+             dataType: "json",
+             type: "post",
+             async: false,
+             success: function (data) {
+             if (data.length > 0) {
+             armado_detalle = '<h2 style="font-size:15px">Estado Cuotas Factura N°: ' + data[0].NUM_FACTURA + '</h2>';
+             armado_detalle += '<ul>';
+             for (var i = 0; i < data.length; i++) {
+             armado_detalle += '<li style="list-style:none;margin-top:5px;">Cuota N° ' + data[i].NUM_CUOTA
+             + ' =>  Vencimiento: ' + data[i].FECHA_VEN + ' </li>'
+             + '<li style="margin-left:15px;"> Estado:' + data[i].ESTADO_CUOTA + '</li>'
+             + '<li style="margin-left:15px;"> Orden Pago:' + data[i].ORDEN_PAGO + ' </li>';
+             }
+             armado_detalle += '</ul>';
+             $.fancybox(
+             $("#op_cuota").html(armado_detalle),
+             {'padding': 80, 'autoScale': true, 'scrolling': 'auto'}
+             );
+             } else {
+             jAlert('No posee cuotas.', $.ucwords(_etiqueta_modulo));
+             }
+             }
+             });
+             } else if (rowindexes.length >= 2) {
+             jAlert('Se seleccionaron mas de un comprobante, debe seleccionar uno para ver el detalle.', $.ucwords(_etiqueta_modulo));
+             } else {
+             jAlert('No se selecciono comprobante, debe seleccionar un comprobante para ver el detalle.', $.ucwords(_etiqueta_modulo));
+             }
+             
+             
+             */
+
         } else if (top == 'edi_rev') {
             if (_permiso_modificacion == 0) {
                 jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
@@ -1270,6 +1685,9 @@ $(document).ready(function () {
     }
     if (_opcion == 9) {
         editar_formulario_operatoria();
+    }
+    if (_opcion == 10) {
+        editar_formulario_estado_cu();
     }
 
     evento_lista_arch();
@@ -1575,8 +1993,96 @@ function editar_formulario() {
                 });
                 $.unblockUI();
             }
+        }
+    });
+}
 
 
+function editar_formulario_estado_cu() {
+    var url_con_id = document.location.href;
+    var ultimo_id = url_con_id.split("/");
+    var el_id = ultimo_id[ultimo_id.length - 1];
+    var pagoshtml = '';
+    $.ajax({
+        url: _compravino.URL + "/x_getfactura",
+        data: {id_objeto: el_id},
+        dataType: "json",
+        type: "post",
+        success: function (rtn) {
+            $("#numFactura").val(rtn[0].NUMERO);
+            $("#cant-cuotas-f").val(rtn[0].FORMA_PAGO);
+            for (var i = 0; i < rtn.length; i++) {
+                pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
+                        + '<div class="indent formtext">'
+                        + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].VALOR_CUOTA + '">'
+                        + '</div>'
+                        + '</div>';
+
+                pagoshtml += '<div class="elem elem_med"><label class="der">ESTADO:</label><div class="indent" id="">'
+                        + '<select class="chzn-select medium-select select" id="estadoCuota' + rtn[i].NUM_CUOTA + '">'
+                        + '<option value="0">No enviada</option><option value="1">Pendiente</option><option value="2">Pagado</option>'
+                        + '</select></div></div>';
+
+                pagoshtml += '<div class="elem elem_med_cond">'
+                        + ' <label class="der">Orden de pago:</label><div class="indent formtext">'
+                        + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
+                        + '<div style="margin-top:50px;" class="clear"></div>';
+            }
+            $("#estado-cuota").html(pagoshtml);
+            if (rtn[0].FORMA_PAGO == 1) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+            }
+            if (rtn[0].FORMA_PAGO == 2) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota2").chosen({width: "220px"});
+                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+            }
+            if (rtn[0].FORMA_PAGO == 3) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota2").chosen({width: "220px"});
+                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota3").chosen({width: "220px"});
+                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+            }
+            if (rtn[0].FORMA_PAGO == 4) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota2").chosen({width: "220px"});
+                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota3").chosen({width: "220px"});
+                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota4").chosen({width: "220px"});
+                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+            }
+            if (rtn[0].FORMA_PAGO == 5) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota2").chosen({width: "220px"});
+                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota3").chosen({width: "220px"});
+                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota4").chosen({width: "220px"});
+                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota5").chosen({width: "220px"});
+                $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
+            }
+            if (rtn[0].FORMA_PAGO == 6) {
+                $("#estadoCuota1").chosen({width: "220px"});
+                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota2").chosen({width: "220px"});
+                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota3").chosen({width: "220px"});
+                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota4").chosen({width: "220px"});
+                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota5").chosen({width: "220px"});
+                $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
+                $("#estadoCuota6").chosen({width: "220px"});
+                $("#estadoCuota6").val(rtn[5].ESTADO_CUOTA).trigger("chosen:updated");
+            }
         }
     });
 }
@@ -2913,7 +3419,6 @@ function initGridListado(id_usuario) {
                 }
             }
     );
-
     var cellbeginedit = function (row, datafield, columntype, value) {
         var fila = row;
         if (row == fila)
@@ -2960,7 +3465,7 @@ function initGridListado(id_usuario) {
 //            container.append(span2);
 //            container.append(input2);
 //            $("#fechaField").datepicker();
-            
+
             if (theme != "") {
                 input.addClass('jqx-widget-content-' + theme);
                 input.addClass('jqx-rc-all-' + theme);
@@ -3097,6 +3602,32 @@ function editar_operatoria(name_grid) {
     }
     var urlh = "backend/carpeta/compravino/init/12/9/" + mydata.ID_OPERATORIA;
     $(location).attr('href', urlh);
+}
+
+function editar_estado_cu(name_grid) {
+    name_grid || (name_grid = 'jqxgrid_listado');
+    mydata = '';
+    var selectedrowindex = $("#" + name_grid).jqxGrid('getselectedrowindex');
+    var selectedrowindexes = $("#" + name_grid).jqxGrid('getselectedrowindexes');
+    mydata = $('#' + name_grid).jqxGrid('getrowdata', selectedrowindex);
+    console.log("LALALALALA");
+    console.log(mydata);
+//    if (mydata == null) {
+//        jAlert('Seleccione una factura.', $.ucwords(_etiqueta_modulo), function () {
+//            $.unblockUI();
+//        });
+//        return false;
+//    }
+//    if (selectedrowindexes.length > 1) {
+//        jAlert('Elija solo una Factura para editar.', $.ucwords(_etiqueta_modulo), function () {
+//            $.unblockUI();
+//        });
+//        return false;
+//    }
+    var urlh = "backend/carpeta/compravino/init/12/10/" + mydata.ID;
+    $(location).attr('href', urlh);
+//    var urlh = "backend/carpeta/compravino/init/" + _provincia + "/10";
+//    $(location).attr('href', urlh);
 }
 
 function limpiar_form_nf() {

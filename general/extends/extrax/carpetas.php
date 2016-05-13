@@ -243,6 +243,210 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
     echo trim(json_encode($array_cuotas ? $array_cuotas : array()));
     die();
 }
+if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuvaFiltro') {
+
+
+    $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";
+    $idope = isset($_GET["idope"]) ? $_GET["idope"] : '0';
+    $idpro = isset($_GET["idpro"]) ? $_GET["idpro"] : '0';
+    $idestado = isset($_GET["estado"]) ? $_GET["estado"] : '0';
+    $idtipo = isset($_GET["idtipo"]) ? $_GET["idtipo"] : '0';
+    $fechaBuscar = isset($_GET["fechaBuscar"]) ? $_GET["fechaBuscar"] : '';
+    $condicion_fecha = '';
+    if ($fechaBuscar != '') {
+//        $condicion_fecha = "AND pa.FECHA_VEN <='".date("Ymd",$fechaBuscar)."'";
+    }
+
+    $cad_campos = "f.ID, c.CUIT, c.RAZON_SOCIAL";
+    $arr_campos = explode(', ', $cad_campos);
+    $cad_like = "";
+    foreach ($arr_campos as $tp) {
+        $cad_like .= " " . $tp . " LIKE '%" . $word . "%' OR";
+    }
+    $cad_like = substr($cad_like, 0, -2);
+
+    $array_cuotas = array();
+
+/*    
+    SELECT IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA,IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
+f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
+f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
+ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
+c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
+DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO,IFNULL(ti.CHECK_ESTADO,0) AS CHECK_ESTADO,
+IFNULL(fi.ID_CONTABLE,0) AS ID_CONTABLE,
+(SELECT fecha_ven FROM fid_cu_pagos WHERE NUM_FACTURA=f.NUMERO AND ESTADO_CUOTA!=2 LIMIT 1) AS FECHA_VEN
+FROM fid_cu_factura f  LEFT JOIN fid_clientes c ON ( c.ID=f.ID_CLIENTE )  
+LEFT JOIN fid_cliente_condicion_iva civa ON ( civa.ID=c.ID_CONDICION_IVA )  
+LEFT JOIN fid_cliente_condicion_iibb ciibb ON ( ciibb.ID=c.ID_CONDICION_IIBB )  
+LEFT JOIN fid_entidades ent ON ( ent.ID=f.ID_BODEGA )  LEFT JOIN fid_cu_factura_estados fe ON ( fe.ID=f.ID_ESTADO )  
+LEFT JOIN fid_usuarios u1 ON ( u1.ID=f.USU_CARGA )  LEFT JOIN fid_usuarios u2 ON ( u2.ID=f.USU_CHEQUEO )  
+LEFT JOIN fid_operatoria_vino of ON ( of.ID_OPERATORIA = f.ID_OPERATORIA )  
+LEFT JOIN fid_op_vino_cambio_tit ti ON ( ti.ID_FACTURA=f.NUMERO )  
+LEFT JOIN fid_fideicomiso fi ON ( fi.ID=of.ID_FIDEICOMISO )  
+LEFT JOIN fid_cu_pagos pa ON ( pa.NUM_FACTURA=f.NUMERO)  
+WHERE (  f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
+AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='20160630'
+
+*/  
+    $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA,IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
+            f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
+            f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
+            ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
+            c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
+            DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, of.ID_OPERATORIA,f.FORMA_PAGO,IFNULL(ti.CHECK_ESTADO,0) AS CHECK_ESTADO,
+            IFNULL(fi.ID_CONTABLE,0) AS ID_CONTABLE");
+    $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
+    $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
+    $cnn->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
+    $cnn->join("fid_entidades ent", "ent.ID=f.ID_BODEGA", "left");
+    $cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
+    $cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
+    $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+    $cnn->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
+    $cnn->join("fid_op_vino_cambio_tit ti", "ti.ID_FACTURA=f.NUMERO", "left");
+    $cnn->join("fid_fideicomiso fi", "fi.ID=of.ID_FIDEICOMISO", "left");
+//    $cnn->join("fid_cu_pagos pa", "pa.NUM_FACTURA=f.NUMERO", "left");
+
+    if ($idestado > 0) {
+        $cad_where = "( " . $cad_like . ") and f.ID_ESTADO = '" . $idestado . "'";
+    } else {
+        $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
+    }
+    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
+
+    $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
+//    file_put_contents('OBTENERLOTESFACTURAS.log', $cnn->last_query());
+
+    foreach ($rtn as $value) {
+
+        $cnn->select("*"); //$rtn_cuota = $cnn->get_tabla("fid_cu_pagos","NUM_FACTURA='".$value['NUMERO']."' AND ID_PAGO=0");
+        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "'");
+        $facNum = '';
+        foreach ($rtn_cuota as $value_cuota) {
+
+            if ($value_cuota['ESTADO_CUOTA'] == '0' && $facNum != $value['NUMERO']) {
+                $facNum = $value['NUMERO'];
+                $value['CANT_CUOTAS'] = (string) $value_cuota['NUM_CUOTA'] . "/" . (string) $value['FORMA_PAGO'];
+                if ($value['FORMA_PAGO'] == '1' || $value['FPAGO'] == '0') {
+                    $value['VALORPAGAR'] = (float) $value['TOTAL'];
+                    $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                    $cnn->select("FECHA_VEN");
+                    $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                    $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                } else if ($value['FORMA_PAGO'] == '2') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 2) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '3') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 2) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else if ($value_cuota['NUM_CUOTA'] == 3) {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '4') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '5') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    }
+                } else if ($value['FORMA_PAGO'] == '6') {
+                    if ($value_cuota['NUM_CUOTA'] == 1) {
+                        $value['VALORPAGAR'] = ((float) $value['NETO'] / (float) $value['FORMA_PAGO']) + (float) $value['IVA'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    } else {
+                        $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
+                        $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
+                        $cnn->select("FECHA_VEN");
+                        $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                        $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
+                    }
+                }
+            }
+        }
+
+        if ($value['CHECK_ESTADO'] == '1') {
+            $value['CHECK_ESTADO'] = 'Confirmada';
+        } else {
+            $value['CHECK_ESTADO'] = 'S/Confirmar';
+        }
+
+
+        $cnn->select("ORDEN_PAGO");
+        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
+
+        if ($rtn_orden[0]['ORDEN_PAGO']) {
+            $value['ORDEN_PAGO'] = $rtn_orden[0]['ORDEN_PAGO'];
+        }
+
+
+        $array_cuotas[] = $value;
+    }
+//    die("SSS");
+    echo trim(json_encode($array_cuotas ? $array_cuotas : array()));
+    die();
+}
 
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
 //    $cnn->select("*");//$cnn->order_by("ID_OPERATORIA"," DESC");//$rtn = $cnn->get_tabla("fid_operatoria_vino");
