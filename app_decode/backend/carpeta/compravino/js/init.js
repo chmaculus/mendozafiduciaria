@@ -2016,81 +2016,88 @@ function editar_formulario_estado_cu() {
         dataType: "json",
         type: "post",
         success: function (rtn) {
-            $("#numFactura").val(rtn[0].NUMERO);
-            $("#cant-cuotas-f").val(rtn[0].FORMA_PAGO);
-            $("#estFact").chosen({width: "220px"});
-            $("#estFact").val(rtn[0].ID_ESTADO).trigger("chosen:updated");
-            for (var i = 0; i < rtn.length; i++) {
-                pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
-                        + '<div class="indent formtext">'
-                        + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].VALOR_CUOTA + '">'
-                        + '</div>'
-                        + '</div>';
+            if (rtn.length > 0) {
+                $("#numFactura").val(rtn[0].NUMERO);
+                $("#cant-cuotas-f").val(rtn[0].FORMA_PAGO);
+                $("#estFact").chosen({width: "220px"});
+                $("#estFact").val(rtn[0].ID_ESTADO).trigger("chosen:updated");
+                for (var i = 0; i < rtn.length; i++) {
+                    pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
+                            + '<div class="indent formtext">'
+                            + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].VALOR_CUOTA + '">'
+                            + '</div>'
+                            + '</div>';
 
-                pagoshtml += '<div class="elem elem_med"><label class="der">ESTADO:</label><div class="indent" id="">'
-                        + '<select class="chzn-select medium-select select" id="estadoCuota' + rtn[i].NUM_CUOTA + '">'
-                        + '<option value="0">No enviada</option><option value="1">Pendiente</option><option value="2">Pagado</option>'
-                        + '</select></div></div>';
+                    pagoshtml += '<div class="elem elem_med"><label class="der">ESTADO:</label><div class="indent" id="">'
+                            + '<select class="chzn-select medium-select select" id="estadoCuota' + rtn[i].NUM_CUOTA + '">'
+                            + '<option value="0">No enviada</option><option value="1">Pendiente</option><option value="2">Pagado</option>'
+                            + '</select></div></div>';
 
-                pagoshtml += '<div class="elem elem_med_cond">'
-                        + ' <label class="der">Orden de pago:</label><div class="indent formtext">'
-                        + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
-                        + '<div style="margin-top:50px;" class="clear"></div>';
-            }
-            $("#estado-cuota").html(pagoshtml);
-            if (rtn[0].FORMA_PAGO == 1) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-            }
-            if (rtn[0].FORMA_PAGO == 2) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota2").chosen({width: "220px"});
-                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
-            }
-            if (rtn[0].FORMA_PAGO == 3) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota2").chosen({width: "220px"});
-                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota3").chosen({width: "220px"});
-                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
-            }
-            if (rtn[0].FORMA_PAGO == 4) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota2").chosen({width: "220px"});
-                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota3").chosen({width: "220px"});
-                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota4").chosen({width: "220px"});
-                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
-            }
-            if (rtn[0].FORMA_PAGO == 5) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota2").chosen({width: "220px"});
-                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota3").chosen({width: "220px"});
-                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota4").chosen({width: "220px"});
-                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota5").chosen({width: "220px"});
-                $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
-            }
-            if (rtn[0].FORMA_PAGO == 6) {
-                $("#estadoCuota1").chosen({width: "220px"});
-                $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota2").chosen({width: "220px"});
-                $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota3").chosen({width: "220px"});
-                $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota4").chosen({width: "220px"});
-                $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota5").chosen({width: "220px"});
-                $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
-                $("#estadoCuota6").chosen({width: "220px"});
-                $("#estadoCuota6").val(rtn[5].ESTADO_CUOTA).trigger("chosen:updated");
+                    pagoshtml += '<div class="elem elem_med_cond">'
+                            + ' <label class="der">Orden de pago:</label><div class="indent formtext">'
+                            + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
+                            + '<div style="margin-top:50px;" class="clear"></div>';
+                }
+                $("#estado-cuota").html(pagoshtml);
+                if (rtn[0].FORMA_PAGO == 1) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+                if (rtn[0].FORMA_PAGO == 2) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota2").chosen({width: "220px"});
+                    $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+                if (rtn[0].FORMA_PAGO == 3) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota2").chosen({width: "220px"});
+                    $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota3").chosen({width: "220px"});
+                    $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+                if (rtn[0].FORMA_PAGO == 4) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota2").chosen({width: "220px"});
+                    $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota3").chosen({width: "220px"});
+                    $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota4").chosen({width: "220px"});
+                    $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+                if (rtn[0].FORMA_PAGO == 5) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota2").chosen({width: "220px"});
+                    $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota3").chosen({width: "220px"});
+                    $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota4").chosen({width: "220px"});
+                    $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota5").chosen({width: "220px"});
+                    $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+                if (rtn[0].FORMA_PAGO == 6) {
+                    $("#estadoCuota1").chosen({width: "220px"});
+                    $("#estadoCuota1").val(rtn[0].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota2").chosen({width: "220px"});
+                    $("#estadoCuota2").val(rtn[1].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota3").chosen({width: "220px"});
+                    $("#estadoCuota3").val(rtn[2].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota4").chosen({width: "220px"});
+                    $("#estadoCuota4").val(rtn[3].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota5").chosen({width: "220px"});
+                    $("#estadoCuota5").val(rtn[4].ESTADO_CUOTA).trigger("chosen:updated");
+                    $("#estadoCuota6").chosen({width: "220px"});
+                    $("#estadoCuota6").val(rtn[5].ESTADO_CUOTA).trigger("chosen:updated");
+                }
+            } else {
+                jAlert('No se ha generado ninguna forma de pago en la cuota con el ID '+el_id+'.', $.ucwords(_etiqueta_modulo), function () {
+                    var urlh = "backend/carpeta/compravino/init/12/2";
+                    $(location).attr('href', urlh);
+                });
             }
         }
     });

@@ -454,7 +454,7 @@ class compravino_model extends main_model {
             $array_post['ordenPago2'] = '';
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
@@ -470,8 +470,8 @@ class compravino_model extends main_model {
         if ($array_post['ordenPago3'] == 'Sin Orden') {
             $array_post['ordenPago3'] = '';
         }
-$this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
-    
+        $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
@@ -492,8 +492,8 @@ $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactur
         if ($array_post['ordenPago4'] == 'Sin Orden') {
             $array_post['ordenPago4'] = '';
         }
-    $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
-        
+        $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
@@ -520,7 +520,7 @@ $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactur
             $array_post['ordenPago5'] = '';
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
@@ -552,7 +552,7 @@ $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactur
             $array_post['ordenPago6'] = '';
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "'");
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1");
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2");
@@ -567,17 +567,27 @@ $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactur
     }
 
     function getfactura($id_objeto) {
-        $this->_db->select("f.ID,f.ID_ESTADO,f.NUMERO,f.FORMA_PAGO,c.NUM_CUOTA,c.VALOR_CUOTA,c.ESTADO_CUOTA,f.ORDEN_PAGO");
-        $this->_db->join("fid_cu_pagos c", "f.NUMERO=c.NUM_FACTURA");
-        $rtn = $this->_db->get_tabla('fid_cu_factura f', "f.ID =" . $id_objeto);
-        $rtn_n = array();
-        foreach ($rtn as $value) {
-            if ($value['ORDEN_PAGO'] == '') {
-                $value['ORDEN_PAGO'] = 'Sin Orden';
+        $this->_db->select("NUMERO");
+        $rtn_factura = $this->_db->get_tabla("fid_cu_factura", "ID=" . $id_objeto);
+        $rtn_pagos = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA ='" . $rtn_factura[0]['NUMERO'] . "'");
+
+        if ($rtn_pagos) {
+            $this->_db->select("f.ID,f.ID_ESTADO,f.NUMERO,f.FORMA_PAGO,c.NUM_CUOTA,c.VALOR_CUOTA,c.ESTADO_CUOTA,f.ORDEN_PAGO");
+            $this->_db->join("fid_cu_pagos c", "f.NUMERO=c.NUM_FACTURA");
+            $rtn = $this->_db->get_tabla('fid_cu_factura f', "f.ID =" . $id_objeto);
+            $rtn_n = array();
+            foreach ($rtn as $value) {
+                if ($value['ORDEN_PAGO'] == '') {
+                    $value['ORDEN_PAGO'] = 'Sin Orden';
+                }
+                $rtn_n[] = $value;
             }
-            $rtn_n[] = $value;
+            return $rtn_n;
+        } else {
+
+            $rtn_n = array();
+            return $rtn_n;
         }
-        return $rtn_n;
     }
 
     function getOperatoriaProveedores($id_objeto) {
