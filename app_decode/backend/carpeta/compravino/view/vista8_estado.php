@@ -11,7 +11,7 @@
     <li class="tb_regresar_ope" data-top="ope_volver"><div>Regresar</div></li>
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
 </ul>
-    <input type="hidden" id="cant-cuotas-f" value=""/>
+<input type="hidden" id="cant-cuotas-f" value=""/>
 <div class="cambioEstados_form">
     <div class="elem elem_med_cond">
         <label class="der">N° Factura:</label>
@@ -19,7 +19,15 @@
             <input type="text" class="tip-right" title="numFactura" id="numFactura" value="" >
         </div>
     </div>
-<div style="margin-top:50px;" class="clear"></div>
+
+    <div class="elem elem_med"><label class="der">Estado Factura:</label><div class="indent" id="estado-factura">
+            <select class="chzn-select medium-select select" id="estFact">
+                <option value="1">Cargada</option><option value="5">Pago Solicitado</option><option value="9">Pagada o Pago Rechazado</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="margin-top:50px;" class="clear"></div>
     <div id="estado-cuota">
     </div>
 

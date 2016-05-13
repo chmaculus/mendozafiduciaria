@@ -423,6 +423,7 @@ $(document).ready(function () {
         var estCuo1, estCuo2, estCuo3, estCuo4, estCuo5, estCuo6 = 0;
         var ordenPago1, ordenPago2, ordenPago3, ordenPago4, ordenPago5, ordenPago6 = '';
         var numFactura = $("#numFactura").val();
+        var estFactura = $("#estFact").val();
         if ($("#cant-cuotas-f").val() == '1') {
             estCuo1 = $("#estadoCuota1").val();
             ordenPago1 = $("#ordenPago1").val();
@@ -430,6 +431,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago1",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1
                 },
@@ -452,6 +454,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago2",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1,
                     estCuo2: estCuo2,
@@ -477,6 +480,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1,
                     estCuo2: estCuo2,
@@ -506,6 +510,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1,
                     estCuo2: estCuo2,
@@ -539,6 +544,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1,
                     estCuo2: estCuo2,
@@ -576,6 +582,7 @@ $(document).ready(function () {
                 url: _compravino.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
+                    estFactura: estFactura,
                     estCuo1: estCuo1,
                     ordenPago1: ordenPago1,
                     estCuo2: estCuo2,
@@ -2011,6 +2018,8 @@ function editar_formulario_estado_cu() {
         success: function (rtn) {
             $("#numFactura").val(rtn[0].NUMERO);
             $("#cant-cuotas-f").val(rtn[0].FORMA_PAGO);
+            $("#estFact").chosen({width: "220px"});
+            $("#estFact").val(rtn[0].ID_ESTADO).trigger("chosen:updated");
             for (var i = 0; i < rtn.length; i++) {
                 pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
                         + '<div class="indent formtext">'
