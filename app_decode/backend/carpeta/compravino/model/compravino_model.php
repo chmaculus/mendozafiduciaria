@@ -74,7 +74,7 @@ class compravino_model extends main_model {
         $this->_db->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
         $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
             AND f.ID_PROVINCIA='12' AND TIPO=1 AND f.ID_ESTADO='5'");
-
+//        log_this('log/SELECTGRANDEEE.log', $this->_db->last_query() );
         foreach ($fact_enviadas as $value) {
             if (is_null($value['NUM_CUOTA'])) {
                 //No debe hacer nada si es null
@@ -83,9 +83,9 @@ class compravino_model extends main_model {
 
                     $this->_dbsql->select("CUIT,OPERATORIA,LOTE,IDFACTURAINT,NUMFACTURA,TIPO,ESTADO,CCU,UCU,BODEGA,ORDEN_PAGO,FECHA_PROCESADO");
                     $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
-                            " AND NUMFACTURA=" . $value['NUMERO'] . "" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
+                            " AND NUMFACTURA='" . $value['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
                             . "AND BODEGA=" . $value['ID_BODEGA']);
-
+        log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query() );
                     if ($solicitud_adm[$j]) {
 
                         if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
@@ -117,7 +117,7 @@ class compravino_model extends main_model {
     function guardarlote($arr_obj) {
 
         $id_lote_new = 0;
-        if ($arr_obj):
+        if ($arr_obj){
             //insert cabezera
             $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
 
@@ -188,6 +188,7 @@ class compravino_model extends main_model {
                     $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins_cuota);
                 } else if ((int) $cuit_cli[0]['FORMA_PAGO'] >= 1) {
                     if ($ciu['NUMCUOTA'] == '1') {
+//                        die("ENTRA 1 CUOTA");
                         $arra_ins = array(
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
@@ -238,7 +239,7 @@ class compravino_model extends main_model {
                             "FIDEICOMISO" => (int) $cuit_cli[0]['ID_CONTABLE'],
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
-                            "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
+                            "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']),
                             "CCU" => (int) $cuit_cli[0]['FORMA_PAGO'], //Cantidad de cuotas
                             "UCU" => (int) $ciu['NUMCUOTA'], // numero de la cuota a pagar
                             "LOTE" => $id_lote_new,
@@ -260,7 +261,7 @@ class compravino_model extends main_model {
             endforeach;
             $this->actualizarTablasW();
 
-        endif;
+    }
         return $id_lote_new;
     }
 
