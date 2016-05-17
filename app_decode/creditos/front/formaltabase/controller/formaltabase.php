@@ -159,6 +159,8 @@ class formaltabase extends main_controller {
     function _guardar_creditos_excel() {
         $_SESSION['msg_err'] = "";
         $excel = $_FILES['fexcel'];
+        set_time_limit(0);
+        ini_set('memory_limit', '512M');
         if (isset($excel['tmp_name']) && is_file($excel['tmp_name'])) {
             $dir = 'backup/importaciones/' ;
             if (!is_dir($dir)) {
@@ -172,7 +174,7 @@ class formaltabase extends main_controller {
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
 
             $objReader = new PHPExcel_Reader_Excel2007();
-            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+            if ($objPHPExcel = $objReader->load($file_import)) {
                 set_time_limit(0);
 
                 $objPHPExcel->setActiveSheetIndex(0);
