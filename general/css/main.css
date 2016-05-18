@@ -152,6 +152,9 @@ verfoto img{
 .tb_desmarcar_cu{
     background: url('../../general/css/images/32x32/desmarcar.png') no-repeat 50% 6px !important;
 }
+.tb_estado_cu{
+    background: url('../../general/css/images/32x32/estado-fact.png') no-repeat 50% 6px !important;
+}
 
 .tb_uncheck{
     background: url('../../general/css/images/32x32/uncheckall.png') no-repeat 50% 6px !important;

@@ -336,6 +336,15 @@ iframe{
     display: none;
     float: left;
 }
+.cambioEstados_form{
+    margin-left: 33px;
+    min-height: 520px;
+    width: 980px;
+    position: relative;
+    top: 20px;
+    float: left;
+}
+
 .nuevaOpe_form{
     margin-left: 33px;
     min-height: 520px;
