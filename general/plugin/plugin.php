@@ -28,6 +28,9 @@ function get_plugin(&$_plug){
     //$_plug['jqgrid']["js"]['backend/administracion/permisos'] = array("jqwidgets/jqxcore.js","jqwidgets/jqxdata.js","jqwidgets/jqxbuttons.js","jqwidgets/jqxscrollbar.js","jqwidgets/jqxmenu.js","jqwidgets/jqxgrid.js","jqwidgets/jqxgrid.grouping.js","jqwidgets/jqxgrid.selection.js","scripts/gettheme.js","jqwidgets/jqxnumberinput.js","jqwidgets/globalization/globalize.js","jqwidgets/jqxgrid.columnsresize.js","jqwidgets/jqxgrid.edit.js","jqwidgets/jqxmaskedinput.js","jqwidgets/jqxlistbox.js","jqwidgets/jqxdropdownlist.js","jqwidgets/jqxgrid.filter.js","jqwidgets/jqxlistbox.js","jqwidgets/jqxgrid.aggregates.js","jqwidgets/jqxcheckbox.js","jqwidgets/jqxtree.js");
     //$_plug['jqgrid']["js"]['creditos/cuotas'] = array("jqwidgets/jqxcore.js","jqwidgets/jqxtabs.js");
 
+    $_plug['multiselect']["css"] = array("multiselect.css");
+    $_plug['multiselect']["js"] = array("multiselect.js");
+    
 
     $_plug['numeric']["css"] = array("numeric.css");
     $_plug['numeric']["js"] = array("jquery.numeric.js");

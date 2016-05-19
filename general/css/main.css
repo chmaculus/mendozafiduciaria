@@ -102,7 +102,7 @@ verfoto img{
 .tb_per{
     background: url('../../general/css/images/32x32/permisos.png') no-repeat 50% 6px !important;
 }
-.tb_atras{
+.tb_atras,.tb_atras_ope, .tb_regresar_ope{
     background: url('../../general/css/images/32x32/Back.png') no-repeat 50% 6px !important;
 }
 .tb_chist{
@@ -146,7 +146,15 @@ verfoto img{
 .tb_pagos{
     background: url('../../general/css/images/32x32/monedas.jpg') no-repeat 50% 6px !important;
 }
-
+.tb_detalle_cu{
+    background: url('../../general/css/images/32x32/zoom-cu.png') no-repeat 50% 6px !important;
+}
+.tb_desmarcar_cu{
+    background: url('../../general/css/images/32x32/desmarcar.png') no-repeat 50% 6px !important;
+}
+.tb_estado_cu{
+    background: url('../../general/css/images/32x32/estado-fact.png') no-repeat 50% 6px !important;
+}
 
 .tb_uncheck{
     background: url('../../general/css/images/32x32/uncheckall.png') no-repeat 50% 6px !important;

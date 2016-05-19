@@ -18,6 +18,17 @@
         </form>
       </div>
 </div>
+<?php if($lst_operatorias) { ?>
+<div id="op_vino" style="display:none">
+    <h2>Seleccione la operatoria</h2>
+    <ul id="lst_op_vino">
+        <?php foreach ($lst_operatorias as $it_o) { ?>
+        <li data-id="<?= $it_o['ID_OPERATORIA']; ?>"><?= $it_o['NOMBRE_OPE']; ?> (<?= date('d/m/Y', strtotime($it_o['FECHA_CRE'])) ?>)</li>
+        <?php } ?>
+    </ul>
+    <button onclick="imp_procesar();" value="Procesar importación">Procesar importación</button>
+</div>
+<?php } ?>
 <iframe name="enviar_archivo" id="enviar_archivo"></iframe>
 
 

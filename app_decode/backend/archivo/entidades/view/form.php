@@ -124,9 +124,15 @@
                     </div>
 
                     <div class="elem elem_med">
-                        <label>Limite:</label>
+                        <label>Limite Kgrs:</label>
                         <div class="indent formtext">
                             <input type="text" class="" title="Ingrese limite" id="limite" value="0"> 
+                        </div>
+                    </div>
+                    <div class="elem elem_med">
+                        <label>Limite Litros:</label>
+                        <div class="indent formtext">
+                            <input type="text" class="" title="Ingrese limite" id="limiteLitros" value="0"> 
                         </div>
                     </div>
 

@@ -16,6 +16,7 @@
                     <input type="hidden" id="nombreh" />
                     
                     <input type="hidden" id="provinciah1" value="<?php echo isset($entidad["ID_PROVINCIA"])?$entidad["ID_PROVINCIA"]:"" ?>" />
+                    <input type="hidden" id="fcontable" value="<?php echo isset($entidad["ID_CONTABLE"])?$entidad["ID_CONTABLE"]:"" ?>" />
                     <input type="hidden" id="localidadh1" value="<?php echo isset($entidad["ID_DEPARTAMENTO"])?$entidad["ID_DEPARTAMENTO"]:"" ?>" />
                     <input type="hidden" id="finih" value="<?php echo isset($entidad["FECHA_INICIO"])?$entidad["FECHA_INICIO"]:"" ?>" />
                     <input type="hidden" id="ffinh" value="<?php echo isset($entidad["FECHA_FIN"])?$entidad["FECHA_FIN"]:"" ?>" />
@@ -85,6 +86,20 @@
                     </div>
                     <?php endif; ?>
                     
+                    <?php if(is_array($lst_fideicomiso_contable)): ?>
+                    
+                    <div class="elem elem_med" >
+                        <label>Fideicomiso Cont:</label>
+                        <div class="indent">
+                        <select class="validate[required] chzn-select medium-select select" id="fidcontables" data-prompt-position="topLeft">
+                            <option value="">Elegir Fideicomiso</option>
+                            <?php foreach($lst_fideicomiso_contable as $r_prov): ?>
+                            <option data-connection="<?php echo $r_prov["EMP"] ?>" value="<?php echo $r_prov["EMP"] ?>"><?php echo $r_prov["EMP"]."-".$r_prov["DET_LARGO"] ?></option>
+                            <?php endforeach; ?>
+                        </select>   
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     
                  
     		 <div class="clear"> </div>
@@ -279,9 +294,9 @@
               </div> 
            </div>
 		 <!--Tabs end-->
-                    <div class="elem elempie">
+                    <div class="elem elempie"  style="margin-top:50px;">
                         <div class="indent">
-                          <input id="send" name="send" type="submit" class="button-a gray" value="Enviar" /> &nbsp;&nbsp;
+                            <input id="send" name="send" type="submit" class="button-a gray" value="Enviar"/> &nbsp;&nbsp;
                           <button class="button-a dark-blue" id="btnClear">Limpiar</button>  
                         </div>
                     </div>

@@ -22,6 +22,7 @@ class entidades_model extends main_model{
     function sendobj($obj , $obj_tipo_entidades){
         $iid = $obj["id"];
         unset($obj["id"]);
+//        var_dump($obj);die("ACA EL OBJETO A GUARDAR");
         if ($iid==0)://agregar
             $resp = $this->_db->insert($this->_tablamod, $obj);
             $acc = "add";

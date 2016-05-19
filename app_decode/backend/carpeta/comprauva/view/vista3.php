@@ -1,380 +1,474 @@
 <ul class="toolbar">
     <li class="tb_atras" data-top="lis_editar"><div>Regresar</div></li>
-    
-    
     <li class="tb_ver" data-top='inicio'><div>Inicio</div></li>
-    
     <li class="tb_search" data-top='search'><div>Buscar Cuit</div></li>
-    
-    
-    
     <li class="tb_fil" data-top='nueva_f'><div>Nueva Factura</div></li>
     <li class="tb_save" data-top="lis_guardar_enviar"><div>Guardar Cliente</div></li>
     <li class="tb_save1" data-top="lis_guardar_fact"><div>Guardar Factura</div></li>
-    
-<!--    <li class="tb_edi" data-top='edi'><div>Editar</div></li> -->
+
+    <!--    <li class="tb_edi" data-top='edi'><div>Editar</div></li> -->
 </ul>
 
 
 
-    <div class="elem elem_med_cond" style="margin-left:32px;">
-        <label class="der">CUIT:</label>
-        <div class="indent formtext" style="width: 231px;clear: none;float: left;margin-left: 115px!important;">
-            <input style="width: 200px;" type="text" class="tip-right" title="Ingrese asunto" id="cuit_busqueda" value="" maxlength="11" >
-        </div>
-        <div class="elem elempie" style="float: left;clear: none;margin-left: 1px;position: relative;top: -16px;width: 164px;">
-            <div class="indent">
-                <div class="button-a blue consultar"><span>Consultar</span></div>
-            </div>
+<div class="elem elem_med_cond" style="margin-left:32px;">
+    <label class="der">CUIT:</label>
+    <div class="indent formtext" style="width: 231px;clear: none;float: left;margin-left: 115px!important;">
+        <input style="width: 200px;" type="text" class="tip-right" title="Ingrese asunto" id="cuit_busqueda" value="" maxlength="11" >
+    </div>
+    <div class="elem elempie" style="float: left;clear: none;margin-left: 1px;position: relative;top: -16px;width: 164px;">
+        <div class="indent">
+            <div class="button-a blue consultar"><span>Consultar</span></div>
         </div>
     </div>
+</div>
 
 <div class="env_form">
     <div class="elem elem_med_cond">
         <label class="der">Nombre/Razón Social:</label>
         <div class="indent formtext">
-            <input type="text" class="tip-right" title="Ingrese asunto" id="nombre" value="<?php echo isset($obj_req["REMITENTE"])?$obj_req["REMITENTE"]:""?>">
+            <input type="text" class="tip-right" title="Ingrese asunto" id="nombre" value="<?php echo isset($obj_req["REMITENTE"]) ? $obj_req["REMITENTE"] : "" ?>">
         </div>
     </div>
-    
+
     <input type="hidden" id="provinciah" value="" />
     <input type="hidden" id="localidadh" value="" />
-    
+
     <div class="elem elem_med">
-            <label class="der">CUIT:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="CUIT" id="cuit" value="" maxlength="11"> 
-            </div>
-    </div>
-    
-    <div class="elem elem_med">
-            <label class="der">CBU:</label>
-            <div class="indent formtext">
-                <input maxlength="22" type="text" class="validate[required] tip-right" title="" id="cbu" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>>
-            </div>
-    </div>
-    
-    <?php if(isset($lst_condicioniva) && is_array($lst_condicioniva)): ?>
-    <div class="elem elem_med">
-        <label>Cond. Iva:</label>
-        <div class="indent">
-        <select class="chzn-select medium-select select" id="condicioniva">
-            <option value="">Elegir Condicion Iva</option>
-            <?php foreach($lst_condicioniva as $rs_iva): ?>
-            <option data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["CONDICION"] ?></option>
-            <?php endforeach; ?>
-        </select>   
+        <label class="der">CUIT:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="CUIT" id="cuit" value="" maxlength="11"> 
         </div>
     </div>
-    <?php endif; ?>
-    
-    <?php if(is_array($lst_condicioniibb)): ?>
+
     <div class="elem elem_med">
-        <label>Condicion IIBB:</label>
-        <div class="indent">
-        <select class=" chzn-select medium-select select" id="condicioniibb">
-            <option value="">Condicion IIBB</option>
-            <?php foreach($lst_condicioniibb as $rs_iibb): ?>
-            <option data-connection="<?php echo $rs_iibb["ID"] ?>" value="<?php echo $rs_iibb["ID"] ?>"><?php echo $rs_iibb["CONDICION"] ?></option>
-            <?php endforeach; ?>
-        </select>   
+        <label class="der">CBU:</label>
+        <div class="indent formtext">
+            <input maxlength="22" type="text" class="validate[required] tip-right" title="" id="cbu" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
-    <?php endif; ?>
-    
-    <div class="elem elem_med">
-            <label class="der">Inscr. IIBB:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="insciibb" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>>
+
+    <?php if (isset($lst_condicioniva) && is_array($lst_condicioniva)): ?>
+        <div class="elem elem_med">
+            <label>Cond. Iva:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" id="condicioniva">
+                    <option value="">Elegir Condicion Iva</option>
+                    <?php foreach ($lst_condicioniva as $rs_iva): ?>
+                        <option data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["CONDICION"] ?></option>
+                    <?php endforeach; ?>
+                </select>   
             </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (is_array($lst_condicioniibb)): ?>
+        <div class="elem elem_med">
+            <label>Condicion IIBB:</label>
+            <div class="indent">
+                <select class=" chzn-select medium-select select" id="condicioniibb">
+                    <option value="">Condicion IIBB</option>
+                    <?php foreach ($lst_condicioniibb as $rs_iibb): ?>
+                        <option data-connection="<?php echo $rs_iibb["ID"] ?>" value="<?php echo $rs_iibb["ID"] ?>"><?php echo $rs_iibb["CONDICION"] ?></option>
+                    <?php endforeach; ?>
+                </select>   
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <div class="elem elem_med">
+        <label class="der">Inscr. IIBB:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="" id="insciibb" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+        </div>
     </div>
-    
-    
-    
-    
+
+
+
+
     <div class="elem elem_med_cond">
         <label class="der">Domicilio:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="direccion" value="">
         </div>
     </div>
-    
-    
-    <?php if(is_array($lst_provincias)): ?>
-    <div class="elem elem_med" >
-        <label>Provincia:</label>
-        <div class="indent">
-        <select class="chzn-select medium-select select" id="provincia">
-            <option value="">Elegir Provincia</option>
-            <?php foreach($lst_provincias as $rs_prov): ?>
-            <option data-connection="<?php echo $rs_prov["ID"] ?>" value="<?php echo $rs_prov["ID"] ?>"><?php echo $rs_prov["PROVINCIA"] ?></option>
-            <?php endforeach; ?>
-        </select>   
+
+
+    <?php if (is_array($lst_provincias)): ?>
+        <div class="elem elem_med" >
+            <label>Provincia:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" id="provincia">
+                    <option value="">Elegir Provincia</option>
+                    <?php foreach ($lst_provincias as $rs_prov): ?>
+                        <option data-connection="<?php echo $rs_prov["ID"] ?>" value="<?php echo $rs_prov["ID"] ?>"><?php echo $rs_prov["PROVINCIA"] ?></option>
+                    <?php endforeach; ?>
+                </select>   
+            </div>
         </div>
-    </div>
     <?php endif; ?>
 
     <div class="elem elem_med">
-           <label>Localidad:</label>
-           <div class="indent" id="div_subrubro">
-           <select class="chzn-select medium-select2 select" id="subrubro" data-prompt-position="topLeft">
-               <option value="">Elegir Subrubro</option>
-           </select>
-           </div>
+        <label>Localidad:</label>
+        <div class="indent" id="div_subrubro">
+            <select class="chzn-select medium-select2 select" id="subrubro" data-prompt-position="topLeft">
+                <option value="">Elegir Subrubro</option>
+            </select>
+        </div>
     </div>
-    
-    
+
+
     <div class="elem elem_med">
-            <label class="der">Teléfono:</label>
-            <div class="indent formtext">
-                <input type="text" title="" id="telefono" value=""> 
-            </div>
+        <label class="der">Teléfono:</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="telefono" value=""> 
+        </div>
     </div>
 
     <div class="elem elem_med">
-            <label class="der">Email:</label>
-            <div class="indent formtext">
-                <input type="text" title="" id="correo" value="">
-            </div>
+        <label class="der">Email:</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="correo" value="">
+        </div>
     </div>
-    
+
     <div class="elem">
         <label class="ancho100">Observaciones:</label>
         <div class="formtext">
             <textarea  class="medium"  id="observacion" name="observacion" rows="5"></textarea>
         </div>
     </div>
-    
+
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
-    
+
 </div>
 
 
 
 <div class="nuevafact_form">
-    
-    <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"])?$entidad["ID"]:''; ?>" />
-    
-    
+
+    <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
+
+
     <div class="elem elem_med_cond">
         <label class="der">CUIT:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="nombre" id="cuitform" value="" readonly maxlength="11">
         </div>
     </div>
-    
+
     <div class="elem elem_med_cond">
         <label class="der">Nombre/Razón Social:</label>
         <div class="indent formtext">
             <input type="text" title="nombre" id="nombre2" readonly>
         </div>
     </div>
-    
+
     <input type="hidden" id="provinciah" value="" />
     <input type="hidden" id="localidadh" value="" />
-    
-    <div class="elem elem_med">
-            <label class="der">Nro Factura:</label>
-            <div class="indent formtext">
-                <input maxlength="12" type="text" class="tip-right" title="" id="numero" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO'])? $entidad['MONTO_SOLICITADO']:"" ) ?>" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>> 
-            </div>
-    </div>
-
-    
-    <div class="elem elem_med">
-            <label class="der">Fecha:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO'])? $entidad['MONTO_SOLICITADO']:"" ) ?>" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>> 
-            </div>
-    </div>
 
     <div class="elem elem_med">
-            <label class="der">CAI:</label>
-            <div class="indent formtext">
-                <input maxlength="14" type="text" class="validate[required] tip-right" title="Ingrese CAI" id="cai" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>>
-            </div>
-    </div>
-    
-    <div class="elem elem_med">
-            <label class="der">Fecha Vto:</label>
-            <div class="indent formtext">
-                <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID'])? "readonly":"" ) ?>>
-            </div>
-    </div>
-    
-    
-    <?php if(isset($lst_bodegas) && is_array($lst_bodegas)): ?>
-    <div class="elem elem_med">
-        <label>Bodega:</label>
-        <div class="indent">
-        <select class="chzn-select medium-select select" id="bodega">
-            <option value="">Elegir Bodega</option>
-            <?php foreach($lst_bodegas as $rs_iva): ?>
-            <!--<option data-local="<?php // echo $rs_iva["LOCAL"] ?>" data-connection="<?php // echo $rs_iva["ID"] ?>" value="<?php // echo $rs_iva["ID"] ?>"><?php // echo $rs_iva["NOMBRE"] ?></option>-->
-            <option data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["entidad"] ?></option>
-            <?php endforeach; ?>
-        </select>   
+        <label class="der">Nro Factura:</label>
+        <div class="indent formtext">
+            <input maxlength="12" type="text" class="tip-right" title="" id="numero" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO']) ? $entidad['MONTO_SOLICITADO'] : "" ) ?>" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>> 
         </div>
     </div>
-    <?php endif; ?>
-    
-    
+
+
     <div class="elem elem_med">
-            <label class="der">Departamento:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="dto_bodega" value="" readonly>
-            </div>
+        <label class="der">Fecha:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value="<?php echo (isset($entidad['MONTO_SOLICITADO']) ? $entidad['MONTO_SOLICITADO'] : "" ) ?>" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>> 
+        </div>
     </div>
 
     <div class="elem elem_med">
-            <label class="der">Lim. Bodega elegida:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
-            </div>
+        <label class="der">CAI:</label>
+        <div class="indent formtext">
+            <input maxlength="14" type="text" class="validate[required] tip-right" title="Ingrese CAI" id="cai" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+        </div>
     </div>
-    
+
     <div class="elem elem_med">
-            <label class="der">Kgrs cargados en bodega:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="kgrs_cargados" value="" readonly>
+        <label class="der">Fecha Vto:</label>
+        <div class="indent formtext">
+            <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+        </div>
+    </div> 
+
+    <?php if (isset($lst_bodegas) && is_array($lst_bodegas)): ?>
+        <div class="elem elem_med">
+            <label>Bodega:</label>
+            <div class="indent">
+                <select class="chzn-select medium-select select" data-placeholder="Seleccione Bodega/s" id="bodega" multiple="multiple">
+                    <?php foreach ($lst_bodegas as $rs_iva): ?>
+                        <option data-connection="<?php echo $rs_iva["ID"] ?>" value="<?php echo $rs_iva["ID"] ?>"><?php echo $rs_iva["entidad"] ?></option>
+                    <?php endforeach; ?>
+                </select>   
             </div>
+        </div>
+    <?php endif; ?>
+
+    <div class="button-a blue mostrarBodegas" style="float:left; margin-top:10px;"><span>Calcular datos Bodegas</span></div>
+
+    <div class="elem elem_med_cond" style="width: 100%; height: 5px;">
+
     </div>
-    
+
+    <div id="info-bodegas">
+        <div id="jqxgrid_bodegas" style="margin-left:20px; margin-top: 5px;">
+        </div>
+        <!--        <div id="todas_bodegas">
+                    <h2 style="font-size: 16px; margin-top: 10px; margin-left: 10px;">Totales Bodegas Elegidas</h2>
+                    <div class="elem elem_med" style="margin-left: 20px;">
+                        <label class="der">Limite Total:</label>
+                        <div class="indent formtext">
+                            <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
+                        </div>
+                    </div>
+                                <div class="elem elem_med" style="margin-left: 20px;">
+                                    <label class="der">Kgrs cargados total:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class="tip-right" title="" id="kgrs_cargados" value="" readonly>
+                                    </div>
+                                </div>
+                                <div class="elem elem_med" style="margin-left: 20px;">
+                                    <label class="der">Limite total permitido:</label>
+                                    <div class="indent formtext">
+                                        <input type="text" class="tip-right" title="" id="limite_bodega" value="" readonly>
+                                    </div>
+                                </div>
+                </div>-->
+        <!--        <div id="cada_bodega">
+                    <h2 style="font-size: 16px; margin-top: 10px; margin-left: 10px;">Total por Bodega</h2>
+                    <div class="elem elem_med" style="margin-left: 20px;">
+                        <label class="der">Limite </label>
+                        <div class="indent formtext">
+                            <input type="text" class="tip-right" title="" id="limite_bodega_selec" value="" readonly>
+                        </div>
+                    </div>
+                </div>-->
+        <div id="formularios-individuales" style="width: 800px; height:auto; margin-top: 10px;">
+        </div>
+    </div>
+    <div style="width: 100%; height: 10px;">
+    </div>
+    <!--    <div class="elem elem_med">
+                <label class="der">Departamento:</label>
+                <div class="indent formtext">
+                    <input type="text" class="tip-right" title="" id="dto_bodega" value="" readonly>
+                </div>
+        </div>-->
     <div class="elem elem_med">
-            <label class="der">Limite permitido:</label>
+        <label class="der">Kgrs Totales Asignados:</label>
+        <div class="indent formtext">
+            <!--<input type="text" class="tip-right" title="" id="kgrs" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )           ?>" >-->
+            <input type="text" class="tip-right" title="" id="kgrs" value="" readonly>
+        </div>
+    </div>
+    <div class="elem elem_med">
+        <label class="der">Azucar:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="" id="azucar" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
+        </div>
+    </div>
+
+    <div id="calculos-con-ciu">
+
+        <div class="elem elem_med">
+            <label class="der">Kgrs Disponibles:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="limite_bodega" value="" readonly>
+                <input type="text" class="tip-right" title="" id="kgrs-ciu" value=""  style="color: #28a100;" readonly="readonly">
             </div>
-    </div>
-    
-    <div class="elem elem_med">
-            <label class="der">Kgrs:</label>
+        </div>
+        <div class="elem elem_med">
+            <label class="der">Azucar Disponible:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="kgrs" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" >
+                <input type="text" class="tip-right" title="" id="azucar-ciu" value="" style="color: #28a100;" readonly="readonly">
             </div>
+        </div>
     </div>
-    
-    
-    <div class="elem elem_med">
-            <label class="der">Azucar:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="azucar" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" >
+
+<!--    <div class="formas-de-pago" style="width:100%; height: 110px; margin-top: 70px;  border: 1px solid #000000; 
+    border-radius: 10px 10px 10px 10px;">
+        <div style="width: 50%; margin-top: 10px; height: 110px; float: left;">
+            <label style="margin-left: 10px;">Formas de pago:</label>
+            <div style="width: 300px; margin-top: 25px;">
+                <div style="">
+                    <div style="width:190px; margin-left: 10px; float: left;">
+                        <label>Precio Fijo:</label>
+                    </div>
+                    <div style="width:90px;margin-left: 10px; float: left;">
+                        <input type="radio"  id="chkPrecioFijo" name="tipoPago" value="0" checked="checked"/>
+                    </div>
+                </div>
+                <div style="">
+                    <div style="width:190px; float: left;margin-left: 10px; margin-top: 10px;">
+                        <label>Precio promedio:</label>
+                    </div>
+                    <div style="width:90px; float: left; margin-top: 10px; margin-left: 10px;">
+                        <input type="radio" id="chkPrecioPromedio" name="tipoPago" value="1"/>
+                    </div>
+                </div>
             </div>
-    </div>
-    
-    
-    <div class="elem elem_med">
+        </div>
+        <div style="width: 50%; margin-top: 10px; height: 110px; float: left;">
+            
+            <div style="width: 300px;">
+                <div style="">
+                    <div style="width:200px; float: left;">
+                        <label class="der">Cantidad Pagos:</label>
+                    </div>
+                    <div style="width:100px; float: left;">
+                        <input type="text" class="tip-right" title="" id="precio" value="">
+                    </div>
+                </div>
+                <div style="">
+                    <div style="width:200px; float: left;  margin-top: 10px;">
+                        <label class="der">Importe:</label>
+                    </div>
+                    <div style="width:100px; float: left;  margin-top: 10px;">
+                        <input type="text" class="tip-right" title="" id="precio" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="width: 50%; margin-top: 10px; height: 110px; float: left;">
+            <div style="width: 300px;">
+                <div style="">
+                    <div style="width:200px; float: left;">
+                        <label class="der">Cantidad Pagos:</label>
+                    </div>
+                    <div style="width:100px; float: left;">
+                        <input type="text" class="tip-right" title="" id="precio" value="">
+                    </div>
+                </div>
+                <div style="">
+                    <div style="width:200px; float: left;  margin-top: 10px;">
+                        <label class="der">Importe:</label>
+                    </div>
+                    <div style="width:100px; float: left;  margin-top: 10px;">
+                        <input type="text" class="tip-right" title="" id="precio" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </div>-->
+
+        <div class="elem elem_med">
             <label class="der">Precio:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="precio" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                <input type="text" class="tip-right" title="" id="precio" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
             </div>
-    </div>
-    
-    <div class="elem elem_med">
+        </div>
+        <div class="elem elem_med">
             <label class="der">Neto:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="neto" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>
+                <input type="text" class="tip-right" title="" id="neto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
             </div>
-    </div>
-    
-    <div class="elem elem_med">
+        </div>
+
+        <div class="elem elem_med">
             <label class="der">Porcentaje Iva:</label>
             <div class="indent formtext">
                 <input type="text" class="tip-right" title="" id="porcentaje_iva">
             </div>
-    </div>
-    
-    <div class="elem elem_med">
+        </div>
+
+        <div class="elem elem_med">
             <label class="der">Iva:</label>
             <div class="indent formtext">
-                <!--<input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>-->
-                <input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                <!--<input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>-->
+                <input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
             </div>
-    </div>
-    
-    <div class="elem elem_med">
+        </div>
+
+        <div class="elem elem_med">
             <label class="der">Total:</label>
             <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="total" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>" readonly>
+                <input type="text" class="tip-right" title="" id="total" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
             </div>
-    </div>
-    
-    
-    <?php if(isset($lst_formulas) && is_array($lst_formulas)): ?>
-    <div class="elem elem_med">
-        <label>Formula:</label>
-        <div class="indent">
-        <select class="chzn-select medium-select select" id="formula">
-            <option value="">Elegir Formula</option>
-            <?php foreach($lst_formulas as $rs_form): ?>
-            <option value="<?php echo $rs_form["idFormula"] ?>"><?php echo "Fórmula".$rs_form["idFormula"] ?></option>
-            <?php endforeach; ?>
-        </select>   
         </div>
-    </div>
-    <?php endif; ?>
-    
-    <div class="elem">
-        <label class="ancho100">Observaciones:</label>
-        <div class="formtext">
-            <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
-        </div>
-    </div>
-    
-    
-    <div class="div_cius" id="frm_cargacius">
-        
-        <div class="cabezera_frm_ciu">
-            <div class="titulo_cius">Cargar CIUs</div>
 
+
+        <?php if (isset($lst_formulas) && is_array($lst_formulas)): ?>
             <div class="elem elem_med">
-                <label class="der">Numero CIU:<div style="font-size: 10px;">(Hasta 8 digitos)</div></label>
+                <label>Formula:</label>
+                <div class="indent">
+                    <select class="chzn-select medium-select select" id="formula">
+                        <option value="">Elegir Formula</option>
+                        <?php foreach ($lst_formulas as $rs_form): ?>
+                            <option value="<?php echo $rs_form["idFormula"] ?>"><?php echo "Fórmula" . $rs_form["idFormula"] ?></option>
+                        <?php endforeach; ?>
+                    </select>   
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="elem">
+            <label class="ancho100">Observaciones:</label>
+            <div class="formtext">
+                <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
+            </div>
+        </div>
+
+
+        <div class="div_cius" id="frm_cargacius">
+
+            <div class="cabezera_frm_ciu">
+                <div class="titulo_cius">Cargar CIUs</div>
+
+                <div class="elem elem_med">
+                    <label class="der">Numero CIU:<div style="font-size: 10px;">(Hasta 8 digitos)</div></label>
                     <div class="indent formtext">
-                        <input type="text" class="tip-right"  maxlength="8" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                        <input type="text" class="tip-right"  maxlength="8" title="" id="ciu_num" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
                     </div>
-            </div>
+                </div>
 
-            <div class="elem elem_med">
+                <div class="elem elem_med">
                     <label class="der">Kgrs:</label>
                     <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                        <!--<input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )        ?>">-->
+                        <input type="text" class="tip-right" title="" id="ciu_kgrs" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
                     </div>
-            </div>
+                </div>
 
-            <div class="elem elem_med">
+                <div class="elem elem_med">
                     <label class="der">Azucar:</label>
                     <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_azucar" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                        <input type="text" class="tip-right" title="" id="ciu_azucar" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
                     </div>
-            </div>
-            
-            <div class="elem elem_med">
+                </div>
+
+                <div class="elem elem_med">
                     <label class="der">Inscripcion Inv:</label>
                     <div class="indent formtext">
-                        <input type="text" class="tip-right" title="" id="ciu_insc" value="<?php echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" ) ?>">
+                        <input type="text" class="tip-right" title="" id="ciu_insc" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>">
                     </div>
+                </div>
+
+
+                <input id="add_cius" name="add_cius" type="submit" class="button-a blue send" value="Agregar CIU">
+
             </div>
 
 
-            <input id="add_cius" name="add_cius" type="submit" class="button-a blue send" value="Agregar CIU">
-        
-        </div>
-        
-        
-        <div data-gridname="jqxgridcius" class="refresgrid">Refresh Grid</div>
-        <div id="jqxgridcius"></div>
-        
-        <div class="suma_aportes"><span></span><span id="suma_aporte"></span><span id="suma_aporte1">$222</span></div>
-        
-        
-        
-    </div>
-    
-    <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
-    <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
-    
-</div>
+            <div data-gridname="jqxgridcius" class="refresgrid">Refresh Grid</div>
+            <div id="jqxgridcius"></div>
 
-<div id="wpopup"></div>
+            <div class="suma_aportes"><span></span><span id="suma_aporte"></span><span id="suma_aporte1">$222</span></div>
+
+
+
+        </div>
+
+        <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
+        <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
+
+    </div>
+
+    <div id="wpopup"></div>
 

@@ -197,7 +197,7 @@ $(document).ready(function(){
                             var id_proceso = $("#id_proceso").val();
                             var jefeope = $("#jefeope").val();
                             var cordope = $("#cordope").val();
-                            var ivapope = $("#ivaope").val();
+                            var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
                             var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
                             var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;

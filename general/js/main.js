@@ -88,7 +88,7 @@ $(document).ready(function(){
         setInterval(function(){
             actualizaNotif();
 //            inter();
-        },15000);
+        },30000);
     }
         
     if ( _this_app.URL!='main' && _this_app.URL!='backend/cambiarpassword' )
@@ -1096,6 +1096,8 @@ function validarFecha(field, rules, i, options) {
 
 
 function formattedDate(date) {
+    if (date == null)
+        return '';
     
     var arr = date.split("/");
     dia = arr[0];

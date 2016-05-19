@@ -3,6 +3,7 @@ var mydata;
 $(document).ready(function () {
     mydata = '';
 
+
     $(".toolbar li").hover(
             function () {
                 $(this).removeClass('li_sel').addClass('li_sel');
@@ -159,14 +160,11 @@ $(document).ready(function () {
                         var mail = $("#mail").val();
                         var representante = $("#representante").val();
                         var limite = $("#limite").val();
+                        var limite_litros = $("#limiteLitros").val();
                         var provincia = $("#provincia").val();
                         if (!$("#customForm").validationEngine('validate'))
                             return false;
-//if(limite <= 1000){
-//    alert("El limite es correcto");
-//}else{
-//    alert("EL limite permitido por la bodega es de 1000");
-//}
+
                         iid = id ? id : 0;
                         obj = {
                             id: iid,
@@ -181,6 +179,7 @@ $(document).ready(function () {
                             mail: mail,
                             representante: representante,
                             limite: limite,
+                            limite_litros: limite_litros,
                             ID_PROVINCIA: provincia
                         }
 

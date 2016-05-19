@@ -128,6 +128,8 @@ class sqldata {
         if ($this->_show)
             $this->show_sql($this->_sql);
         $_SESSION ['ParSQL'] = $this->_sql;
+        
+        $this->log_this("get_tabla", $sql);
 
         // timequery();
         $registros = mysqli_query($this->_conn, $sql);

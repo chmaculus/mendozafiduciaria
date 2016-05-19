@@ -336,6 +336,40 @@ iframe{
     display: none;
     float: left;
 }
+.cambioEstados_form{
+    margin-left: 33px;
+    min-height: 520px;
+    width: 980px;
+    position: relative;
+    top: 20px;
+    float: left;
+}
+
+.nuevaOpe_form{
+    margin-left: 33px;
+    min-height: 520px;
+    width: 980px;
+    position: relative;
+    top: 20px;
+    float: left;
+}
+#opeNombre,#opeDescripcion{
+    width:230px;
+}
+
+.asignarLimiteProv , .asignarLimiteBod{
+    float:left; margin-left:135px;margin-top:10px;
+}
+#info-proveedores,#info-bodegas{
+    /*margin-top: 25px;*/
+    /*height: 230px;*/ 
+    /*display: none;*/ 
+    width: 800px; 
+    height: auto;
+    overflow: hidden;
+}
+
+
 
 #div_subrubro{
     width: 400px!important;
@@ -344,7 +378,7 @@ iframe{
     margin-left: 145px;
     width: 618px!important;
 }
-#nuevafactura,#send{
+#nuevafactura,#send,#send_edit{
     display: none;
 }
 .div_cius{
@@ -486,4 +520,19 @@ iframe{
     background-color: #FF141C;
 }
 
+#fecha_ven_edit{
+    display: none;
+}
 
+#titularidadHistorial{
+    display: none;
+}
+#lst_op_vino ul{
+    padding:10px 0;
+}
+#lst_op_vino li {
+    padding:2px 5px;
+}
+#lst_op_vino li.sel-op{
+    background-color: #ccc;
+}
