@@ -142,7 +142,7 @@ class formalta_model extends credito_model {
    //se gneran las cuotas a partir de una variacion en particular
     //si no se pasa el parametro se utiliza la ultima variacion ingresada.
 
-    function generar_cuotas($variacion = false,  $micro = 0, $ret=TRUE) {
+    function generar_cuotas_aleman($variacion = false,  $micro = 0, $ret=TRUE) {
         $credito_id = $this->_id_credito;
 
         $bDb = true;
@@ -313,6 +313,166 @@ class formalta_model extends credito_model {
         if (!$bDb) {
             $cuotas_arr = array_merge($cuotas_arr_prev, $cuotas_arr);
         }
+
+        return $cuotas_arr;
+    }
+
+
+    function generar_cuotas_frances($variacion = false,  $micro = 0, $ret=TRUE) {
+        $credito_id = $this->_id_credito;
+
+        $bDb = true;
+        $cuotas_restantes = 0;
+        if (!$variacion) {
+            $this->_db->order_by("FECHA", "desc");
+            $variacion = $this->get_row_variaciones();
+
+            $cuotas_restantes = $variacion['CANTIDAD_CUOTAS'] - 1;
+        } else {
+            $cuotas_restantes = $variacion['CANTIDAD_CUOTAS'];
+        }
+        
+        //si no quedan cuotas para generar se deuvleve vacio
+        if ($cuotas_restantes == 0)
+            return array();
+
+        //desactivamos las cuotas a remplazar si existieran
+        //si es por db se modifican los registros
+        $cantidad_cuotas_anteriores = 0;
+
+
+        $this->_db->where("_PARENT = 0");
+        $todas_cuotas = $this->get_tabla_cuotas();
+
+        //obtenemos las cuotas anteriores y posteriores a la fecha de la variacion
+        $cuotas_anteriores = array();
+        $cuotas_siguientes = array();
+        $cuotas_restantes_cont = $cuotas_restantes;
+        foreach ($todas_cuotas as $cuota) {
+            if ($cuota['FECHA_INICIO'] < $variacion['FECHA']) {
+                $cuotas_anteriores[] = $cuota;
+            } else {
+                $cuota['CUOTAS_RESTANTES'] = $cuotas_restantes_cont--;
+                $cuotas_siguientes[] = $cuota;
+            }
+        }
+
+        $cantidad_cuotas_iniciadas = count($cuotas_anteriores);
+
+        //obtenemos las cuotas que se borraran para tener las fechas de inicio y finalizacion previamente establecidas.
+        $this->_db->delete("fid_creditos_cuotas", "ID_CREDITO = " . $credito_id . " AND FECHA_INICIO > " . $variacion['FECHA'] . " AND ID_VERSION = " . $this->_id_version);
+
+
+
+        $IVA = $variacion['IVA'];
+        $monto = $variacion['CAPITAL'];
+        //cuotas gracia
+        $cuotas_gracia = $variacion['CUOTAS_GRACIA'] - $cantidad_cuotas_iniciadas;
+        $cuotas_gracia = $cuotas_gracia < 0 ? 0 : $cuotas_gracia;
+
+
+        $fecha = $variacion['FECHA'];
+        $fecha_venvimiento = $variacion['FECHA_INICIO'];
+        $periodicidad = $variacion['PERIODICIDAD'];
+        $DIA_INICIO = date("d", $fecha_venvimiento);
+        $YEAR_INICIO = date("Y", $fecha_venvimiento);
+        $MES_INICIO = date("m", $fecha_venvimiento);
+        $fecha_venvimiento = $this->obtener_fecha_vencimiento($DIA_INICIO, $fecha_venvimiento, $variacion['PERIODICIDAD_TASA'] * $cantidad_cuotas_iniciadas, $variacion['PERIODICIDAD']);
+
+        $cuotas_amort = $cuotas_restantes - $cuotas_gracia;
+
+        $monto_cuotas = $monto / $cuotas_amort;
+        $cuotas_arr = array();
+        
+        $valor_cuota = $this->_calcular_cuota_frances($variacion['POR_INT_COMPENSATORIO'], $variacion['CANTIDAD_CUOTAS'], $variacion['CAPITAL'], $variacion['PERIODICIDAD_TASA']);
+        $this->_calcular_base_interes_frances($variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
+        
+        for ($i = 0; $i < $cuotas_restantes; $i++) {
+            $cuotas_arr[$i]['_ACTIVA'] = 1;
+            $cuotas_arr[$i]['ID_CREDITO'] = $credito_id;
+
+            $cuotas_arr[$i]['CUOTAS_RESTANTES'] = $cuotas_restantes - $i;
+
+            //comparamos la cuota que se esta realizando con la cuota eliminada
+            //para no ingresar fechas diferentes previamente modificadas
+            $bcuota_exist = false;
+            if (isset($cuotas_siguientes[$i])) {
+                if ($cuotas_arr[$i]['CUOTAS_RESTANTES'] == $cuotas_siguientes[$i]['CUOTAS_RESTANTES']) {
+                    if ($cuotas_siguientes[$i]['FECHA_INICIO'] > 0) {
+                        $bcuota_exist = true;
+                        $fecha_inicio = $cuotas_siguientes[$i]['FECHA_INICIO'];
+                        $fecha_venvimiento = $cuotas_siguientes[$i]['FECHA_VENCIMIENTO'];
+                    }
+                }
+            }
+            if (!$bcuota_exist) {
+                $fecha_inicio = $fecha_venvimiento;
+                $fecha_venvimiento = $this->obtener_fecha_vencimiento($DIA_INICIO, $fecha_venvimiento, $variacion['PERIODICIDAD_TASA'], $variacion['PERIODICIDAD']);
+            }
+
+            $cuotas_arr[$i]['POR_INT_COMPENSATORIO'] = $variacion['POR_INT_COMPENSATORIO'] / 12 * $periodicidad;
+            $cuotas_arr[$i]['POR_INT_MORATORIO'] = $variacion['POR_INT_MORATORIO'];
+            $cuotas_arr[$i]['POR_INT_PUNITORIO'] = $variacion['POR_INT_PUNITORIO'];
+
+            $cuotas_arr[$i]['FECHA_GENERADA'] = $fecha;
+
+            $cuotas_arr[$i]['FECHA_INICIO'] = $fecha_inicio;
+            $cuotas_arr[$i]['FECHA_VENCIMIENTO'] = $fecha_venvimiento;
+
+            $rango = ($fecha_venvimiento - $fecha_inicio) / 86400;
+
+
+            if ($micro==1){
+                $cuotas_arr[$i]['FECHA_ENVIADA'] = $fecha_inicio;
+            }
+            
+            $cantidad_cuotas = $variacion['CANTIDAD_CUOTAS'];
+            
+            
+            if (isset($cuotas_arr[$i - 1])) {
+                $cuotas_arr[$i]['SALDO_CAPITAL'] = $cuotas_arr[$i - 1]['SALDO_CAPITAL'] - $cuotas_arr[$i - 1]['CAPITAL_CUOTA'];
+            } else {
+                $cuotas_arr[$i]['SALDO_CAPITAL'] = $variacion['CAPITAL'];
+            }
+
+            $cuotas_arr[$i]['INT_COMPENSATORIO'] = $cuotas_arr[$i]['SALDO_CAPITAL'] * $this->_base_int_frances;
+            $cuotas_arr[$i]['INT_COMPENSATORIO_IVA'] = $cuotas_arr[$i]['INT_COMPENSATORIO'] * $IVA;
+                
+            //----------------------------------------------------------------------------------
+            $INT_SUBSIDIO = $variacion['POR_INT_SUBSIDIO'];
+            $interes_subsidio = $this->_calcular_interes_aleman($cuotas_arr[$i]['SALDO_CAPITAL'], $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], false);
+            //----------------------------------------------------------------------------------
+            
+            $cuotas_arr[$i]['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
+            $cuotas_arr[$i]['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $interes_subsidio * $IVA;
+
+            $cuotas_arr[$i]['INT_MORATORIO'] = 0;
+            $cuotas_arr[$i]['INT_PUNITORIO'] = 0;
+            $cuotas_arr[$i]['_ID_VARIACION'] = $variacion['ID'];
+            
+            //CUOTAS DE GRACIA
+            if ($cuotas_gracia > $i) {
+                $cuotas_arr[$i]['CAPITAL_CUOTA'] = 0;
+            } else {
+                $cuotas_arr[$i]['CAPITAL_CUOTA'] = $valor_cuota - $cuotas_arr[$i]['INT_COMPENSATORIO'];
+            }
+
+            $cuotas_arr[$i]['ID_VERSION'] = $this->_id_version;
+        }
+        
+        if ( $bDb) {
+
+            foreach ($cuotas_arr as $cuota) {
+                
+                $this->_db->insert("fid_creditos_cuotas", $cuota);
+            }
+        }
+
+        if (!$bDb) {
+            $cuotas_arr = array_merge($cuotas_arr_prev, $cuotas_arr);
+        }
+        
+        print_r($cuotas_arr);
 
         return $cuotas_arr;
     }

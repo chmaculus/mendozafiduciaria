@@ -579,7 +579,7 @@ class formaltabase extends main_controller {
         
         
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
-        $this->mod->generar_cuotas($ret, 0, $retorno);
+        $this->mod->generar_cuotas_frances($ret, 0, $retorno);
         
       /*  $i = 0;
 
