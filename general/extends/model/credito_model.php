@@ -1269,7 +1269,7 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if($variacion['FECHA'] > $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
+                        if($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
@@ -3435,6 +3435,7 @@ ORDER BY T1.lvl DESC');
         
         $evento_inicial = false;
         $evento_desembolso = false;
+        $eventos_tasas = array();
         
         foreach ($this->_variaciones as $variacion) {
             switch ($variacion['TIPO']) {
@@ -3448,6 +3449,15 @@ ORDER BY T1.lvl DESC');
             
             if ($evento_inicial && $evento_desembolso) {
                 break;
+            }
+        }
+        
+        
+        foreach ($this->_variaciones as $variacion) {
+            switch ($variacion['TIPO']) {
+                case EVENTO_TASA:
+                    $eventos_tasas[] = $variacion;
+                    break;
             }
         }
         
@@ -3470,6 +3480,13 @@ ORDER BY T1.lvl DESC');
             $evento_desembolso['ASOC']['MONTO'] = $SALDO_CAPITAL;
             $variacion['ASOC'] = $evento_desembolso['ASOC'];
             $this->_variaciones[$variacion['ID']] = $variacion;
+        }
+        
+        $id_var = $variacion['ID'];
+        if ($eventos_tasas) {
+            foreach ($eventos_tasas as $t) {
+                $this->_variaciones[++$id_var] = $t;
+            }
         }
             
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
