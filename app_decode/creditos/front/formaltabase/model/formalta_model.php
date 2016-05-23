@@ -132,7 +132,8 @@ class formalta_model extends credito_model {
             "ID_FIDEICOMISO" => $this->_id_fideicomiso,
             "ID_OPERATORIA" => $this->_id_operatoria,
             "POSTULANTES" => implode("|",$this->_postulantes),
-            "TIPO_CREDITO" => $this->_tipo_credito
+            "TIPO_CREDITO" => $this->_tipo_credito,
+            "SISTEMA_CREDITO" => $this->_sistema_credito
         );
         $this->_db->insert("fid_creditos",$credito);
     }
@@ -254,12 +255,12 @@ class formalta_model extends credito_model {
                 $divisor = $cuotas_arr[$i]['CUOTAS_RESTANTES'] - ( $cuotas_gracia + $i );
                 $cuotas_arr[$i]['CAPITAL_CUOTA'] = 0;
 
-                $cuotas_arr[$i]['INT_COMPENSATORIO'] = $this->_calcular_interes($monto_restante, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
+                $cuotas_arr[$i]['INT_COMPENSATORIO'] = $this->_calcular_interes_aleman($monto_restante, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
                 $cuotas_arr[$i]['INT_COMPENSATORIO_IVA'] = $cuotas_arr[$i]['INT_COMPENSATORIO'] * $IVA;
 
                 //----------------------------------------------------------------------------------
                 $INT_SUBSIDIO = $variacion['POR_INT_SUBSIDIO'] ;
-                $interes_subsidio = $this->_calcular_interes($monto_restante, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], false);
+                $interes_subsidio = $this->_calcular_interes_aleman($monto_restante, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], false);
 
                 $cuotas_arr[$i]['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                 $cuotas_arr[$i]['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $interes_subsidio * IMP_IVA;
@@ -282,12 +283,12 @@ class formalta_model extends credito_model {
                 $divisor = $cuotas_arr[$i]['CUOTAS_RESTANTES'] + ($cantidad_cuotas_anteriores == 0 ? 0 : 1);
                 $cuotas_arr[$i]['CAPITAL_CUOTA'] = $monto_restante / $divisor;
 
-                $cuotas_arr[$i]['INT_COMPENSATORIO'] = $this->_calcular_interes($monto_restante, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
+                $cuotas_arr[$i]['INT_COMPENSATORIO'] = $this->_calcular_interes_aleman($monto_restante, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
                 $cuotas_arr[$i]['INT_COMPENSATORIO_IVA'] = $cuotas_arr[$i]['INT_COMPENSATORIO'] * $IVA;
 
                 //----------------------------------------------------------------------------------
                 $INT_SUBSIDIO = $variacion['POR_INT_SUBSIDIO'];
-                $interes_subsidio = $this->_calcular_interes($monto_restante, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], false);
+                $interes_subsidio = $this->_calcular_interes_aleman($monto_restante, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], false);
 
                 $cuotas_arr[$i]['INT_COMPENSATORIO_SUBSIDIO'] = $interes_subsidio;
                 $cuotas_arr[$i]['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $interes_subsidio * IMP_IVA;

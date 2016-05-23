@@ -521,9 +521,10 @@ class formaltabase extends main_controller {
         $data['por_int_gastos_min'] = isset($_POST['int_gastos']) ? $_POST['int_gastos_min'] : 0;
         $data['periodicidad'] = $_POST['periodicidad'];
         $data['periodicidad_tasa'] = $_POST['periodicidad_tasa'];
+        $data['sistema_credito'] = $_POST['sistema_credito'];
         $data['TIPO'] = 0;
         $data['iva'] = key_exists('iva', $_POST) ? $_POST['iva'] : 0.21;
-
+        
         $desembolsos = $_POST['desembolsos'];
 
         $postulantes = $_POST['clientes'];
@@ -579,7 +580,11 @@ class formaltabase extends main_controller {
         
         
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
-        $this->mod->generar_cuotas_frances($ret, 0, $retorno);
+        if ($data['sistema_credito'] == SISTEMA_CREDITO_FRANCES) {
+            $this->mod->generar_cuotas_frances($ret, 0, $retorno);
+        } else {
+            $this->mod->generar_cuotas_aleman($ret, 0, $retorno);
+        }
         
       /*  $i = 0;
 

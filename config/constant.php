@@ -27,8 +27,6 @@ define("TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO", 2);
 //solo se plancha la cuota actual sin importar si se ha enviado
 define("TIPO_DEVENGAMIENTO_FORZAR_CUOTA_ACTUAL", 3);
 
-define("TIPO_MICROCREDITO", 1);
-
 define("EVENTO_ENVIO", 7);
 define("EVENTO_GASTO", 5);
 define("EVENTO_INICIAL", 0);
@@ -48,3 +46,7 @@ define("ESTADO_CREDITO_PRORROGADO",5);
 define("ESTADO_CREDITO_DESISTIDO",6);
 
 define("TIPO_CREDITO_NORMAL", 0);
+define("TIPO_MICROCREDITO", 1);
+
+define("SISTEMA_CREDITO_ALEMAN", 0);
+define("SISTEMA_CREDITO_FRANCES", 1);

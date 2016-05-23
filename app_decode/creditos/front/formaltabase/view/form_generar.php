@@ -22,12 +22,21 @@
 
                 <div class="row">
                     <div class="c5">
+                        <span >Sistema</span>
+                    </div>
+                    <div class="c7" id="radSistema">
+                        <input type="radio" name="radSistema" value="<?php echo SISTEMA_CREDITO_ALEMAN ?>" checked="checked" /> Alemán
+                        <input type="radio" name="radSistema" value="<?php echo SISTEMA_CREDITO_FRANCES ?>" /> Francés
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="c5">
                         <span >Microcredito</span>
                     </div>
                     <div class="c7">
                         <input type="checkbox" id="chkMicro" value="1" />
                     </div>
-                </div>                
+                </div>
                 <div class="row">
                     <div class="c5">
                         <span >Cantidad cuotas</span>

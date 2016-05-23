@@ -214,6 +214,7 @@ function _generar_cuotas(simulacion){
     var plazo_pago = $("#txtPlazo").val();
     var credito_id = $("#hCreditoID").val();
     var micro = $("#hMicro").val();
+    var sistema_credito = $('input:checked', '#radSistema').val();
     
     var total_credito = $("#txtMontoTotalDesembolsos").val();
     
@@ -281,6 +282,7 @@ function _generar_cuotas(simulacion){
             plazo_moratorio : plazo_moratorio || 0,
             plazo_punitorio : plazo_punitorio || 0,
             total_credito : total_credito || 0,
+            sistema_credito : sistema_credito,
             desembolsos : _desembolsos,
             clientes : clientes || 0,
             operatoria : operatoria || 0,

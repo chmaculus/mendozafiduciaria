@@ -40,7 +40,7 @@ class credito_model extends main_model {
     var $_flag_pago_cuota_anterior = false;
     var $_caducado_de = 0;
     var $_prorroga_de = 0;
-    var $_sistema_aleman = FALSE;
+    var $_sistema_credito = SISTEMA_CREDITO_ALEMAN;
     var $_base_int_frances = 0;
     
     function clear() {
@@ -63,7 +63,7 @@ class credito_model extends main_model {
         $this->_cuotas = array();
         $this->_pagos = array();
         $this->_gastos = array();
-        $this->_tipo_credito = TIPO_CREDITO_NORMAL;
+        $this->_tipo_credito = TIPO_CREDITO_ALEMAN;
         $this->_bsave = true;
         $this->_ultimo_vencimiento_subsidio = 0;
         $this->_tipo_devengamiento = TIPO_DEVENGAMIENTO_AUTO;
@@ -78,6 +78,8 @@ class credito_model extends main_model {
         $this->_flag_pago_cuota_anterior = false;
         $this->_caducado_de = 0;
         $this->_prorroga_de = 0;
+        $this->_sistema_credito = SISTEMA_CREDITO_ALEMAN;
+        $this->_base_int_frances = 0;
     }
 
     function set_log($log = true) {
@@ -166,6 +168,10 @@ class credito_model extends main_model {
 
         $fecha = (!$fecha) ? time() : $fecha;
         $this->renew_datos();
+        
+        if (isset($data['sistema_credito'])) {
+            $this->_sistema_credito = $data['sistema_credito'];
+        }
 
         if ($this->_bsave) {
             $this->_db->update("fid_creditos_cuotas", array("ESTADO" => 0), "FECHA_VENCIMIENTO > " . $fecha);
@@ -1151,7 +1157,7 @@ class credito_model extends main_model {
                     /////
                     if($fecha_get >= $cuota['FECHA_VENCIMIENTO'] || $this->_tipo_devengamiento == TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO) {
                     
-                        if ($this->_sistema_aleman) {
+                        if ($this->_sistema_credito !== SISTEMA_CREDITO_FRANCES) {
                             $interes = $ranto_total_comp ? ($this->_calcular_interes_aleman($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp)) : 0;
                             $interes_subsidio = $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                         } else {
@@ -1433,7 +1439,7 @@ class credito_model extends main_model {
 
 
             //calculamos saldo de capital
-            if ($this->_sistema_aleman) {
+            if ($this->_sistema_credito !== SISTEMA_CREDITO_FRANCES) {
                 $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] + 1, true);
             }
             
@@ -1571,7 +1577,7 @@ class credito_model extends main_model {
                         $saldo_desembolso = $cuota['SALDO_CAPITAL'];
                     }
                     
-                    if ($this->_sistema_aleman) {
+                    if ($this->_sistema_credito !== SISTEMA_CREDITO_FRANCES) {
                         $int_compensatorio += $variacion ? $this->_calcular_interes_aleman($saldo_desembolso, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                         $int_compensatorio_subsidio += $variacion ? $this->_calcular_interes_aleman($saldo_desembolso, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                     } else {
@@ -1586,7 +1592,7 @@ class credito_model extends main_model {
                 }
                 
             } else {
-                if ($this->_sistema_aleman) {
+                if ($this->_sistema_credito !== SISTEMA_CREDITO_FRANCES) {
                     $int_compensatorio = $variacion ? $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                     $int_compensatorio_subsidio = $variacion ? $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                 } else {
@@ -1999,7 +2005,7 @@ class credito_model extends main_model {
         $AMORTIZACION_CUOTA_ACTUAL = 0;
         $SALDO_TEORICO = 0;
         
-        if (!$this->_sistema_aleman) { //sistema frances
+        if ($this->_sistema_credito == SISTEMA_CREDITO_FRANCES) {
             $valor_cuota = $this->_calcular_cuota_frances($variacion_inicial_arr['POR_INT_COMPENSATORIO'], $variacion_inicial_arr['CANTIDAD_CUOTAS'], $variacion_inicial_arr['CAPITAL'], $variacion_inicial_arr['PERIODICIDAD_TASA']);
         }
         
@@ -2028,7 +2034,7 @@ class credito_model extends main_model {
             $DESEMBOLSOS_ACUMULADOS += $cuotas[$c]['DESEMBOLSOS'];
             if ($c >= $CUOTAS_GRACIA) {
                 
-                if ($this->_sistema_aleman) { //SISTEMA ALEMAN
+                if ($this->_sistema_credito !== SISTEMA_CREDITO_FRANCES) { //SISTEMA ALEMAN
                     $audi .= "<br/>CUOTAS GRACIA: NO";
                     $divisor = $cuotas[$c]['CUOTAS_RESTANTES'];
                     $AMORTIZACION_CUOTA = ( $DESEMBOLSOS_ACUMULADOS - $AMORTIZACION_TEORICA_ACUMULADA) / $divisor;
@@ -2567,6 +2573,7 @@ class credito_model extends main_model {
             $this->_total_credito = $row_credito['MONTO_CREDITO'];
             $this->_estado_credito = $row_credito['CREDITO_ESTADO'];
             $this->_tipo_credito = $row_credito['TIPO_CREDITO'];
+            $this->_sistema_credito = $row_credito['SISTEMA_CREDITO'];
             $this->_caducado_de = $row_credito['ID_CADUCADO'];
             $this->_prorroga_de = $row_credito['ID_PRORROGA'];
             return TRUE;
