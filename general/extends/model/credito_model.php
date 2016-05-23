@@ -3379,7 +3379,9 @@ ORDER BY T1.lvl DESC');
         foreach ($this->_variaciones as $variacion) {
             switch ($variacion['TIPO']) {
                 case EVENTO_TASA:
-                    $eventos_tasas[] = $variacion;
+                    if ($variacion['FECHA'] < $fecha) {
+                        $eventos_tasas[] = $variacion;
+                    }
                     break;
             }
         }
@@ -3408,10 +3410,10 @@ ORDER BY T1.lvl DESC');
         $id_var = $variacion['ID'];
         if ($eventos_tasas) {
             foreach ($eventos_tasas as $t) {
-                $this->_variaciones[++$id_var] = $t;
+                $this->_variaciones[$t['ID']] = $t;
             }
         }
-            
+        
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
         
         $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;
