@@ -1255,7 +1255,7 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
+                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
