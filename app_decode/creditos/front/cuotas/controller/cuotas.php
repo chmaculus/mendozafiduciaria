@@ -1141,7 +1141,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
             
             $objReader = new PHPExcel_Reader_Excel2007();
-            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+            if ($objPHPExcel = $objReader->load($file_import)) {
                 $_SESSION['msg_err'] = "";
                 set_time_limit(0);
                 $err = "";
