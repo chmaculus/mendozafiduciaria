@@ -1280,7 +1280,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                                 $data['por_int_punitorio'] = $pago['TP'];
                                 $data['TIPO'] = EVENTO_TASA;
                                 
-                                $ret = $this->mod->generar_evento( $data, true, $fec + 1);
+                                $ret = $this->mod->generar_evento($data, true, $fec + 1);
                                 $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
                                 
                                 $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
@@ -1291,8 +1291,6 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                                 ++$pagos_no;
                             }
                         }
-                        
-                        die();
                         
                         if ($pagos_no) {
                             $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
