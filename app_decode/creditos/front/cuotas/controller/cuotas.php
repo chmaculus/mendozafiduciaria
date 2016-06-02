@@ -1196,8 +1196,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     }
                 }
                 
-                //for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
-                for ($j = 2; $j <= 17; $j++) {
+                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
                     if (!$credito_id) {
                         
