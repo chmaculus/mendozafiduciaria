@@ -2617,13 +2617,13 @@ class compravino_model extends main_model {
 
             if (trim($fecha) == "-   -") {
                 $fecha = '';
-            } else {
+            } elseif (trim($fecha)) {
                 $fecha = loadDate_excel($fecha);
             }
 
             if (trim($fechavto) == "-   -") {
                 $fechavto = '';
-            } else {
+            } elseif (trim($fechavto)) {
                 $fechavto = loadDate_excel($fechavto);
             }
 
@@ -2740,7 +2740,7 @@ class compravino_model extends main_model {
                     $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
                 }
             }
-
+            
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
             //log_this('log/aaaaaa.log', $this->_db->last_query() );
             $res[] = $resp;
