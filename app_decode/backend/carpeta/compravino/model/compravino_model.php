@@ -268,7 +268,8 @@ class compravino_model extends main_model {
     function actualizarTablasW() {
 
         //W_PROVEEDORES
-        $rtn = $this->_db->get_tabla('fid_clientes', "CU=1");
+//        $rtn = $this->_db->get_tabla('fid_clientes', "CU=1");
+        $rtn = $this->_db->get_tabla('fid_clientes');
 
         if ($rtn) {
             $this->_dbsql->delete('W_PROVEEDORES');
