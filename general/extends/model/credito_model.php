@@ -1242,7 +1242,7 @@ class credito_model extends main_model {
                             }
 
                             if ($cuota['ID']==0) {
-                                ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA<br />";
+                                ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA {$cuota['ID']}<br />";
                                 echo "S:$SALDO_CUOTA<br />";
                                 echo "R:$rango_int_mor<br />";
                                 echo "IM:{$tmp['INT_MORATORIO']}<br />";
@@ -1255,7 +1255,8 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
+                        //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
+                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && $tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
