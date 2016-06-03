@@ -2140,8 +2140,6 @@ class compravino_model extends main_model {
         $array_resultado2 = array();
         $i = 0;
         $j = 0;
-        /*         * ************************************************************************ */
-        /*         * ************************************************************************ */
         $array1 = $ids_proveedores; //Son los elementos que hay que agregar
         $array2 = $firstColumnData; //Son los elementos que se quitan
         //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
@@ -2304,74 +2302,140 @@ class compravino_model extends main_model {
     }
 
     function getDatoBodega($ids_bodegas, $firstColumnData) {
-        if (count($ids_bodegas) > count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($ids_bodegas as $nuevos) {
-                $existe = 0;
-                foreach ($firstColumnData as $actuales) {
-                    if ($nuevos == $actuales) {
-                        $existe = 1;
-                    }
+        $array_resultado1 = array();
+        $array_resultado2 = array();
+        $i = 0;
+        $j = 0;
+        $array1 = $ids_bodegas; //Son los elementos que hay que agregar
+        $array2 = $firstColumnData; //Son los elementos que se quitan
+        //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
+        //echo "<br>\nElementos que sólo existen en array1<br>\n";
+        foreach ($array1 as $value1) {
+            $encontrado = false;
+            foreach ($array2 as $value2) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
                 }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $nuevos;
-                }
-                $i++;
             }
-            $bod_ids = "";
-            foreach ($array_resultado as $value) {
-                $bod_ids .= $value . ",";
+            if ($encontrado == false) {
+                $array_resultado1[$i] = $value1;
             }
-            $bod_ids = substr($bod_ids, 0, -1);
-            $this->_db->select("ID,NOMBRE");
-            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
-            $n_rtn = array();
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
-                $n_rtn[$j]['ACCION'] = 'AGREGAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($ids_bodegas) < count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($firstColumnData as $actuales) {
-                $existe = 0;
-                foreach ($ids_bodegas as $nuevos) {
-
-                    if ($actuales == $nuevos) {
-                        $existe = 1;
-                    }
-                }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $actuales;
-                }
-                $i++;
-            }
-            $bod_ids = "";
-            foreach ($array_resultado as $value) {
-                $bod_ids .= $value . ",";
-            }
-            $bod_ids = substr($bod_ids, 0, -1);
-            $this->_db->select("ID,NOMBRE");
-            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
-                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($firstColumnData) > 0 && $ids_bodegas == 'null') {
-            $n_rtn[0]['ID'] = $firstColumnData[0];
-            $n_rtn[0]['NOMBRE'] = '';
-            $n_rtn[0]['ACCION'] = 'ELIMINAR';
-            return $n_rtn;
+            $i++;
         }
+        //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
+        //echo "<br>\nElementos que sólo existen en array2<br>\n";
+        foreach ($array2 as $value2) {
+            $encontrado = false;
+            foreach ($array1 as $value1) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
+                }
+            }
+            if ($encontrado == false) {
+                $array_resultado2[$i] = $value2;
+            }
+            $j++;
+        }
+
+        if (count($array_resultado1) > count($array_resultado2)) {
+            foreach ($array_resultado1 as $value1) {
+                $this->_db->select("ID,NOMBRE");
+                $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $value1 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                    $n_rtn[$j]['ACCION'] = 'AGREGAR';
+                    $j++;
+                }
+            }
+//            return $n_rtn;
+        } else {
+            foreach ($array_resultado2 as $value2) {
+                $this->_db->select("ID,NOMBRE");
+                $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $value2 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                    $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+                    $j++;
+                }
+            }
+//            return $n_rtn;
+        }
+        return $n_rtn;
+
+//        if (count($ids_bodegas) > count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($ids_bodegas as $nuevos) {
+//                $existe = 0;
+//                foreach ($firstColumnData as $actuales) {
+//                    if ($nuevos == $actuales) {
+//                        $existe = 1;
+//                    }
+//                }
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $nuevos;
+//                }
+//                $i++;
+//            }
+//            $bod_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $bod_ids .= $value . ",";
+//            }
+//            $bod_ids = substr($bod_ids, 0, -1);
+//            $this->_db->select("ID,NOMBRE");
+//            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+//            $n_rtn = array();
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+//                $n_rtn[$j]['ACCION'] = 'AGREGAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        } else if (count($ids_bodegas) < count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($firstColumnData as $actuales) {
+//                $existe = 0;
+//                foreach ($ids_bodegas as $nuevos) {
+//
+//                    if ($actuales == $nuevos) {
+//                        $existe = 1;
+//                    }
+//                }
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $actuales;
+//                }
+//                $i++;
+//            }
+//            $bod_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $bod_ids .= $value . ",";
+//            }
+//            $bod_ids = substr($bod_ids, 0, -1);
+//            $this->_db->select("ID,NOMBRE");
+//            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+//                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        } else if (count($firstColumnData) > 0 && $ids_bodegas == 'null') {
+//            $n_rtn[0]['ID'] = $firstColumnData[0];
+//            $n_rtn[0]['NOMBRE'] = '';
+//            $n_rtn[0]['ACCION'] = 'ELIMINAR';
+//            return $n_rtn;
+//        }
     }
 
     function getDatoBodegaNueva($ids_bodegas) {

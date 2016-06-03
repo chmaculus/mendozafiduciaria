@@ -1233,6 +1233,9 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (datos) {
+                console.log("VIENE ACA BODEGA");
+                console.log(datos);
+                
                 accion_bodegas_new = datos[0]['ACCION'];
                 for (var i = 0; i < datos.length; i++) {
                     row['ID'] = datos[i]['ID'];
@@ -1272,6 +1275,9 @@ $(document).ready(function () {
             });
             $('#opeBodega').on('change', function () {
                 var datarow = generaterow_bodegas();
+                console.log("DONDE DEBERIA BORRAR");
+                console.log(datarow);
+                console.log(accion_bodegas_new);
                 if (accion_bodegas_new == 'AGREGAR') {
                     var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
                 } else if (accion_bodegas_new == 'ELIMINAR') {
