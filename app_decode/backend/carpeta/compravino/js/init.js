@@ -1135,6 +1135,9 @@ $(document).ready(function () {
             });
             $('#opeProveedores').on('change', function () {
                 var datarow = generaterow_proveedores();
+                console.log("Viene a este llamado");
+                console.log(datarow);
+                console.log(accion_proveedores_new);
                 /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
                  * 
                  * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
