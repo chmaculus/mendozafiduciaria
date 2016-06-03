@@ -603,6 +603,7 @@ class credito_model extends main_model {
                     "MORATORIO" => $arr_moratorio,
                     "COMPENSATORIO" => $arr_compensatorio,
                     "CAPITAL" => $arr_capital,
+                    "ADELANTO" => (isset($this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO])) ? $this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO] : 0,
                     "ID" => $cuota['ID'],
                     "COMPENSATORIO_ACT" => $cuota['INT_COMPENSATORIO_ACT'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
@@ -642,6 +643,7 @@ class credito_model extends main_model {
                     "IVA_COMPENSATORIO" => $arr_iva_compensatorio,
                     "COMPENSATORIO" => $arr_compensatorio,
                     "CAPITAL" => $arr_capital,
+                    "ADELANTO" => (isset($this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO])) ? $this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO] : 0,
                     "ID" => $cuota['ID'],
                     "COMPENSATORIO_ACT" => isset($cuota['INT_COMPENSATORIO_ACT']) ? $cuota['INT_COMPENSATORIO_ACT'] : 0,
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
@@ -1188,12 +1190,13 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true, false);
+                            
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
                             }
-
+                            
                             $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
                             $tmp['INT_PUNITORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_PUNITORIO / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
                             
@@ -2014,8 +2017,8 @@ class credito_model extends main_model {
                 }
             }
         }
-
-
+        
+        
         //DESEMBOLSO AL FINAL DE LA CUOTA
 
         $total_desembolso_teorico = 0;
