@@ -972,7 +972,6 @@ $(document).ready(function () {
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-//validar campos
         if (opeNombre == '') {
             jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -991,14 +990,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (opeCoordinador == '') {
-//            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
-//            return false;
-//        }
-//        if (opeJefe == '') {
-//            jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
-//            return false;
-//        }
         if (listrosMax == '') {
             jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#listrosMax").focus();
@@ -1011,14 +1002,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (opeProveedores == '') {
-//            jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
-//        if (opeBodega == '') {
-//            jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
         $.ajax({
             url: _compravino.URL + "/x_updateOperatoria",
             data: {
@@ -1050,7 +1033,6 @@ $(document).ready(function () {
             },
             dataType: "json",
             type: "post"});
-//        $.ajax({url: _compravino.URL + "/x_updateBodegas",data: {data_bodegas: data_bodegas,nuevoID: el_id},dataType: "json",type: "post"});
         jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
             var urlh = "backend/carpeta/compravino/init/12/7";
@@ -1109,6 +1091,9 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (datos) {
+                console.log("Q UE DEVUELVE");
+//                alert(datos[0]['ACCION']);
+                console.log(datos);
                 accion_proveedores_new = datos[0]['ACCION'];
                 for (var i = 0; i < datos.length; i++) {
                     row['ID'] = datos[i]['ID'];
@@ -2094,7 +2079,7 @@ function editar_formulario_estado_cu() {
                     $("#estadoCuota6").val(rtn[5].ESTADO_CUOTA).trigger("chosen:updated");
                 }
             } else {
-                jAlert('No se ha generado ninguna forma de pago en la cuota con el ID '+el_id+'.', $.ucwords(_etiqueta_modulo), function () {
+                jAlert('No se ha generado ninguna forma de pago en la cuota con el ID ' + el_id + '.', $.ucwords(_etiqueta_modulo), function () {
                     var urlh = "backend/carpeta/compravino/init/12/2";
                     $(location).attr('href', urlh);
                 });
@@ -2254,6 +2239,7 @@ function editar_formulario_operatoria() {
                                 if (accion_proveedores == 'AGREGAR') {
                                     var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
                                 } else if (accion_proveedores == 'ELIMINAR') {
+                                    console.log("PASO X ACA ELIMINAR");
                                     var posicion = 0;
                                     var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
                                     for (var j = 0; j < rows.length; j++) {
