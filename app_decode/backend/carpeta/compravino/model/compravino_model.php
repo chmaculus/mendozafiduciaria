@@ -85,7 +85,7 @@ class compravino_model extends main_model {
                     $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
                             " AND NUMFACTURA='" . $value['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
                             . "AND BODEGA=" . $value['ID_BODEGA']);
-        log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query() );
+                    log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query());
                     if ($solicitud_adm[$j]) {
 
                         if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
@@ -117,7 +117,7 @@ class compravino_model extends main_model {
     function guardarlote($arr_obj) {
 
         $id_lote_new = 0;
-        if ($arr_obj){
+        if ($arr_obj) {
             //insert cabezera
             $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
 
@@ -260,15 +260,15 @@ class compravino_model extends main_model {
                 //file_put_contents("loggg.txt", $this->_dbsql->last_query(), FILE_APPEND);
             endforeach;
             $this->actualizarTablasW();
-
-    }
+        }
         return $id_lote_new;
     }
 
     function actualizarTablasW() {
 
         //W_PROVEEDORES
-        $rtn = $this->_db->get_tabla('fid_clientes', "CU=1");
+//        $rtn = $this->_db->get_tabla('fid_clientes', "CU=1");
+        $rtn = $this->_db->get_tabla('fid_clientes');
 
         if ($rtn) {
             $this->_dbsql->delete('W_PROVEEDORES');
@@ -770,6 +770,7 @@ class compravino_model extends main_model {
             "DESCRIPCION_OPE" => $arr_post['opeDescripcion'],
             "ID_FIDEICOMISO" => $arr_post['opeFideicomiso'],
             "ID_COORDINADOR_OPE" => $arr_post['opeCoordinador'],
+//            "opeProveedores" => $arr_post['opeProveedores'],
             "ID_JEFE_OPE" => $arr_post['opeJefe'],
             "LTRS_MAX" => $arr_post['listrosMax'],
             "MAX_PESOS" => $arr_post['maxPesos'],
@@ -812,6 +813,7 @@ class compravino_model extends main_model {
     }
 
     function updateProveedores($obj_bod, $obj_prov, $nuevoID) {
+
         $this->_db->delete("fid_op_vino_proveedores", "ID_OPERATORIA='" . $nuevoID . "'");
         foreach ($obj_prov as $value) {
             $ins_proveedor = array(
@@ -821,8 +823,9 @@ class compravino_model extends main_model {
                 "LIM_OPE_HECT" => $value['MAXHECTAREAS']
             );
             $this->_db->insert('fid_op_vino_proveedores', $ins_proveedor);
-//            log_this('log/UUUUUUU.log', $this->_db->last_query());
+//            log_this('log/HACEUPDATEPROV.log', $this->_db->last_query());
         }
+
         $this->_db->delete("fid_op_vino_bodegas", "ID_OPERATORIA='" . $nuevoID . "'");
         if ($obj_bod && count($obj_bod) > 0) {
             foreach ($obj_bod as $value) {
@@ -2133,6 +2136,96 @@ class compravino_model extends main_model {
 
     function getDatoProveedor($ids_proveedores, $firstColumnData) {
 
+//        $array_resultado1 = array();
+//        $array_resultado2 = array();
+//        $i = 0;
+//        $j = 0;
+//        /*         * ************************************************************************ */
+//        /*         * ************************************************************************ */
+//        $array1 = $ids_proveedores; //Son los elementos que hay que agregar
+//        $array2 = $firstColumnData; //Son los elementos que se quitan
+//        //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
+//        //echo "<br>\nElementos que sólo existen en array1<br>\n";
+//        foreach ($array1 as $value1) {
+//            $encontrado = false;
+//            foreach ($array2 as $value2) {
+//                if ($value1 == $value2) {
+//                    $encontrado = true;
+//                    $break;
+//                }
+//            }
+//            if ($encontrado == false) {
+////                echo "---> $value1<br>\n";
+//                $array_resultado1[$i] = $value1;
+//            }
+//            $i++;
+//        }
+//
+//        //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
+//        //echo "<br>\nElementos que sólo existen en array2<br>\n";
+//        foreach ($array2 as $value2) {
+//            $encontrado = false;
+//            foreach ($array1 as $value1) {
+//                if ($value1 == $value2) {
+//                    $encontrado = true;
+//                    $break;
+//                }
+//            }
+//            if ($encontrado == false) {
+////                echo "---> $value2<br>\n";
+//                $array_resultado2[$i] = $value2;
+//            }
+//            $j++;
+//        }
+//////        echo "Se agrego";
+//////        var_dump($array_resultado1);
+//////        echo "Se quito";
+//////        var_dump($array_resultado2);
+//////        die();
+//////        count($array)==0)
+////        if (count($array_resultado1) != 0) {
+//////            echo "Se agrego";
+////            return $array_resultado1;
+//////            die;
+////        }
+////        if (count($array_resultado2) != 0) {
+//////            echo "Se quito";
+////            return $array_resultado2;
+//////            die();
+////        }
+//        if (count($array_resultado1) > count($array_resultado2)) {
+////            var_dump($array_resultado1[0]);die;
+//            $this->_db->select("ID,RAZON_SOCIAL");
+//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $array_resultado1[0] . ")");
+//            $n_rtn = array();
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+//                $n_rtn[$j]['ACCION'] = 'AGREGAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        }else{
+//            
+//            $this->_db->select("ID,RAZON_SOCIAL");
+//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $array_resultado2[0] . ")");
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+//                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        }
+//
+
+
+
+        /*         * ************************************************************************ */
+        /*         * ************************************************************************ */
+
         if (count($ids_proveedores) > count($firstColumnData)) {
             $array_resultado = array();
             $i = 0;
@@ -2167,10 +2260,9 @@ class compravino_model extends main_model {
         } else if (count($ids_proveedores) < count($firstColumnData)) {
             $array_resultado = array();
             $i = 0;
-            foreach ($firstColumnData as $actuales) {
+            foreach ($ids_proveedores as $actuales) {
                 $existe = 0;
-                foreach ($ids_proveedores as $nuevos) {
-
+                foreach ($firstColumnData as $nuevos) {
                     if ($actuales == $nuevos) {
                         $existe = 1;
                     }
@@ -2180,10 +2272,12 @@ class compravino_model extends main_model {
                 }
                 $i++;
             }
+
             $prov_ids = "";
             foreach ($array_resultado as $value) {
                 $prov_ids .= $value . ",";
             }
+
             $prov_ids = substr($prov_ids, 0, -1);
             $this->_db->select("ID,RAZON_SOCIAL");
             $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
@@ -2739,7 +2833,7 @@ class compravino_model extends main_model {
                     $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
                 }
             }
-            
+
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
             //log_this('log/aaaaaa.log', $this->_db->last_query() );
             $res[] = $resp;
