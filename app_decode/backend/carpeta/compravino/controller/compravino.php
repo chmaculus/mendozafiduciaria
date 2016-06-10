@@ -837,7 +837,8 @@ class compravino extends main_controller {
 
     function x_verificarnumfactura() {
         $numero = $_POST['numero'];
-        $obj = $this->mod->verificarnumfactura($numero);
+        $cuit = $_POST['cuit'];
+        $obj = $this->mod->verificarnumfactura($numero,$cuit);
         echo trim(json_encode($obj ? $obj : array()));
     }
 
