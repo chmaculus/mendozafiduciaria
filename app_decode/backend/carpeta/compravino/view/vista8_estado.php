@@ -22,7 +22,10 @@
 
     <div class="elem elem_med"><label class="der">Estado Factura:</label><div class="indent" id="estado-factura">
             <select class="chzn-select medium-select select" id="estFact">
-                <option value="1">Cargada</option><option value="5">Pago Solicitado</option><option value="9">Pagada o Pago Rechazado</option>
+                <option value="1">Cargada</option>
+                <option value="5">Pago Solicitado</option>
+                <option value="9">Pagada o Pago Rechazado</option>
+                <option value="10">Anulada</option>
             </select>
         </div>
     </div>

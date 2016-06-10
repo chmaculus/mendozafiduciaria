@@ -570,22 +570,28 @@ class compravino_model extends main_model {
     function getfactura($id_objeto) {
         $this->_db->select("NUMERO");
         $rtn_factura = $this->_db->get_tabla("fid_cu_factura", "ID=" . $id_objeto);
-        $rtn_pagos = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA ='" . $rtn_factura[0]['NUMERO'] . "'");
 
-        if ($rtn_pagos) {
-            $this->_db->select("f.ID,f.ID_ESTADO,f.NUMERO,f.FORMA_PAGO,c.NUM_CUOTA,c.VALOR_CUOTA,c.ESTADO_CUOTA,f.ORDEN_PAGO");
-            $this->_db->join("fid_cu_pagos c", "f.NUMERO=c.NUM_FACTURA");
-            $rtn = $this->_db->get_tabla('fid_cu_factura f', "f.ID =" . $id_objeto);
-            $rtn_n = array();
-            foreach ($rtn as $value) {
-                if ($value['ORDEN_PAGO'] == '') {
-                    $value['ORDEN_PAGO'] = 'Sin Orden';
+        if ($rtn_factura[0]['NUMERO'] != '') {
+            $rtn_pagos = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA ='" . $rtn_factura[0]['NUMERO'] . "'");
+
+            if ($rtn_pagos) {
+                $this->_db->select("f.ID,f.ID_ESTADO,f.NUMERO,f.FORMA_PAGO,c.NUM_CUOTA,c.VALOR_CUOTA,c.ESTADO_CUOTA,f.ORDEN_PAGO");
+                $this->_db->join("fid_cu_pagos c", "f.NUMERO=c.NUM_FACTURA");
+                $rtn = $this->_db->get_tabla('fid_cu_factura f', "f.ID =" . $id_objeto);
+                $rtn_n = array();
+                foreach ($rtn as $value) {
+                    if ($value['ORDEN_PAGO'] == '') {
+                        $value['ORDEN_PAGO'] = 'Sin Orden';
+                    }
+                    $rtn_n[] = $value;
                 }
-                $rtn_n[] = $value;
-            }
-            return $rtn_n;
-        } else {
+                return $rtn_n;
+            } else {
 
+                $rtn_n = array();
+                return $rtn_n;
+            }
+        } else {
             $rtn_n = array();
             return $rtn_n;
         }
@@ -905,6 +911,7 @@ class compravino_model extends main_model {
 
     function sendobj($obj, $cambio_titularidad) {
         $numero_factura = $obj['NUMERO'];
+//        echo $numero_factura . "  ";die("QUERER VER Q TRAE");
         $iid = $obj["id"];
         $cuit = $obj["CUIT"];
         $cli = $this->_db->get_tabla("fid_clientes", "CUIT='" . $cuit . "'");
@@ -918,35 +925,20 @@ class compravino_model extends main_model {
             $armando_array = implode(',', $obj['CHECKLIST_PERSONA']);
             $obj['CHECKLIST_PERSONA'] = $armando_array;
         }
-
-        $ins_cuotas1 = array();
-        $ins_cuotas2 = array();
-        $ins_cuotas3 = array();
-        $ins_cuotas4 = array();
-        $ins_cuotas5 = array();
-        $ins_cuotas6 = array();
-        $cuota1 = 0;
-        $cuota2 = 0;
-        $cuota3 = 0;
-        $cuota4 = 0;
-        $cuota5 = 0;
-        $cuota6 = 0;
+        $ins_cuotas1 = array();$ins_cuotas2 = array();$ins_cuotas3 = array();
+        $ins_cuotas4 = array();$ins_cuotas5 = array();$ins_cuotas6 = array();
+        $cuota1 = 0;$cuota2 = 0;$cuota3 = 0;$cuota4 = 0;$cuota5 = 0;$cuota6 = 0;
 
         if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
-
             $fecha = $obj["FECHA"];
-
             if ($obj["FORMA_PAGO"] == 1) {
-                /*                 * *********************************************************************************************
-                 * Forma de pago 1
-                 * ********************************************************************************************* */
+                /* Forma de pago 1 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
                 $primerVen = 15;
                 $otrosVen = 30;
-//                if (intval($primerVen) <= 0)return false;
                 $habiles = 0;
                 $selectDias = "";
                 $ven = array();
@@ -963,10 +955,7 @@ class compravino_model extends main_model {
                 $ins_cuotas1['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
             } else if ($obj["FORMA_PAGO"] == 2) {
-
-                /*                 * *********************************************************************************************
-                 * Forma de pago 2
-                 * ********************************************************************************************* */
+                /* Forma de pago 2 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
@@ -986,7 +975,6 @@ class compravino_model extends main_model {
                 $fecha = date('Ymd', strtotime(end($ven)));
                 $ins_cuotas1['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
-
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
@@ -995,20 +983,12 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {
-                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
-                }
-                if ($dia == 0) {
-                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
-                }
-
+                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
+                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
             } else if ($obj["FORMA_PAGO"] == 3) {
-
-                /*                 * *********************************************************************************************
-                 * Forma de pago 3
-                 * ********************************************************************************************* */
+                /* Forma de pago 3 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
@@ -1028,7 +1008,6 @@ class compravino_model extends main_model {
                 $fecha = date('Ymd', strtotime(end($ven)));
                 $ins_cuotas1['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
-
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
@@ -1037,16 +1016,10 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {
-                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
-                }
-                if ($dia == 0) {
-                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
-                }
-
+                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
+                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
-
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas3['NUM_CUOTA'] = 3;
                 $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
@@ -1055,21 +1028,12 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {
-                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
-                }
-                if ($dia == 0) {
-                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
-                }
-
+                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
+                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
                 $ins_cuotas3['FECHA_VEN'] = $fecha;
-
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
             } else if ($obj["FORMA_PAGO"] == 4) {
-
-                /*                 * *********************************************************************************************
-                 * Forma de pago 4
-                 * ********************************************************************************************* */
+                /* Forma de pago 4 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
@@ -1365,25 +1329,17 @@ class compravino_model extends main_model {
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
             $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
-            if (isset($titu) AND $titu !== '') {
-                if ($cambio_titularidad == 'true') {
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $numero_factura,
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 1);
-                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                }
-            } else {
-                if ($titu[0]['CHECK_ESTADO'] == 0 && $cambio_titularidad == 'true') {//no esta activado y se ha activado
-                    $arr_cambio_titu = array(
-                        "ID_FACTURA" => $numero_factura,
-                        "ID_USUARIO" => $_SESSION['USERADM'],
-                        "FECHA" => date("Y-m-d H:i:s"),
-                        "CHECK_ESTADO" => 1);
-                    $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                }
+            if (count($titu)==0 && $cambio_titularidad == 'true') {
+                $arr_cambio_titu = array(
+                    "ID_FACTURA" => $numero_factura,
+                    "ID_USUARIO" => $_SESSION['USERADM'],
+                    "FECHA" => date("Y-m-d H:i:s"),
+                    "CHECK_ESTADO" => 1,
+                );
+                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
+                log_this('quieroverquetrae.log', $this->_db->last_query());
             }
+
             $acc = "edit";
             $id_new = $iid;
         }
@@ -2015,8 +1971,11 @@ class compravino_model extends main_model {
         }
     }
 
-    function verificarnumfactura($numero) {
-        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO=" . $numero);
+    function verificarnumfactura($numero, $cuit) {
+        $this->_db->select("*");
+        $this->_db->join("fid_clientes c", "f.ID_CLIENTE = c.ID");
+        $rtn = $this->_db->get_tabla("fid_cu_factura f", "f.NUMERO='" . $numero . "' AND c.CUIT='" . $cuit . "'");
+//        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO=" . $numero);
         if (count($rtn) > 0) {
             return 1;
         } else {
@@ -2136,67 +2095,96 @@ class compravino_model extends main_model {
 
     function getDatoProveedor($ids_proveedores, $firstColumnData) {
 
-//        $array_resultado1 = array();
-//        $array_resultado2 = array();
-//        $i = 0;
-//        $j = 0;
-//        /*         * ************************************************************************ */
-//        /*         * ************************************************************************ */
-//        $array1 = $ids_proveedores; //Son los elementos que hay que agregar
-//        $array2 = $firstColumnData; //Son los elementos que se quitan
-//        //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
-//        //echo "<br>\nElementos que sólo existen en array1<br>\n";
-//        foreach ($array1 as $value1) {
-//            $encontrado = false;
-//            foreach ($array2 as $value2) {
-//                if ($value1 == $value2) {
-//                    $encontrado = true;
-//                    $break;
+        $array_resultado1 = array();
+        $array_resultado2 = array();
+        $i = 0;
+        $j = 0;
+        $array1 = $ids_proveedores; //Son los elementos que hay que agregar
+        $array2 = $firstColumnData; //Son los elementos que se quitan
+        //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
+        //echo "<br>\nElementos que sólo existen en array1<br>\n";
+        foreach ($array1 as $value1) {
+            $encontrado = false;
+            foreach ($array2 as $value2) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
+                }
+            }
+            if ($encontrado == false) {
+//                echo "---> $value1<br>\n";
+                $array_resultado1[$i] = $value1;
+            }
+            $i++;
+        }
+
+        //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
+        //echo "<br>\nElementos que sólo existen en array2<br>\n";
+        foreach ($array2 as $value2) {
+            $encontrado = false;
+            foreach ($array1 as $value1) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
+                }
+            }
+            if ($encontrado == false) {
+                $array_resultado2[$i] = $value2;
+            }
+            $j++;
+        }
+        if (count($array_resultado1) > count($array_resultado2)) {
+            foreach ($array_resultado1 as $value1) {
+                $this->_db->select("ID,RAZON_SOCIAL");
+                $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $value1 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+                    $n_rtn[$j]['ACCION'] = 'AGREGAR';
+                    $j++;
+                }
+            }
+            return $n_rtn;
+        } else {
+            foreach ($array_resultado2 as $value2) {
+                $this->_db->select("ID,RAZON_SOCIAL");
+                $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $value2 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
+                    $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+                    $j++;
+                }
+            }
+            return $n_rtn;
+        }
+        /*         * ************************************************************************ */
+        /*         * ************************************************************************ */
+
+//        if (count($ids_proveedores) > count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($ids_proveedores as $nuevos) {
+//                $existe = 0;
+//                foreach ($firstColumnData as $actuales) {
+//                    if ($nuevos == $actuales) {
+//                        $existe = 1;
+//                    }
 //                }
-//            }
-//            if ($encontrado == false) {
-////                echo "---> $value1<br>\n";
-//                $array_resultado1[$i] = $value1;
-//            }
-//            $i++;
-//        }
-//
-//        //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
-//        //echo "<br>\nElementos que sólo existen en array2<br>\n";
-//        foreach ($array2 as $value2) {
-//            $encontrado = false;
-//            foreach ($array1 as $value1) {
-//                if ($value1 == $value2) {
-//                    $encontrado = true;
-//                    $break;
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $nuevos;
 //                }
+//                $i++;
 //            }
-//            if ($encontrado == false) {
-////                echo "---> $value2<br>\n";
-//                $array_resultado2[$i] = $value2;
+//            $prov_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $prov_ids .= $value . ",";
 //            }
-//            $j++;
-//        }
-//////        echo "Se agrego";
-//////        var_dump($array_resultado1);
-//////        echo "Se quito";
-//////        var_dump($array_resultado2);
-//////        die();
-//////        count($array)==0)
-////        if (count($array_resultado1) != 0) {
-//////            echo "Se agrego";
-////            return $array_resultado1;
-//////            die;
-////        }
-////        if (count($array_resultado2) != 0) {
-//////            echo "Se quito";
-////            return $array_resultado2;
-//////            die();
-////        }
-//        if (count($array_resultado1) > count($array_resultado2)) {
-////            var_dump($array_resultado1[0]);die;
+//            $prov_ids = substr($prov_ids, 0, -1);
 //            $this->_db->select("ID,RAZON_SOCIAL");
-//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $array_resultado1[0] . ")");
+//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
 //            $n_rtn = array();
 //            $j = 0;
 //            foreach ($rtn as $value) {
@@ -2206,10 +2194,30 @@ class compravino_model extends main_model {
 //                $j++;
 //            }
 //            return $n_rtn;
-//        }else{
-//            
+//        } else if (count($ids_proveedores) < count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($ids_proveedores as $actuales) {
+//                $existe = 0;
+//                foreach ($firstColumnData as $nuevos) {
+//                    if ($actuales == $nuevos) {
+//                        $existe = 1;
+//                    }
+//                }
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $actuales;
+//                }
+//                $i++;
+//            }
+//
+//            $prov_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $prov_ids .= $value . ",";
+//            }
+//
+//            $prov_ids = substr($prov_ids, 0, -1);
 //            $this->_db->select("ID,RAZON_SOCIAL");
-//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $array_resultado2[0] . ")");
+//            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
 //            $j = 0;
 //            foreach ($rtn as $value) {
 //                $n_rtn[$j]['ID'] = $value['ID'];
@@ -2218,83 +2226,12 @@ class compravino_model extends main_model {
 //                $j++;
 //            }
 //            return $n_rtn;
+//        } else if (count($firstColumnData) > 0 && $ids_proveedores == 'null') {
+//            $n_rtn[0]['ID'] = $firstColumnData[0];
+//            $n_rtn[0]['RAZON_SOCIAL'] = '';
+//            $n_rtn[0]['ACCION'] = 'ELIMINAR';
+//            return $n_rtn;
 //        }
-//
-
-
-
-        /*         * ************************************************************************ */
-        /*         * ************************************************************************ */
-
-        if (count($ids_proveedores) > count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($ids_proveedores as $nuevos) {
-                $existe = 0;
-                foreach ($firstColumnData as $actuales) {
-                    if ($nuevos == $actuales) {
-                        $existe = 1;
-                    }
-                }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $nuevos;
-                }
-                $i++;
-            }
-            $prov_ids = "";
-            foreach ($array_resultado as $value) {
-                $prov_ids .= $value . ",";
-            }
-            $prov_ids = substr($prov_ids, 0, -1);
-            $this->_db->select("ID,RAZON_SOCIAL");
-            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
-            $n_rtn = array();
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
-                $n_rtn[$j]['ACCION'] = 'AGREGAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($ids_proveedores) < count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($ids_proveedores as $actuales) {
-                $existe = 0;
-                foreach ($firstColumnData as $nuevos) {
-                    if ($actuales == $nuevos) {
-                        $existe = 1;
-                    }
-                }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $actuales;
-                }
-                $i++;
-            }
-
-            $prov_ids = "";
-            foreach ($array_resultado as $value) {
-                $prov_ids .= $value . ",";
-            }
-
-            $prov_ids = substr($prov_ids, 0, -1);
-            $this->_db->select("ID,RAZON_SOCIAL");
-            $rtn = $this->_db->get_tabla("fid_clientes", "ID IN (" . $prov_ids . ")");
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['RAZON_SOCIAL'] = $value['RAZON_SOCIAL'];
-                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($firstColumnData) > 0 && $ids_proveedores == 'null') {
-            $n_rtn[0]['ID'] = $firstColumnData[0];
-            $n_rtn[0]['RAZON_SOCIAL'] = '';
-            $n_rtn[0]['ACCION'] = 'ELIMINAR';
-            return $n_rtn;
-        }
     }
 
     function getDatoProveedorNuevo($ids_proveedores) {
@@ -2324,74 +2261,140 @@ class compravino_model extends main_model {
     }
 
     function getDatoBodega($ids_bodegas, $firstColumnData) {
-        if (count($ids_bodegas) > count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($ids_bodegas as $nuevos) {
-                $existe = 0;
-                foreach ($firstColumnData as $actuales) {
-                    if ($nuevos == $actuales) {
-                        $existe = 1;
-                    }
+        $array_resultado1 = array();
+        $array_resultado2 = array();
+        $i = 0;
+        $j = 0;
+        $array1 = $ids_bodegas; //Son los elementos que hay que agregar
+        $array2 = $firstColumnData; //Son los elementos que se quitan
+        //Aqui se encuentran los elementos que estan en el array1 y no estan en el array2 y hay que agregarlo
+        //echo "<br>\nElementos que sólo existen en array1<br>\n";
+        foreach ($array1 as $value1) {
+            $encontrado = false;
+            foreach ($array2 as $value2) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
                 }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $nuevos;
-                }
-                $i++;
             }
-            $bod_ids = "";
-            foreach ($array_resultado as $value) {
-                $bod_ids .= $value . ",";
+            if ($encontrado == false) {
+                $array_resultado1[$i] = $value1;
             }
-            $bod_ids = substr($bod_ids, 0, -1);
-            $this->_db->select("ID,NOMBRE");
-            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
-            $n_rtn = array();
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
-                $n_rtn[$j]['ACCION'] = 'AGREGAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($ids_bodegas) < count($firstColumnData)) {
-            $array_resultado = array();
-            $i = 0;
-            foreach ($firstColumnData as $actuales) {
-                $existe = 0;
-                foreach ($ids_bodegas as $nuevos) {
-
-                    if ($actuales == $nuevos) {
-                        $existe = 1;
-                    }
-                }
-                if ($existe == 0) {
-                    $array_resultado[$i] = $actuales;
-                }
-                $i++;
-            }
-            $bod_ids = "";
-            foreach ($array_resultado as $value) {
-                $bod_ids .= $value . ",";
-            }
-            $bod_ids = substr($bod_ids, 0, -1);
-            $this->_db->select("ID,NOMBRE");
-            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
-            $j = 0;
-            foreach ($rtn as $value) {
-                $n_rtn[$j]['ID'] = $value['ID'];
-                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
-                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
-                $j++;
-            }
-            return $n_rtn;
-        } else if (count($firstColumnData) > 0 && $ids_bodegas == 'null') {
-            $n_rtn[0]['ID'] = $firstColumnData[0];
-            $n_rtn[0]['NOMBRE'] = '';
-            $n_rtn[0]['ACCION'] = 'ELIMINAR';
-            return $n_rtn;
+            $i++;
         }
+        //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
+        //echo "<br>\nElementos que sólo existen en array2<br>\n";
+        foreach ($array2 as $value2) {
+            $encontrado = false;
+            foreach ($array1 as $value1) {
+                if ($value1 == $value2) {
+                    $encontrado = true;
+                    $break;
+                }
+            }
+            if ($encontrado == false) {
+                $array_resultado2[$i] = $value2;
+            }
+            $j++;
+        }
+
+        if (count($array_resultado1) > count($array_resultado2)) {
+            foreach ($array_resultado1 as $value1) {
+                $this->_db->select("ID,NOMBRE");
+                $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $value1 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                    $n_rtn[$j]['ACCION'] = 'AGREGAR';
+                    $j++;
+                }
+            }
+//            return $n_rtn;
+        } else {
+            foreach ($array_resultado2 as $value2) {
+                $this->_db->select("ID,NOMBRE");
+                $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $value2 . ")");
+                $j = 0;
+                foreach ($rtn as $value) {
+                    $n_rtn[$j]['ID'] = $value['ID'];
+                    $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+                    $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+                    $j++;
+                }
+            }
+//            return $n_rtn;
+        }
+        return $n_rtn;
+
+//        if (count($ids_bodegas) > count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($ids_bodegas as $nuevos) {
+//                $existe = 0;
+//                foreach ($firstColumnData as $actuales) {
+//                    if ($nuevos == $actuales) {
+//                        $existe = 1;
+//                    }
+//                }
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $nuevos;
+//                }
+//                $i++;
+//            }
+//            $bod_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $bod_ids .= $value . ",";
+//            }
+//            $bod_ids = substr($bod_ids, 0, -1);
+//            $this->_db->select("ID,NOMBRE");
+//            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+//            $n_rtn = array();
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+//                $n_rtn[$j]['ACCION'] = 'AGREGAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        } else if (count($ids_bodegas) < count($firstColumnData)) {
+//            $array_resultado = array();
+//            $i = 0;
+//            foreach ($firstColumnData as $actuales) {
+//                $existe = 0;
+//                foreach ($ids_bodegas as $nuevos) {
+//
+//                    if ($actuales == $nuevos) {
+//                        $existe = 1;
+//                    }
+//                }
+//                if ($existe == 0) {
+//                    $array_resultado[$i] = $actuales;
+//                }
+//                $i++;
+//            }
+//            $bod_ids = "";
+//            foreach ($array_resultado as $value) {
+//                $bod_ids .= $value . ",";
+//            }
+//            $bod_ids = substr($bod_ids, 0, -1);
+//            $this->_db->select("ID,NOMBRE");
+//            $rtn = $this->_db->get_tabla("fid_entidades", "ID IN (" . $bod_ids . ")");
+//            $j = 0;
+//            foreach ($rtn as $value) {
+//                $n_rtn[$j]['ID'] = $value['ID'];
+//                $n_rtn[$j]['NOMBRE'] = $value['NOMBRE'];
+//                $n_rtn[$j]['ACCION'] = 'ELIMINAR';
+//                $j++;
+//            }
+//            return $n_rtn;
+//        } else if (count($firstColumnData) > 0 && $ids_bodegas == 'null') {
+//            $n_rtn[0]['ID'] = $firstColumnData[0];
+//            $n_rtn[0]['NOMBRE'] = '';
+//            $n_rtn[0]['ACCION'] = 'ELIMINAR';
+//            return $n_rtn;
+//        }
     }
 
     function getDatoBodegaNueva($ids_bodegas) {
