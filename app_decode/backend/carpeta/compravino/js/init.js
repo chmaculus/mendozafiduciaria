@@ -154,7 +154,8 @@ function guardar_factura() {
     $.ajax({
         url: _compravino.URL + "/x_verificarnumfactura",
         data: {
-            numero: numero
+            numero: numero,
+            cuit: cuitform,
         },
         dataType: "json",
         type: "post",
@@ -760,7 +761,7 @@ $(document).ready(function () {
 
         var fechaBuscar = $("#fechaBuscarVen").val();
         if (fechaBuscar == '') {
-            alert("NADA");
+//            alert("NADA");
         }
         $("#jqxgrid_listado").hide();
         $("#jqxgrid_listado").show();
@@ -1235,7 +1236,7 @@ $(document).ready(function () {
             success: function (datos) {
                 console.log("VIENE ACA BODEGA");
                 console.log(datos);
-                
+
                 accion_bodegas_new = datos[0]['ACCION'];
                 for (var i = 0; i < datos.length; i++) {
                     row['ID'] = datos[i]['ID'];
@@ -1770,8 +1771,8 @@ function editar_formulario() {
                 $("#bodega").chosen({width: "220px"});
                 $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
 //            $("#formula").chosen({width: "220px"});$("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");$("#formula").trigger('change');$("#azucar").val(data.AZUCAR);
-                $("#ltros").val(data.LITROS).attr("readonly", "readonly");
-                $("#precio").val(data.PRECIO).attr("readonly", "readonly");
+                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
+                $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
                 $("#numVinedo").val(data.VINEDO);
                 $("#numRut").val(data.RUT);
                 $("#observacion_fact").val(data.OBSERVACIONES);
@@ -1812,7 +1813,8 @@ function editar_formulario() {
                         $("#fpago-select").chosen({width: "220px"});
                     }
                 })
-                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+//                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
                 var data_checklists_persona = [];
                 var listado_checklist = data.CHECKLIST_PERSONA;
                 data_checklists_persona = listado_checklist.split(',');
@@ -1996,6 +1998,13 @@ function editar_formulario() {
             }
         }
     });
+
+    $("#ltros").keyup(function () {
+        cambiarPrecio();
+    });
+//    $("#precio").keyup(function () {
+//        cambiarPrecio();
+//    });
 }
 
 
@@ -3663,6 +3672,8 @@ function lote_pago() {
                 swa = 1;
             } else if (reg.ESTADO == 'Pagada o Pago Rechazado') {
                 swa = 3;
+            } else if (reg.ESTADO == 'Anulada') {
+                swa = 10;
             }
             if (reg.CHECK_ESTADO == 'S/Confirmar') {
                 swa = 2;
@@ -3686,6 +3697,10 @@ function lote_pago() {
             return false;
         } else if (swa == '4') {
             jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '10') {
+            jAlert('La factura se encuentra anulada.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         }
