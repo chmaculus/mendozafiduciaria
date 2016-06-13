@@ -325,12 +325,12 @@ class main_model extends model{
     }
     
     function get_menu_padres(){
-        $rtn = $this->_db->get_tabla("fid_menu","ESPADRE='1'","ID");
+        $rtn = $this->_db->get_tabla("fid_menu","ESPADRE='1' AND ESTADO=1","ID");
         return $rtn;        
     }
     
     function get_menu_hijos($idpadre){
-        $rtn = $this->_db->get_tabla("fid_menu","ESPADRE='0' AND PADRE='".$idpadre."'","ID");
+        $rtn = $this->_db->get_tabla("fid_menu","ESPADRE='0' AND PADRE='".$idpadre."' AND ESTADO=1","ID");
         //log_this( 'aaaaa.log', $this->_db->last_query() );
         return $rtn;        
     }
