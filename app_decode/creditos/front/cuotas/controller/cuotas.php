@@ -84,6 +84,7 @@ class cuotas extends main_controller{
             $monto = $_POST['monto'];
 
             $this->mod->realizar_pago($fecha,  $monto);
+            die;
         }
         
         $this->mod->renew_datos();
@@ -201,6 +202,16 @@ class cuotas extends main_controller{
         $data['por_int_punitorio'] = $_POST['punitorio'];
         
         $fecha = $_POST['fecha'];
+        $desimputar = FALSE;
+        
+        if ($retornar) {
+            $this->mod->set_fecha_actual($fecha);
+            if ($this->mod->verificiar_eventos_posteriores()) {
+                //return;
+                $desimputar =TRUE;
+            }
+        }
+            
         $data['TIPO'] = EVENTO_TASA;
         //genero la variacion corerspondiente al desembolso
         $ret = $this->mod->generar_evento( $data, true, $fecha);
@@ -211,9 +222,30 @@ class cuotas extends main_controller{
         
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
+                
+        if ($retornar) {
+            if ($desimputar) {
+                $this->mod->set_credito_active($credito_id);
+                $this->mod->set_version_active($version);
         
-        if ($retornar) return;
+                $this->mod->renew_datos();
+                
+                $this->mod->save_last_state(true);
+                $this->mod->set_fecha_actual($fecha);
+                $pagos = $this->mod->desimputar_pago();
+                
+                //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
+                //$version_id = $data['VERSION'];
+                $version_id = $version;
         
+                $this->mod->set_version_active($version_id);
+                $this->mod->make_active_version();
+                foreach($pagos as $pago){
+                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                }
+            }
+            return;
+        }
         //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
         //y recalcula los pagos desde esa fecha
         if ( ($fecha_planchado = $this->mod->modificar_planchado($fecha)) > 0 ){
@@ -278,7 +310,7 @@ class cuotas extends main_controller{
         }
         
         echo trim(json_encode($_SESSION['CAMBIO_TASAS']['RESULTADO']));
-        unset($_SESSION['CAMBIO_TASAS']);
+        //unset($_SESSION['CAMBIO_TASAS']);
         die();
     }
 
@@ -1141,7 +1173,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             require_once(MODULE_DIRECTORY . 'PHPExcel/PHPExcel/Reader/Excel2007.php');
             
             $objReader = new PHPExcel_Reader_Excel2007();
-            if ($objPHPExcel = $objReader->load($excel['tmp_name'])) {
+            if ($objPHPExcel = $objReader->load($file_import)) {
                 $_SESSION['msg_err'] = "";
                 set_time_limit(0);
                 $err = "";
@@ -1149,6 +1181,22 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $arr_creditos = array();
                 $creditos_err = array();
                 $cuit_creditos = array();
+                
+                //cambios de tasas
+                $cambios_tasas = array();
+                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
+                    $tmp_ct = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getCalculatedValue();
+                    if ($tmp_ct) {
+                        $tmp_ct = strtotime(date('Y-m-d', PHPExcel_Shared_Date::ExcelToPHP($tmp_ct) + 86400));
+                        $cambios_tasas[$tmp_ct]['TC'] = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getCalculatedValue();
+                        $cambios_tasas[$tmp_ct]['TS'] = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getCalculatedValue();
+                        $cambios_tasas[$tmp_ct]['TP'] = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getCalculatedValue();
+                        $cambios_tasas[$tmp_ct]['TM'] = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getCalculatedValue();
+                    } else {
+                        break;
+                    }
+                }
+                
                 for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
                     if (!$credito_id) {
@@ -1187,12 +1235,21 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             $_fpago += $j;
                         }
                         
+                        if (!isset($arr_creditos[$credito_id]) ) {
+                            foreach ($cambios_tasas as $k_ct => $tmp_ct) {
+                                $arr_creditos[$credito_id][$k_ct-1] = $tmp_ct;
+                            }
+                        }
+                        
                         $arr_creditos[$credito_id][$_fpago] = array(
                             'FP' => $fpago,
                             'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
                             );
                     } else {
-                        $creditos_err[$cuit] = $cuit;
+                        $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
+                        if ($cuit) {
+                            $creditos_err[$cuit] = $cuit;
+                        }
                     }
                 }
                 
@@ -1214,8 +1271,21 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $this->mod->renew_datos();
                         
                         $pagos_no = 0;
-                        foreach ($creditos as $pago) {
-                            if (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
+                        foreach ($creditos as $fec => $pago) {
+                            if (isset($pago['TC'])) {
+                                $data = array();
+                                $data['por_int_compensatorio'] = $pago['TC'];
+                                $data['por_int_subsidio'] = $pago['TS'];
+                                $data['por_int_moratorio'] = $pago['TM'];
+                                $data['por_int_punitorio'] = $pago['TP'];
+                                $data['TIPO'] = EVENTO_TASA;
+                                
+                                $ret = $this->mod->generar_evento($data, true, $fec + 1);
+                                $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
+                                
+                                $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
+                                $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
+                            } elseif (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
                                 $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
                             } else {
                                 ++$pagos_no;

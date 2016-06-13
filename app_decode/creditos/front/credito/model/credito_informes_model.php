@@ -461,11 +461,14 @@ class credito_informes_model extends credito_model {
                 $tmp['POR_INT_MORATORIO'] = $variacion['ASOC']['MORATORIO'];
                 $tmp['POR_INT_PUNITORIO'] = $variacion['ASOC']['PUNITORIO'];
                 $tmp['FECHA_DESDE'] = $variacion['FECHA'];
-                $tmp['FECHA_HASTA'] = $fecha_posterior;
+                $tmp['FECHA_HASTA'] = 0;
 
                 $tasas[] = $tmp;
-
                 
+                if (isset($tasas[count($tasas)-2])) {
+                    $tasas[count($tasas)-2]['FECHA_HASTA'] = $variacion['FECHA'];
+                }
+
                 $fecha_posterior = $variacion['FECHA'];
             }
         }
@@ -477,5 +480,3 @@ class credito_informes_model extends credito_model {
     }
 
 }
-
-?>

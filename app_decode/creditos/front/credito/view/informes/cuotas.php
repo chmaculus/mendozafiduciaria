@@ -36,6 +36,7 @@ $saldo_cuota_iva = 0;
 $saldo_cuota_iva_compensatorio = 0;
 $saldo_cuota_iva_moratorio = 0;
 $saldo_cuota_iva_punitorio = 0;
+$saldo_a_favor = 0;
 
 //variables acumuladores totales
 $total_cuota_total = 0;
@@ -152,14 +153,17 @@ foreach($cuotas as $kk=>$cuota){
     $saldo_cuota_compensatorio += $saldo_compensatorio;
     $saldo_cuota_moratorio += $saldo_moratorio;
     $saldo_cuota_punitorio += $saldo_punitorio;
-    $saldo_cuota_iva += $iva_saldo;
+    $saldo_cuota_iva += $iva_saldo > 0 ? $iva_saldo : 0;
     $saldo_cuota_iva_compensatorio += $iva_compensatorio_saldo;
     $saldo_cuota_iva_moratorio += $iva_moratorio_saldo;
     $saldo_cuota_iva_punitorio += $iva_punitorio_saldo;
+    $saldo_a_favor += $cuota['ADELANTO'];
     
     
     $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos;
     $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $saldo_gastos;
+    $total_saldo = $total_saldo > 0.5 ? $total_saldo : 0;
+    $total_saldo -= $saldo_a_favor;
     $total_pagado = $pagado_moratorio + $pagado_punitorio + $pagado_compenstorio + $pagado_capital + $pagado_gastos;
     $total_subsidio =$cuota['_INFO']['COMPENSATORIO_SUBSIDIO']['TOTAL'] + $iva_subsidiado;
         
@@ -175,7 +179,7 @@ foreach($cuotas as $kk=>$cuota){
 
     $total_cuota_total += $total_total;
     $total_cuota_saldo += $total_saldo;
-    $total_cuota_pagado += $total_pagado;
+    $total_cuota_pagado += $total_pagado + $saldo_a_favor;
     $total_cuota_subsidio += $total_subsidio;
     $total_cuota_iva_subsidio += $total_iva_subsidio;
     
@@ -298,7 +302,7 @@ foreach($cuotas as $kk=>$cuota){
 ?>
     <li class="datos totales">
         <span class="porcentaje-desembolso">SALDO TOTAL</span>
-        <span class="porcentaje-desembolso">$<?= number_format($total_cuota_saldo+$saldo_cuota_iva,2)?></span>
+        <span class="porcentaje-desembolso">$<?= $saldo_total = number_format($total_cuota_saldo+$saldo_cuota_iva,2) . ($total_cuota_saldo+$saldo_cuota_iva < 0 ? '(a favor)' : '')?></span>
         <span class="opcion ampliar">( + )</span>
         <div class="especificaciones">
             <table width="100%">

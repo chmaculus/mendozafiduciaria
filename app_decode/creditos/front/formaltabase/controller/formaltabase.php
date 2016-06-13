@@ -491,6 +491,10 @@ class formaltabase extends main_controller {
         echo json_encode($operatorias);
         
     }
+    
+    function x_generar_clientes() {
+        $this->mod->generar_clientes();
+    }
 
     function x_generar_cuotas($retorno = TRUE) {
         

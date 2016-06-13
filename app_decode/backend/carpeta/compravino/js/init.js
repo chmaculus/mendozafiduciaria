@@ -154,7 +154,8 @@ function guardar_factura() {
     $.ajax({
         url: _compravino.URL + "/x_verificarnumfactura",
         data: {
-            numero: numero
+            numero: numero,
+            cuit: cuitform,
         },
         dataType: "json",
         type: "post",
@@ -760,7 +761,7 @@ $(document).ready(function () {
 
         var fechaBuscar = $("#fechaBuscarVen").val();
         if (fechaBuscar == '') {
-            alert("NADA");
+//            alert("NADA");
         }
         $("#jqxgrid_listado").hide();
         $("#jqxgrid_listado").show();
@@ -972,7 +973,6 @@ $(document).ready(function () {
         $('.op input:checked').each(function () {
             data_checklists_persona.push($(this).val());
         })
-//validar campos
         if (opeNombre == '') {
             jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -991,14 +991,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (opeCoordinador == '') {
-//            jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
-//            return false;
-//        }
-//        if (opeJefe == '') {
-//            jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
-//            return false;
-//        }
         if (listrosMax == '') {
             jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#listrosMax").focus();
@@ -1011,14 +1003,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (opeProveedores == '') {
-//            jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
-//        if (opeBodega == '') {
-//            jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;
-//        }
         $.ajax({
             url: _compravino.URL + "/x_updateOperatoria",
             data: {
@@ -1050,7 +1034,6 @@ $(document).ready(function () {
             },
             dataType: "json",
             type: "post"});
-//        $.ajax({url: _compravino.URL + "/x_updateBodegas",data: {data_bodegas: data_bodegas,nuevoID: el_id},dataType: "json",type: "post"});
         jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
             var urlh = "backend/carpeta/compravino/init/12/7";
@@ -1109,6 +1092,9 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (datos) {
+                console.log("Q UE DEVUELVE");
+//                alert(datos[0]['ACCION']);
+                console.log(datos);
                 accion_proveedores_new = datos[0]['ACCION'];
                 for (var i = 0; i < datos.length; i++) {
                     row['ID'] = datos[i]['ID'];
@@ -1150,6 +1136,9 @@ $(document).ready(function () {
             });
             $('#opeProveedores').on('change', function () {
                 var datarow = generaterow_proveedores();
+                console.log("Viene a este llamado");
+                console.log(datarow);
+                console.log(accion_proveedores_new);
                 /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
                  * 
                  * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
@@ -1245,6 +1234,9 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function (datos) {
+                console.log("VIENE ACA BODEGA");
+                console.log(datos);
+
                 accion_bodegas_new = datos[0]['ACCION'];
                 for (var i = 0; i < datos.length; i++) {
                     row['ID'] = datos[i]['ID'];
@@ -1284,6 +1276,9 @@ $(document).ready(function () {
             });
             $('#opeBodega').on('change', function () {
                 var datarow = generaterow_bodegas();
+                console.log("DONDE DEBERIA BORRAR");
+                console.log(datarow);
+                console.log(accion_bodegas_new);
                 if (accion_bodegas_new == 'AGREGAR') {
                     var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
                 } else if (accion_bodegas_new == 'ELIMINAR') {
@@ -1776,8 +1771,8 @@ function editar_formulario() {
                 $("#bodega").chosen({width: "220px"});
                 $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
 //            $("#formula").chosen({width: "220px"});$("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");$("#formula").trigger('change');$("#azucar").val(data.AZUCAR);
-                $("#ltros").val(data.LITROS).attr("readonly", "readonly");
-                $("#precio").val(data.PRECIO).attr("readonly", "readonly");
+                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
+                $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
                 $("#numVinedo").val(data.VINEDO);
                 $("#numRut").val(data.RUT);
                 $("#observacion_fact").val(data.OBSERVACIONES);
@@ -1818,7 +1813,8 @@ function editar_formulario() {
                         $("#fpago-select").chosen({width: "220px"});
                     }
                 })
-                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+//                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
                 var data_checklists_persona = [];
                 var listado_checklist = data.CHECKLIST_PERSONA;
                 data_checklists_persona = listado_checklist.split(',');
@@ -2002,6 +1998,13 @@ function editar_formulario() {
             }
         }
     });
+
+    $("#ltros").keyup(function () {
+        cambiarPrecio();
+    });
+//    $("#precio").keyup(function () {
+//        cambiarPrecio();
+//    });
 }
 
 
@@ -2094,7 +2097,7 @@ function editar_formulario_estado_cu() {
                     $("#estadoCuota6").val(rtn[5].ESTADO_CUOTA).trigger("chosen:updated");
                 }
             } else {
-                jAlert('No se ha generado ninguna forma de pago en la cuota con el ID '+el_id+'.', $.ucwords(_etiqueta_modulo), function () {
+                jAlert('No se ha generado ninguna forma de pago en la cuota con el ID ' + el_id + '.', $.ucwords(_etiqueta_modulo), function () {
                     var urlh = "backend/carpeta/compravino/init/12/2";
                     $(location).attr('href', urlh);
                 });
@@ -2254,6 +2257,7 @@ function editar_formulario_operatoria() {
                                 if (accion_proveedores == 'AGREGAR') {
                                     var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
                                 } else if (accion_proveedores == 'ELIMINAR') {
+                                    console.log("PASO X ACA ELIMINAR");
                                     var posicion = 0;
                                     var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
                                     for (var j = 0; j < rows.length; j++) {
@@ -3668,6 +3672,8 @@ function lote_pago() {
                 swa = 1;
             } else if (reg.ESTADO == 'Pagada o Pago Rechazado') {
                 swa = 3;
+            } else if (reg.ESTADO == 'Anulada') {
+                swa = 10;
             }
             if (reg.CHECK_ESTADO == 'S/Confirmar') {
                 swa = 2;
@@ -3691,6 +3697,10 @@ function lote_pago() {
             return false;
         } else if (swa == '4') {
             jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '10') {
+            jAlert('La factura se encuentra anulada.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         }

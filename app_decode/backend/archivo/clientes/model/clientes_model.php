@@ -55,7 +55,6 @@ class clientes_model extends main_model{
                     );    
 /*damian*/
            $rtn = $this->_db->update("fid_operaciones",$arr_razon,"BENEF like'%".$unidos."%'");
-     /**/  
             $acc = "edit";
             $id_new = $iid;
             endif;

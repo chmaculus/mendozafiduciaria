@@ -611,6 +611,7 @@ class credito_model extends main_model {
                     "MORATORIO" => $arr_moratorio,
                     "COMPENSATORIO" => $arr_compensatorio,
                     "CAPITAL" => $arr_capital,
+                    "ADELANTO" => (isset($this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO])) ? $this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO] : 0,
                     "ID" => $cuota['ID'],
                     "COMPENSATORIO_ACT" => $cuota['INT_COMPENSATORIO_ACT'],
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
@@ -650,6 +651,7 @@ class credito_model extends main_model {
                     "IVA_COMPENSATORIO" => $arr_iva_compensatorio,
                     "COMPENSATORIO" => $arr_compensatorio,
                     "CAPITAL" => $arr_capital,
+                    "ADELANTO" => (isset($this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO])) ? $this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO] : 0,
                     "ID" => $cuota['ID'],
                     "COMPENSATORIO_ACT" => isset($cuota['INT_COMPENSATORIO_ACT']) ? $cuota['INT_COMPENSATORIO_ACT'] : 0,
                     "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
@@ -1208,12 +1210,13 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_INICIO'], true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true, false);
+                            
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
                             }
-
+                            
                             $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
                             $tmp['INT_PUNITORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_PUNITORIO / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
                             
@@ -1262,7 +1265,7 @@ class credito_model extends main_model {
                             }
 
                             if ($cuota['ID']==0) {
-                                ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA<br />";
+                                ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA {$cuota['ID']}<br />";
                                 echo "S:$SALDO_CUOTA<br />";
                                 echo "R:$rango_int_mor<br />";
                                 echo "IM:{$tmp['INT_MORATORIO']}<br />";
@@ -1275,7 +1278,8 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
+                        //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
+                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && $tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
@@ -2096,8 +2100,8 @@ class credito_model extends main_model {
                 }
             }
         }
-
-
+        
+        
         //DESEMBOLSO AL FINAL DE LA CUOTA
 
         $total_desembolso_teorico = 0;
@@ -3463,7 +3467,9 @@ ORDER BY T1.lvl DESC');
         foreach ($this->_variaciones as $variacion) {
             switch ($variacion['TIPO']) {
                 case EVENTO_TASA:
-                    $eventos_tasas[] = $variacion;
+                    if ($variacion['FECHA'] < $fecha) {
+                        $eventos_tasas[] = $variacion;
+                    }
                     break;
             }
         }
@@ -3492,10 +3498,10 @@ ORDER BY T1.lvl DESC');
         $id_var = $variacion['ID'];
         if ($eventos_tasas) {
             foreach ($eventos_tasas as $t) {
-                $this->_variaciones[++$id_var] = $t;
+                $this->_variaciones[$t['ID']] = $t;
             }
         }
-            
+        
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
         
         $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;

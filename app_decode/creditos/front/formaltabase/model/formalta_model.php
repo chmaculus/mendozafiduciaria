@@ -133,11 +133,50 @@ class formalta_model extends credito_model {
             "ID_OPERATORIA" => $this->_id_operatoria,
             "POSTULANTES" => implode("|",$this->_postulantes),
             "TIPO_CREDITO" => $this->_tipo_credito,
-            "SISTEMA_CREDITO" => $this->_sistema_credito
+            "SISTEMA_CREDITO" => $this->_sistema_credito,
+            "POSTULANTES_NOMBRES" => '',
+            "POSTULANTES_CUIT" => '',
+            "TIPO_CREDITO" => $this->_tipo_credito
         );
+        
+        $this->_db->select('RAZON_SOCIAL, CUIT');
+        if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
+            $credito['POSTULANTES_NOMBRES'] = $data_clientes['POSTULANTES_NOMBRES'];
+            $credito['POSTULANTES_CUIT'] = $data_clientes['POSTULANTES_CUIT'];
+        }
+        
         $this->_db->insert("fid_creditos",$credito);
     }
     
+    function _generar_clientes($clientes = FALSE) {
+        if($clientes) {
+            $clientes = $this->_db->get_tabla("fid_clientes", "ID IN (" . str_replace("|", ',', $clientes) . ")");
+            if ($clientes) {
+                $nombres = array();
+                $cuits = array();
+                foreach ($clientes as $it_cl) {
+                    $nombres[] = $it_cl['RAZON_SOCIAL'];
+                    $cuits[] = $it_cl['CUIT'];
+                }
+                
+                return array(
+                    'POSTULANTES_NOMBRES' => implode(' | ', $nombres),
+                    'POSTULANTES_CUIT' => implode(' | ', $cuits),
+                    );
+            }
+        }
+        return FALSE;
+    }
+    
+    function generar_clientes() {
+        if ($creditos = $this->_db->get_tabla("fid_creditos")) {
+            foreach ($creditos as $credito) {
+                if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
+                    $this->_db->update('fid_creditos', $data_clientes, 'ID = ' . $credito['ID']);
+                }
+            }
+        }
+    }
     
     
    //se gneran las cuotas a partir de una variacion en particular
