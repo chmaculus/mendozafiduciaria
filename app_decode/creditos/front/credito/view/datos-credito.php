@@ -11,6 +11,14 @@
                     
                 </div>
             </div>
+            <?php if ($sistema_tipo >= 0) { ?>
+            <div class="elem elem_med">
+                <label>Sistema:</label>
+                <div class="indent" id="div_operatoria">
+                    <span ><?=(isset($OPERATORIAS['SISTEMA_CREDITO']) && $OPERATORIAS['SISTEMA_CREDITO']) ? 'Francés' : 'Alemán'?>  </span>
+                </div>
+            </div>
+            <?php } ?>
             <div class="clear"> </div>
 
 

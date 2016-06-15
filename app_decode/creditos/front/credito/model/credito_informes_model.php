@@ -478,5 +478,15 @@ class credito_informes_model extends credito_model {
         }        
         return $tasas;
     }
+    
+    function get_sistema_tipo() {
+        $this->_db->select("valor");
+        $rtn = $this->_db->get_tabla("fid_settings", "variable='sistema_credito'");
+        
+        if($rtn)
+            return trim($rtn[0]['valor']);
+        else
+            return 0;
+    }
 
 }

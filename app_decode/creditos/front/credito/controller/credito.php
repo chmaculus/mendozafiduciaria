@@ -93,6 +93,7 @@ class credito extends main_controller{
         
             
         $data['info'] = $this->mod->get_datos_credito();
+        $data['info']['sistema_tipo'] = $this->mod->get_sistema_tipo();
         //print_array($data['info'] );
       //  die();
         

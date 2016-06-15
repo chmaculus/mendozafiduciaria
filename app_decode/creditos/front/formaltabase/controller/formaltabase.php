@@ -143,7 +143,7 @@ class formaltabase extends main_controller {
         list($y, $m, $d) = $fecha_arr;
         $credito['CAPITAL_VTO'] = $d . "-" . $m . "-" . $y;
         $credito['MICRO'] = 0;
-        return $this->view("form_generar", array("credito" => $credito));
+        return $this->view("form_generar", array("credito" => $credito, 'sistema_tipo' => $this->mod->get_sistema_tipo()));
         /* permiso mostrar */
     }
 
@@ -584,7 +584,7 @@ class formaltabase extends main_controller {
         
         
         //la variable microcreditos $micro solo se marca en la tabla fid_creditos y no en las cuotas
-        if ($data['sistema_credito'] == SISTEMA_CREDITO_FRANCES) {
+        if ($data['sistema_credito'] == 1) {
             $this->mod->generar_cuotas_frances($ret, 0, $retorno);
         } else {
             $this->mod->generar_cuotas_aleman($ret, 0, $retorno);

@@ -1141,13 +1141,6 @@ class credito_model extends main_model {
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
                     $tmp['SALDO_CAPITAL'] = $SALDO_CAPITAL;
                     
-                    $this->_calcular_base_interes_frances($INTERES_COMPENSATORIO_VARIACION, $rango_comp);
-                    
-                    if ($cuota['ID']==73) {
-                        echo $interes = $cuota['SALDO_CAPITAL'] * $this->_base_int_frances;
-                        echo "<br />";
-                    }
-                    
                     //primero definimos los valores
                     
                     //luego buscamos los valores más correctos a la fecha
@@ -1163,6 +1156,7 @@ class credito_model extends main_model {
                             $interes = $ranto_total_comp ? ($this->_calcular_interes_aleman($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp)) : 0;
                             $interes_subsidio = $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                         } else {
+                            $this->_calcular_base_interes_frances($INTERES_COMPENSATORIO_VARIACION, $rango_comp ? $PERIODICIDAD_TASA_VARIACION : 0);
                             $interes = $cuota['SALDO_CAPITAL'] * $this->_base_int_frances;
                             $interes_subsidio = 0;
                         }
@@ -1585,7 +1579,7 @@ class credito_model extends main_model {
                         $int_compensatorio += $variacion ? $this->_calcular_interes_aleman($saldo_desembolso, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                         $int_compensatorio_subsidio += $variacion ? $this->_calcular_interes_aleman($saldo_desembolso, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                     } else {
-                        $this->_calcular_base_interes_frances($variacion['POR_INT_COMPENSATORIO'], 30);
+                        $this->_calcular_base_interes_frances($variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
                         $int_compensatorio += $variacion ? $cuota['SALDO_CAPITAL'] * $this->_base_int_frances : 0;
                         $int_compensatorio_subsidio = 0;
                     }
@@ -1600,7 +1594,7 @@ class credito_model extends main_model {
                     $int_compensatorio = $variacion ? $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango, $variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                     $int_compensatorio_subsidio = $variacion ? $this->_calcular_interes_aleman($SALDO_CAPITAL, $rango, $INT_SUBSIDIO, $variacion['PERIODICIDAD_TASA'], $blog) : 0;
                 } else {
-                    $this->_calcular_base_interes_frances($variacion['POR_INT_COMPENSATORIO'], 30);
+                    $this->_calcular_base_interes_frances($variacion['POR_INT_COMPENSATORIO'], $variacion['PERIODICIDAD_TASA']);
                     $int_compensatorio = $variacion ? $SALDO_CAPITAL * $this->_base_int_frances : 0;
                     $int_compensatorio_subsidio = 0;
                 }
@@ -2055,7 +2049,7 @@ class credito_model extends main_model {
                             $por_int_compensatorio = $variacion['POR_INT_COMPENSATORIO'];
                         }
                     }
-                    $this->_calcular_base_interes_frances($por_int_compensatorio, 30);
+                    $this->_calcular_base_interes_frances($por_int_compensatorio, $variacion['PERIODICIDAD_TASA']);
                     
                     $intereses = $cuotas[$c]['SALDO_CAPITAL'] * $this->_base_int_frances;
                     $AMORTIZACION_CUOTA = $valor_cuota - $intereses;
@@ -2577,7 +2571,7 @@ class credito_model extends main_model {
             $this->_total_credito = $row_credito['MONTO_CREDITO'];
             $this->_estado_credito = $row_credito['CREDITO_ESTADO'];
             $this->_tipo_credito = $row_credito['TIPO_CREDITO'];
-            $this->_sistema_credito = $row_credito['SISTEMA_CREDITO'];
+            $this->_sistema_credito = (int)$row_credito['SISTEMA_CREDITO'];
             $this->_caducado_de = $row_credito['ID_CADUCADO'];
             $this->_prorroga_de = $row_credito['ID_PRORROGA'];
             return TRUE;

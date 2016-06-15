@@ -1,4 +1,4 @@
-<input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
+    <input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
 <input type="hidden" id="fecha_caduca" value="<?=$credito['FECHA_CADUCA']?>" />
 <input type="hidden" id="credito_operatoria" value="<?=(isset($credito['ID_OPERATORIA']) && $credito['ID_OPERATORIA']) ? $credito['ID_OPERATORIA'] : ''?>" />
 <input type="hidden" id="prorroga" value="<?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 1 : 0 ?>" />
@@ -20,6 +20,7 @@
                         </div>
                     </div>
 
+                <?php if ($sistema_tipo) { ?>
                 <div class="row">
                     <div class="c5">
                         <span >Sistema</span>
@@ -29,6 +30,9 @@
                         <input type="radio" name="radSistema" value="<?php echo SISTEMA_CREDITO_FRANCES ?>" /> Francés
                     </div>
                 </div>
+                <?php } else { ?>
+                <input type="hidden" name="radSistema" id="sisTipo" value="<?php echo SISTEMA_CREDITO_ALEMAN ?>" />
+                <?php } ?>
                 <div class="row">
                     <div class="c5">
                         <span >Microcredito</span>

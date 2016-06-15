@@ -214,7 +214,7 @@ function _generar_cuotas(simulacion){
     var plazo_pago = $("#txtPlazo").val();
     var credito_id = $("#hCreditoID").val();
     var micro = $("#hMicro").val();
-    var sistema_credito = $('input:checked', '#radSistema').val();
+    var sistema_credito = ($("#radSistema input:checked").length > 0) ? $('input:checked', '#radSistema').val() : $("#sisTipo").val();
     
     var total_credito = $("#txtMontoTotalDesembolsos").val();
     
