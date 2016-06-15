@@ -217,9 +217,9 @@ class formaltabase extends main_controller {
                     $cuit = explode("\n", $cuit);
                     $_postulantes = explode("\n", $_postulantes);
                     
-                    if (count($cuit) != count($_postulantes)) {
-                        continue;
-                    }
+                    /*if (count($cuit) != count($_postulantes)) {
+                        continue; //a pedido de mercedes se saca la validación 14/06/16
+                    }*/
                     
                     
                     $postulantes = array();
