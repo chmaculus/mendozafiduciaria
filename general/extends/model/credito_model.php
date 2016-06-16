@@ -1133,6 +1133,7 @@ class credito_model extends main_model {
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
                     $tmp['SALDO_CAPITAL'] = $SALDO_CAPITAL;
                     
+                    
                     //primero definimos los valores
                     
                     //luego buscamos los valores más correctos a la fecha
@@ -1190,7 +1191,7 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] - 1, true, false);
                             
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
@@ -1423,7 +1424,7 @@ class credito_model extends main_model {
 
 
             //calculamos saldo de capital
-            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] + 1, true);
+           // $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true);
 
             $cuota['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
             $cuota['SALDO_CAPITAL'] = $SALDO_CAPITAL;
