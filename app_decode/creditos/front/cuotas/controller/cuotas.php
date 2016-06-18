@@ -313,8 +313,48 @@ class cuotas extends main_controller{
         //unset($_SESSION['CAMBIO_TASAS']);
         die();
     }
-
     
+    private function _reimputar($credito_id, $version = FALSE, $fecha = FALSE) {
+        
+        $this->mod->set_credito_active($credito_id);
+        $this->mod->set_version_active($version);
+
+        $this->mod->renew_datos();
+
+        $this->mod->save_last_state(true);
+        
+        if (!$fecha) {
+            $cuotas = $this->mod->get_cuotas_credito();
+            if ($cuotas) {
+                $fecha = $cuotas['RESULT'][0]['FECHA_INICIO'];
+            }
+        }
+        
+        $this->mod->set_fecha_actual($fecha);
+        $pagos = $this->mod->desimputar_pago();
+
+        //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
+        //$version_id = $data['VERSION'];
+        $version_id = $version;
+
+        $this->mod->set_version_active($version_id);
+        $this->mod->make_active_version();
+        foreach($pagos as $pago){
+            $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+        }
+    }
+    
+    function reimputar_pagos_creditos() {
+        $creditos = array(1267);
+        set_time_limit(0);
+        
+        foreach ($creditos as $credito_id) {
+            $this->_reimputar($credito_id);
+            
+            die();
+        }
+    }
+                
     function x_segmentar(){
         $credito_id = $_POST['credito_id'];
         $this->mod->set_credito_active($credito_id);

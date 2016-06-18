@@ -301,6 +301,7 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
     }
 
     reset = reset || 0;
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_agregar_desembolso",
         type: "post",
@@ -331,7 +332,7 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
                     desimputar_pagos(id_credito, fecha, true);
                 }
                 else{
-                    $.unblockUI();                    
+                    $.unblockUI();
                 }
             }
         }
@@ -787,7 +788,7 @@ function desimputar_pagos(id_credito, fecha, confirm){
         },
         type: "post",
         success: function(result) {
-            $.unblockUI();            
+            $.unblockUI();
             if (result=='-1'){
                 jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function(e) {
                     return;
