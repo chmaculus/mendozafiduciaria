@@ -158,6 +158,7 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
         return;
     }
     
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_set_pago",
         data: {
