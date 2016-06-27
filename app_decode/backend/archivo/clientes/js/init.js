@@ -170,6 +170,7 @@ $(document).ready(function(){
                             var con = $("#con").val();
                             var cuit = $("#cuit").val();
                             var insiibb = $("#insiibb").val();
+                            var retencion = $("#input-retencion").val();
                             var insinv = $("#insinv").val();
                             var ema = $("#ema").val();
                             var obs = $("#obs").val();
@@ -229,6 +230,7 @@ $(document).ready(function(){
                                             CORREO:ema,
                                             OBSERVACION:obs,
                                             INSCRIPCION_IIBB:insiibb,
+                                            RETENCION:retencion,
                                             CBU:cbu,
                                             contactos:arr_contactos
                                         }
@@ -367,7 +369,6 @@ $(document).ready(function(){
                                 });
                            });
                         });
-                        
                         $('.elem_cerrar').off().click(function(e) {
                             $(this).fadeOut(400, function() {
                                 $(this).parent().remove();
@@ -497,6 +498,7 @@ $(document).ready(function(){
                             var con = $("#con").val();
                             var cuit = $("#cuit").val();
                             var insiibb = $("#insiibb").val();
+                            var retencion = $("#input-retencion").val();
                             var ema = $("#ema").val();
                             var obs = $("#obs").val();
                             var cbu = $("#cbu").val();
@@ -535,6 +537,7 @@ $(document).ready(function(){
                                 CORREO:ema,
                                 OBSERVACION:obs,
                                 INSCRIPCION_IIBB:insiibb,
+                                RETENCION:retencion,
                                 CBU:cbu,
                                 contactos:arr_contactos
                             }                                                  
@@ -696,7 +699,8 @@ $(document).ready(function(){
             { name: 'CBU' , type: 'string'},
             { name: 'CORREO' , type: 'string'},
             { name: 'ID_INV' , type: 'string'},
-            { name: 'INSCRIPCION_IIBB' , type: 'string'}
+            { name: 'INSCRIPCION_IIBB' , type: 'string'},
+            { name: 'RETENCION' , type: 'float'}
         ],
         //url: _clientes.URL + '/x_get_info_grid',
         url: 'general/extends/extra/clientes.php',
@@ -785,7 +789,8 @@ $(document).ready(function(){
             { text: 'CORREO', datafield: 'CORREO', width: '20%', hidden : true, filterable : false },
             { text: 'TELEFONO', datafield: 'TELEFONO', width: '20%', hidden : true, filterable : false },
             { text: 'INSCRIPCION INV', datafield: 'ID_INV', width: '20%', hidden : true, filterable : false },
-            { text: 'INSCRIPCCION IIBB', datafield: 'INSCRIPCION_IIBB', width: '20%', hidden : true, filterable : false }
+            { text: 'INSCRIPCCION IIBB', datafield: 'INSCRIPCION_IIBB', width: '20%', hidden : true, filterable : false },
+            { text: 'RETENCION', datafield: 'RETENCION', width: '20%', hidden : true, filterable : false }
         ]
     });
             
@@ -833,10 +838,8 @@ function salir_pwd(){
 }
 
 function ingresar_pwd(){
-    
     var passw = $("#clave_desb").val();
     var nivel = $("#clave_desb").data('nivel');
-    
     if (working1==false){
         working1 = true;
         $.ajax({
@@ -857,12 +860,8 @@ function ingresar_pwd(){
                         $("#clave_desb").select();
                     });
                 }
-                
                 working1 = false;
             }
         });
     }
-    
-    
-    
 }

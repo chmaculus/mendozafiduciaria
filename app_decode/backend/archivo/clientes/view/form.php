@@ -136,6 +136,12 @@
                             </div>
                             <div class="div_pidepass"><span>Contenido Bloqueado</span></div>
                     </div>
+                    <div style="margin-top: 10px;" class="elem elem_med">
+                            <label class="der">Retencion:</label>
+                            <div class="indent formtext">
+                                <input type="text" class="tip-right" title="Ingrese Valor" id="input-retencion" data-prompt-position="centerRight" value="<?php echo (isset($entidad['INSCRIPCION_IIBB'])? $entidad['INSCRIPCION_IIBB']:"" ) ?>"> 
+                            </div>
+                    </div>
                     <div class="validate[custom[contacto]] group" id="contactos">
                         <div class="elem">
                             <label>Contactos:</label>
