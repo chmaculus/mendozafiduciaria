@@ -289,7 +289,7 @@ class cuotas extends main_controller{
                 
                 if ($cambiar_valores) {
                     $tasas = $this->mod->getTasasCredito($credito['ID'], $_POST['fecha']);
-                    if ($tasa_comp === FALSE) {
+                    /*if ($tasa_comp === FALSE) {
                         $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
                     }
                     if ($tasa_subs === FALSE) {
@@ -300,7 +300,7 @@ class cuotas extends main_controller{
                     }
                     if ($tasa_pun === FALSE) {
                         $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
-                    }
+                    }*/
                 }
                 $_POST['credito_id'] = $credito['ID'];
                 $_POST['version_id'] = $credito['ID_VERSION'];
