@@ -3419,6 +3419,10 @@ ORDER BY T1.lvl DESC');
             }
         }
         
+        foreach ($this->_variaciones as $k => $v) {
+            $this->_variaciones[$k]['POR_INT_COMPENSATORIO'] = 0;
+        }
+        
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
         
         $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;
