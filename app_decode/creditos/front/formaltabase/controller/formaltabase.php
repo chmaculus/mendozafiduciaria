@@ -636,6 +636,9 @@ class formaltabase extends main_controller {
                 $this->x_agregar_desembolso();
             }
         }
+        
+        //buscamos cambios de tasas x operatoria - historial
+        $this->mod->setCambiosTasasOperatoria();
     }
     
     function x_agregar_desembolso(){

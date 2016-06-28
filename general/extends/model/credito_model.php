@@ -3571,6 +3571,34 @@ ORDER BY T1.lvl DESC');
         
         return FALSE;
     }
+    
+    function setCambiosTasasOperatoria() {
+        if (!$this->_id_operatoria) {
+            return;
+        }
+            
+        $cuota = reset($this->_cuotas);
+        $fecha = $cuota['FECHA_INICIO'];
+        
+        $this->_db->select('*');
+        $this->_db->where("ID_OPERATORIA = " . $this->_id_operatoria . " AND FECHA >= '$fecha'");
+        $cambiotasas = $this->_db->get_tabla("fid_operatoria_cambiotasas");
+        
+        if ($cambiotasas) {
+            $data = array();
+            $data['TIPO'] = EVENTO_TASA;
+        
+            foreach ($cambiotasas as $ct) {
+                $data['por_int_compensatorio'] = $ct['COMPENSATORIO'];
+                $data['por_int_subsidio'] = $ct['SUBSIDIO'];
+                $data['por_int_moratorio'] = $ct['MORATORIO'];
+                $data['por_int_punitorio'] = $ct['PUNITORIO'];
+                $ret = $this->generar_evento($data, true, $ct['FECHA']);
+                $this->agregar_tasa($ct['COMPENSATORIO'], $ct['SUBSIDIO'], $ct['MORATORIO'], $ct['PUNITORIO'], $cuota['CUOTAS_RESTANTES'], $ct['FECHA']);
+                $this->assign_id_evento($ret['ID'],EVENTO_TASA);
+            }
+        }
+    }
   
 }
                 
