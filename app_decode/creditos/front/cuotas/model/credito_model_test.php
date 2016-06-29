@@ -870,6 +870,10 @@ class credito_model_test extends credito_model {
         return $rtn[0];
     }
 
+    function get_monto_credito() {
+        return $this->_total_credito;
+    }
+
 }
 
 ?>

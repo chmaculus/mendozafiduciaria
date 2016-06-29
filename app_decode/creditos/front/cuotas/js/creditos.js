@@ -169,15 +169,20 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
         },
         type: "post",
         success: function(result) {
-        
-            $(".div-result").html(result);
-            if (_version_change){
-                desimputar_pagos(id_credito, fecha, true);
-            }          
-            else{
-                $.unblockUI();                
+            if (result == '-1') {
+                jAlert("No se guardó el recupero. Se deben cargar el 100% de desembolsos", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
+            } else {
+                $(".div-result").html(result);
+                if (_version_change){
+                    desimputar_pagos(id_credito, fecha, true);
+                }          
+                else{
+                    $.unblockUI();                
+                }
+                _events_lista();
             }
-            _events_lista();
         }
     });    
 };

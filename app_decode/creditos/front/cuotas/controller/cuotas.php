@@ -83,8 +83,19 @@ class cuotas extends main_controller{
 
             $monto = $_POST['monto'];
 
+            $monto_credito = $this->mod->get_monto_credito();
+            $desembolsos = $this->mod->get_desembolsos(0);
+            $desembolsado = 0;
+            
+            foreach($desembolsos as $desembolso){
+                $desembolsado += $desembolso['MONTO'];
+            }
+            
+            if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
+                die("-1");
+            }
+            
             $this->mod->realizar_pago($fecha,  $monto);
-            die;
         }
         
         $this->mod->renew_datos();
@@ -345,7 +356,7 @@ class cuotas extends main_controller{
     }
     
     function reimputar_pagos_creditos() {
-        $creditos = array(1267);
+        $creditos = array(1262);
         set_time_limit(0);
         
         foreach ($creditos as $credito_id) {
@@ -1310,30 +1321,43 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $this->mod->set_version_active();
                         $this->mod->renew_datos();
                         
-                        $pagos_no = 0;
-                        foreach ($creditos as $fec => $pago) {
-                            if (isset($pago['TC'])) {
-                                $data = array();
-                                $data['por_int_compensatorio'] = $pago['TC'];
-                                $data['por_int_subsidio'] = $pago['TS'];
-                                $data['por_int_moratorio'] = $pago['TM'];
-                                $data['por_int_punitorio'] = $pago['TP'];
-                                $data['TIPO'] = EVENTO_TASA;
-                                
-                                $ret = $this->mod->generar_evento($data, true, $fec + 1);
-                                $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
-                                
-                                $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
-                                $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
-                            } elseif (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
-                                $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
-                            } else {
-                                ++$pagos_no;
-                            }
+                        
+                        $monto_credito = $this->mod->get_monto_credito();
+                        $desembolsos = $this->mod->get_desembolsos(0);
+                        $desembolsado = 0;
+
+                        foreach($desembolsos as $desembolso){
+                            $desembolsado += $desembolso['MONTO'];
                         }
                         
-                        if ($pagos_no) {
-                            $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
+                        if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
+                            $err .= "El crédito $credito_id no se imputaron pagos porque no tiene el 100% de los desembolsos<br />";
+                        } else {
+                            $pagos_no = 0;
+                            foreach ($creditos as $fec => $pago) {
+                                if (isset($pago['TC'])) {
+                                    $data = array();
+                                    $data['por_int_compensatorio'] = $pago['TC'];
+                                    $data['por_int_subsidio'] = $pago['TS'];
+                                    $data['por_int_moratorio'] = $pago['TM'];
+                                    $data['por_int_punitorio'] = $pago['TP'];
+                                    $data['TIPO'] = EVENTO_TASA;
+
+                                    $ret = $this->mod->generar_evento($data, true, $fec + 1);
+                                    $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
+
+                                    $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
+                                    $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
+                                } elseif (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
+                                    $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
+                                } else {
+                                    ++$pagos_no;
+                                }
+                            }
+
+                            if ($pagos_no) {
+                                $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
+                            }
                         }
                         
                         if(isset($cuit_creditos[$credito_id])) {
