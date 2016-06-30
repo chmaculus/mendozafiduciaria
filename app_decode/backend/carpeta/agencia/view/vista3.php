@@ -136,6 +136,28 @@
         </div>
     </div>
 
+    <div class="elem elem_med">
+        <label class="der">Retencion %:</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="retencionesD" value="">
+        </div>
+    </div>
+
+    <div class="elem elem_med">
+        <label class="der">Tipo :</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="tipo_m" value="">
+        </div>
+    </div>
+    <div id="ver_limite_m" style="display:none;">
+        <div class="elem elem_med">
+            <label class="der">Limite:</label>
+            <div class="indent formtext">
+                <input type="text" title="" id="limite_m_d" value="">
+            </div>
+        </div>
+    </div>
+    
     <div class="elem">
         <label class="ancho100">Observaciones:</label>
         <div class="formtext">
@@ -151,12 +173,6 @@
 
 <div class="nuevafact_form">
     <input type="hidden" id="idh" value="<?php echo isset($entidad["ID"]) ? $entidad["ID"] : ''; ?>" />
-<!--    <div class="elem elem_med_cond">
-        <label class="der">N° Operatoria:</label>
-        <div class="indent formtext">
-            <input type="text" class="tip-right" title="numOperatoria" id="numOperatoria" value="" readonly maxlength="11">
-        </div>
-    </div>-->
     <div class="elem elem_med_cond">
         <label class="der">CUIT:</label>
         <div class="indent formtext">
@@ -195,32 +211,7 @@
             <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
-
-<!--    <div class="elem elem_med">
-        <label>Proveedores:</label>
-        <div class="indent" id="indent_prueba">
-        </div>
-    </div>-->
-
-    <!--    <div class="elem elem_med">
-            <label class="der">Provincia:</label>
-            <div class="indent formtext">
-                <input type="text" class="tip-right" title="" id="prov_bodega" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" )   ?>" readonly>
-            </div>
-        </div>-->
-    <div style="margin-top:10px;" class="clear"></div>
-    <!--    <div class="elem elem_med">
-                <label class="der">Departamento:</label>
-                <div class="indent formtext">
-                    <input type="text" class="tip-right" title="" id="dto_bodega" value="<?php // echo (isset($entidad['DESTINO'])? $entidad['DESTINO']:"" )      ?>" readonly>
-                </div>
-        </div>-->
-<!--    <div class="elem elem_med" style="margin-top:30px;">
-        <label class="der">Litros:</label>
-        <div class="indent formtext">
-            <input type="text" class="tip-right" title="" id="ltros" value="<?php // echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" >
-        </div>
-    </div>-->
+    <!--<div style="margin-top:10px;" class="clear"></div>-->
     <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med">
         <label class="der">Forma de pago:</label>
@@ -230,6 +221,7 @@
             </select>   
         </div>
     </div>
+    <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med">
         <label class="der">Precio:</label>
         <div class="indent formtext">
@@ -244,16 +236,23 @@
     </div>
 
     <div class="elem elem_med">
+        <label class="der">Porcentaje Iva %:</label>
+        <div class="indent formtext">
+            <input type="text" class="tip-right" title="" id="porcentaje_iva">
+        </div>
+    </div>
+    <div class="elem elem_med">
         <label class="der">Iva:</label>
         <div class="indent formtext">
             <input type="text" class="tip-right" title="" id="iva" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
         </div>
     </div>
 
+
     <div class="elem elem_med">
-        <label class="der">Porcentaje Iva:</label>
+        <label class="der">Retencion %:</label>
         <div class="indent formtext">
-            <input type="text" class="tip-right" title="" id="porcentaje_iva">
+            <input type="text" class="tip-right" title="" id="retencion" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
         </div>
     </div>
 
@@ -263,23 +262,15 @@
             <input type="text" class="tip-right" title="" id="total" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" readonly>
         </div>
     </div>
-    <?php // if (isset($lst_formulas) && is_array($lst_formulas)): ?>
-    <!--        <div class="elem elem_med"><label>Formula:</label><div class="indent">
-                    <select class="chzn-select medium-select select" id="formula">
-                        <option value="">Elegir Formula</option>
-                <?php // foreach ($lst_formulas as $rs_form): ?>
-                        <option value="<?php // echo $rs_form["idFormula"]  ?>"><?php // echo "Fórmula" . $rs_form["idFormula"]  ?></option>
-    <?php // endforeach; ?>
-                    </select></div></div>--><?php //endif; ?>
     <div class="elem">
         <label class="ancho100">Observaciones:</label>
         <div class="formtext">
             <textarea  class="medium"  id="observacion_fact" name="observacion_fact" rows="5"></textarea>
         </div>
     </div>
-    <div style="margin-top:10px;" class="clear"></div>
-    <div id="check_datos" style="width: 100%;">
-    </div>
+    <!--<div style="margin-top:10px;" class="clear"></div>-->
+    <!--    <div id="check_datos" style="width: 100%;">
+        </div>-->
     <input id="send" name="send" type="submit" class="button-a blue send" value="Guardar">
     <input id="nuevafactura" name="nuevafactura" type="submit" class="button-a blue send" value="Nueva Factura" style="margin-right: 10px;">
 </div>

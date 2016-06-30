@@ -228,6 +228,15 @@ function llenar_form(cliente) {
     $(".env_form #direccion").val(cliente.DIRECCION);
     $(".env_form #correo").val(cliente.CORREO);
     $(".env_form #telefono").val(cliente.TELEFONO);
+    $(".env_form #retencionesD").val(cliente.RETENCION);
+    if(cliente.MAYORISTA == 0 ){
+    $(".env_form #tipo_m").val('Minorista');
+    $("#ver_limite_m").hide();
+    }else{
+    $(".env_form #tipo_m").val('Mayorista');
+    $("#ver_limite_m").show();
+    $(".env_form #limite_m_d").val(cliente.LIMITE_M);
+    }
     $(".env_form #observacion").val(cliente.OBSERVACION);
     $(".env_form #condicioniva").val(cliente.ID_CONDICION_IVA).trigger("chosen:updated");
     $(".env_form #condicioniibb").val(cliente.ID_CONDICION_IIBB).trigger("chosen:updated");
@@ -344,18 +353,18 @@ $(document).ready(function () {
         limpiar_form_nf();
         $("#porcentaje_iva").val('10.5');
         $('.env_form').hide();
-        var trae_operatoria = 0;
-        $.ajax({
-            url: _agencia.URL + "/x_getNumOpe",
-            data: {
-                id_cliente: $("#id_buscar").val()
-            },
-            dataType: "json",
-            type: "post",
-            async: false,
-            success: function (data_op) {
-                trae_operatoria = 1;
-                $("#numOperatoria").val(data_op.ID_OPERATORIA);
+//        var trae_operatoria = 0;
+//        $.ajax({
+//            url: _agencia.URL + "/x_getNumOpe",
+//            data: {
+//                id_cliente: $("#id_buscar").val()
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (data_op) {
+//                trae_operatoria = 1;
+//                $("#numOperatoria").val(data_op.ID_OPERATORIA);
 //                $.ajax({
 //                    url: _agencia.URL + "/x_getAlgunosProveedores",
 //                    datatype: 'html',
@@ -382,22 +391,24 @@ $(document).ready(function () {
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {id: data_op.ID_OPERATORIA},
+//                    data: {id: data_op.ID_OPERATORIA},
                     success: function (data) {
                         $('#fpago').html(data);
                         $("#fpago-select").chosen({width: "220px"});
                     }
                 })
                 $('.nuevafact_form').show();
-            }
-        });
-        if (trae_operatoria == 0) {
-            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
-                var urlh = "backend/carpeta/agencia/init/12/7";
-                $(location).attr('href', urlh);
-            });
-        }
+//            }
+//        });
+//        if (trae_operatoria == 0) {
+//            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
+//                var urlh = "backend/carpeta/agencia/init/12/7";
+//                $(location).attr('href', urlh);
+//            });
+//        }
+        
         $("#nombre2").val($("#nombre").val());
+        $("#retencion").val($("#retencionesD").val());
         $("#cuitform").val(cc);
         show_btns(2);
     });
@@ -641,24 +652,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (listrosMax == '') {
-//            jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#listrosMax").focus();
-//            });
-//            return false;
-//        }
-//        if (maxPesos == '') {
-//            jAlert('Ingrese el maximo de pesos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#maxPesos").focus();
-//            });
-//            return false;
-//        }
-//        if (opePrecio1 == '') {
-//            jAlert('Ingrese el precio de contado para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#opeP1").focus();
-//            });
-//            return false;
-//        }
         if (data_checklists_persona == '') {
             jAlert('Seleccione requerimientos para los tipo de personas a presentar.', $.ucwords(_etiqueta_modulo), function () {
                 $("#humana").focus();
@@ -1501,7 +1494,7 @@ $(document).ready(function () {
     initGrid();
     $("#cuit_busqueda").focus();
     $("#cuit_busqueda").numeric({negative: false});
-    agregarCIUS();
+//    agregarCIUS();
     show_btns();
     $("#kgrs").numeric({negative: false});
     $("#azucar").numeric({negative: false});
@@ -1520,22 +1513,6 @@ $(document).ready(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
-//$("#ciu_num").numeric({negative: false});//$("#ciu_azucar").numeric({negative: false});//$("#ciu_kgrs").numeric({negative: false});
-//    $("#precio").keyup(function () {
-//        if ($(this).val() == 0) {
-//            $("#neto").val(0);
-//        } else {
-////var porc = var_cliente.VALOR;//condicioniva_g
-//            var factor = 0;
-//            if (condicioniva_g >= 0) {factor = condicioniva_g;} else {factor = var_cliente.VALOR;}
-//            var neto = $("#ltros").val() * $(this).val();
-//            $("#neto").val(dec(neto, 2));
-//            var iva = factor * $("#neto").val() / 100;
-//            $("#iva").val(dec(iva, 2));
-//            var total = 1 * $("#neto").val() + 1 * $("#iva").val();
-//            $("#total").val(dec(total, 2));
-//        }
-//    });
     $("#porcentaje_iva").keyup(function () {
         factor = $('#porcentaje_iva').val();
         var iva = factor * $("#neto").val() / 100;
@@ -1543,31 +1520,9 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
-    $("#cbu").focusout(function () {
-//verificar cbu
-        var cbu = $(this).val();
-        $.ajax({
-            url: _agencia.URL + "/x_verificarcbu",
-            data: {
-                cbu: cbu
-            },
-            dataType: "json",
-            type: "post",
-            success: function (datos) {
-
-                if (datos.length > 0) {
-                    var cadcli = '';
-                    $.each(datos, function (index, value) {
-                        cadcli += value.RAZON_SOCIAL + '(' + value.CUIT + '), ';
-                    });
-                    cadcli = cadcli.substring(0, cadcli.length - 2);
-                    jAlert('Este cbu esta asociado a mas clientes. ' + cadcli, $.ucwords(_etiqueta_modulo), function () {
-                        $("#cbu").focus();
-                    });
-                }
-            }
-        });
-    })
+    $("#precio,#retencion").keyup(function () {
+        cambiarPrecio();
+    });
 
     if (_opcion == 3) {
 //no buscar, entrar directamente al formulario con los datos cargados
@@ -1575,11 +1530,6 @@ $(document).ready(function () {
         $('.nuevafact_form').show();
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val($("#cuit_busqueda").val());
-//        var data_checklists_persona = [];
-//        var listado_checklist = rtn[0].CHECKLIST_PERSONA;
-//        data_checklists_persona = listado_checklist.split(',');
-//        console.log(data_checklists_persona);
-//        $('.op input').each(function () {if ($.inArray($(this).val(), data_checklists_persona) >= 0) {$(this).prop('checked', true);}});
         show_btns(2);
         editar_formulario();
     }
@@ -1832,14 +1782,14 @@ function editar_formulario() {
                     }
                 })
                 $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
-                var data_checklists_persona = [];
-                var listado_checklist = data.CHECKLIST_PERSONA;
-                data_checklists_persona = listado_checklist.split(',');
-                $('.op input').each(function () {
-                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-                        $(this).prop('checked', true);
-                    }
-                });
+//                var data_checklists_persona = [];
+//                var listado_checklist = data.CHECKLIST_PERSONA;
+//                data_checklists_persona = listado_checklist.split(',');
+//                $('.op input').each(function () {
+//                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+//                        $(this).prop('checked', true);
+//                    }
+//                });
                 if (arr_check == 1) {
                     $("#cambio_titularidad").attr('checked', true);
                     $.ajax({
@@ -1897,7 +1847,7 @@ function editar_formulario() {
         }
     });
 
-    $("#ltros").keyup(function () {
+    $("#precio").keyup(function () {
         cambiarPrecio();
     });
 //    $("#precio").keyup(function () {
@@ -2337,228 +2287,228 @@ function editar_formulario_operatoria() {
 }
 
 
-function agregarCIUS(_arr_cius) {
-
-    _arr_cius || (_arr_cius = []);
-    var source = {
-        datatype: "json",
-        datafields: [
-            {name: 'NUM'},
-            {name: 'KGRS', type: 'number'},
-            {name: 'AZUCAR'},
-            {name: 'CHEQUEO', type: 'bool'},
-            {name: 'INSC'},
-            {name: 'ID'}
-        ],
-        url: _agencia.URL + '/x_get_info_bancos',
-        deleterow: function (rowid, commit) {
-            commit(true);
-        }
-    };
-    $("#jqxgridcius").jqxGrid({
-        width: '98%',
-        height: '200px',
-        source: source,
-        theme: 'energyblue',
-        editable: true,
-        ready: function () {
-            $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
-            if (_arr_cius.length > 0) {
-                //colocar
-                $.each(_arr_cius, function (k, v) {
-                    var data = {
-                        'NUM': v.ciu_num,
-                        'KGRS': v.ciu_kgrs,
-                        'AZUCAR': v.ciu_azucar,
-                        'CHEQUEO': v.ciu_chequeo,
-                        'INSC': v.ciu_insc,
-                        'ID': 'DDDDDDD',
-                        'uid': 1
-                    }
-                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                });
-            }
-        },
-        columnsresize: true,
-        localization: getLocalization(),
-        showstatusbar: true,
-        renderstatusbar: function (statusbar) {
-            var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-            var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
-            container.append(deleteButton);
-            statusbar.append(container);
-            deleteButton.jqxButton({theme: theme, width: 65, height: 20});
-            deleteButton.click(function (event) {
-                var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex < rowscount) {
-
-                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
-                        if (r == true) {
-
-                            if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                var id = $("#jqxgridcius").jqxGrid('getrowid', selectedrowindex);
-                                $("#jqxgridcius").jqxGrid('deleterow', id);
-                            }
-
-                            //actualizar suma
-                            var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-                            var _arr_aportes_tmp = [];
-                            for (var i = 0; i < griddata.rowscount; i++)
-                                _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-                            var total = 0;
-                            var total1 = 0;
-                            if (griddata.rowscount == 0) {
-                                $("#suma_aporte").html('');
-                                $(".suma_aportes").hide();
-                            } else {
-                                if (_arr_aportes_tmp.length > 0) {
-                                    //colocar
-                                    $.each(_arr_aportes_tmp, function (k, v) {
-                                        total = total + parseFloat(v.KGRS);
-                                        total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-                                    });
-                                    total1 = total1 / total;
-                                    $(".suma_aportes").show();
-                                    $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-                                    $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
-                    });
-                    return false;
-                }
-            });
-        },
-        columns: [
-            {text: 'NUM CIU', datafield: 'NUM', width: '20%', editable: false},
-            {text: 'KILOGRAMOS', datafield: 'KGRS', width: '30%', editable: false, cellsformat: 'c2'},
-            {text: 'AZUCAR', datafield: 'AZUCAR', width: '30%', editable: false},
-            {text: 'INSCR', datafield: 'INSC', width: '30%', editable: false},
-            {text: 'VERIFICACION', datafield: 'CHEQUEO', width: '20%', columntype: 'checkbox', editable: true},
-            {text: 'ID', datafield: 'ID', width: '0%', editable: false}
-        ]
-    });
-    $("#add_cius").off().on('click', function () {
-
-        if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
-                || $("#frm_cargacius input#ciu_azucar").val() == '') {
-            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius input").first().select();
-            });
-            return false;
-        }
-
-        var ciu_num = $("#ciu_num").val();
-        var ciu_kgrs = $("#ciu_kgrs").val();
-        var ciu_azucar = $("#ciu_azucar").val();
-        var ciu_insc = $("#ciu_insc").val();
-        if (!isnumeroCiu(ciu_num)) {
-            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius input").first().select();
-            });
-            return false;
-        }
-
-        if (!isnumeroCiuIns(ciu_insc)) {
-            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius #ciu_insc").first().next().next().select();
-            });
-            return false;
-        }
-
-//recorrer el grid, si ya eciste el ciu, alertar y no agregar
-        var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-        var _arr_cius = [];
-        for (var i = 0; i < griddata.rowscount; i++)
-            _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-        sw1 = 0;
-        if (_arr_cius) {
-            $.each(_arr_cius, function (index, value) {
-                if (value.NUM == ciu_num) {
-                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
-                        $("#ciu_num").select();
-                    });
-                    sw1 = 1;
-                    return false;
-                }
-            });
-        }
-
-        if (sw1 == 1) {
-            return false;
-        }
-
-//validar ciu a traves de todas las bd
-        $.ajax({
-            url: _agencia.URL + "/x_verificarciu",
-            data: {
-                nciu: ciu_num
-            },
-            dataType: "json",
-            type: "post",
-            success: function (data) {
-                console.dir(data);
-                if (data <= 0) {
-                    var data = {
-                        'NUM': ciu_num,
-                        'KGRS': ciu_kgrs,
-                        'AZUCAR': ciu_azucar,
-                        'CHEQUEO': 0,
-                        'INSC': ciu_insc,
-                        'ID': 'DDDDDDD',
-                        'uid': 1
-                    }
-
-                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                    //$('#jqxgridbancos').jqxGrid( { editable: true} );
-                    //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
-
-
-                    //actualizar suma
-                    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-                    var _arr_aportes_tmp = [];
-                    for (var i = 0; i < griddata.rowscount; i++)
-                        _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-                    var total = 0;
-                    var total1 = 0;
-                    if (griddata.rowscount == 0) {
-                        $("#suma_aporte").html('');
-                        $(".suma_aportes").hide();
-                    } else {
-                        if (_arr_aportes_tmp.length > 0) {
-                            //colocar
-                            $.each(_arr_aportes_tmp, function (k, v) {
-                                total = total + parseFloat(v.KGRS);
-                                total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-                            });
-                            total1 = total1 / total;
-                            $(".suma_aportes").show();
-                            $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-                            $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-                        }
-                    }
-
-                    $("#frm_cargacius input").not('#add_cius').val('');
-                    $("#frm_cargacius input").first().focus();
-                } else {
-                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
-                        $.unblockUI();
-                    });
-                }
-
-            }
-        });
-        return false;
-    });
-}
+//function agregarCIUS(_arr_cius) {
+//
+//    _arr_cius || (_arr_cius = []);
+//    var source = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'NUM'},
+//            {name: 'KGRS', type: 'number'},
+//            {name: 'AZUCAR'},
+//            {name: 'CHEQUEO', type: 'bool'},
+//            {name: 'INSC'},
+//            {name: 'ID'}
+//        ],
+//        url: _agencia.URL + '/x_get_info_bancos',
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        }
+//    };
+//    $("#jqxgridcius").jqxGrid({
+//        width: '98%',
+//        height: '200px',
+//        source: source,
+//        theme: 'energyblue',
+//        editable: true,
+//        ready: function () {
+//            $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
+//            if (_arr_cius.length > 0) {
+//                //colocar
+//                $.each(_arr_cius, function (k, v) {
+//                    var data = {
+//                        'NUM': v.ciu_num,
+//                        'KGRS': v.ciu_kgrs,
+//                        'AZUCAR': v.ciu_azucar,
+//                        'CHEQUEO': v.ciu_chequeo,
+//                        'INSC': v.ciu_insc,
+//                        'ID': 'DDDDDDD',
+//                        'uid': 1
+//                    }
+//                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
+//                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
+//                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+//                });
+//            }
+//        },
+//        columnsresize: true,
+//        localization: getLocalization(),
+//        showstatusbar: true,
+//        renderstatusbar: function (statusbar) {
+//            var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
+//            var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
+//            container.append(deleteButton);
+//            statusbar.append(container);
+//            deleteButton.jqxButton({theme: theme, width: 65, height: 20});
+//            deleteButton.click(function (event) {
+//                var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex < rowscount) {
+//
+//                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
+//                        if (r == true) {
+//
+//                            if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                                var id = $("#jqxgridcius").jqxGrid('getrowid', selectedrowindex);
+//                                $("#jqxgridcius").jqxGrid('deleterow', id);
+//                            }
+//
+//                            //actualizar suma
+//                            var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+//                            var _arr_aportes_tmp = [];
+//                            for (var i = 0; i < griddata.rowscount; i++)
+//                                _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+//                            var total = 0;
+//                            var total1 = 0;
+//                            if (griddata.rowscount == 0) {
+//                                $("#suma_aporte").html('');
+//                                $(".suma_aportes").hide();
+//                            } else {
+//                                if (_arr_aportes_tmp.length > 0) {
+//                                    //colocar
+//                                    $.each(_arr_aportes_tmp, function (k, v) {
+//                                        total = total + parseFloat(v.KGRS);
+//                                        total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
+//                                    });
+//                                    total1 = total1 / total;
+//                                    $(".suma_aportes").show();
+//                                    $("#suma_aporte").html(dec(precise_round(total, 2), 2));
+//                                    $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
+//                                }
+//                            }
+//                        }
+//                    });
+//                } else {
+//                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
+//                    });
+//                    return false;
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'NUM CIU', datafield: 'NUM', width: '20%', editable: false},
+//            {text: 'KILOGRAMOS', datafield: 'KGRS', width: '30%', editable: false, cellsformat: 'c2'},
+//            {text: 'AZUCAR', datafield: 'AZUCAR', width: '30%', editable: false},
+//            {text: 'INSCR', datafield: 'INSC', width: '30%', editable: false},
+//            {text: 'VERIFICACION', datafield: 'CHEQUEO', width: '20%', columntype: 'checkbox', editable: true},
+//            {text: 'ID', datafield: 'ID', width: '0%', editable: false}
+//        ]
+//    });
+////    $("#add_cius").off().on('click', function () {
+////
+////        if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
+////                || $("#frm_cargacius input#ciu_azucar").val() == '') {
+////            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius input").first().select();
+////            });
+////            return false;
+////        }
+////
+////        var ciu_num = $("#ciu_num").val();
+////        var ciu_kgrs = $("#ciu_kgrs").val();
+////        var ciu_azucar = $("#ciu_azucar").val();
+////        var ciu_insc = $("#ciu_insc").val();
+////        if (!isnumeroCiu(ciu_num)) {
+////            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius input").first().select();
+////            });
+////            return false;
+////        }
+////
+////        if (!isnumeroCiuIns(ciu_insc)) {
+////            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius #ciu_insc").first().next().next().select();
+////            });
+////            return false;
+////        }
+////
+//////recorrer el grid, si ya eciste el ciu, alertar y no agregar
+////        var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+////        var _arr_cius = [];
+////        for (var i = 0; i < griddata.rowscount; i++)
+////            _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+////        sw1 = 0;
+////        if (_arr_cius) {
+////            $.each(_arr_cius, function (index, value) {
+////                if (value.NUM == ciu_num) {
+////                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
+////                        $("#ciu_num").select();
+////                    });
+////                    sw1 = 1;
+////                    return false;
+////                }
+////            });
+////        }
+////
+////        if (sw1 == 1) {
+////            return false;
+////        }
+////
+//////validar ciu a traves de todas las bd
+////        $.ajax({
+////            url: _agencia.URL + "/x_verificarciu",
+////            data: {
+////                nciu: ciu_num
+////            },
+////            dataType: "json",
+////            type: "post",
+////            success: function (data) {
+////                console.dir(data);
+////                if (data <= 0) {
+////                    var data = {
+////                        'NUM': ciu_num,
+////                        'KGRS': ciu_kgrs,
+////                        'AZUCAR': ciu_azucar,
+////                        'CHEQUEO': 0,
+////                        'INSC': ciu_insc,
+////                        'ID': 'DDDDDDD',
+////                        'uid': 1
+////                    }
+////
+////                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
+////                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
+////                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+////                    //$('#jqxgridbancos').jqxGrid( { editable: true} );
+////                    //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
+////
+////
+////                    //actualizar suma
+////                    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+////                    var _arr_aportes_tmp = [];
+////                    for (var i = 0; i < griddata.rowscount; i++)
+////                        _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+////                    var total = 0;
+////                    var total1 = 0;
+////                    if (griddata.rowscount == 0) {
+////                        $("#suma_aporte").html('');
+////                        $(".suma_aportes").hide();
+////                    } else {
+////                        if (_arr_aportes_tmp.length > 0) {
+////                            //colocar
+////                            $.each(_arr_aportes_tmp, function (k, v) {
+////                                total = total + parseFloat(v.KGRS);
+////                                total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
+////                            });
+////                            total1 = total1 / total;
+////                            $(".suma_aportes").show();
+////                            $("#suma_aporte").html(dec(precise_round(total, 2), 2));
+////                            $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
+////                        }
+////                    }
+////
+////                    $("#frm_cargacius input").not('#add_cius').val('');
+////                    $("#frm_cargacius input").first().focus();
+////                } else {
+////                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
+////                        $.unblockUI();
+////                    });
+////                }
+////
+////            }
+////        });
+////        return false;
+////    });
+//}
 
 
 function initGrid(id_usuario) {
@@ -3785,6 +3735,13 @@ function cambiarPrecio() {
         var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
         $("#iva").val(dec(iva, 2));
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+        if($('#retencion').val()!=0){
+            console.log("CALCULOS Q SE HACEN");
+            console.log("TOTAL " + total);
+            console.log("RETENCION " + $('#retencion').val() * total / 100);
+            total = total - ($('#retencion').val() * total / 100);
+            console.log(" TOTAL CON RETENCION " + total);
+        }
         $("#total").val(dec(total, 2));
     }
 }

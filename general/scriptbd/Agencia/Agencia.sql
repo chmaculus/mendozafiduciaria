@@ -13,3 +13,19 @@ INSERT INTO fid_permisos VALUES (21,'Procesos','Agencia',39)
 */
 ALTER TABLE  `fid_clientes` ADD  `RETENCION` FLOAT NOT NULL
 
+/*28/06
+* Se agrega el campo mayorista a la tabla clientes
+*/
+ALTER TABLE  `fid_clientes` ADD  `MAYORISTA` INT NOT NULL
+
+/*29/06
+* Se agrega el campo limite por si es mayorista a la tabla clientes
+*/
+ALTER TABLE  `fid_clientes` ADD  `LIMITE_M` FLOAT NOT NULL
+
+/*
+* Se agrega el campo RETENCION_PORC para guardar en la factura el porcentaje de retencion que se le hace  por si despues se modifica la retencion
+*del cliente
+*/
+ALTER TABLE  `fid_cu_factura` ADD  `RETENCION_PORC` FLOAT NOT NULL
+

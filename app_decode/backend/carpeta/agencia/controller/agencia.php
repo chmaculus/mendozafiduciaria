@@ -257,68 +257,42 @@ class agencia extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
-    function x_getAlgunasBodegas() {
-        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
-        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
-                <option value="">Elegir Bodega</option>';
-        foreach ($data_bodega as $value) {
-            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
-        }
-        $html .= '</select>';
-        echo $html;
-    }
+//    function x_getAlgunasBodegas() {
+//        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
+//        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
+//                <option value="">Elegir Bodega</option>';
+//        foreach ($data_bodega as $value) {
+//            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
+//                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
+//        }
+//        $html .= '</select>';
+//        echo $html;
+//    }
     
-    function x_getAlgunosProveedores() {
-//        $data_bodega = $this->mod->get_proveedores($_POST['id']);
-        $data_proveedor = $this->mod->get_proveedores();
-        $html = '<select class="chzn-select medium-select select" id="proveedor-jquery" >
-                <option value="">Elegir Proveedor</option>';
-        foreach ($data_proveedor as $value) {
-            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-                    '" value="' . $value["ID"] . '">' . $value["RAZON_SOCIAL"] . '</option>';
-        }
-        $html .= '</select>';
-        echo $html;
-    }
+//    function x_getAlgunosProveedores() {
+////        $data_bodega = $this->mod->get_proveedores($_POST['id']);
+//        $data_proveedor = $this->mod->get_proveedores();
+//        $html = '<select class="chzn-select medium-select select" id="proveedor-jquery" >
+//                <option value="">Elegir Proveedor</option>';
+//        foreach ($data_proveedor as $value) {
+//            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
+//                    '" value="' . $value["ID"] . '">' . $value["RAZON_SOCIAL"] . '</option>';
+//        }
+//        $html .= '</select>';
+//        echo $html;
+//    }
 
 
     function x_getFormasPago() {
-        $forma_pago = $this->mod->getPagos($_POST['id']);
-        $j = 1;
         $html = '';
         $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
-                <option value="">Seleccione forma pago</option>';
-        foreach ($forma_pago[0] as $key => $value) {
-            $nombre_ver = '';
-            $posicion = 0;
-            if ($key == 'PRECIO_1') {
-                $nombre_ver = '1 PAGO';
-                $posicion = 1;
-            }
-            if ($key == 'PRECIO_2') {
-                $nombre_ver = '2 PAGOS';
-                $posicion = 2;
-            }
-            if ($key == 'PRECIO_3') {
-                $nombre_ver = '3 PAGOS';
-                $posicion = 3;
-            }
-            if ($key == 'PRECIO_4') {
-                $nombre_ver = '4 PAGOS';
-                $posicion = 4;
-            }
-            if ($key == 'PRECIO_5') {
-                $nombre_ver = '5 PAGOS';
-                $posicion = 5;
-            }
-            if ($key == 'PRECIO_6') {
-                $nombre_ver = '6 PAGOS';
-                $posicion = 6;
-            }
-            $html .= '<option id="precio_fp" value="' . $posicion . '" data-precio="' . $value . '">' . $nombre_ver . '</option>';
-            $j++;
-        }
+                <option value="">Seleccione forma pago</option>
+                <option value="1">1 Cuota</option>
+                <option value="2">2 Cuotas</option>
+                <option value="3">3 Cuotas</option>
+                <option value="4">4 Cuotas</option>
+                <option value="5">5 Cuotas</option>
+                <option value="6">6 Cuotas</option>';
         $html .= '</select>';
         echo $html;
     }
@@ -482,19 +456,19 @@ class agencia extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
-    function x_sendBodegas() {
-        $obj = $_POST['data_bodegas'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->sendBodegas($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
+//    function x_sendBodegas() {
+//        $obj = $_POST['data_bodegas'];
+//        $nuevoID = $_POST['nuevoID'];
+//        $rtn = $this->mod->sendBodegas($obj, $nuevoID);
+//        echo trim(json_encode($rtn ? $rtn : array()));
+//    }
 
-    function x_sendHumana() {
-        $obj = $_POST['checks_humana'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->sendHumana($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
+//    function x_sendHumana() {
+//        $obj = $_POST['checks_humana'];
+//        $nuevoID = $_POST['nuevoID'];
+//        $rtn = $this->mod->sendHumana($obj, $nuevoID);
+//        echo trim(json_encode($rtn ? $rtn : array()));
+//    }
 
 //    function x_sendJuridica() {
 //        $obj = $_POST['checks_juridica'];
@@ -503,12 +477,12 @@ class agencia extends main_controller {
 //        echo trim(json_encode($rtn ? $rtn : array()));
 //    }
 
-    function x_updateBodegas() {
-        $obj = $_POST['data_bodegas'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->updateBodegas($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
+//    function x_updateBodegas() {
+//        $obj = $_POST['data_bodegas'];
+//        $nuevoID = $_POST['nuevoID'];
+//        $rtn = $this->mod->updateBodegas($obj, $nuevoID);
+//        echo trim(json_encode($rtn ? $rtn : array()));
+//    }
 
     function x_getform_importar() {
         $data['datos'] = "";

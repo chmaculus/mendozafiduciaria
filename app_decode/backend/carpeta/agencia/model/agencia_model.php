@@ -1974,7 +1974,7 @@ class agencia_model extends main_model {
     function verificarnumfactura($numero, $cuit) {
         $this->_db->select("*");
         $this->_db->join("fid_clientes c", "f.ID_CLIENTE = c.ID");
-        $rtn = $this->_db->get_tabla("fid_cu_factura f", "f.NUMERO='" . $numero . "' AND c.CUIT='" . $cuit . "'");
+        $rtn = $this->_db->get_tabla("fid_cu_factura f", "f.NUMERO='" . $numero . "' AND c.CUIT='" . $cuit . "' AND f.TIPO=2");
 //        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO=" . $numero);
         if (count($rtn) > 0) {
             return 1;
