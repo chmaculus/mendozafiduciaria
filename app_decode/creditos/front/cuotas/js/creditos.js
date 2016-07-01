@@ -158,6 +158,7 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
         return;
     }
     
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_set_pago",
         data: {
@@ -168,15 +169,20 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
         },
         type: "post",
         success: function(result) {
-        
-            $(".div-result").html(result);
-            if (_version_change){
-                desimputar_pagos(id_credito, fecha, true);
-            }          
-            else{
-                $.unblockUI();                
+            if (result == '-1') {
+                jAlert("No se guardó el recupero. Se deben cargar el 100% de desembolsos", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
+            } else {
+                $(".div-result").html(result);
+                if (_version_change){
+                    desimputar_pagos(id_credito, fecha, true);
+                }          
+                else{
+                    $.unblockUI();                
+                }
+                _events_lista();
             }
-            _events_lista();
         }
     });    
 };
@@ -301,6 +307,7 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
     }
 
     reset = reset || 0;
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_agregar_desembolso",
         type: "post",
@@ -331,7 +338,7 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
                     desimputar_pagos(id_credito, fecha, true);
                 }
                 else{
-                    $.unblockUI();                    
+                    $.unblockUI();
                 }
             }
         }
@@ -787,7 +794,7 @@ function desimputar_pagos(id_credito, fecha, confirm){
         },
         type: "post",
         success: function(result) {
-            $.unblockUI();            
+            $.unblockUI();
             if (result=='-1'){
                 jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function(e) {
                     return;
