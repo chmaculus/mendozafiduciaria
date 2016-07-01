@@ -1180,10 +1180,10 @@ class credito_model extends main_model {
                         }
 
                         $INT_SUBSIDIO_ACUMULADO += $interes_subsidio;
-                        $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $tmp['IVA']);
+                        $IVA_INT_SUBSIDIO_ACUMULADO += ($interes_subsidio * $this->_iva_operatoria);
 
                         $INTERES_COMPENSATORIO += $tmp['INT_COMPENSATORIO'];
-                        $IVA_INTERES_COMPENSATORIO += ($tmp['INT_COMPENSATORIO'] * $tmp['IVA']);
+                        $IVA_INTERES_COMPENSATORIO += ($tmp['INT_COMPENSATORIO'] * $this->_iva_operatoria);
 
                         /*if ($cuota['ID'] == 8943 && $variacion['TIPO'] == EVENTO_INFORME) {
                             echo $variacion['FECHA']."<BR />";
@@ -1607,9 +1607,9 @@ class credito_model extends main_model {
             
             
             $cuota['INT_COMPENSATORIO_SUBSIDIO'] = $int_compensatorio_subsidio;
-            $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $variacion ? $int_compensatorio_subsidio * $variacion['IVA'] : 0;
+            $cuota['INT_COMPENSATORIO_IVA_SUBSIDIO'] = $variacion ? $int_compensatorio_subsidio * $this->_iva_operatoria : 0;
             $cuota['INT_COMPENSATORIO'] = $int_compensatorio;
-            $cuota['INT_COMPENSATORIO_IVA'] = $variacion ? $int_compensatorio * $variacion['IVA'] : 0;
+            $cuota['INT_COMPENSATORIO_IVA'] = $variacion ? $int_compensatorio * $this->_iva_operatoria : 0;
 
 
             //calculo de tipo de intereses moratorios y punitorios
@@ -1919,7 +1919,7 @@ class credito_model extends main_model {
                 "POR_INT_MORATORIO" => $variacion['POR_INT_MORATORIO'],
                 "POR_INT_PUNITORIO" => $variacion['POR_INT_PUNITORIO'],
                 "INT_COMPENSATORIO" => $interes_compensatorio,
-                "INT_COMPENSATORIO_IVA" => $interes_compensatorio * $variacion['IVA'],
+                "INT_COMPENSATORIO_IVA" => $interes_compensatorio * $this->_iva_operatoria,
                 "INT_COMPENSATORIO_SUBSIDIO" => $interes_compensatorio_subsidio,
                 "INT_COMPENSATORIO_IVA_SUBSIDIO" => $interes_compensatorio_subsidio * $this->_iva_operatoria,
                 "INT_MORATORIO" => 0,
