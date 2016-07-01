@@ -1141,6 +1141,7 @@ class credito_model extends main_model {
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
                     $tmp['SALDO_CAPITAL'] = $SALDO_CAPITAL;
                     
+                    
                     //primero definimos los valores
                     
                     //luego buscamos los valores más correctos a la fecha
@@ -1204,7 +1205,7 @@ class credito_model extends main_model {
 
                             $total = $pagos[PAGO_CAPITAL] + $pagos[PAGO_IVA_COMPENSATORIO] + $pagos[PAGO_COMPENSATORIO];
 
-                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'], true, false);
+                            $capital_arr = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] - 1, true, false);
                             
                             $SALDO_CUOTA = $capital_arr['AMORTIZACION_CUOTA'] + $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $total;
                             if ($SALDO_CUOTA < 0.2) {
@@ -3496,6 +3497,10 @@ ORDER BY T1.lvl DESC');
             }
         }
         
+        foreach ($this->_variaciones as $k => $v) {
+            $this->_variaciones[$k]['POR_INT_COMPENSATORIO'] = 0;
+        }
+        
         //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
         
         $cuota_vencimiento['FECHA_VENCIMIENTO'] += 1;
@@ -3647,6 +3652,34 @@ ORDER BY T1.lvl DESC');
         }
         
         return FALSE;
+    }
+    
+    function setCambiosTasasOperatoria() {
+        if (!$this->_id_operatoria) {
+            return;
+        }
+            
+        $cuota = reset($this->_cuotas);
+        $fecha = $cuota['FECHA_INICIO'];
+        
+        $this->_db->select('*');
+        $this->_db->where("ID_OPERATORIA = " . $this->_id_operatoria . " AND FECHA >= '$fecha'");
+        $cambiotasas = $this->_db->get_tabla("fid_operatoria_cambiotasas");
+        
+        if ($cambiotasas) {
+            $data = array();
+            $data['TIPO'] = EVENTO_TASA;
+        
+            foreach ($cambiotasas as $ct) {
+                $data['por_int_compensatorio'] = $ct['COMPENSATORIO'];
+                $data['por_int_subsidio'] = $ct['SUBSIDIO'];
+                $data['por_int_moratorio'] = $ct['MORATORIO'];
+                $data['por_int_punitorio'] = $ct['PUNITORIO'];
+                $ret = $this->generar_evento($data, true, $ct['FECHA']);
+                $this->agregar_tasa($ct['COMPENSATORIO'], $ct['SUBSIDIO'], $ct['MORATORIO'], $ct['PUNITORIO'], $cuota['CUOTAS_RESTANTES'], $ct['FECHA']);
+                $this->assign_id_evento($ret['ID'],EVENTO_TASA);
+            }
+        }
     }
   
 }
