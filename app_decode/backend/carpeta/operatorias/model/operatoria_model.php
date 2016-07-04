@@ -218,6 +218,18 @@ class operatoria_model extends main_model{
         return $rtn;
     }
     */
-          
+    
+    function guardar_cambio_tasa($obj, $fecha) {
+        $arr_tasas = array(
+            'ID_OPERATORIA' => $obj['id'],
+            'COMPENSATORIO' => $obj['TASA_INTERES_COMPENSATORIA'],
+            'SUBSIDIO' => $obj['TASA_SUBSIDIADA'],
+            'MORATORIO' => $obj['TASA_INTERES_MORATORIA'],
+            'PUNITORIO' => $obj['TASA_INTERES_POR_PUNITORIOS'],
+            'FECHA' => $fecha
+        );
+        
+        $id = $this->_db->insert("fid_operatoria_cambiotasas",$arr_tasas);
+    }
+    
 }
-?>
