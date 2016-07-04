@@ -714,11 +714,11 @@ $(document).ready(function () {
             datosBuscar.push({
                 ID: rows[i].ID,
                 NUMERO: rows[i].NUMERO,
-                ID_BODEGA: rows[i].ID_BODEGA
+//                ID_BODEGA: rows[i].ID_BODEGA
             });
         }
         $.ajax({
-            url: _agencia.URL + "/x_sincronizarVino",
+            url: _agencia.URL + "/x_sincronizarAgencia",
             data: {
                 datosBuscar: datosBuscar
             },
@@ -1520,9 +1520,12 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
-    $("#precio,#retencion").keyup(function () {
+    $("#precio").keyup(function () {
         cambiarPrecio();
     });
+//    $("#precio,#retencion").keyup(function () {
+//        cambiarPrecio();
+//    });
 
     if (_opcion == 3) {
 //no buscar, entrar directamente al formulario con los datos cargados
@@ -3502,31 +3505,35 @@ function lote_pago() {
             } else if (reg.ESTADO == 'Anulada') {
                 swa = 10;
             }
-            if (reg.CHECK_ESTADO == 'S/Confirmar') {
-                swa = 2;
-            }
-            if (reg.ID_CONTABLE == 0) {
-                swa = 4;
-            }
+//            if (reg.CHECK_ESTADO == 'S/Confirmar') {
+//                swa = 2;
+//            }
+//            if (reg.ID_CONTABLE == 0) {
+//                swa = 4;
+//            }
             _arr_sel.push(reg);
         });
         if (swa == '1') {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        } else if (swa == '2') {
-            jAlert('Comprobantes seleccionados sin el cambio de titularidad realizado.', $.ucwords(_etiqueta_modulo), function () {
-            });
-            return false;
-        } else if (swa == '3') {
+        } 
+//        else if (swa == '2') {
+//            jAlert('Comprobantes seleccionados sin el cambio de titularidad realizado.', $.ucwords(_etiqueta_modulo), function () {
+//            });
+//            return false;
+//        } 
+        else if (swa == '3') {
             jAlert('Comprbantes seleccionados con pagos registrados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        } else if (swa == '4') {
-            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
-            });
-            return false;
-        } else if (swa == '10') {
+        } 
+//        else if (swa == '4') {
+//            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
+//            });
+//            return false;
+//        } 
+        else if (swa == '10') {
             jAlert('La factura se encuentra anulada.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
@@ -3735,13 +3742,7 @@ function cambiarPrecio() {
         var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
         $("#iva").val(dec(iva, 2));
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
-        if($('#retencion').val()!=0){
-            console.log("CALCULOS Q SE HACEN");
-            console.log("TOTAL " + total);
-            console.log("RETENCION " + $('#retencion').val() * total / 100);
-            total = total - ($('#retencion').val() * total / 100);
-            console.log(" TOTAL CON RETENCION " + total);
-        }
+//        if($('#retencion').val()!=0){total = total - ($('#retencion').val() * total / 100);}
         $("#total").val(dec(total, 2));
     }
 }

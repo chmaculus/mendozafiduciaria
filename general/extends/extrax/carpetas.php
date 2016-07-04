@@ -109,15 +109,16 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
         //$cad_where .= " and f.ID_ESTADO <> '12'";
         $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
     }
-    $cad_where .= " AND TIPO=" . $idtipo;
+//    $cad_where .= " AND TIPO=" . $idtipo;
+    $cad_where .= " AND TIPO=1";
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
-    file_put_contents('OBTENERLOTESFACTURAS.log', $cnn->last_query());
+//    file_put_contents('OBTENERLOTESFACTURAS.log', $cnn->last_query());
 
     foreach ($rtn as $value) {
 
         $cnn->select("*"); //$rtn_cuota = $cnn->get_tabla("fid_cu_pagos","NUM_FACTURA='".$value['NUMERO']."' AND ID_PAGO=0");
-        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "'");
+        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=1 ");
         $facNum = '';
         foreach ($rtn_cuota as $value_cuota) {
 
@@ -129,7 +130,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                     $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                     $cnn->select("FECHA_VEN");
                     $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                     $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                 } else if ($value['FORMA_PAGO'] == '2') {
                     if ($value_cuota['NUM_CUOTA'] == 1) {
@@ -137,14 +138,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']. " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']. " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '3') {
@@ -153,21 +154,21 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 3) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '4') {
@@ -176,14 +177,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '5') {
@@ -192,14 +193,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '6') {
@@ -208,29 +209,26 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuva') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 }
             }
         }
-
         if ($value['CHECK_ESTADO'] == '1') {
             $value['CHECK_ESTADO'] = 'Confirmada';
         } else {
             $value['CHECK_ESTADO'] = 'S/Confirmar';
         }
-
-
         $cnn->select("ORDEN_PAGO");
-        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
+        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=1 AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 
         if ($rtn_orden[0]['ORDEN_PAGO']) {
             $value['ORDEN_PAGO'] = $rtn_orden[0]['ORDEN_PAGO'];
@@ -264,9 +262,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasCuvaFiltro') {
         $cad_like .= " " . $tp . " LIKE '%" . $word . "%' OR";
     }
     $cad_like = substr($cad_like, 0, -2);
-
     $array_cuotas = array();
-
 /*    
     SELECT IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA,IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
 f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
@@ -287,7 +283,6 @@ LEFT JOIN fid_fideicomiso fi ON ( fi.ID=of.ID_FIDEICOMISO )
 LEFT JOIN fid_cu_pagos pa ON ( pa.NUM_FACTURA=f.NUMERO)  
 WHERE (  f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
 AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='20160630'
-
 */  
     $cnn->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA,IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, 
             f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, f.NETO AS NETO, f.PRECIO AS PRECIO, fe.NOMBRE AS ESTADO, 
@@ -307,21 +302,20 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
     $cnn->join("fid_op_vino_cambio_tit ti", "ti.ID_FACTURA=f.NUMERO", "left");
     $cnn->join("fid_fideicomiso fi", "fi.ID=of.ID_FIDEICOMISO", "left");
 //    $cnn->join("fid_cu_pagos pa", "pa.NUM_FACTURA=f.NUMERO", "left");
-
     if ($idestado > 0) {
         $cad_where = "( " . $cad_like . ") and f.ID_ESTADO = '" . $idestado . "'";
     } else {
         $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
     }
-    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
-
+//    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
+    $cad_where .= " AND TIPO=1 " .$condicion_fecha;
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
 //    file_put_contents('OBTENERLOTESFACTURAS.log', $cnn->last_query());
 
     foreach ($rtn as $value) {
 
         $cnn->select("*"); //$rtn_cuota = $cnn->get_tabla("fid_cu_pagos","NUM_FACTURA='".$value['NUMERO']."' AND ID_PAGO=0");
-        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "'");
+        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=1");
         $facNum = '';
         foreach ($rtn_cuota as $value_cuota) {
 
@@ -333,7 +327,7 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                     $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                     $cnn->select("FECHA_VEN");
                     $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                     $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                 } else if ($value['FORMA_PAGO'] == '2') {
                     if ($value_cuota['NUM_CUOTA'] == 1) {
@@ -341,14 +335,14 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '3') {
@@ -357,21 +351,21 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 3) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '4') {
@@ -380,14 +374,14 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '5') {
@@ -396,14 +390,14 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '6') {
@@ -412,14 +406,14 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=1 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 }
@@ -434,7 +428,7 @@ AND f.ID_PROVINCIA='12' AND f.ID_ESTADO <> '12' AND TIPO=1  AND pa.FECHA_VEN<='2
 
 
         $cnn->select("ORDEN_PAGO");
-        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
+        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=1 AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 
         if ($rtn_orden[0]['ORDEN_PAGO']) {
             $value['ORDEN_PAGO'] = $rtn_orden[0]['ORDEN_PAGO'];
@@ -499,7 +493,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
 
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
 
-
     $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";
     $idope = isset($_GET["idope"]) ? $_GET["idope"] : '0';
     $idpro = isset($_GET["idpro"]) ? $_GET["idpro"] : '0';
@@ -510,7 +503,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
     if ($fechaBuscar != '') {
 //        $condicion_fecha = "AND pa.FECHA_VEN <='".date("Ymd",$fechaBuscar)."'";
     }
-
     $cad_campos = "f.ID, c.CUIT, c.RAZON_SOCIAL";
     $arr_campos = explode(', ', $cad_campos);
     $cad_like = "";
@@ -543,15 +535,16 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
     } else {
         $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
     }
-    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
+//    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
+    $cad_where .= " AND TIPO=2  " .$condicion_fecha;
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
-    file_put_contents('CONSULTAAGENCIA.log', $cnn->last_query());
+//    file_put_contents('CONSULTAAGENCIA.log', $cnn->last_query());
 
     foreach ($rtn as $value) {
 
         $cnn->select("*"); //$rtn_cuota = $cnn->get_tabla("fid_cu_pagos","NUM_FACTURA='".$value['NUMERO']."' AND ID_PAGO=0");
-        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "'");
+        $rtn_cuota = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=2");
         $facNum = '';
         foreach ($rtn_cuota as $value_cuota) {
 
@@ -563,7 +556,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                     $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                     $cnn->select("FECHA_VEN");
                     $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                            . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                     $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                 } else if ($value['FORMA_PAGO'] == '2') {
                     if ($value_cuota['NUM_CUOTA'] == 1) {
@@ -571,14 +564,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '3') {
@@ -587,21 +580,21 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 2) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else if ($value_cuota['NUM_CUOTA'] == 3) {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '4') {
@@ -610,14 +603,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '5') {
@@ -626,14 +619,14 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 } else if ($value['FORMA_PAGO'] == '6') {
@@ -642,27 +635,28 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     } else {
                         $value['VALORPAGAR'] = (float) $value['NETO'] / (float) $value['FORMA_PAGO'];
                         $value['NUMCUOTA'] = (int) $value_cuota['NUM_CUOTA'];
                         $cnn->select("FECHA_VEN");
                         $rtn_fecven_cu = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' "
-                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA']);
+                                . "AND NUM_CUOTA=" . (int) $value_cuota['NUM_CUOTA'] . " AND TIPO=2 ");
                         $value['FECHA_VEN'] = $rtn_fecven_cu[0]['FECHA_VEN'];
                     }
                 }
             }
         }
 
-        if ($value['CHECK_ESTADO'] == '1') {
-            $value['CHECK_ESTADO'] = 'Confirmada';
-        } else {
-            $value['CHECK_ESTADO'] = 'S/Confirmar';
-        }
+//        if ($value['CHECK_ESTADO'] == '1') {
+//            $value['CHECK_ESTADO'] = 'Confirmada';
+//        } else {
+//            $value['CHECK_ESTADO'] = 'S/Confirmar';
+//        }
+        
         $cnn->select("ORDEN_PAGO");
-        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
+        $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=2 AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 
         if ($rtn_orden[0]['ORDEN_PAGO']) {
             $value['ORDEN_PAGO'] = $rtn_orden[0]['ORDEN_PAGO'];

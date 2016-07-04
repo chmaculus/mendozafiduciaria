@@ -3719,13 +3719,14 @@ function lote_pago() {
                         console.dir(data);
                         if (data > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                                imprimir_listado_seleccionado();
-                                show_btns();
-                                limpiar_form_fact();
-                                //$('#send').hide();
-                                $("#jqxgrid_listado").show();
-                                $("#jqxgrid_listado").jqxGrid('updatebounddata');
-                                $("#wpopup").html('');
+//                                imprimir_listado_seleccionado();
+//                                show_btns();
+//                                limpiar_form_fact();
+//                                //$('#send').hide();
+//                                $("#jqxgrid_listado").show();
+//                                $("#jqxgrid_listado").jqxGrid('updatebounddata');
+//                                $("#wpopup").html('');
+                            window.location.href = "backend/carpeta/compravino/init/12/2";
                             });
                         } else {
                             jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {

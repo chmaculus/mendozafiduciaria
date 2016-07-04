@@ -29,3 +29,11 @@ ALTER TABLE  `fid_clientes` ADD  `LIMITE_M` FLOAT NOT NULL
 */
 ALTER TABLE  `fid_cu_factura` ADD  `RETENCION_PORC` FLOAT NOT NULL
 
+/*
+* Se agrega el campo TIPO para poder diferenciar los distintos pagos
+* 0 => UVA
+* 1 => VINO
+* 2 => AGENCIA
+*/
+ALTER TABLE  `fid_cu_pagos` ADD  `TIPO` INT NOT NULL
+

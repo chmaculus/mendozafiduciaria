@@ -100,11 +100,11 @@ class agencia extends main_controller {
             $data['lst_provincias'] = $this->x_getprovincias();
             $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
             $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
-            $data['lst_bodegas'] = $this->x_getbodegas();
-            $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
+//            $data['lst_bodegas'] = $this->x_getbodegas();
+//            $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
             $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
             $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
-            $data['lst_proveedores'] = $this->x_getProveedores();
+//            $data['lst_proveedores'] = $this->x_getProveedores();
 //            $data['lst_checkHumana'] = $this->x_getChecklistHumana();
 //            $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
         }
@@ -118,7 +118,7 @@ class agencia extends main_controller {
             if ($provincia == 4):
                 return $this->view("vista6_revision", $data);
             elseif ($provincia == 3):
-                $data['lst_operatorias'] = $this->mod->get_operatorias_importacion();
+//                $data['lst_operatorias'] = $this->mod->get_operatorias_importacion();
                 return $this->view("vista5_importar", $data);
             elseif ($provincia == 0):
                 return $this->view("vista1", $data);
@@ -238,9 +238,9 @@ class agencia extends main_controller {
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
 
-    function x_sincronizarVino() {
+    function x_sincronizarAgencia() {
         $datosBuscar = $_POST['datosBuscar'];
-        $rtn = $this->mod->sincronizarVino($datosBuscar);
+        $rtn = $this->mod->sincronizarAgencia($datosBuscar);
 //        $_SESSION['OPERATORIA'] = $rtn[0]['ID_OPERATORIA'];
 //        echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
