@@ -2550,8 +2550,8 @@ class agencia_model extends main_model {
         return $rtn;
     }
 
-    function importar_xls($fid_sanjuan, $ope_sanjuan, $id_op_vino) {
-        if (!is_file("_tmp/importar/imp_vino_fact.xlsx")) {
+    function importar_xls($fid_sanjuan, $ope_sanjuan) {
+        if (!is_file("_tmp/importar/imp_agencia_fact.xlsx")) {
             return -1;
         }
         set_time_limit(0);
@@ -2559,7 +2559,7 @@ class agencia_model extends main_model {
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
 
         $objReader = new PHPExcel_Reader_Excel2007();
-        $objPHPExcel = $objReader->load("_tmp/importar/imp_vino_fact.xlsx");
+        $objPHPExcel = $objReader->load("_tmp/importar/imp_agencia_fact.xlsx");
         $objPHPExcel->setActiveSheetIndex(0);
 
         $i = 2;
@@ -2567,12 +2567,12 @@ class agencia_model extends main_model {
 
         $k = 0;
 
-        $id_tipoentidad_bodega = $this->_db->get_tabla('fid_settings', "variable='compra_uva_id_tipo_entidad'");
-        if ($id_tipoentidad_bodega) {
-            $id_tipoentidad_bodega = $id_tipoentidad_bodega[0]['valor'];
-        } else {
-            die("Falta configurar sistema");
-        }
+//        $id_tipoentidad_bodega = $this->_db->get_tabla('fid_settings', "variable='compra_uva_id_tipo_entidad'");
+//        if ($id_tipoentidad_bodega) {
+//            $id_tipoentidad_bodega = $id_tipoentidad_bodega[0]['valor'];
+//        } else {
+//            die("Falta configurar sistema");
+//        }
         /*
           $id_operatoria = $this->getIdOperatoria();
 
@@ -2583,10 +2583,10 @@ class agencia_model extends main_model {
           );
 
           $this->_db->insert('fid_operatoria_vino', $arr_ope); */
-        $id_operatoria = $id_op_vino;
+//        $id_operatoria = $id_op_vino;
 
-        $arr_proveedores = $arr_bodegas = array();
-        $total_litros = 0;
+//        $arr_proveedores = $arr_bodegas = array();
+//        $total_litros = 0;
         $precios_cuotas = array();
 
         while ($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue() != '') {
@@ -2714,7 +2714,7 @@ class agencia_model extends main_model {
             $numero = $objPHPExcel->getActiveSheet()->getCell("Y" . $i)->getValue();
 
             //validar numero de factura
-            $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente) : FALSE;
+            $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente ."  AND TIPO=2") : FALSE;
 
             if ($numero && $existe_fact) {
                 $i++;
@@ -2795,12 +2795,12 @@ class agencia_model extends main_model {
                 //"FECHAVTO" => $fechavto,
                 //"CAI" => $cai,
                 "ID_ESTADO" => $estado_fact,
-                "TIPO" => "1",
-                "LITROS" => $litros,
+                "TIPO" => "2",
+//                "LITROS" => $litros,
                 "FORMA_PAGO" => $cuotas,
-                "VINEDO" => $nro_vinedo,
-                "RUT" => $nro_inv,
-                "ID_OPERATORIA" => $id_operatoria,
+//                "VINEDO" => $nro_vinedo,
+//                "RUT" => $nro_inv,
+//                "ID_OPERATORIA" => $id_operatoria,
                 //"AZUCAR" => $azucar,
                 "PRECIO" => $precio,
                 "NETO" => $neto,
@@ -2809,7 +2809,7 @@ class agencia_model extends main_model {
                 "PORC_IVA" => $porc_iva,
                 "OBSERVACIONES" => $observaciones,
                 "ID_CLIENTE" => $id_cliente,
-                "ID_BODEGA" => $id_bodega,
+//                "ID_BODEGA" => $id_bodega,
                 "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
             );
 
@@ -2817,9 +2817,9 @@ class agencia_model extends main_model {
                 $arr_fact['FECHA'] = $fecha;
             }
 
-            $arr_bodegas[] = $id_bodega;
+//            $arr_bodegas[] = $id_bodega;
             $arr_proveedores[] = $id_cliente;
-            $total_litros += $litros;
+//            $total_litros += $litros;
 
             /* if (intval($formula) > 0) {
               $arr_fact["FORMULA"] = $formula;

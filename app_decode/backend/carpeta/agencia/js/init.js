@@ -1470,7 +1470,8 @@ $(document).ready(function () {
             var urlh = "backend/carpeta/agencia/init/3";
             $(location).attr('href', urlh);
         } else if (top == 'impor_procesar') {
-            importar_procesar();
+//            importar_procesar();
+             _imp_procesar();
         } else if (top == 'impor_revision') {
             var urlh = "backend/carpeta/agencia/init/4";
             $(location).attr('href', urlh);
@@ -3643,34 +3644,31 @@ function post_upload(nombre, nombre_tmp, etapa) {
     });
 }
 
-function importar_procesar() {
-    if ($("#op_vino").length > 0) {
-        $.fancybox(
-                $("#op_vino").html(),
-                {
-                    'padding': 15,
-                    'autoScale': true,
-                    'scrolling': 'auto'
-                }
-        );
-        $("#lst_op_vino li").on('click', function () {
-            $("#lst_op_vino li").each(function () {
-                $(this).removeClass('sel-op');
-            });
-            $(this).addClass('sel-op');
-        });
-    } else {
-        jAlert('No existen operatorias, debe crear una operatoria para procesar la solicitud', $.ucwords(_etiqueta_modulo));
-    }
-}
+//function importar_procesar() {
+//    alert("ACA");
+//        $.fancybox(
+//                $("#op_vino").html(),
+//                {
+//                    'padding': 15,
+//                    'autoScale': true,
+//                    'scrolling': 'auto'
+//                }
+//        );
+//        $("#lst_op_vino li").on('click', function () {
+//            $("#lst_op_vino li").each(function () {
+//                $(this).removeClass('sel-op');
+//            });
+//            $(this).addClass('sel-op');
+//        });
+//}
 
-function imp_procesar() {
-    if ($("#lst_op_vino li.sel-op").length > 0) {
-        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
-    } else {
-        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
-    }
-}
+//function imp_procesar() {
+//    if ($("#lst_op_vino li.sel-op").length > 0) {
+//        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
+//    } else {
+//        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
+//    }
+//}
 
 function _imp_procesar(id_op_vino) {
     jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {

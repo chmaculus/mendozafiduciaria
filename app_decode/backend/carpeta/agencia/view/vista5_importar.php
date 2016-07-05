@@ -7,7 +7,7 @@
 <div class="elem myfile" id="fot_car">
       <label>Adjunto:</label>
       <div class="indent">
-        <form id="upload_file1" action="backend/carpeta/compravino/get_file1" target="enviar_archivo" method="post" enctype="multipart/form-data">
+        <form id="upload_file1" action="backend/carpeta/agencia/get_file1" target="enviar_archivo" method="post" enctype="multipart/form-data">
             <div class="uploader black">
                 <input type="text"  class="filename" readonly="readonly" id="lblfile"/>
                 <input type="button" class="button_files " value="Examinar..."/>
@@ -19,7 +19,13 @@
       </div>
 </div>
 
-
+<!--<div id="op_vino" style="display:none">
+    <h2>Seleccione la operatoria</h2>
+    <ul id="lst_op_vino">
+        <li data-id=""></li>
+    </ul>
+    <button onclick="imp_procesar();" value="Procesar importación">Procesar importación</button>
+</div>-->
 
 
 <iframe name="enviar_archivo" id="enviar_archivo"></iframe>

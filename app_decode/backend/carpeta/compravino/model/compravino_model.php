@@ -443,8 +443,28 @@ class compravino_model extends main_model {
         if ($array_post['ordenPago1'] == 'Sin Orden') {
             $array_post['ordenPago1'] = '';
         }
+
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
+
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
+
+        $ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
     }
 
     function sendPago2($array_post) {
@@ -456,9 +476,36 @@ class compravino_model extends main_model {
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
 
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
 
+        $ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=2");
+
+        $ins_audi_pag2 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
     }
 
     function sendPago3($array_post) {
@@ -473,11 +520,45 @@ class compravino_model extends main_model {
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
 
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
+
+        $ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=2");
 
+        $ins_audi_pag2 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=3");
+        $ins_audi_pag3 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag3);
     }
 
     function sendPago4($array_post) {
@@ -495,13 +576,58 @@ class compravino_model extends main_model {
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
 
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
+
+        $ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
 
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=2");
 
+        $ins_audi_pag2 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=3");
 
+        $ins_audi_pag3 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag3);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=4");
+        
+        $ins_audi_pag4 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag4);
+        
     }
 
     function sendPago5($array_post) {
@@ -522,15 +648,69 @@ class compravino_model extends main_model {
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
 
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
 
+$ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);        
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=2");
 
+        $ins_audi_pag2 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=3");
 
+        $ins_audi_pag3 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag3);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=4");
 
+        $ins_audi_pag4 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag4);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo5'], "ORDEN_PAGO" => $array_post['ordenPago5']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=5");
+        
+        $ins_audi_pag5 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag5);
     }
 
     function sendPago6($array_post) {
@@ -554,17 +734,81 @@ class compravino_model extends main_model {
         }
         $this->_db->update("fid_cu_factura", array("ID_ESTADO" => $array_post['estFactura']), "NUMERO='" . $array_post['numFactura'] . "' AND TIPO=1 ");
 
+        $ins_audi_fact = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_fact);
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=1");
 
+        $ins_audi_pag1 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=2");
 
+        $ins_audi_pag2 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=3");
 
+        $ins_audi_pag3 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag3);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=4");
 
+        $ins_audi_pag4 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag4);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo5'], "ORDEN_PAGO" => $array_post['ordenPago5']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=5");
 
+        $ins_audi_pag5 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag5);
+        
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo6'], "ORDEN_PAGO" => $array_post['ordenPago6']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND TIPO=1 AND NUM_CUOTA=6");
+    
+        $ins_audi_pag6 = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 6 con estado " . $array_post['estCuo6'] . " proceso Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi_pag6);    
+        
     }
 
     function getfactura($id_objeto) {
@@ -925,9 +1169,18 @@ class compravino_model extends main_model {
             $armando_array = implode(',', $obj['CHECKLIST_PERSONA']);
             $obj['CHECKLIST_PERSONA'] = $armando_array;
         }
-        $ins_cuotas1 = array();$ins_cuotas2 = array();$ins_cuotas3 = array();
-        $ins_cuotas4 = array();$ins_cuotas5 = array();$ins_cuotas6 = array();
-        $cuota1 = 0;$cuota2 = 0;$cuota3 = 0;$cuota4 = 0;$cuota5 = 0;$cuota6 = 0;
+        $ins_cuotas1 = array();
+        $ins_cuotas2 = array();
+        $ins_cuotas3 = array();
+        $ins_cuotas4 = array();
+        $ins_cuotas5 = array();
+        $ins_cuotas6 = array();
+        $cuota1 = 0;
+        $cuota2 = 0;
+        $cuota3 = 0;
+        $cuota4 = 0;
+        $cuota5 = 0;
+        $cuota6 = 0;
 
         if ($iid == 0) {//agregar
             $resp = $this->_db->insert('fid_cu_factura', $obj);
@@ -986,8 +1239,12 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
-                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
+                }
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
             } else if ($obj["FORMA_PAGO"] == 3) {
@@ -1021,8 +1278,12 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
-                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
+                }
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
@@ -1034,8 +1295,12 @@ class compravino_model extends main_model {
                 $ven = array();
                 $fecha = date('Ymd', strtotime('+1 month', strtotime($fecha)));
                 $dia = date("w", strtotime($fecha));
-                if ($dia == 6) {$fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));}
-                if ($dia == 0) {$fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));}
+                if ($dia == 6) {
+                    $fecha = date('Ymd', strtotime('+2 days', strtotime($fecha)));
+                }
+                if ($dia == 0) {
+                    $fecha = date('Ymd', strtotime('+1 days', strtotime($fecha)));
+                }
                 $ins_cuotas3['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
             } else if ($obj["FORMA_PAGO"] == 4) {
@@ -1350,7 +1615,7 @@ class compravino_model extends main_model {
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
             $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
-            if (count($titu)==0 && $cambio_titularidad == 'true') {
+            if (count($titu) == 0 && $cambio_titularidad == 'true') {
                 $arr_cambio_titu = array(
                     "ID_FACTURA" => $numero_factura,
                     "ID_USUARIO" => $_SESSION['USERADM'],

@@ -688,11 +688,11 @@ class agencia extends main_controller {
     function x_importar_xls() {
         $fid_sanjuan = $_POST['fid_sanjuan'];
         $ope_sanjuan = $_POST['ope_sanjuan'];
-        $id_op_vino = $_POST['id_op_vino'];
+//        $id_op_vino = $_POST['id_op_vino'];
 
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
-            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan, $id_op_vino);
+            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
         } else {
             //echo -1;
             $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
@@ -748,14 +748,14 @@ class agencia extends main_controller {
             if ($subir == true) {
                 $file_name = FALSE;
 
-                $resultado = stripos($archivo['name'], 'vino_ciu');
-                if ($resultado !== FALSE) {
-                    $file_name = 'imp_vino_cius.xlsx';
-                }
+//                $resultado = stripos($archivo['name'], 'vino_ciu');
+//                if ($resultado !== FALSE) {
+//                    $file_name = 'imp_vino_cius.xlsx';
+//                }
 
-                $resultado = stripos($archivo['name'], 'vino_fact');
+                $resultado = stripos($archivo['name'], 'agencia');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_vino_fact.xlsx';
+                    $file_name = 'imp_agencia.xlsx';
                 }
 
                 $extencion = substr($archivo['name'], -3);
