@@ -420,6 +420,12 @@ $(document).ready(function () {
     });
     refresGridevent();
 
+
+//    $('#estFact').on('change', function () {
+//    alert($('#estFact').val());
+//    });
+
+
     $('#send-estado').on('click', function (e) {
         var estCuo1, estCuo2, estCuo3, estCuo4, estCuo5, estCuo6 = 0;
         var ordenPago1, ordenPago2, ordenPago3, ordenPago4, ordenPago5, ordenPago6 = '';
@@ -2027,18 +2033,18 @@ function editar_formulario_estado_cu() {
                 for (var i = 0; i < rtn.length; i++) {
                     pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
                             + '<div class="indent formtext">'
-                            + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].VALOR_CUOTA + '">'
+                            + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA
+                            + '" value="' + rtn[i].VALOR_CUOTA + '">'
                             + '</div>'
                             + '</div>';
-
                     pagoshtml += '<div class="elem elem_med"><label class="der">ESTADO:</label><div class="indent" id="">'
                             + '<select class="chzn-select medium-select select" id="estadoCuota' + rtn[i].NUM_CUOTA + '">'
                             + '<option value="0">No enviada</option><option value="1">Pendiente</option><option value="2">Pagado</option>'
                             + '</select></div></div>';
-
                     pagoshtml += '<div class="elem elem_med_cond">'
                             + ' <label class="der">Orden de pago:</label><div class="indent formtext">'
-                            + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
+                            + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA
+                            + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
                             + '<div style="margin-top:50px;" class="clear"></div>';
                 }
                 $("#estado-cuota").html(pagoshtml);
@@ -3666,6 +3672,8 @@ function lote_pago() {
     var _arr_sel = [];
     if (rowindexes.length > 0) {
         var swa = 0;
+        var id_referencia_devolver = "";
+        var id_ref_devolver = 0;
         $.each(rowindexes, function (index, value) {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
             if (reg.ESTADO == 'Pago Solicitado') {
@@ -3681,8 +3689,34 @@ function lote_pago() {
             if (reg.ID_CONTABLE == 0) {
                 swa = 4;
             }
+            if (reg.NUMCUOTA == "") {
+                id_ref_devolver = reg.ID;
+                swa = 5;
+            }
+//            console.log("REEEEEG");
+//            console.log(reg);
+            $.ajax({
+                url: _compravino.URL + "/x_verificar_enviadas",
+                data: {
+                    provincia: _compravino._provincia,
+                    obj: reg
+                },
+                dataType: "json",
+                type: "post",
+                async: false,
+                success: function (data) {
+//                    console.log("DAATAAA");
+//                    console.log(data);
+                    if (data.length > 0) {
+                        id_referencia_devolver = data[0].IDFACTURAINT;
+                        swa = 6;
+                    }
+                }
+            });
+
             _arr_sel.push(reg);
         });
+
         if (swa == '1') {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
             });
@@ -3697,6 +3731,14 @@ function lote_pago() {
             return false;
         } else if (swa == '4') {
             jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '5') {
+            jAlert('En la factura ID '+id_ref_devolver+' no hay mas cuotas para enviar. Ya fueron procesadas todas.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '6') {
+            jAlert('La cuota de la factura con el ID '+id_referencia_devolver+' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '10') {
@@ -3726,7 +3768,7 @@ function lote_pago() {
 //                                $("#jqxgrid_listado").show();
 //                                $("#jqxgrid_listado").jqxGrid('updatebounddata');
 //                                $("#wpopup").html('');
-                            window.location.href = "backend/carpeta/compravino/init/12/2";
+                                window.location.href = "backend/carpeta/compravino/init/12/2";
                             });
                         } else {
                             jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {

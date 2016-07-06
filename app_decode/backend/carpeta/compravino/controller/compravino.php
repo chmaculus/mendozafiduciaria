@@ -576,6 +576,12 @@ class compravino extends main_controller {
         $rtn = $this->mod->guardarlote($obj);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
+    
+    function x_verificar_enviadas() {
+        $obj = $_POST['obj'];
+        $rtn = $this->mod->verificar_enviadas($obj);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
 
     function x_sendobjcli() {
         $obj = $_POST['obj'];
