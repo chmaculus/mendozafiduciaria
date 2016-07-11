@@ -391,15 +391,14 @@ class sqldata {
                 } else {
                     fwrite($pfile, $var . "\n");
                 }
-            } else {
-                die("ERROR EN EL SISTEMA, contactar con soporte");
+                fclose($pfile);
             }
         
         } catch (Exception $ex) {
-            print_r($ex);die;
+            //print_r($ex);die;
         }
 
-        fclose($pfile);
+        
 
     }
 
