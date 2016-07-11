@@ -1,6 +1,6 @@
 <section id="form">
     <div id="logo_admin">
-        <img src="general/images/logof.jpg" border="0"/>
+        <img src="general/images/logo.jpg" border="0" style="width: 375px;"/>
     </div>
     
     <form id="form-login" action="dashboard.html"  class="formular" method="post">
@@ -20,7 +20,7 @@
            </div>
             
             <div id="left" style="clear:both;margin-top: 10px">
-                <div class="tmfoca"></div><p>Copyright Foca Software © 2012-2013</p>
+                <div class="tmfoca"></div><p>Copyright Foca Software © 2012-2016</p>
             </div>
         
     </form>
