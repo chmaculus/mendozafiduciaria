@@ -80,6 +80,7 @@ class cuotas extends main_controller{
         if ($this->mod->set_credito_active($credito_id)) {
             $version = $_POST['version_id'];
             $this->mod->set_version_active($version);
+            $this->mod->renew_datos();
 
             $monto = $_POST['monto'];
 
@@ -355,8 +356,13 @@ class cuotas extends main_controller{
         }
     }
     
-    function reimputar_pagos_creditos() {
-        $creditos = array(1262);
+    function reimputar_pagos_creditos($id = NULL) {
+        $id = (int) $id;
+        if ($id == NULL || !is_int($id)) {
+            die("error!");
+        }
+                
+        $creditos = array($id);
         set_time_limit(0);
         
         foreach ($creditos as $credito_id) {
