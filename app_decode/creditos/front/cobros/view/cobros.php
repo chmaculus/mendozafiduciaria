@@ -27,6 +27,7 @@
         <span class="titulo-sp">ARCHIVOS RECIBIDOS</span>
         <ul class="titulo">
             <li>
+                <span class='archivo-id'>ID</span>
                 <span class='archivo-nombre'>ARCHIVO</span>
                 <span class='archivo-fecha'>FECHA</span>
                 <span class='mostrar-archivo'>OPCIONES</span>
@@ -34,6 +35,7 @@
         </ul>
         <ul class="datos">
             <li>
+                <span class='archivo-id'></span>
                 <span class='archivo-nombre'></span>
                 <span class='archivo-fecha'></span>
                 <span class='mostrar-archivo'><button onclick="mostrar_archivo();">Mostrar</button> - <button onclick="borrar_archivo();">Eliminar</button></span>

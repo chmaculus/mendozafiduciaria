@@ -73,16 +73,17 @@ class cuotas extends main_controller{
     
     
     function x_set_pago(){
+        $this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id']);
         
-        $fecha = $_POST['fecha'];
-        $credito_id = $_POST['credito_id'];
+        $this->mod->renew_datos();
+        echo $this->_get_cuotas();
+    }
+    
+    function _x_set_pago($credito_id, $fecha, $monto, $version) {
         
         if ($this->mod->set_credito_active($credito_id)) {
-            $version = $_POST['version_id'];
             $this->mod->set_version_active($version);
             $this->mod->renew_datos();
-
-            $monto = $_POST['monto'];
 
             $monto_credito = $this->mod->get_monto_credito();
             $desembolsos = $this->mod->get_desembolsos(0);
@@ -98,9 +99,6 @@ class cuotas extends main_controller{
             
             $this->mod->realizar_pago($fecha,  $monto);
         }
-        
-        $this->mod->renew_datos();
-        echo $this->_get_cuotas();
     }
     
     
@@ -1441,8 +1439,33 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         set_time_limit(0);
         $this->mod->updateFechaPago();
     }
-}
 
+    function x_add_cobros() {
+        $cobros = $_POST['cobros'];
+
+        $fecha = time();
+        
+        set_time_limit(0);
+        //die();
+        foreach ($cobros as $cobro) {
+            $ID_CREDITO = $cobro['ID_CREDITO'];
+
+            list($d, $m, $y) = explode("/", $cobro['FECHA']);
+            $fecha = mktime(0, 0, 0, $m, $d, $y);
+
+            list($d, $m, $y) = explode("/", $cobro['CREDITO_VENCIMIENTO']);
+            $vencimiento_cuota = mktime(0, 0, 0, $m, $d, $y);
+
+            if ($version =$this->mod->existCredito($ID_CREDITO)) {
+                $this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION']);
+                $this->mod->marcar_cobro_bancario($cobro['ID'], $fecha);
+            } else {
+                echo "llega-----";
+            }
+        }
+    }
+    
+}
 
 
 // extend TCPF with custom functions

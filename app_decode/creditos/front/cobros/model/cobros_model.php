@@ -29,7 +29,10 @@ class cobros_model extends credito_model{
     }
     
     function get_archivos_bancarios(){
-        $rtn = $this->_db->get_tabla("fid_creditos_bancos_files", FALSE, "FECHA_REC DESC");
+        $this->_db->select('bf.ID, FECHA_REC, ARCHIVO, ESTADO, ID_CREDITO');
+        $this->_db->join("fid_creditos_bancos_cobros bc","bc.ID_FILE = bf.ID AND FECHA_INGRESADO=0", "left");
+        $this->_db->group_by("bf.ID");
+        $rtn = $this->_db->get_tabla("fid_creditos_bancos_files bf", FALSE, "FECHA_REC DESC");
         return $rtn;
     }
     

@@ -343,7 +343,7 @@ class cobros extends main_controller {
 
         echo $this->view("extract", array("datos" => $datos));
     }
-
+    /*
     function x_add_cobros() {
         $cobros = $_POST['cobros'];
 
@@ -372,7 +372,7 @@ class cobros extends main_controller {
             
         }
 
-    }
+    }*/
     
     function x_del_cobros() {
         $id = $_POST['id'];

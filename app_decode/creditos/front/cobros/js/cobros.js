@@ -54,8 +54,12 @@ function _agregar_item_html(item){
     var fecha_txt = ("0" + fecha.getDate()).slice(-2) + "-" + ("0" + (fecha.getUTCMonth() + 1)).slice(-2) + "-"+fecha.getFullYear();
     
     $li.find(".archivo-fecha").text(fecha_txt );
+    $li.find(".archivo-id").text(item.ID );
     $li.find(".archivo-nombre").text(item.ARCHIVO );
     $li.data("id",item.ID);
+    if (item.ID_CREDITO) {
+        $li.find(".archivo-nombre").addClass('nimp');
+    }
     $(".lista_archivos ul.datos").append($li);
     
     $(".lista_archivos ul.datos li").off().on({
@@ -150,7 +154,7 @@ function agregar_cobros_seleccionados(){
 _cobros.agregar_coboros_credito = function(cobros){
     
     $.ajax({
-        url : _cobros.URL + "/x_add_cobros",
+        url : _cobros.URL.replace('front/cobros', 'front/cuotas') + "/x_add_cobros",
         data : {
             cobros : cobros
         },

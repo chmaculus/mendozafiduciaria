@@ -873,6 +873,12 @@ class credito_model_test extends credito_model {
     function get_monto_credito() {
         return $this->_total_credito;
     }
+    
+    function marcar_cobro_bancario($id, $fecha = false){
+        $fecha = $fecha ? $fecha : time();
+        $this->_db->update("fid_creditos_bancos_cobros",array("FECHA_INGRESADO"=>$fecha ),"ID = ".$id);
+    }
+    
 
 }
 
