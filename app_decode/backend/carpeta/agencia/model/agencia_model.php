@@ -143,6 +143,7 @@ class agencia_model extends main_model {
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                         "FIDEICOMISO" => 28,
+                        "OPERATORIA" => 0,
                         "NETO" => $cuit_cli[0]['NETO'],
                         "IVA" => $cuit_cli[0]['IVA'],
                         "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -164,6 +165,7 @@ class agencia_model extends main_model {
                         "CUIT" => $cuit_cli[0]['CUIT'],
                         "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                         "FIDEICOMISO" => 28,
+                        "OPERATORIA" => 0,
                         "NETO" => (float) $cuit_cli[0]['NETO'],
                         "IVA" => (float) $cuit_cli[0]['IVA'],
                         "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -185,6 +187,7 @@ class agencia_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "FIDEICOMISO" => 28,
+                            "OPERATORIA" => 0,
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => $cuit_cli[0]['TOTAL'],
@@ -204,6 +207,7 @@ class agencia_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "FIDEICOMISO" => 28,
+                            "OPERATORIA" => 0,
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']) + (float) $cuit_cli[0]['IVA'],
@@ -224,6 +228,7 @@ class agencia_model extends main_model {
                             "CUIT" => $cuit_cli[0]['CUIT'],
                             "CODIGO_WEB" => $cuit_cli[0]['IDCLIENTE'],
                             "FIDEICOMISO" => 28,
+                            "OPERATORIA" => 0,
                             "NETO" => (float) $cuit_cli[0]['NETO'],
                             "IVA" => (float) $cuit_cli[0]['IVA'],
                             "IMPORTE" => ((float) $cuit_cli[0]['NETO'] / (int) $cuit_cli[0]['FORMA_PAGO']),
@@ -936,7 +941,6 @@ class agencia_model extends main_model {
     function verificar_enviadas($arr_obj) {
         $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'" .
                 " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
-//                    " AND NUMFACTURA='" . $arr_obj['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
         return $verificar_enviadas;
         die;
@@ -2303,7 +2307,6 @@ class agencia_model extends main_model {
 //                case 'APROBADO':case 'APROBADA':$estado_fact = 1;break;
 //                default:$estado_fact = 1;break;
 //            }
-
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
@@ -2327,7 +2330,7 @@ class agencia_model extends main_model {
                     "CUIT" => $cuit,
                     "RAZON_SOCIAL" => $razonsocial,
                     "FECHA_ALTA" => "",
-                    //"DIRECCION" => $direccion,
+//                    "DIRECCION" => $direccion,
 //                    "TELEFONO" => $telefono,
 //                    "OBSERVACION" => $observacion,
                     "ID_PROVINCIA" => 0,
@@ -2345,6 +2348,8 @@ class agencia_model extends main_model {
 
             // idfactura
             $numero = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
+            
+            if ($numero != "") {
             //validar numero de factura
             $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2") : FALSE;
 //            log_this('log/existelafactura.log', $this->_db->last_query() );
@@ -2377,13 +2382,11 @@ class agencia_model extends main_model {
 //            $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
 //            $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
             //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
-
             if (trim($fecha) == "-   -") {
                 $fecha = '';
             } elseif (trim($fecha)) {
                 $fecha = loadDate_excel($fecha);
             }
-
 //            if (trim($fechavto) == "-   -") {
 //                $fechavto = '';
 //            } elseif (trim($fechavto)) {
@@ -2392,10 +2395,8 @@ class agencia_model extends main_model {
             // local
             $_fid_sanjuan = 88;
             $_ope_sanjuan = 99;
-
             $_fid_mendoza = 66;
             $_ope_mendoza = 77;
-
             $nolocal = 1;
             if ($nolocal == 1) {
                 $_fid_sanjuan = 1;
@@ -2403,7 +2404,6 @@ class agencia_model extends main_model {
                 $_fid_mendoza = 1;
                 $_ope_mendoza = 16;
             }
-
             /* if ($id_provincia == '17') {
               $save_ope = $_ope_sanjuan;
               $save_fid = $_fid_sanjuan;
@@ -2411,7 +2411,6 @@ class agencia_model extends main_model {
             $save_ope = $_ope_mendoza;
             $save_fid = $_fid_mendoza;
             //}
-
             $arr_fact = array(
                 "NUMERO" => $numero,
                 "TIPO" => "2",
@@ -2424,9 +2423,7 @@ class agencia_model extends main_model {
             if ($fecha) {
                 $arr_fact['FECHA'] = $fecha;
             }
-
             $arr_proveedores[] = $id_cliente;
-
             //validaciones
             $sw_error = 0;
             $arr_error = array();
@@ -2470,10 +2467,10 @@ class agencia_model extends main_model {
             $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
 //            log_this('log/QUIEROVERINSERTXLXS.log', $this->_db->last_query() );
             $res[] = $resp;
+            } // END IF -- >Se cierra el if que valida si el registro tiene numero de factura
             $i++;
             $k++;
-            /*
-              if ($k==30){
+/*      if ($k==30){
               break;
               } */
         }

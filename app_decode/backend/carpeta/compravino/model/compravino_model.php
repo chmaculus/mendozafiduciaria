@@ -115,7 +115,7 @@ class compravino_model extends main_model {
     }
 
     function verificar_enviadas($arr_obj) {
-        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", " NUMFACTURA='" . $arr_obj['NUMERO'] . "'" 
+        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", " NUMFACTURA='" . $arr_obj['NUMERO'] . "'"
                 . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //                    " AND NUMFACTURA='" . $arr_obj['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
@@ -2825,7 +2825,7 @@ class compravino_model extends main_model {
         if (!is_file("_tmp/importar/imp_vino_fact.xlsx")) {
             return -1;
         }
-        
+
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");
@@ -2985,176 +2985,181 @@ class compravino_model extends main_model {
             // idfactura
             $numero = $objPHPExcel->getActiveSheet()->getCell("Y" . $i)->getValue();
 
-            //validar numero de factura
-            $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO=" . $numero . " AND id_cliente=" . $id_cliente) : FALSE;
+            if ($numero != "") {
+                
+                //validar numero de factura
+                $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=1") : FALSE;
 
-            if ($numero && $existe_fact) {
-                $i++;
-                $k++;
-                continue;
-            }
-
-            $fecha = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue(); //??
-            $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
-            $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
-            //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
-            $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
-            if (!$neto) {
-                $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());
-            }
-            $precio = $litros ? $neto / $litros : 0;
-            $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
-            if (!$iva) {
-                $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());
-            }
-            $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue());
-            if (!$total) {
-                $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getCalculatedValue());
-            }
-            $porc_iva = 0;
-            if ($total && $neto) {
-                $porc_iva = $iva * 100 / $neto;
-            }
-            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue();
-            $observaciones .= $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
-            $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
-            if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
-                $precios_cuotas[$cuotas] = $precio;
-            }
-
-            $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
-            $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
-            //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
-
-            if (trim($fecha) == "-   -") {
-                $fecha = '';
-            } elseif (trim($fecha)) {
-                $fecha = loadDate_excel($fecha);
-            }
-
-            if (trim($fechavto) == "-   -") {
-                $fechavto = '';
-            } elseif (trim($fechavto)) {
-                $fechavto = loadDate_excel($fechavto);
-            }
-
-            // local
-            $_fid_sanjuan = 88;
-            $_ope_sanjuan = 99;
-
-            $_fid_mendoza = 66;
-            $_ope_mendoza = 77;
-
-            $nolocal = 1;
-            if ($nolocal == 1) {
-                $_fid_sanjuan = 1;
-                $_ope_sanjuan = 16;
-
-                $_fid_mendoza = 1;
-                $_ope_mendoza = 16;
-            }
-
-            /* if ($id_provincia == '17') {
-              $save_ope = $_ope_sanjuan;
-              $save_fid = $_fid_sanjuan;
-              } else { */
-            $save_ope = $_ope_mendoza;
-            $save_fid = $_fid_mendoza;
-            //}
-
-            $arr_fact = array(
-                "NUMERO" => $numero,
-                //"FECHAVTO" => $fechavto,
-                //"CAI" => $cai,
-                "ID_ESTADO" => $estado_fact,
-                "TIPO" => "1",
-                "LITROS" => $litros,
-                "FORMA_PAGO" => $cuotas,
-                "VINEDO" => $nro_vinedo,
-                "RUT" => $nro_inv,
-                "ID_OPERATORIA" => $id_operatoria,
-                //"AZUCAR" => $azucar,
-                "PRECIO" => $precio,
-                "NETO" => $neto,
-                "IVA" => $iva,
-                "TOTAL" => $total,
-                "PORC_IVA" => $porc_iva,
-                "OBSERVACIONES" => $observaciones,
-                "ID_CLIENTE" => $id_cliente,
-                "ID_BODEGA" => $id_bodega,
-                "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
-            );
-
-            if ($fecha) {
-                $arr_fact['FECHA'] = $fecha;
-            }
-
-            $arr_bodegas[] = $id_bodega;
-            $arr_proveedores[] = $id_cliente;
-            $total_litros += $litros;
-
-            /* if (intval($formula) > 0) {
-              $arr_fact["FORMULA"] = $formula;
-              } */
-
-            //validaciones
-
-            $sw_error = 0;
-            $arr_error = array();
-
-            $arr_factor = $this->_db->get_tabla('fid_cliente_condicion_iva', "Id = $id_condicion_iva");
-            $factor = 0;
-            if ($arr_factor) {
-                $factor = $arr_factor[0]['VALOR'];
-            }
-
-            /* if (0 and ( $neto != $litros * $precio)) {
-              $sw_error = 1; //
-              $arr_error[] = "Neto observado";
-              } */
-
-            $iva = round($iva * 1, 2);
-            $factor = round(($factor * $neto / 100) * 1, 2);
-            //log_this("iv-factor.txt", $iva . " - " . $factor);
-            /* if ((abs($iva - $factor) > 1)) {
-              $sw_error = 1;
-              $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
-              } */
-
-            if ($total - ($neto + $iva) > 1) {
-                $sw_error = 1;
-                $arr_error[] = "Total observado";
-            }
-
-            //verificar cbu
-            /* $existe_cbu = $this->verificar_cbu($cbu);
-              if ($existe_cbu['error']) {
-              $sw_error = 1;
-              $arr_error[] = $existe_cbu['result'];
-              } */
-
-            //verificar largo cuit
-            if (strlen($cuit) != 11) {
-                $sw_error = 1;
-                $arr_error[] = "Longitud de CUIT Observado";
-            }
-
-
-            if ($sw_error > 0) {
-                $arr_fact["ID_ESTADO"] = "12";
-                //$arr_fact["IMP_ERROR_COD"] = $sw_error;
-                if ($arr_error) {
-                    $texto_error = "";
-                    foreach ($arr_error as $err) {
-                        $texto_error .= $err . "-";
-                    }
-                    $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
+                if ($numero && $existe_fact) {
+                    $i++;
+                    $k++;
+                    continue;
                 }
-            }
 
-            $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
-            //log_this('log/aaaaaa.log', $this->_db->last_query() );
-            $res[] = $resp;
+                $fecha = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue(); //??
+                $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
+                $cai = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue();  //??
+                //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
+                $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
+                if (!$neto) {
+                    $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());
+                }
+                $precio = $litros ? $neto / $litros : 0;
+                $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
+                if (!$iva) {
+                    $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());
+                }
+                $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getValue());
+                if (!$total) {
+                    $total = floatval($objPHPExcel->getActiveSheet()->getCell("AD" . $i)->getCalculatedValue());
+                }
+                $porc_iva = 0;
+                if ($total && $neto) {
+                    $porc_iva = $iva * 100 / $neto;
+                }
+                $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue();
+                $observaciones .= $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
+                $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
+                if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
+                    $precios_cuotas[$cuotas] = $precio;
+                }
+
+                $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
+                $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
+                //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
+
+                if (trim($fecha) == "-   -") {
+                    $fecha = '';
+                } elseif (trim($fecha)) {
+                    $fecha = loadDate_excel($fecha);
+                }
+
+                if (trim($fechavto) == "-   -") {
+                    $fechavto = '';
+                } elseif (trim($fechavto)) {
+                    $fechavto = loadDate_excel($fechavto);
+                }
+
+                // local
+                $_fid_sanjuan = 88;
+                $_ope_sanjuan = 99;
+
+                $_fid_mendoza = 66;
+                $_ope_mendoza = 77;
+
+                $nolocal = 1;
+                if ($nolocal == 1) {
+                    $_fid_sanjuan = 1;
+                    $_ope_sanjuan = 16;
+
+                    $_fid_mendoza = 1;
+                    $_ope_mendoza = 16;
+                }
+
+                /* if ($id_provincia == '17') {
+                  $save_ope = $_ope_sanjuan;
+                  $save_fid = $_fid_sanjuan;
+                  } else { */
+                $save_ope = $_ope_mendoza;
+                $save_fid = $_fid_mendoza;
+                //}
+
+                $arr_fact = array(
+                    "NUMERO" => $numero,
+                    //"FECHAVTO" => $fechavto,
+                    //"CAI" => $cai,
+                    "ID_ESTADO" => $estado_fact,
+                    "TIPO" => "1",
+                    "LITROS" => $litros,
+                    "FORMA_PAGO" => $cuotas,
+                    "VINEDO" => $nro_vinedo,
+                    "RUT" => $nro_inv,
+                    "ID_OPERATORIA" => $id_operatoria,
+                    //"AZUCAR" => $azucar,
+                    "PRECIO" => $precio,
+                    "NETO" => $neto,
+                    "IVA" => $iva,
+                    "TOTAL" => $total,
+                    "PORC_IVA" => $porc_iva,
+                    "OBSERVACIONES" => $observaciones,
+                    "ID_CLIENTE" => $id_cliente,
+                    "ID_BODEGA" => $id_bodega,
+                    "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
+                );
+
+                if ($fecha) {
+                    $arr_fact['FECHA'] = $fecha;
+                }
+
+                $arr_bodegas[] = $id_bodega;
+                $arr_proveedores[] = $id_cliente;
+                $total_litros += $litros;
+
+                /* if (intval($formula) > 0) {
+                  $arr_fact["FORMULA"] = $formula;
+                  } */
+
+                //validaciones
+
+                $sw_error = 0;
+                $arr_error = array();
+
+                $arr_factor = $this->_db->get_tabla('fid_cliente_condicion_iva', "Id = $id_condicion_iva");
+                $factor = 0;
+                if ($arr_factor) {
+                    $factor = $arr_factor[0]['VALOR'];
+                }
+
+                /* if (0 and ( $neto != $litros * $precio)) {
+                  $sw_error = 1; //
+                  $arr_error[] = "Neto observado";
+                  } */
+
+                $iva = round($iva * 1, 2);
+                $factor = round(($factor * $neto / 100) * 1, 2);
+                //log_this("iv-factor.txt", $iva . " - " . $factor);
+                /* if ((abs($iva - $factor) > 1)) {
+                  $sw_error = 1;
+                  $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
+                  } */
+
+                if ($total - ($neto + $iva) > 1) {
+                    $sw_error = 1;
+                    $arr_error[] = "Total observado";
+                }
+
+                //verificar cbu
+                /* $existe_cbu = $this->verificar_cbu($cbu);
+                  if ($existe_cbu['error']) {
+                  $sw_error = 1;
+                  $arr_error[] = $existe_cbu['result'];
+                  } */
+
+                //verificar largo cuit
+                if (strlen($cuit) != 11) {
+                    $sw_error = 1;
+                    $arr_error[] = "Longitud de CUIT Observado";
+                }
+
+
+                if ($sw_error > 0) {
+                    $arr_fact["ID_ESTADO"] = "12";
+                    //$arr_fact["IMP_ERROR_COD"] = $sw_error;
+                    if ($arr_error) {
+                        $texto_error = "";
+                        foreach ($arr_error as $err) {
+                            $texto_error .= $err . "-";
+                        }
+                        $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
+                    }
+                }
+
+                $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
+                //log_this('log/aaaaaa.log', $this->_db->last_query() );
+                $res[] = $resp;
+            
+                
+            } // END IF -- >Se cierra el if que valida si el registro tiene numero de factura
 
             $i++;
             $k++;
