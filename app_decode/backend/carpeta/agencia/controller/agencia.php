@@ -100,13 +100,8 @@ class agencia extends main_controller {
             $data['lst_provincias'] = $this->x_getprovincias();
             $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
             $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
-//            $data['lst_bodegas'] = $this->x_getbodegas();
-//            $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
             $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
             $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
-//            $data['lst_proveedores'] = $this->x_getProveedores();
-//            $data['lst_checkHumana'] = $this->x_getChecklistHumana();
-//            $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
         }
         $this->_js_var['_provincia'] = $provincia;
         $this->_js_var['_opcion'] = $opcion;
@@ -125,12 +120,8 @@ class agencia extends main_controller {
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 3)):
                 return $this->view("vista3", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 1)):
-//                $id_operatoria = $_SESSION['OPERATORIA']
-//                if($_SESSION['OPERATORIA']){
-//                $data['lst_bodegas_vino'] = $this->x_getbodegas_vino($_SESSION['OPERATORIA']);
                 return $this->view("vista3", $data);
-//                }
-//                ;
+
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 2)):
                 return $this->view("vista4_listado", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
@@ -256,32 +247,6 @@ class agencia extends main_controller {
         $rtn = $this->mod->getDetalleCu($id_fac);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-
-//    function x_getAlgunasBodegas() {
-//        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
-//        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
-//                <option value="">Elegir Bodega</option>';
-//        foreach ($data_bodega as $value) {
-//            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-//                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
-//        }
-//        $html .= '</select>';
-//        echo $html;
-//    }
-    
-//    function x_getAlgunosProveedores() {
-////        $data_bodega = $this->mod->get_proveedores($_POST['id']);
-//        $data_proveedor = $this->mod->get_proveedores();
-//        $html = '<select class="chzn-select medium-select select" id="proveedor-jquery" >
-//                <option value="">Elegir Proveedor</option>';
-//        foreach ($data_proveedor as $value) {
-//            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-//                    '" value="' . $value["ID"] . '">' . $value["RAZON_SOCIAL"] . '</option>';
-//        }
-//        $html .= '</select>';
-//        echo $html;
-//    }
-
 
     function x_getFormasPago() {
         $html = '';
@@ -414,6 +379,12 @@ class agencia extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
+    function x_verificar_enviadas() {
+        $obj = $_POST['obj'];
+        $rtn = $this->mod->verificar_enviadas($obj);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    
     function x_guardarlote() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->guardarlote($obj);
@@ -455,34 +426,6 @@ class agencia extends main_controller {
         $rtn = $this->mod->updateProveedores($obj_bod, $obj_prov, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
-
-//    function x_sendBodegas() {
-//        $obj = $_POST['data_bodegas'];
-//        $nuevoID = $_POST['nuevoID'];
-//        $rtn = $this->mod->sendBodegas($obj, $nuevoID);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-//    }
-
-//    function x_sendHumana() {
-//        $obj = $_POST['checks_humana'];
-//        $nuevoID = $_POST['nuevoID'];
-//        $rtn = $this->mod->sendHumana($obj, $nuevoID);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-//    }
-
-//    function x_sendJuridica() {
-//        $obj = $_POST['checks_juridica'];
-//        $nuevoID = $_POST['nuevoID'];
-//        $rtn = $this->mod->sendJuridica($obj, $nuevoID);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-//    }
-
-//    function x_updateBodegas() {
-//        $obj = $_POST['data_bodegas'];
-//        $nuevoID = $_POST['nuevoID'];
-//        $rtn = $this->mod->updateBodegas($obj, $nuevoID);
-//        echo trim(json_encode($rtn ? $rtn : array()));
-//    }
 
     function x_getform_importar() {
         $data['datos'] = "";
@@ -686,16 +629,12 @@ class agencia extends main_controller {
     }
 
     function x_importar_xls() {
-        $fid_sanjuan = $_POST['fid_sanjuan'];
-        $ope_sanjuan = $_POST['ope_sanjuan'];
-//        $id_op_vino = $_POST['id_op_vino'];
-
+//$fid_sanjuan = $_POST['fid_sanjuan'];$ope_sanjuan = $_POST['ope_sanjuan'];
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
-            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan);
+            echo $fact = $this->mod->importar_xls();
         } else {
-            //echo -1;
-            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+            echo -1;
         }
     }
 
@@ -748,14 +687,9 @@ class agencia extends main_controller {
             if ($subir == true) {
                 $file_name = FALSE;
 
-//                $resultado = stripos($archivo['name'], 'vino_ciu');
-//                if ($resultado !== FALSE) {
-//                    $file_name = 'imp_vino_cius.xlsx';
-//                }
-
                 $resultado = stripos($archivo['name'], 'agencia');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_agencia.xlsx';
+                    $file_name = 'imp_agencia_fact.xlsx';
                 }
 
                 $extencion = substr($archivo['name'], -3);

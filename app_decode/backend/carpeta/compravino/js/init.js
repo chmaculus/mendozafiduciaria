@@ -3693,8 +3693,6 @@ function lote_pago() {
                 id_ref_devolver = reg.ID;
                 swa = 5;
             }
-//            console.log("REEEEEG");
-//            console.log(reg);
             $.ajax({
                 url: _compravino.URL + "/x_verificar_enviadas",
                 data: {
@@ -3705,8 +3703,6 @@ function lote_pago() {
                 type: "post",
                 async: false,
                 success: function (data) {
-//                    console.log("DAATAAA");
-//                    console.log(data);
                     if (data.length > 0) {
                         id_referencia_devolver = data[0].IDFACTURAINT;
                         swa = 6;

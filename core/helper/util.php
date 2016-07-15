@@ -274,6 +274,12 @@ function contar_archivos_imp_f($file = "_tmp/importar/imp_fact.xlsx"){
     return $total;
 }
 
+function contar_archivos_imp_a($file = "_tmp/importar/imp_agencia.xlsx"){
+    $total = count(glob($file, GLOB_BRACE));
+//    $total = count(glob("_tmp/importar/imp_fact_procesado.xlsx",GLOB_BRACE));
+    return $total;
+}
+
 function contar_archivos_imp_c(){
     $total  = count(glob("_tmp/importar/imp_cius.xlsx",GLOB_BRACE));
 //    $total  = count(glob("_tmp/importar/imp_cius_procesado.xlsx",GLOB_BRACE));

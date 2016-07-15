@@ -115,8 +115,9 @@ class compravino_model extends main_model {
     }
 
     function verificar_enviadas($arr_obj) {
-        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $arr_obj['ID'] .
-                    " AND NUMFACTURA='" . $arr_obj['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
+        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", " NUMFACTURA='" . $arr_obj['NUMERO'] . "'" 
+                . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
+//                    " AND NUMFACTURA='" . $arr_obj['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
         return $verificar_enviadas;
         die;
@@ -2824,6 +2825,7 @@ class compravino_model extends main_model {
         if (!is_file("_tmp/importar/imp_vino_fact.xlsx")) {
             return -1;
         }
+        
         set_time_limit(0);
         require_once ('general/helper/ClassesPHPExcel/PHPExcel.php');
         require_once ("general/helper/ClassesPHPExcel/PHPExcel/Reader/Excel2007.php");

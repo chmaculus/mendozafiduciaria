@@ -103,19 +103,13 @@ function guardar_factura() {
 
     objsave = {
         id: iid,
-//        ID_OPE: numOperatoria,
         NUMERO: numero,
         FECHA: fecha,
         CAI: cai,
         ID_PROVINCIA: _provincia,
         FECHAVTO: fechavto,
-//        ID_BODEGA: bodega,
         CUIT: cuitform,
-//        LITROS: ltros,
-//        AZUCAR: azucar,
         PRECIO: precio,
-//        VINEDO: numVinedo,
-//        RUT: numRut,
         ID_ESTADO: 1,
         USU_CARGA: _USUARIO_SESION_ACTUAL,
         NETO: neto,
@@ -123,10 +117,7 @@ function guardar_factura() {
         TOTAL: total,
         FORMA_PAGO: fpago,
         OBSERVACIONES: observacion_fact,
-//        CHECKLIST_PERSONA: data_checklists_persona,
         update_cius: 0,
-//        ID_OPERATORIA: numOperatoria,
-//        ID_FIDEICOMISO: tmp_fid,
         PORC_IVA: porcentaje_iva,
         FORMULA: formula,
         TIPO: 2
@@ -229,13 +220,13 @@ function llenar_form(cliente) {
     $(".env_form #correo").val(cliente.CORREO);
     $(".env_form #telefono").val(cliente.TELEFONO);
     $(".env_form #retencionesD").val(cliente.RETENCION);
-    if(cliente.MAYORISTA == 0 ){
-    $(".env_form #tipo_m").val('Minorista');
-    $("#ver_limite_m").hide();
-    }else{
-    $(".env_form #tipo_m").val('Mayorista');
-    $("#ver_limite_m").show();
-    $(".env_form #limite_m_d").val(cliente.LIMITE_M);
+    if (cliente.MAYORISTA == 0) {
+        $(".env_form #tipo_m").val('Minorista');
+        $("#ver_limite_m").hide();
+    } else {
+        $(".env_form #tipo_m").val('Mayorista');
+        $("#ver_limite_m").show();
+        $(".env_form #limite_m_d").val(cliente.LIMITE_M);
     }
     $(".env_form #observacion").val(cliente.OBSERVACION);
     $(".env_form #condicioniva").val(cliente.ID_CONDICION_IVA).trigger("chosen:updated");
@@ -386,18 +377,18 @@ $(document).ready(function () {
 //                        $('#check_datos').html(data);
 //                    }
 //                })
-                $.ajax({
-                    url: _agencia.URL + "/x_getFormasPago",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
+        $.ajax({
+            url: _agencia.URL + "/x_getFormasPago",
+            datatype: 'html',
+            type: 'post',
+            async: false,
 //                    data: {id: data_op.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#fpago').html(data);
-                        $("#fpago-select").chosen({width: "220px"});
-                    }
-                })
-                $('.nuevafact_form').show();
+            success: function (data) {
+                $('#fpago').html(data);
+                $("#fpago-select").chosen({width: "220px"});
+            }
+        })
+        $('.nuevafact_form').show();
 //            }
 //        });
 //        if (trae_operatoria == 0) {
@@ -406,7 +397,7 @@ $(document).ready(function () {
 //                $(location).attr('href', urlh);
 //            });
 //        }
-        
+
         $("#nombre2").val($("#nombre").val());
         $("#retencion").val($("#retencionesD").val());
         $("#cuitform").val(cc);
@@ -713,8 +704,7 @@ $(document).ready(function () {
         for (var i = 0; i < rows.length; i++) {
             datosBuscar.push({
                 ID: rows[i].ID,
-                NUMERO: rows[i].NUMERO,
-//                ID_BODEGA: rows[i].ID_BODEGA
+                NUMERO: rows[i].NUMERO
             });
         }
         $.ajax({
@@ -726,10 +716,10 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function () {
-                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/agencia/init/12/2";
-                    $(location).attr('href', urlh);
-                });
+//                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
+//                    var urlh = "backend/carpeta/agencia/init/12/2";
+//                    $(location).attr('href', urlh);
+//                });
             }
         });
     });
@@ -1262,7 +1252,7 @@ $(document).ready(function () {
             $('#nuevafactura').trigger('click');
         } else if (top == 'lis_editar') {
             var urlh = "backend/carpeta/agencia/init/12/1";
-            
+
             $(location).attr('href', urlh);
             show_btns(7);
         } else if (top == 'lis_guardar_enviar') {
@@ -1399,7 +1389,7 @@ $(document).ready(function () {
                 return false;
             }
             editar_estado_cu();
-            
+
         } else if (top == 'edi_rev') {
             if (_permiso_modificacion == 0) {
                 jAlert('Usted no tiene Permisos para ejecutar esta acción.', $.ucwords(_etiqueta_modulo), function () {
@@ -1471,7 +1461,7 @@ $(document).ready(function () {
             $(location).attr('href', urlh);
         } else if (top == 'impor_procesar') {
 //            importar_procesar();
-             _imp_procesar();
+            _imp_procesar();
         } else if (top == 'impor_revision') {
             var urlh = "backend/carpeta/agencia/init/4";
             $(location).attr('href', urlh);
@@ -1600,9 +1590,9 @@ function editar_formulario() {
             $("#numOperatoria").val(data.ID_OPERATORIA);
             $("#cuitform").val(data.CUIT);
             $("#nombre2").val(data.RAZ);
+            var forma_pago = 0;
 //            $("#fecha").val(formattedDate(data.FECHA));
 //            $("#fecha").val(data.FECHA);
-
             if (data.NUMERO) {
                 var fecha_string = data.FECHA;
                 $("#fecha").val(fecha_string.substr(0, 10));
@@ -1620,40 +1610,31 @@ function editar_formulario() {
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
                 //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
-                $("#bodega").chosen({width: "220px"});
-                $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
-//            $("#formula").chosen({width: "220px"});$("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");$("#formula").trigger('change');$("#azucar").val(data.AZUCAR);
-                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
+
+//                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
-                $("#numVinedo").val(data.VINEDO);
-                $("#numRut").val(data.RUT);
                 $("#observacion_fact").val(data.OBSERVACIONES);
                 $("#neto").val(data.NETO).attr("readonly", "readonly");
                 $("#iva").val(data.IVA).attr("readonly", "readonly");
                 $("#total").val(data.TOTAL).attr("readonly", "readonly");
                 $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
+
+                forma_pago = data.FORMA_PAGO;
+
                 $.ajax({
-                    url: _agencia.URL + "/x_getAlgunasBodegas",
+                    url: _agencia.URL + "/x_getFormasPago",
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {id: data.ID_OPERATORIA},
+                    data: {id: data.NUMERO},
                     success: function (data) {
-                        $('#indent_prueba').html(data);
-                        $("#proveedor-jquery").chosen({width: "220px"});
+
+                        $('#fpago').html(data);
+                        $("#fpago-select").chosen({width: "220px"});
+                        $("#fpago-select").val(forma_pago).trigger("chosen:updated");
+                        $("#fpago-select").trigger('change');
                     }
                 })
-//                $("#proveedor-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
-//                $.ajax({
-//                    url: _agencia.URL + "/x_getChecklistHumanaFact",
-//                    datatype: 'html',
-//                    type: 'post',
-//                    async: false,
-//                    data: {id: data.ID_OPERATORIA},
-//                    success: function (data) {
-//                        $('#check_datos').html(data);
-//                    }
-//                })
 //                $.ajax({
 //                    url: _agencia.URL + "/x_getFormasPago",
 //                    datatype: 'html',
@@ -3497,6 +3478,8 @@ function lote_pago() {
     var _arr_sel = [];
     if (rowindexes.length > 0) {
         var swa = 0;
+        var id_referencia_devolver = "";
+        var id_ref_devolver = 0;
         $.each(rowindexes, function (index, value) {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
             if (reg.ESTADO == 'Pago Solicitado') {
@@ -3506,35 +3489,49 @@ function lote_pago() {
             } else if (reg.ESTADO == 'Anulada') {
                 swa = 10;
             }
-//            if (reg.CHECK_ESTADO == 'S/Confirmar') {
-//                swa = 2;
-//            }
-//            if (reg.ID_CONTABLE == 0) {
-//                swa = 4;
-//            }
+            if (reg.CHECK_ESTADO == 'S/Confirmar') {
+                swa = 2;
+            }
+            if (reg.NUMCUOTA == "") {
+                id_ref_devolver = reg.ID;
+                swa = 5;
+            }
+            $.ajax({
+                url: _agencia.URL + "/x_verificar_enviadas",
+                data: {
+                    provincia: _agencia._provincia,
+                    obj: reg
+                },
+                dataType: "json",
+                type: "post",
+                async: false,
+                success: function (data) {
+                    if (data.length > 0) {
+                        id_referencia_devolver = data[0].IDFACTURAINT;
+                        swa = 6;
+                    }
+                }
+            });
+
             _arr_sel.push(reg);
         });
         if (swa == '1') {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        } 
-//        else if (swa == '2') {
-//            jAlert('Comprobantes seleccionados sin el cambio de titularidad realizado.', $.ucwords(_etiqueta_modulo), function () {
-//            });
-//            return false;
-//        } 
-        else if (swa == '3') {
+        } else if (swa == '3') {
             jAlert('Comprbantes seleccionados con pagos registrados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        } 
-//        else if (swa == '4') {
-//            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
-//            });
-//            return false;
-//        } 
-        else if (swa == '10') {
+        } else if (swa == '5') {
+            jAlert('En la factura ID ' + id_ref_devolver + ' no hay cuotas para enviar.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '6') {
+            jAlert('La cuota de la factura con el ID ' + id_referencia_devolver + ' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
+            });
+            return false;
+        } else if (swa == '10') {
             jAlert('La factura se encuentra anulada.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
@@ -3644,66 +3641,29 @@ function post_upload(nombre, nombre_tmp, etapa) {
     });
 }
 
-//function importar_procesar() {
-//    alert("ACA");
-//        $.fancybox(
-//                $("#op_vino").html(),
-//                {
-//                    'padding': 15,
-//                    'autoScale': true,
-//                    'scrolling': 'auto'
-//                }
-//        );
-//        $("#lst_op_vino li").on('click', function () {
-//            $("#lst_op_vino li").each(function () {
-//                $(this).removeClass('sel-op');
-//            });
-//            $(this).addClass('sel-op');
-//        });
-//}
-
-//function imp_procesar() {
-//    if ($("#lst_op_vino li.sel-op").length > 0) {
-//        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
-//    } else {
-//        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
-//    }
-//}
-
-function _imp_procesar(id_op_vino) {
+function _imp_procesar() {
     jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
 // llamar ajax
             $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
             $.ajax({
                 url: _agencia.URL + "/x_importar_xls",
-                data: {
-                    fid_sanjuan: _fid_sanjuan,
-                    ope_sanjuan: _ope_sanjuan,
-                    id_op_vino: id_op_vino
-                },
+                data: {fid_sanjuan: _fid_sanjuan, ope_sanjuan: _ope_sanjuan},
                 dataType: "json",
                 type: "post",
                 success: function (dat) {
                     console.dir(dat);
                     if (dat == -2) {
-                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {
-
-                        });
+                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {});
                     } else if (dat == -1) {
-                        jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
-                            $.ajax({
-                                url: _agencia.URL + "/x_actualizarLista",
-                                data: {
-                                },
-                                //dataType: "json",
-                                type: "post",
-                                success: function (data) {
-                                    console.dir(data);
-                                    $('.lista_arch').html(data);
-                                    evento_lista_arch();
-                                }
-                            });
+                        $.ajax({url: _agencia.URL + "/x_actualizarLista", data: {},
+                            //dataType: "json",
+                            type: "post",
+                            success: function (data) {
+                                console.dir(data);
+                                $('.lista_arch').html(data);
+                                evento_lista_arch();
+                            }
                         });
                     } else if (dat == 1) {
                         jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
@@ -3723,6 +3683,7 @@ function _imp_procesar(id_op_vino) {
                             window.location.href = "backend/carpeta/agencia/init/12/2";
                         });
                     }
+
                 }
             });
         }
