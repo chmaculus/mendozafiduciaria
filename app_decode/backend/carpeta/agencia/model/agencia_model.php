@@ -72,21 +72,19 @@ class agencia_model extends main_model {
         $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
         $this->_db->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
         $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
-            AND f.ID_PROVINCIA='12' AND f.TIPO=1 AND f.ID_ESTADO='5' AND cu.TIPO=2");
-
+            AND f.ID_PROVINCIA='12' AND f.TIPO=2 AND f.ID_ESTADO='5' AND cu.TIPO=2");
+//        log_this('log/VERDEBETRAERREGISTRO.log', $this->_db->last_query());
+        xdebug_break();
         foreach ($fact_enviadas as $value) {
             if (is_null($value['NUM_CUOTA'])) {
                 //No debe hacer nada si es null
             } else {
-                if ($value['ID'] != '' && $value['NUMERO'] != '' && $value['ID_BODEGA'] != '') {
-
+                if ($value['ID'] != '' && $value['NUMERO'] != '') {
                     $this->_dbsql->select("CUIT,OPERATORIA,LOTE,IDFACTURAINT,NUMFACTURA,TIPO,ESTADO,CCU,UCU,BODEGA,ORDEN_PAGO,FECHA_PROCESADO");
                     $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
-                            " AND NUMFACTURA='" . $value['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
-                            . "AND BODEGA=" . $value['ID_BODEGA']);
+                            " AND NUMFACTURA='" . $value['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA']);
 //                    log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query());
                     if ($solicitud_adm[$j]) {
-
                         if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
                             if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
@@ -95,14 +93,13 @@ class agencia_model extends main_model {
                                 $this->_db->update('fid_cu_factura', $arr_act_fact, " NUMERO='" . $value['NUMERO'] . "'");
 //                                log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
-
 //            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
                         } else if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] == $solicitud_adm[$j][0]['CCU']) {
                             if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
                                 $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
                                 $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
+                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO='" . $value['NUMERO']."'");
 //                            log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
                         }
@@ -439,7 +436,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -450,7 +448,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -469,7 +468,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -480,7 +480,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -492,7 +493,8 @@ class agencia_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -514,7 +516,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -525,7 +528,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -536,7 +540,8 @@ class agencia_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -547,7 +552,8 @@ class agencia_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -572,7 +578,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -583,7 +590,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -594,7 +602,8 @@ class agencia_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -605,7 +614,8 @@ class agencia_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -616,7 +626,8 @@ class agencia_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -644,7 +655,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -655,7 +667,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -666,7 +679,8 @@ class agencia_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -677,7 +691,8 @@ class agencia_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -688,7 +703,8 @@ class agencia_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -699,7 +715,8 @@ class agencia_model extends main_model {
         $ins_audi_pag5 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -730,7 +747,8 @@ class agencia_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -741,7 +759,8 @@ class agencia_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -752,7 +771,8 @@ class agencia_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -763,7 +783,8 @@ class agencia_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -774,7 +795,8 @@ class agencia_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -785,7 +807,8 @@ class agencia_model extends main_model {
         $ins_audi_pag5 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -796,7 +819,8 @@ class agencia_model extends main_model {
         $ins_audi_pag6 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 6 con estado " . $array_post['estCuo6'] . " proceso Agencia",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 6 con estado " . $array_post['estCuo6'] . ".",
+            "SECTOR" => "Agencia",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -2144,7 +2168,7 @@ class agencia_model extends main_model {
                 $array_resultado1[$i] = $value1;
             }
             $i++;
-        }
+    }
 
         //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
         //echo "<br>\nElementos que sólo existen en array2<br>\n";
@@ -2387,11 +2411,7 @@ class agencia_model extends main_model {
             } elseif (trim($fecha)) {
                 $fecha = loadDate_excel($fecha);
             }
-//            if (trim($fechavto) == "-   -") {
-//                $fechavto = '';
-//            } elseif (trim($fechavto)) {
-//                $fechavto = loadDate_excel($fechavto);
-//            }
+//            if (trim($fechavto) == "-   -") {$fechavto = '';} elseif (trim($fechavto)) {$fechavto = loadDate_excel($fechavto);}
             // local
             $_fid_sanjuan = 88;
             $_ope_sanjuan = 99;
@@ -2507,5 +2527,4 @@ class agencia_model extends main_model {
     }
 
 }
-
 ?>

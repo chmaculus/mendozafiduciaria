@@ -103,7 +103,7 @@ class compravino_model extends main_model {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
                                 $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=1 AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
                                 $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO=" . $value['NUMERO'] . " AND ID_BODEGA=" . $value['ID_BODEGA']);
+                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO='" . $value['NUMERO'] . "' AND ID_BODEGA=" . $value['ID_BODEGA']);
 //                            log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
                         }
@@ -458,7 +458,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -469,7 +470,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -488,7 +490,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -499,7 +502,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -510,7 +514,8 @@ class compravino_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -532,7 +537,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -543,7 +549,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
         $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
@@ -553,7 +560,8 @@ class compravino_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -563,7 +571,8 @@ class compravino_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -588,7 +597,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -599,7 +609,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
         $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
@@ -609,7 +620,8 @@ class compravino_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -620,7 +632,8 @@ class compravino_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -631,7 +644,8 @@ class compravino_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -659,7 +673,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -670,7 +685,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -681,7 +697,8 @@ class compravino_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -692,7 +709,8 @@ class compravino_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -703,7 +721,8 @@ class compravino_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -714,7 +733,8 @@ class compravino_model extends main_model {
         $ins_audi_pag5 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -745,7 +765,8 @@ class compravino_model extends main_model {
         $ins_audi_fact = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " con estado " . $array_post['estFactura'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -756,7 +777,8 @@ class compravino_model extends main_model {
         $ins_audi_pag1 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 1 con estado " . $array_post['estCuo1'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -767,7 +789,8 @@ class compravino_model extends main_model {
         $ins_audi_pag2 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 2 con estado " . $array_post['estCuo2'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -778,7 +801,8 @@ class compravino_model extends main_model {
         $ins_audi_pag3 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 3 con estado " . $array_post['estCuo3'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -789,7 +813,8 @@ class compravino_model extends main_model {
         $ins_audi_pag4 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 4 con estado " . $array_post['estCuo4'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -800,7 +825,8 @@ class compravino_model extends main_model {
         $ins_audi_pag5 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 5 con estado " . $array_post['estCuo5'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 
@@ -811,7 +837,8 @@ class compravino_model extends main_model {
         $ins_audi_pag6 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
-            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 6 con estado " . $array_post['estCuo6'] . " proceso Compra Vino",
+            "ACCION" => "Actualiza estado Factura " . $array_post['numFactura'] . " Cuota 6 con estado " . $array_post['estCuo6'] . ".",
+            "SECTOR" => "Compra Vino",
             "FECHA_ACCION" => date('Y-m-d H:i:s')
         );
 

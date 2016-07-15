@@ -20,3 +20,7 @@ CREATE TABLE `fid_cu_pagos_estados` (
 INSERT INTO fid_cu_pagos_estados VALUES (0,"No Enviada")
 INSERT INTO fid_cu_pagos_estados VALUES (1,"Pendiente")
 INSERT INTO fid_cu_pagos_estados VALUES (2,"Pagada")
+/*
+*15/07
+*/
+ALTER TABLE  `fid_audi_fact` ADD  `SECTOR` VARCHAR( 64 ) NOT NULL AFTER  `ACCION`

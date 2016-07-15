@@ -716,10 +716,10 @@ $(document).ready(function () {
             type: "post",
             async: false,
             success: function () {
-//                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
-//                    var urlh = "backend/carpeta/agencia/init/12/2";
-//                    $(location).attr('href', urlh);
-//                });
+                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
+                    var urlh = "backend/carpeta/agencia/init/12/2";
+                    $(location).attr('href', urlh);
+                });
             }
         });
     });
