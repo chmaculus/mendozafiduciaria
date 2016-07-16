@@ -7,3 +7,9 @@ CREATE TABLE IF NOT EXISTS `fid_operatoria_cambiotasas` (
   `PUNITORIO` double NOT NULL,
   PRIMARY KEY (`ID_OPERATORIA`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+ALTER TABLE `fid_creditos` ADD `IVA` FLOAT NOT NULL AFTER `T_GASTOS_MIN` ;
+UPDATE `fid_creditos` c JOIN `fid_operatorias` o ON c.ID_OPERATORIA = o.ID SET c.IVA=o.IVA;
