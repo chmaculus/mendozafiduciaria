@@ -463,6 +463,44 @@ class formalta_model extends credito_model {
         return $fecha_vencimiento;
     }
     
+    function get_operatoria_tasas($id, $fecha) {
+        $id =  (int) $id;
+        $this->_db->select("*");
+        $rtn = $this->_db->get_row("fid_operatorias", "ID=" . $id);
+        if ($rtn) {
+            $arr = array(
+                'IVA' => $rtn['IVA'],
+                'COMPENSATORIO' => $rtn['TASA_INTERES_COMPENSATORIA'],
+                'PUNITORIO' => $rtn['TASA_INTERES_POR_PUNITORIOS'],
+                'MORATORIO' => $rtn['TASA_INTERES_MORATORIA'],
+                'SUBSIDIO' => $rtn['TASA_SUBSIDIADA']
+            );
+            
+            if ($fecha) {
+                $this->_db->select("FECHA, IVA, COMPENSATORIO, SUBSIDIO, MORATORIO, PUNITORIO");
+                $this->_db->join("fid_operatoria_cambiotasas oc","oc.ID_OPERATORIA = o.ID AND oc.FECHA<=" . $fecha);
+                $this->_db->order_by("FECHA", "ASC");
+                $rtn = $this->_db->get_tabla("fid_operatorias o", "ID=" . $id);
+                
+                foreach ($rtn as $r) {
+                    if ($r['COMPENSATORIO'] >= 0) {
+                        $arr['COMPENSATORIO'] = $r['COMPENSATORIO'];
+                    }
+                    if ($r['SUBSIDIO'] >= 0) {
+                        $arr['SUBSIDIO'] = $r['SUBSIDIO'];
+                    }
+                    if ($r['MORATORIO'] >= 0) {
+                        $arr['MORATORIO'] = $r['MORATORIO'];
+                    }
+                    if ($r['PUNITORIO'] >= 0) {
+                        $arr['PUNITORIO'] = $r['PUNITORIO'];
+                    }
+                }
+            }
+            
+            return $arr;
+        }
+    }
     
 }
 

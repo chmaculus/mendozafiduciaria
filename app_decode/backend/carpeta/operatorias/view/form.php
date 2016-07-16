@@ -117,9 +117,9 @@
     <div class="grid-1 tab" id="tabs">
       <div class="title-grid tabs">
           <ul class="tabNavigation">
-              <li><a href="#tabs-1"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/User.png" borde=""/>Créditos</a></li>
-              <li><a href="#tabs-2"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/System.png" borde=""/>Adjuntos</a></li>
-              <li><a href="#tabs-3"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/Template.png" borde=""/>Checklist</a></li>
+              <li><a href="#tabs-1"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/User.png" borde=""/>Créditos</a></li>
+              <li><a href="#tabs-2"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/System.png" borde=""/>Adjuntos</a></li>
+              <li><a href="#tabs-3"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/Template.png" borde=""/>Checklist</a></li>
           </ul>
       </div>
       <div class="content-gird">
@@ -227,7 +227,10 @@
                   <div class="elem elem_med">
                       <label>Impactar cambio de tasas en créditos:</label>
                       <div class="indent formtext impt">
-                          <input type="checkbox" id="impactar_tasas" />
+                          <input type="checkbox" id="imp_comp" /> Int.Comp.<br />
+                          <input type="checkbox" id="imp_mora" /> Int.Mor.<br />
+                          <input type="checkbox" id="imp_pun" /> Int.Pun.<br />
+                          <input type="checkbox" id="imp_subs" /> Int.Subs.
                       </div>
                   </div>
 

@@ -291,7 +291,7 @@ class cuotas extends main_controller{
             $_POST['fecha'] = $_SESSION['CAMBIO_TASAS']['FECHA'];
             
             $cambiar_valores = FALSE;
-            if ($tasa_comp === FALSE || $tasa_subs === FALSE || $tasa_mora === FALSE || $tasa_pun === FALSE) {
+            if ($tasa_comp === -1 || $tasa_subs === -1 || $tasa_mora === -1 || $tasa_pun === -1) {
                 $cambiar_valores = TRUE;
             }
             
@@ -299,18 +299,18 @@ class cuotas extends main_controller{
                 
                 if ($cambiar_valores) {
                     $tasas = $this->mod->getTasasCredito($credito['ID'], $_POST['fecha']);
-                    /*if ($tasa_comp === FALSE) {
+                    if ($tasa_comp === -1) {
                         $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
                     }
-                    if ($tasa_subs === FALSE) {
+                    if ($tasa_subs === -1) {
                         $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
                     }
-                    if ($tasa_mora === FALSE) {
+                    if ($tasa_mora === -1) {
                         $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
                     }
-                    if ($tasa_pun === FALSE) {
+                    if ($tasa_pun === -1) {
                         $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
-                    }*/
+                    }
                 }
                 $_POST['credito_id'] = $credito['ID'];
                 $_POST['version_id'] = $credito['ID_VERSION'];

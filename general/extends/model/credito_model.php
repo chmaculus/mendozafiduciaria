@@ -2481,14 +2481,7 @@ class credito_model extends main_model {
         $row_credito = $this->_db->get_row("fid_creditos", "ID = " . $id_credito);
         if ($row_credito) {
             $this->_credito = $row_credito;
-            if ($row_credito['ID_OPERATORIA']) {
-                $row_operatoria = $this->_db->get_row("fid_operatorias", "ID = " . $row_credito['ID_OPERATORIA']);
-                if ($row_operatoria) {
-                    $this->_iva_operatoria = $row_operatoria['IVA'] / 100;
-                    $this->_banco = $row_operatoria['BANCO'];
-                    $this->_actualizacion_compensatorios = $row_operatoria['ACT_COMPENS'];
-                }
-            }
+            $this->_iva_operatoria = $row_credito['IVA'] / 100;
             $this->_interese_compensatorio_plazo = $row_credito['PLAZO_COMPENSATORIO'];
             $this->_interese_moratorio_plazo = $row_credito['PLAZO_MORATORIO'];
             $this->_interese_punitorio_plazo = $row_credito['PLAZO_PUNITORIO'];
@@ -3592,8 +3585,34 @@ ORDER BY T1.lvl DESC');
             $data = array();
             $data['TIPO'] = EVENTO_TASA;
         
+            $por_int_compensatorio = 0;
+            $por_int_subsidio = 0;
+            $por_int_moratorio = 0;
+            $por_int_punitorio = 0;
+            
             foreach ($cambiotasas as $ct) {
-                $data['por_int_compensatorio'] = $ct['COMPENSATORIO'];
+                if ($ct['COMPENSATORIO'] == -1) {
+                    $ct['COMPENSATORIO'] = $por_int_compensatorio;
+                } else {
+                    $por_int_compensatorio = $ct['COMPENSATORIO'];
+                }
+                if ($ct['SUBSIDIO'] == -1) {
+                    $ct['SUBSIDIO'] = $por_int_subsidio;
+                } else {
+                    $por_int_subsidio = $ct['SUBSIDIO'];
+                }
+                if ($ct['MORATORIO'] == -1) {
+                    $ct['MORATORIO'] = $por_int_moratorio;
+                } else {
+                    $por_int_moratorio = $ct['MORATORIO'];
+                }
+                if ($ct['PUNITORIO'] == -1) {
+                    $ct['PUNITORIO'] = $por_int_punitorio;
+                } else {
+                    $por_int_punitorio = $ct['PUNITORIO'];
+                }
+                
+                $data['por_int_compensatorio'] = $ct['COMPENSATORIO'] ;
                 $data['por_int_subsidio'] = $ct['SUBSIDIO'];
                 $data['por_int_moratorio'] = $ct['MORATORIO'];
                 $data['por_int_punitorio'] = $ct['PUNITORIO'];

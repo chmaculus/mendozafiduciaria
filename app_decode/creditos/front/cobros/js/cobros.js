@@ -133,7 +133,7 @@ _cobros.get_data_file = function(id){
 };
 
 function agregar_cobros_seleccionados(){
-    
+    $('.opciones_extract button').prop('disabled', true);
     var pagos = [];
     $(".lista-extract ul li.no_ingresado").each(function(){
         console.log("length: " + $(this).find(".opciones_chk input:checked").length );

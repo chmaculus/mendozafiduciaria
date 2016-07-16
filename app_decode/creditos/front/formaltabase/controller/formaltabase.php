@@ -104,7 +104,7 @@ class formaltabase extends main_controller {
                 "MONTO_APORTE_POR" => 0,
                 "MONTO_OTRO_POR" => 0,
                 "MONTO_TOTAL_POR" => 0,
-                "PLAZO_COMPENSATORIO" => 365,
+                "PLAZO_COMPENSATORIO" => 360,
                 "PLAZO_PUNITORIO" => 365,
                 "PLAZO_MORATORIO" => 365,
                 "T_COMPENSATORIO" => 12,
@@ -113,6 +113,7 @@ class formaltabase extends main_controller {
                 "T_MORATORIO" => 12,
                 "T_GASTOS" => 0,
                 "T_GASTOS_MIN" => 0,
+                "IVA" => 21,
                 "INTERES_CUOTAS" => 6,
                 "INTERES_VTO" => date("Y-m-d"),
                 "INTERES_PERIODO" => 09,
@@ -709,6 +710,16 @@ class formaltabase extends main_controller {
         $this->mod->renew_datos();
 
         return TRUE;
+    }
+    
+    function x_get_data_operatoria() {
+        $id = $_POST['id'];
+        $fecha = $_POST['fecha'];
+        
+        if ($tasas = $this->mod->get_operatoria_tasas($id, $fecha)) {
+            echo json_encode($tasas);
+        }
+        die();
     }
 
     

@@ -137,11 +137,25 @@ class operatorias extends main_controller{
         unset($obj['entidades']);
           */
         //$obj_tipo_entidades = $_POST['tipo_entidades'];
-        $impactar_tasas = FALSE;
-        if(isset($obj['IMP_TASAS'])) {
-            $impactar_tasas = $obj['IMP_TASAS'];
-            unset($obj['IMP_TASAS']);
+        $imp_comp = $imp_mora = $imp_pun = $imp_subs = FALSE;
+        if (isset($obj['IMP_COMP'])) {
+            $imp_comp = $obj['IMP_COMP'];
+            unset($obj['IMP_COMP']);
         }
+        if (isset($obj['IMP_MORA'])) {
+            $imp_mora = $obj['IMP_MORA'];
+            unset($obj['IMP_MORA']);
+        }
+        if (isset($obj['IMP_PUN'])) {
+            $imp_pun = $obj['IMP_PUN'];
+            unset($obj['IMP_PUN']);
+        }
+        if (isset($obj['IMP_SUBS'])) {
+            $imp_subs = $obj['IMP_SUBS'];
+            unset($obj['IMP_SUBS']);
+        }
+
+        $impactar_tasas = $imp_comp || $imp_mora || $imp_pun || $imp_subs;
             
         if ($impactar_tasas) {
             $fecha_imp_tasas = $obj['IMP_FTASAS'];
@@ -154,18 +168,18 @@ class operatorias extends main_controller{
         $rtn = $this->mod->sendobj($obj, $checklist, $adjuntos );
         
         if ($impactar_tasas) {
-            /*if(!$imp_comp) {
-                $obj['TASA_INTERES_COMPENSATORIA'] = FALSE;
+            if(!$imp_comp) {
+                $obj['TASA_INTERES_COMPENSATORIA'] = -1;
             }
             if(!$imp_mora) {
-                $obj['TASA_INTERES_MORATORIA'] = FALSE;
+                $obj['TASA_INTERES_MORATORIA'] = -1;
             }
             if(!$imp_pun) {
-                $obj['TASA_INTERES_POR_PUNITORIOS'] = FALSE;
+                $obj['TASA_INTERES_POR_PUNITORIOS'] = -1;
             }
             if(!$imp_subs) {
-                $obj['TASA_SUBSIDIADA'] = FALSE;
-            } */
+                $obj['TASA_SUBSIDIADA'] = -1;
+            }
             
             $_SESSION['CAMBIO_TASAS'] = array(
                 'OPERATORIA' => $obj,
