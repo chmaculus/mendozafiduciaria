@@ -308,7 +308,7 @@ function _generar_cuotas(simulacion){
             int_moratorio : int_moratorio,
             int_gastos : gastos,
             int_gastos_min : gastosMin,
-            iva : tasa_iva,
+            tiva : tasa_iva,
             periodicidad : periodicidad,
             periodicidad_tasa : periodicidad_tasa,
             plazo_compensatorio : plazo_compensatorio || 0,

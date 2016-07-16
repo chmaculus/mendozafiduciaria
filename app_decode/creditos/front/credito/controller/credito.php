@@ -360,7 +360,7 @@ class credito extends main_controller{
                     $cuota['COMPENSATORIO_ACT'] = number_format($item['COMPENSATORIO_ACT'], 2, ",", "");
                     $total_comp_act += $item['COMPENSATORIO_ACT'];
                     
-                    $iva_comp_act = $item['COMPENSATORIO_ACT'] * $item['IVA_COMPENSATORIO']['TOTAL'] / $item['COMPENSATORIO']['TOTAL'];
+                    $iva_comp_act = $item['COMPENSATORIO']['TOTAL'] ? $item['COMPENSATORIO_ACT'] * $item['IVA_COMPENSATORIO']['TOTAL'] / $item['COMPENSATORIO']['TOTAL'] : 0;
                     $total_comp_act_iva += $iva_comp_act;
                     $cuota['COMPENSATORIO_ACT_IVA'] = number_format($iva_comp_act, 2, ",", "");
                 } else {

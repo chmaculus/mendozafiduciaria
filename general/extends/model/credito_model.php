@@ -1908,7 +1908,7 @@ class credito_model extends main_model {
         //MODIFICADO 15-08-2013
         $capital_inicial = 0; //$variacion_inicial_arr['CAPITAL'];
 
-        $CUOTAS_GRACIA = $variacion_inicial_arr['CUOTAS_GRACIA'];
+        $CUOTAS_GRACIA = isset($variacion_inicial_arr['CUOTAS_GRACIA']) ? $variacion_inicial_arr['CUOTAS_GRACIA'] : 0;
 
         //obtenemos todas las cuotas que hayan iniciado
         $cuotas = array();

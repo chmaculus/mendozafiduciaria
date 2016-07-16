@@ -53,7 +53,10 @@ class formalta_model extends credito_model {
         $this->_id_operatoria = $id;
     }
     
-
+    function set_iva($iva){
+        $this->_iva = $iva;
+    }
+    
 
     function save_operacion_credito(){
         
@@ -123,6 +126,7 @@ class formalta_model extends credito_model {
             "T_MORATORIO" => $moratorio,
             "T_GASTOS" => $gastos,
             "T_GASTOS_MIN" => $gastosMin,
+            "IVA" => isset($this->_iva) ? $this->_iva : IMP_IVA * 100,
             "INTERES_CUOTAS" => $interes_cuotas,
             "INTERES_VTO" => date("Y-m-d",$primer_vencimiento),
             "INTERES_PERIODO" => 09,
