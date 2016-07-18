@@ -9,13 +9,6 @@ var myfancy = 0;
 var var_cliente = {};
 var condicioniva_g = 0;
 var id_a_editar = 0;
-// local
-/*
- var _fid_sanjuan = 41;
- var _ope_sanjuan = 32;
- var _fid_mendoza = 33;
- var _ope_mendoza = 42;
- */
 var _fid_sanjuan = 88;
 var _ope_sanjuan = 99;
 var _fid_mendoza = 66;
@@ -38,7 +31,7 @@ function guardar_factura() {
     var cai = $("#cai").val();
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
-    var bodega = $("#bodega-jquery").val();
+    var proveedor_list = $("#proveedor-jquery").val();
     var ltros = $("#ltros").val();
     var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
@@ -52,17 +45,7 @@ function guardar_factura() {
     var formula = $("#formula").val();
     var numVinedo = $("#numVinedo").val();
     var numRut = $("#numRut").val();
-//Si el cambio de titularidad esta activado mas abajo va a hacer una validacion donde se va a guardar en una tabla el usuario y la fecha
-    var cambio_titularidad = $("#cambio_titularidad").is(':checked') ? true : false;
     iid = id ? id : 0;
-    var data_checklists_persona = [];
-    $('.op input:checked').each(function () {
-        data_checklists_persona.push($(this).val());
-    })
-
-    if (data_checklists_persona.length == 0) {
-        data_checklists_persona = '';
-    }
 
 //validar campos
     if (numero == '') {
@@ -85,9 +68,9 @@ function guardar_factura() {
             return false;
         }
     }
-    if (bodega == '') {
-        jAlert('Elija una bodega.', $.ucwords(_etiqueta_modulo), function () {
-            $("#bodega-jquery").focus();
+    if (proveedor_list == '') {
+        jAlert('Elija un proveedor.', $.ucwords(_etiqueta_modulo), function () {
+            $("#proveedor-jquery").focus();
         });
         return false;
     }
@@ -120,19 +103,13 @@ function guardar_factura() {
 
     objsave = {
         id: iid,
-//        ID_OPE: numOperatoria,
         NUMERO: numero,
         FECHA: fecha,
         CAI: cai,
         ID_PROVINCIA: _provincia,
         FECHAVTO: fechavto,
-        ID_BODEGA: bodega,
         CUIT: cuitform,
-        LITROS: ltros,
-        AZUCAR: azucar,
         PRECIO: precio,
-        VINEDO: numVinedo,
-        RUT: numRut,
         ID_ESTADO: 1,
         USU_CARGA: _USUARIO_SESION_ACTUAL,
         NETO: neto,
@@ -140,19 +117,16 @@ function guardar_factura() {
         TOTAL: total,
         FORMA_PAGO: fpago,
         OBSERVACIONES: observacion_fact,
-        CHECKLIST_PERSONA: data_checklists_persona,
         update_cius: 0,
-        ID_OPERATORIA: numOperatoria,
-        ID_FIDEICOMISO: tmp_fid,
         PORC_IVA: porcentaje_iva,
         FORMULA: formula,
-        TIPO: 1
+        TIPO: 2
     }
 
 //validar numero de factura
 //numero
     $.ajax({
-        url: _compravino.URL + "/x_verificarnumfactura",
+        url: _agencia.URL + "/x_verificarnumfactura",
         data: {
             numero: numero,
             cuit: cuitform,
@@ -166,16 +140,16 @@ function guardar_factura() {
                 });
             } else { // no existe
                 $.ajax({
-                    url: _compravino.URL + "/x_sendobj",
-                    data: {obj: objsave, cambio_titularidad: cambio_titularidad, },
+                    url: _agencia.URL + "/x_sendobj",
+                    data: {obj: objsave},
                     dataType: "json", type: "post", async: "false", });
                 /*Verificar si tiene cuotas sino generar*/
                 $.ajax({
-                    url: _compravino.URL + "/x_verificarCuotas",
+                    url: _agencia.URL + "/x_verificarCuotas",
                     data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha},
                     dataType: "json", type: "post", async: "false", });
                 jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/compravino/init/12/2";
+                    var urlh = "backend/carpeta/agencia/init/12/2";
                     $(location).attr('href', urlh);
                 });
             }
@@ -245,6 +219,15 @@ function llenar_form(cliente) {
     $(".env_form #direccion").val(cliente.DIRECCION);
     $(".env_form #correo").val(cliente.CORREO);
     $(".env_form #telefono").val(cliente.TELEFONO);
+    $(".env_form #retencionesD").val(cliente.RETENCION);
+    if (cliente.MAYORISTA == 0) {
+        $(".env_form #tipo_m").val('Minorista');
+        $("#ver_limite_m").hide();
+    } else {
+        $(".env_form #tipo_m").val('Mayorista');
+        $("#ver_limite_m").show();
+        $(".env_form #limite_m_d").val(cliente.LIMITE_M);
+    }
     $(".env_form #observacion").val(cliente.OBSERVACION);
     $(".env_form #condicioniva").val(cliente.ID_CONDICION_IVA).trigger("chosen:updated");
     $(".env_form #condicioniibb").val(cliente.ID_CONDICION_IIBB).trigger("chosen:updated");
@@ -262,11 +245,11 @@ $(document).ready(function () {
     $("#juridica").hide();
     $('#send').show();
     $('.tb_atras_ope').on('click', function (e) {
-        var urlh = "backend/carpeta/compravino/init/12/7";
+        var urlh = "backend/carpeta/agencia/init/12/7";
         $(location).attr('href', urlh);
     });
     $('.tb_regresar_ope').on('click', function (e) {
-        var urlh = "backend/carpeta/compravino/init/12";
+        var urlh = "backend/carpeta/agencia/init/12";
         $(location).attr('href', urlh);
     });
     init_datepicker('#fechaBuscarVen', '-3', '+5', '0', 0);
@@ -330,7 +313,7 @@ $(document).ready(function () {
         var cuit = $("#cuit_busqueda").val();
         /* buscar por cuit */
         $.ajax({
-            url: _compravino.URL + "/x_getobjcliente",
+            url: _agencia.URL + "/x_getobjcliente",
             data: {
                 cuit: cuit
             },
@@ -361,70 +344,66 @@ $(document).ready(function () {
         limpiar_form_nf();
         $("#porcentaje_iva").val('10.5');
         $('.env_form').hide();
-        var trae_operatoria = 0;
+//        var trae_operatoria = 0;
+//        $.ajax({
+//            url: _agencia.URL + "/x_getNumOpe",
+//            data: {
+//                id_cliente: $("#id_buscar").val()
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (data_op) {
+//                trae_operatoria = 1;
+//                $("#numOperatoria").val(data_op.ID_OPERATORIA);
+//                $.ajax({
+//                    url: _agencia.URL + "/x_getAlgunosProveedores",
+//                    datatype: 'html',
+//                    type: 'post',
+//                    async: false,
+//                    data: {id: data_op.ID_OPERATORIA},
+//                    success: function (data) {
+//                        $('#indent_prueba').html(data);
+//                        $("#proveedor-jquery").chosen({width: "220px"});
+//                    }
+//                })
+//                $.ajax({
+//                    url: _agencia.URL + "/x_getChecklistHumanaFact",
+//                    datatype: 'html',
+//                    type: 'post',
+//                    async: false,
+//                    data: {id: data_op.ID_OPERATORIA},
+//                    success: function (data) {
+//                        $('#check_datos').html(data);
+//                    }
+//                })
         $.ajax({
-            url: _compravino.URL + "/x_getNumOpe",
-            data: {
-                id_cliente: $("#id_buscar").val()
-            },
-            dataType: "json",
-            type: "post",
+            url: _agencia.URL + "/x_getFormasPago",
+            datatype: 'html',
+            type: 'post',
             async: false,
-            success: function (data_op) {
-                trae_operatoria = 1;
-                $("#numOperatoria").val(data_op.ID_OPERATORIA);
-                $.ajax({
-                    url: _compravino.URL + "/x_getAlgunasBodegas",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data_op.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#indent_prueba').html(data);
-                        $("#bodega-jquery").chosen({width: "220px"});
-                    }
-                })
-                $.ajax({
-                    url: _compravino.URL + "/x_getChecklistHumanaFact",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data_op.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#check_datos').html(data);
-                    }
-                })
-                $.ajax({
-                    url: _compravino.URL + "/x_getFormasPago",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data_op.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#fpago').html(data);
-                        $("#fpago-select").chosen({width: "220px"});
-                    }
-                })
-                $('.nuevafact_form').show();
+//                    data: {id: data_op.ID_OPERATORIA},
+            success: function (data) {
+                $('#fpago').html(data);
+                $("#fpago-select").chosen({width: "220px"});
             }
-        });
-        if (trae_operatoria == 0) {
-            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
-                var urlh = "backend/carpeta/compravino/init/12/7";
-                $(location).attr('href', urlh);
-            });
-        }
+        })
+        $('.nuevafact_form').show();
+//            }
+//        });
+//        if (trae_operatoria == 0) {
+//            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
+//                var urlh = "backend/carpeta/agencia/init/12/7";
+//                $(location).attr('href', urlh);
+//            });
+//        }
+
         $("#nombre2").val($("#nombre").val());
+        $("#retencion").val($("#retencionesD").val());
         $("#cuitform").val(cc);
         show_btns(2);
     });
     refresGridevent();
-
-
-//    $('#estFact').on('change', function () {
-//    alert($('#estFact').val());
-//    });
-
 
     $('#send-estado').on('click', function (e) {
         var estCuo1, estCuo2, estCuo3, estCuo4, estCuo5, estCuo6 = 0;
@@ -435,7 +414,7 @@ $(document).ready(function () {
             estCuo1 = $("#estadoCuota1").val();
             ordenPago1 = $("#ordenPago1").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago1",
+                url: _agencia.URL + "/x_sendPago1",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -446,7 +425,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }});
@@ -458,7 +437,7 @@ $(document).ready(function () {
             estCuo2 = $("#estadoCuota2").val();
             ordenPago2 = $("#ordenPago2").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago2",
+                url: _agencia.URL + "/x_sendPago2",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -471,7 +450,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }});
@@ -484,7 +463,7 @@ $(document).ready(function () {
             estCuo3 = $("#estadoCuota3").val();
             ordenPago3 = $("#ordenPago3").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago3",
+                url: _agencia.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -499,7 +478,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }});
@@ -514,7 +493,7 @@ $(document).ready(function () {
             estCuo4 = $("#estadoCuota4").val();
             ordenPago4 = $("#ordenPago4").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago3",
+                url: _agencia.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -531,7 +510,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }});
@@ -548,7 +527,7 @@ $(document).ready(function () {
             estCuo5 = $("#estadoCuota5").val();
             ordenPago5 = $("#ordenPago5").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago3",
+                url: _agencia.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -567,7 +546,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }});
@@ -586,7 +565,7 @@ $(document).ready(function () {
             estCuo6 = $("#estadoCuota6").val();
             ordenPago6 = $("#ordenPago6").val();
             $.ajax({
-                url: _compravino.URL + "/x_sendPago3",
+                url: _agencia.URL + "/x_sendPago3",
                 data: {
                     numFactura: numFactura,
                     estFactura: estFactura,
@@ -607,7 +586,7 @@ $(document).ready(function () {
                 success: function () {
                     jAlert('Se actualizaron los datos correctamente.', $.ucwords(_etiqueta_modulo), function () {
                         $.unblockUI();
-                        var urlh = "backend/carpeta/compravino/init/12/2";
+                        var urlh = "backend/carpeta/agencia/init/12/2";
                         $(location).attr('href', urlh);
                     });
                 }
@@ -664,24 +643,6 @@ $(document).ready(function () {
             });
             return false;
         }
-//        if (listrosMax == '') {
-//            jAlert('Ingrese listros maximos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#listrosMax").focus();
-//            });
-//            return false;
-//        }
-//        if (maxPesos == '') {
-//            jAlert('Ingrese el maximo de pesos para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#maxPesos").focus();
-//            });
-//            return false;
-//        }
-//        if (opePrecio1 == '') {
-//            jAlert('Ingrese el precio de contado para la operatoria.', $.ucwords(_etiqueta_modulo), function () {
-//                $("#opeP1").focus();
-//            });
-//            return false;
-//        }
         if (data_checklists_persona == '') {
             jAlert('Seleccione requerimientos para los tipo de personas a presentar.', $.ucwords(_etiqueta_modulo), function () {
                 $("#humana").focus();
@@ -689,13 +650,13 @@ $(document).ready(function () {
             return false;
         }
         $.ajax({
-            url: _compravino.URL + "/x_getIdOperatoria",
+            url: _agencia.URL + "/x_getIdOperatoria",
             dataType: "json",
             type: "post",
             success: function (data) {
                 nuevoID = data;
                 $.ajax({
-                    url: _compravino.URL + "/x_sendOperatoria",
+                    url: _agencia.URL + "/x_sendOperatoria",
                     data: {
                         nuevoID: nuevoID,
                         opeNombre: opeNombre,
@@ -717,11 +678,11 @@ $(document).ready(function () {
                     },
                     dataType: "json", type: "post"});
                 $.ajax({
-                    url: _compravino.URL + "/x_sendProveedores",
+                    url: _agencia.URL + "/x_sendProveedores",
                     data: {data_proveedores: data_proveedores, nuevoID: nuevoID},
                     dataType: "json", type: "post", });
                 $.ajax({
-                    url: _compravino.URL + "/x_sendBodegas",
+                    url: _agencia.URL + "/x_sendBodegas",
                     data: {
                         data_bodegas: data_bodegas,
                         nuevoID: nuevoID
@@ -731,7 +692,7 @@ $(document).ready(function () {
                 });
                 jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
                     $.unblockUI();
-                    var urlh = "backend/carpeta/compravino/init/12/7";
+                    var urlh = "backend/carpeta/agencia/init/12/7";
                     $(location).attr('href', urlh);
                 });
             }
@@ -743,12 +704,11 @@ $(document).ready(function () {
         for (var i = 0; i < rows.length; i++) {
             datosBuscar.push({
                 ID: rows[i].ID,
-                NUMERO: rows[i].NUMERO,
-                ID_BODEGA: rows[i].ID_BODEGA
+                NUMERO: rows[i].NUMERO
             });
         }
         $.ajax({
-            url: _compravino.URL + "/x_sincronizarVino",
+            url: _agencia.URL + "/x_sincronizarAgencia",
             data: {
                 datosBuscar: datosBuscar
             },
@@ -757,7 +717,7 @@ $(document).ready(function () {
             async: false,
             success: function () {
                 jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/compravino/init/12/2";
+                    var urlh = "backend/carpeta/agencia/init/12/2";
                     $(location).attr('href', urlh);
                 });
             }
@@ -767,11 +727,9 @@ $(document).ready(function () {
 
         var fechaBuscar = $("#fechaBuscarVen").val();
         if (fechaBuscar == '') {
-//            alert("NADA");
         }
         $("#jqxgrid_listado").hide();
         $("#jqxgrid_listado").show();
-//        id_usuario = id_usuario || '1';
         var sourceope = {
             datatype: "json",
             datafields: [
@@ -807,8 +765,8 @@ $(document).ready(function () {
             ],
             url: 'general/extends/extra/carpetas.php',
             data: {
-                accion: "getFacturasCuvaFiltro",
-                idtipo: 1,
+                accion: "getFacturasAgencia",
+                idtipo: 2,
                 idpro: _provincia,
                 fechaBuscar: fechaBuscar
             },
@@ -850,28 +808,15 @@ $(document).ready(function () {
             selectionmode: 'multiplerows',
             columnsresize: true,
             showtoolbar: true,
-            //sortable: true,
-//        groupable: true,
-//        filterable: true,
-//        showfilterrow: true,
             localization: getLocalization(),
             rendertoolbar: function (toolbar) {
                 var me = this;
                 var container = $("<div style='margin: 5px;'></div>");
                 var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
                 var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
-//            var container2 = $("<div style='margin: 5px;'></div>");
-//            var span2 = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'> Fecha: </span>");
-//            var input2 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='fechaField' style='height: 23px; float: left; width: 223px; z-index:999;'/>");
-////            <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value=""> 
                 toolbar.append(container);
                 container.append(span);
                 container.append(input);
-//            toolbar.append(container2);
-//            container.append(span2);
-//            container.append(input2);
-//            $("#fechaField").datepicker();
-
                 if (theme != "") {
                     input.addClass('jqx-widget-content-' + theme);
                     input.addClass('jqx-rc-all-' + theme);
@@ -897,8 +842,6 @@ $(document).ready(function () {
                 {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
                 {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
                 {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-//            {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
                 {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
                 {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
                 {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
@@ -917,30 +860,7 @@ $(document).ready(function () {
                 {text: 'IID', datafield: 'IID', width: '0%'}
             ]
         });
-//        var datosBuscar = [];
-//        var rows = $('#jqxgrid_listado').jqxGrid('getrows');
-//        for (var i = 0; i < rows.length; i++) {
-//            datosBuscar.push({
-//                ID: rows[i].ID,
-//                NUMERO: rows[i].NUMERO,
-//                ID_BODEGA: rows[i].ID_BODEGA
-//            });
-//        }
-//        $.ajax({
-//            url: _compravino.URL + "/x_sincronizarVino",
-//            data: {
-//                datosBuscar: datosBuscar
-//            },
-////            dataType: "json",
-//            type: "post",
-//            async: false,
-//            success: function () {
-//                jAlert('Se actualizaron los registros.', $.ucwords(_etiqueta_modulo), function () {
-//                    var urlh = "backend/carpeta/compravino/init/12/2";
-//                    $(location).attr('href', urlh);
-//                });
-//            }
-//        });
+
     });
     $('#send_edit').on('click', function (e) {
         e.preventDefault();
@@ -1010,7 +930,7 @@ $(document).ready(function () {
             return false;
         }
         $.ajax({
-            url: _compravino.URL + "/x_updateOperatoria",
+            url: _agencia.URL + "/x_updateOperatoria",
             data: {
                 nuevoID: el_id,
                 opeNombre: opeNombre,
@@ -1032,7 +952,7 @@ $(document).ready(function () {
             dataType: "json",
             type: "post"});
         $.ajax({
-            url: _compravino.URL + "/x_updateProveedores",
+            url: _agencia.URL + "/x_updateProveedores",
             data: {
                 data_proveedores: data_proveedores,
                 data_bodegas: data_bodegas,
@@ -1042,7 +962,7 @@ $(document).ready(function () {
             type: "post"});
         jAlert('Se guardo operatoria correctamente.', $.ucwords(_etiqueta_modulo), function () {
             $.unblockUI();
-            var urlh = "backend/carpeta/compravino/init/12/7";
+            var urlh = "backend/carpeta/agencia/init/12/7";
             $(location).attr('href', urlh);
         });
     });
@@ -1089,7 +1009,7 @@ $(document).ready(function () {
             firstColumnData.push(rows[i].ID);
         }
         $.ajax({
-            url: _compravino.URL + "/x_getDatoProveedor",
+            url: _agencia.URL + "/x_getDatoProveedor",
             data: {
                 ids_proveedores: ids_proveedores,
                 firstColumnData: firstColumnData
@@ -1231,7 +1151,7 @@ $(document).ready(function () {
             firstColumnData.push(rows[i].ID);
         }
         $.ajax({
-            url: _compravino.URL + "/x_getDatoBodega",
+            url: _agencia.URL + "/x_getDatoBodega",
             data: {
                 ids_bodegas: ids_bodegas,
                 firstColumnData: firstColumnData
@@ -1331,7 +1251,8 @@ $(document).ready(function () {
         } else if (top == 'nueva_f') {
             $('#nuevafactura').trigger('click');
         } else if (top == 'lis_editar') {
-            var urlh = "backend/carpeta/compravino/init/12/1";
+            var urlh = "backend/carpeta/agencia/init/12/1";
+
             $(location).attr('href', urlh);
             show_btns(7);
         } else if (top == 'lis_guardar_enviar') {
@@ -1363,7 +1284,7 @@ $(document).ready(function () {
 //        if (opeBodega == '') {jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
 //            return false;}
             $.ajax({
-                url: _compravino.URL + "/x_sendCliente",
+                url: _agencia.URL + "/x_sendCliente",
                 dataType: "json",
                 type: "post",
                 data: {
@@ -1381,25 +1302,21 @@ $(document).ready(function () {
                     observacion: observacion
                 },
                 success: function (data) {
-//if (data.result > 0) {$('#nuevafactura').off().on('click', function (e) {e.preventDefault();limpiar_form_nf();
-//$('.env_form').hide();$('.nuevafact_form').show();$("#cuitform").val(cuit);$("#nombre2").val($("#nombre").val());show_btns(2);});
                     jAlert('Operacion Exitosa.\n Recuerde agregar Cliente desde la operatoria para la carga de factura.', $.ucwords(_etiqueta_modulo), function () {
 //                        show_btns(1);limpiar_form_fact();$('#send').hide();
-                        var urlh = "backend/carpeta/compravino/init/" + _provincia + "/7";
+                        var urlh = "backend/carpeta/agencia/init/" + _provincia + "/7";
                         $(location).attr('href', urlh);
                     });
-//} else {jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {$.unblockUI();});
-//}jAlert('Se guardo Cliente correctamente.', $.ucwords(_etiqueta_modulo), function () {$.unblockUI();var urlh = "backend/carpeta/compravino/init/12/1";
-//$(location).attr('href', urlh);});
+
                 }
             });
         } else if (top == 'lis_guardar_fact') {
             guardar_factura();
         } else if (top == 'lis_mendoza') {
-            var urlh = "backend/carpeta/compravino/init/12";
+            var urlh = "backend/carpeta/agencia/init/12";
             $(location).attr('href', urlh);
         } else if (top == 'lis_sanjuan') {
-            var urlh = "backend/carpeta/compravino/init/17";
+            var urlh = "backend/carpeta/agencia/init/17";
             $(location).attr('href', urlh);
         } else if (top == 'lis_addnf') {
             if (_permiso_alta == 0) {
@@ -1409,7 +1326,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
-            var urlh = "backend/carpeta/compravino/init/" + _provincia + "/1";
+            var urlh = "backend/carpeta/agencia/init/" + _provincia + "/1";
             $(location).attr('href', urlh);
         } else if (top == 'addOpe') {
             if (_permiso_alta == 0) {
@@ -1420,7 +1337,7 @@ $(document).ready(function () {
                 return false;
             }
 //            show_btns(7);
-            var urlh = "backend/carpeta/compravino/init/" + _provincia + "/8";
+            var urlh = "backend/carpeta/agencia/init/" + _provincia + "/8";
             $(location).attr('href', urlh);
         } else if (top == 'lis_lis') {
             if (_permiso_ver == 0) {
@@ -1430,7 +1347,7 @@ $(document).ready(function () {
                 });
                 return false;
             }
-            var urlh = "backend/carpeta/compravino/init/" + _provincia + "/2";
+            var urlh = "backend/carpeta/agencia/init/" + _provincia + "/2";
             $(location).attr('href', urlh);
         } else if (top == 'lis_ope') {
             if (_permiso_ver == 0) {
@@ -1440,10 +1357,10 @@ $(document).ready(function () {
                 });
                 return false;
             }
-            var urlh = "backend/carpeta/compravino/init/" + _provincia + "/7";
+            var urlh = "backend/carpeta/agencia/init/" + _provincia + "/7";
             $(location).attr('href', urlh);
         } else if (top == 'inicio') {
-            var urlh = "backend/carpeta/compravino";
+            var urlh = "backend/carpeta/agencia";
             $(location).attr('href', urlh);
         } else if (top == 'edi') {
             if (_permiso_modificacion == 0) {
@@ -1472,48 +1389,6 @@ $(document).ready(function () {
                 return false;
             }
             editar_estado_cu();
-            /* 
-             * 
-             * ESTO VA A MOSTAR EL ESTADO DE LAS CUOTAS
-             * 
-             * */
-            /*   
-             if (rowindexes.length == 1) {
-             var armado_detalle = '';
-             $.ajax({
-             url: _compravino.URL + "/x_getDetalleCu",
-             data: {num_fat: mydata.NUMERO},
-             dataType: "json",
-             type: "post",
-             async: false,
-             success: function (data) {
-             if (data.length > 0) {
-             armado_detalle = '<h2 style="font-size:15px">Estado Cuotas Factura N°: ' + data[0].NUM_FACTURA + '</h2>';
-             armado_detalle += '<ul>';
-             for (var i = 0; i < data.length; i++) {
-             armado_detalle += '<li style="list-style:none;margin-top:5px;">Cuota N° ' + data[i].NUM_CUOTA
-             + ' =>  Vencimiento: ' + data[i].FECHA_VEN + ' </li>'
-             + '<li style="margin-left:15px;"> Estado:' + data[i].ESTADO_CUOTA + '</li>'
-             + '<li style="margin-left:15px;"> Orden Pago:' + data[i].ORDEN_PAGO + ' </li>';
-             }
-             armado_detalle += '</ul>';
-             $.fancybox(
-             $("#op_cuota").html(armado_detalle),
-             {'padding': 80, 'autoScale': true, 'scrolling': 'auto'}
-             );
-             } else {
-             jAlert('No posee cuotas.', $.ucwords(_etiqueta_modulo));
-             }
-             }
-             });
-             } else if (rowindexes.length >= 2) {
-             jAlert('Se seleccionaron mas de un comprobante, debe seleccionar uno para ver el detalle.', $.ucwords(_etiqueta_modulo));
-             } else {
-             jAlert('No se selecciono comprobante, debe seleccionar un comprobante para ver el detalle.', $.ucwords(_etiqueta_modulo));
-             }
-             
-             
-             */
 
         } else if (top == 'edi_rev') {
             if (_permiso_modificacion == 0) {
@@ -1539,7 +1414,7 @@ $(document).ready(function () {
             if (rowindexes.length == 1) {
                 var armado_detalle = '';
                 $.ajax({
-                    url: _compravino.URL + "/x_getDetalleCu",
+                    url: _agencia.URL + "/x_getDetalleCu",
                     data: {num_fat: mydata.NUMERO},
                     dataType: "json",
                     type: "post",
@@ -1582,18 +1457,19 @@ $(document).ready(function () {
                 });
                 return false;
             }
-            var urlh = "backend/carpeta/compravino/init/3";
+            var urlh = "backend/carpeta/agencia/init/3";
             $(location).attr('href', urlh);
         } else if (top == 'impor_procesar') {
-            importar_procesar();
+//            importar_procesar();
+            _imp_procesar();
         } else if (top == 'impor_revision') {
-            var urlh = "backend/carpeta/compravino/init/4";
+            var urlh = "backend/carpeta/agencia/init/4";
             $(location).attr('href', urlh);
         } else if (top == 'addOpe') {
             $('.nuevaOpe_form').show();
         } else if (top == 'testing') {
             $.ajax({
-                url: _compravino.URL + "/x_testing",
+                url: _agencia.URL + "/x_testing",
                 data: {
                 },
                 dataType: "json",
@@ -1609,7 +1485,7 @@ $(document).ready(function () {
     initGrid();
     $("#cuit_busqueda").focus();
     $("#cuit_busqueda").numeric({negative: false});
-    agregarCIUS();
+//    agregarCIUS();
     show_btns();
     $("#kgrs").numeric({negative: false});
     $("#azucar").numeric({negative: false});
@@ -1628,22 +1504,6 @@ $(document).ready(function () {
             $(this).parents(".uploader").find(".filename").val("Seleccione Archivo...");
         }
     });
-//$("#ciu_num").numeric({negative: false});//$("#ciu_azucar").numeric({negative: false});//$("#ciu_kgrs").numeric({negative: false});
-//    $("#precio").keyup(function () {
-//        if ($(this).val() == 0) {
-//            $("#neto").val(0);
-//        } else {
-////var porc = var_cliente.VALOR;//condicioniva_g
-//            var factor = 0;
-//            if (condicioniva_g >= 0) {factor = condicioniva_g;} else {factor = var_cliente.VALOR;}
-//            var neto = $("#ltros").val() * $(this).val();
-//            $("#neto").val(dec(neto, 2));
-//            var iva = factor * $("#neto").val() / 100;
-//            $("#iva").val(dec(iva, 2));
-//            var total = 1 * $("#neto").val() + 1 * $("#iva").val();
-//            $("#total").val(dec(total, 2));
-//        }
-//    });
     $("#porcentaje_iva").keyup(function () {
         factor = $('#porcentaje_iva').val();
         var iva = factor * $("#neto").val() / 100;
@@ -1651,31 +1511,12 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
-    $("#cbu").focusout(function () {
-//verificar cbu
-        var cbu = $(this).val();
-        $.ajax({
-            url: _compravino.URL + "/x_verificarcbu",
-            data: {
-                cbu: cbu
-            },
-            dataType: "json",
-            type: "post",
-            success: function (datos) {
-
-                if (datos.length > 0) {
-                    var cadcli = '';
-                    $.each(datos, function (index, value) {
-                        cadcli += value.RAZON_SOCIAL + '(' + value.CUIT + '), ';
-                    });
-                    cadcli = cadcli.substring(0, cadcli.length - 2);
-                    jAlert('Este cbu esta asociado a mas clientes. ' + cadcli, $.ucwords(_etiqueta_modulo), function () {
-                        $("#cbu").focus();
-                    });
-                }
-            }
-        });
-    })
+    $("#precio").keyup(function () {
+        cambiarPrecio();
+    });
+//    $("#precio,#retencion").keyup(function () {
+//        cambiarPrecio();
+//    });
 
     if (_opcion == 3) {
 //no buscar, entrar directamente al formulario con los datos cargados
@@ -1683,11 +1524,6 @@ $(document).ready(function () {
         $('.nuevafact_form').show();
         $("#nombre2").val($("#nombre").val());
         $("#cuitform").val($("#cuit_busqueda").val());
-//        var data_checklists_persona = [];
-//        var listado_checklist = rtn[0].CHECKLIST_PERSONA;
-//        data_checklists_persona = listado_checklist.split(',');
-//        console.log(data_checklists_persona);
-//        $('.op input').each(function () {if ($.inArray($(this).val(), data_checklists_persona) >= 0) {$(this).prop('checked', true);}});
         show_btns(2);
         editar_formulario();
     }
@@ -1720,7 +1556,7 @@ function evento_lista_arch() {
                 var ruta = myobj.prev().attr('href');
                 //x_borrar_file
                 $.ajax({
-                    url: _compravino.URL + "/x_borrar_file",
+                    url: _agencia.URL + "/x_borrar_file",
                     data: {
                         ruta: ruta
                     },
@@ -1743,7 +1579,7 @@ function editar_formulario() {
     $('.tb_atras').hide();
     var num_fact_buscar = 0;
     $.ajax({
-        url: _compravino.URL + "/x_getobj",
+        url: _agencia.URL + "/x_getobj",
         data: {id_objeto: _id_objeto},
         dataType: "json",
         type: "post",
@@ -1754,9 +1590,9 @@ function editar_formulario() {
             $("#numOperatoria").val(data.ID_OPERATORIA);
             $("#cuitform").val(data.CUIT);
             $("#nombre2").val(data.RAZ);
+            var forma_pago = 0;
 //            $("#fecha").val(formattedDate(data.FECHA));
 //            $("#fecha").val(data.FECHA);
-
             if (data.NUMERO) {
                 var fecha_string = data.FECHA;
                 $("#fecha").val(fecha_string.substr(0, 10));
@@ -1774,88 +1610,79 @@ function editar_formulario() {
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
                 //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
-                $("#bodega").chosen({width: "220px"});
-                $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
-//            $("#formula").chosen({width: "220px"});$("#formula").val(data.FORMULA).attr('disabled', true).trigger("chosen:updated");$("#formula").trigger('change');$("#azucar").val(data.AZUCAR);
-                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
+
+//                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
-                $("#numVinedo").val(data.VINEDO);
-                $("#numRut").val(data.RUT);
                 $("#observacion_fact").val(data.OBSERVACIONES);
                 $("#neto").val(data.NETO).attr("readonly", "readonly");
                 $("#iva").val(data.IVA).attr("readonly", "readonly");
                 $("#total").val(data.TOTAL).attr("readonly", "readonly");
                 $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
+
+                forma_pago = data.FORMA_PAGO;
+
                 $.ajax({
-                    url: _compravino.URL + "/x_getAlgunasBodegas",
+                    url: _agencia.URL + "/x_getFormasPago",
                     datatype: 'html',
                     type: 'post',
                     async: false,
-                    data: {id: data.ID_OPERATORIA},
+                    data: {id: data.NUMERO},
                     success: function (data) {
-                        $('#indent_prueba').html(data);
-                        $("#bodega-jquery").chosen({width: "220px"});
-                    }
-                })
-                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
-                $.ajax({
-                    url: _compravino.URL + "/x_getChecklistHumanaFact",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#check_datos').html(data);
-                    }
-                })
-                $.ajax({
-                    url: _compravino.URL + "/x_getFormasPago",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
+
                         $('#fpago').html(data);
                         $("#fpago-select").chosen({width: "220px"});
+                        $("#fpago-select").val(forma_pago).trigger("chosen:updated");
+                        $("#fpago-select").trigger('change');
                     }
                 })
-//                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
-                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
-                var data_checklists_persona = [];
-                var listado_checklist = data.CHECKLIST_PERSONA;
-                data_checklists_persona = listado_checklist.split(',');
-                $('.op input').each(function () {
-                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-                        $(this).prop('checked', true);
-                    }
-                });
-                if (arr_check == 1) {
-                    $("#cambio_titularidad").attr('checked', true);
-                    $.ajax({
-                        url: _compravino.URL + "/x_getTitularidad",
-                        datatype: 'html',
-                        type: 'post',
-                        async: false,
-                        data: {num_factura: num_fact_buscar},
-                        success: function (datos) {
-                            $("#cambio_titularidad").hide();
-                            $("#cambio_titularidad_true").show();
-                            $("#cambio_titularidad_true").attr('checked', true);
-                            $("#comentario-titularidad").text(datos);
-                        }
-                    })
 //                $.ajax({
-//                    url: _compravino.URL + "/x_getChecklistHumanaFactTitu",datatype: 'html',type: 'post',async: false,
-//                    data: {id: data.ID_OPERATORIA, num_factura: num_fact_buscar},
-//                    success: function (data) {$('#check_datos').html(data);$("#cambio_titularidad").hide();$("#cambio_titularidad_true").show();$("#cambio_titularidad_true").attr('checked', true);$("#comentario-titularidad").text(datos);}})
-                } else {
-//                $.ajax({
-//                    url: _compravino.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
+//                    url: _agencia.URL + "/x_getFormasPago",
+//                    datatype: 'html',
+//                    type: 'post',
+//                    async: false,
 //                    data: {id: data.ID_OPERATORIA},
-//                    success: function (data) {$('#check_datos').html(data);
-                    $("#cambio_titularidad").attr('checked', false);
-//                    }})
-                }
+//                    success: function (data) {
+//                        $('#fpago').html(data);
+//                        $("#fpago-select").chosen({width: "220px"});
+//                    }
+//                })
+//                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
+//                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
+//                var data_checklists_persona = [];
+//                var listado_checklist = data.CHECKLIST_PERSONA;
+//                data_checklists_persona = listado_checklist.split(',');
+//                $('.op input').each(function () {
+//                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+//                        $(this).prop('checked', true);
+//                    }
+//                });
+//                if (arr_check == 1) {
+//                    $("#cambio_titularidad").attr('checked', true);
+//                    $.ajax({
+//                        url: _agencia.URL + "/x_getTitularidad",
+//                        datatype: 'html',
+//                        type: 'post',
+//                        async: false,
+//                        data: {num_factura: num_fact_buscar},
+//                        success: function (datos) {
+//                            $("#cambio_titularidad").hide();
+//                            $("#cambio_titularidad_true").show();
+//                            $("#cambio_titularidad_true").attr('checked', true);
+//                            $("#comentario-titularidad").text(datos);
+//                        }
+//                    })
+////                $.ajax({
+////                    url: _agencia.URL + "/x_getChecklistHumanaFactTitu",datatype: 'html',type: 'post',async: false,
+////                    data: {id: data.ID_OPERATORIA, num_factura: num_fact_buscar},
+////                    success: function (data) {$('#check_datos').html(data);$("#cambio_titularidad").hide();$("#cambio_titularidad_true").show();$("#cambio_titularidad_true").attr('checked', true);$("#comentario-titularidad").text(datos);}})
+//                } else {
+////                $.ajax({
+////                    url: _agencia.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
+////                    data: {id: data.ID_OPERATORIA},
+////                    success: function (data) {$('#check_datos').html(data);
+//                    $("#cambio_titularidad").attr('checked', false);
+////                    }})
+//                }
 
                 var sourceope_titularidad = {
                     datatype: "json",
@@ -1864,7 +1691,7 @@ function editar_formulario() {
                         {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
                         {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
                     ],
-                    url: _compravino.URL + "/x_getTitularidad",
+                    url: _agencia.URL + "/x_getTitularidad",
                     data: {num_factura: $("#numero").val()},
                     async: false
                 };
@@ -1906,19 +1733,19 @@ function editar_formulario() {
                 $("#total").val(data.TOTAL).attr("readonly", "readonly");
                 $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
                 $.ajax({
-                    url: _compravino.URL + "/x_getAlgunasBodegas",
+                    url: _agencia.URL + "/x_getAlgunasBodegas",
                     datatype: 'html',
                     type: 'post',
                     async: false,
                     data: {id: data.ID_OPERATORIA},
                     success: function (data) {
                         $('#indent_prueba').html(data);
-                        $("#bodega-jquery").chosen({width: "220px"});
+                        $("#proveedor-jquery").chosen({width: "220px"});
                     }
                 })
-                $("#bodega-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
+                $("#proveedor-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
                 $.ajax({
-                    url: _compravino.URL + "/x_getChecklistHumanaFact",
+                    url: _agencia.URL + "/x_getChecklistHumanaFact",
                     datatype: 'html',
                     type: 'post',
                     async: false,
@@ -1929,7 +1756,7 @@ function editar_formulario() {
                 })
 //                var cant_pagos = 0;
                 $.ajax({
-                    url: _compravino.URL + "/x_getFormasPago",
+                    url: _agencia.URL + "/x_getFormasPago",
                     datatype: 'html',
                     type: 'post',
                     async: false,
@@ -1940,18 +1767,18 @@ function editar_formulario() {
                     }
                 })
                 $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
-                var data_checklists_persona = [];
-                var listado_checklist = data.CHECKLIST_PERSONA;
-                data_checklists_persona = listado_checklist.split(',');
-                $('.op input').each(function () {
-                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-                        $(this).prop('checked', true);
-                    }
-                });
+//                var data_checklists_persona = [];
+//                var listado_checklist = data.CHECKLIST_PERSONA;
+//                data_checklists_persona = listado_checklist.split(',');
+//                $('.op input').each(function () {
+//                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
+//                        $(this).prop('checked', true);
+//                    }
+//                });
                 if (arr_check == 1) {
                     $("#cambio_titularidad").attr('checked', true);
                     $.ajax({
-                        url: _compravino.URL + "/x_getTitularidad",
+                        url: _agencia.URL + "/x_getTitularidad",
                         datatype: 'html',
                         type: 'post',
                         async: false,
@@ -1976,7 +1803,7 @@ function editar_formulario() {
                         {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
                         {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
                     ],
-                    url: _compravino.URL + "/x_getTitularidad",
+                    url: _agencia.URL + "/x_getTitularidad",
                     data: {num_factura: $("#numero").val()},
                     async: false
                 };
@@ -2005,7 +1832,7 @@ function editar_formulario() {
         }
     });
 
-    $("#ltros").keyup(function () {
+    $("#precio").keyup(function () {
         cambiarPrecio();
     });
 //    $("#precio").keyup(function () {
@@ -2020,7 +1847,7 @@ function editar_formulario_estado_cu() {
     var el_id = ultimo_id[ultimo_id.length - 1];
     var pagoshtml = '';
     $.ajax({
-        url: _compravino.URL + "/x_getfactura",
+        url: _agencia.URL + "/x_getfactura",
         data: {id_objeto: el_id},
         dataType: "json",
         type: "post",
@@ -2033,18 +1860,18 @@ function editar_formulario_estado_cu() {
                 for (var i = 0; i < rtn.length; i++) {
                     pagoshtml += '<div class="elem elem_med_cond"><label class="der">N° Cuota:' + rtn[i].NUM_CUOTA + '</label>'
                             + '<div class="indent formtext">'
-                            + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA
-                            + '" value="' + rtn[i].VALOR_CUOTA + '">'
+                            + '<input type="text" class="tip-right" title="numcuota" id="cuota' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].VALOR_CUOTA + '">'
                             + '</div>'
                             + '</div>';
+
                     pagoshtml += '<div class="elem elem_med"><label class="der">ESTADO:</label><div class="indent" id="">'
                             + '<select class="chzn-select medium-select select" id="estadoCuota' + rtn[i].NUM_CUOTA + '">'
                             + '<option value="0">No enviada</option><option value="1">Pendiente</option><option value="2">Pagado</option>'
                             + '</select></div></div>';
+
                     pagoshtml += '<div class="elem elem_med_cond">'
                             + ' <label class="der">Orden de pago:</label><div class="indent formtext">'
-                            + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA
-                            + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
+                            + '<input type="text" title="OrdenPago" id="ordenPago' + rtn[i].NUM_CUOTA + '" value="' + rtn[i].ORDEN_PAGO + '"></div></div>'
                             + '<div style="margin-top:50px;" class="clear"></div>';
                 }
                 $("#estado-cuota").html(pagoshtml);
@@ -2104,7 +1931,7 @@ function editar_formulario_estado_cu() {
                 }
             } else {
                 jAlert('No se ha generado ninguna forma de pago en la cuota con el ID ' + el_id + '.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/compravino/init/12/2";
+                    var urlh = "backend/carpeta/agencia/init/12/2";
                     $(location).attr('href', urlh);
                 });
             }
@@ -2123,7 +1950,7 @@ function editar_formulario_operatoria() {
     $('#send_edit').show();
     $('#fecha_ven_edit').show();
     $.ajax({
-        url: _compravino.URL + "/x_getoperatoria",
+        url: _agencia.URL + "/x_getoperatoria",
         data: {id_objeto: el_id},
         dataType: "json",
         type: "post",
@@ -2166,7 +1993,7 @@ function editar_formulario_operatoria() {
                 }
             });
             $.ajax({
-                url: _compravino.URL + "/x_getOperatoriaProveedores",
+                url: _agencia.URL + "/x_getOperatoriaProveedores",
                 data: {id_operatoria: el_id},
                 dataType: "json",
                 type: "post",
@@ -2187,7 +2014,7 @@ function editar_formulario_operatoria() {
                             {name: 'LIMLTRS', type: 'number'},
                             {name: 'MAXHECTAREAS', type: 'number'}
                         ],
-                        url: _compravino.URL + "/x_getProveedoresEdit",
+                        url: _agencia.URL + "/x_getProveedoresEdit",
                         data: {id_operatoria: el_id},
                         async: false, addrow: function (rowid, rowdata, position, commit) {
                             commit(true);
@@ -2215,7 +2042,7 @@ function editar_formulario_operatoria() {
                             firstColumnData.push(rows[i].ID);
                         }
                         $.ajax({
-                            url: _compravino.URL + "/x_getDatoProveedor",
+                            url: _agencia.URL + "/x_getDatoProveedor",
                             data: {ids_proveedores: ids_proveedores, firstColumnData: firstColumnData},
                             dataType: "json",
                             type: "post",
@@ -2302,7 +2129,7 @@ function editar_formulario_operatoria() {
                 }
             });
             $.ajax({
-                url: _compravino.URL + "/x_getOperatoriaBodegas",
+                url: _agencia.URL + "/x_getOperatoriaBodegas",
                 data: {
                     id_operatoria: el_id
                 },
@@ -2322,7 +2149,7 @@ function editar_formulario_operatoria() {
                         datafields: [
                             {name: 'ID', type: 'int'}, {name: 'NOMBRE', type: 'string'}, {name: 'LIMLTRS', type: 'number'}
                         ],
-                        url: _compravino.URL + "/x_getBodegasEdit",
+                        url: _agencia.URL + "/x_getBodegasEdit",
                         data: {
                             id_operatoria: el_id
                         },
@@ -2353,7 +2180,7 @@ function editar_formulario_operatoria() {
                             firstColumnData.push(rows[i].ID);
                         }
                         $.ajax({
-                            url: _compravino.URL + "/x_getDatoBodega",
+                            url: _agencia.URL + "/x_getDatoBodega",
                             data: {
                                 ids_bodegas: ids_bodegas,
                                 firstColumnData: firstColumnData
@@ -2445,228 +2272,228 @@ function editar_formulario_operatoria() {
 }
 
 
-function agregarCIUS(_arr_cius) {
-
-    _arr_cius || (_arr_cius = []);
-    var source = {
-        datatype: "json",
-        datafields: [
-            {name: 'NUM'},
-            {name: 'KGRS', type: 'number'},
-            {name: 'AZUCAR'},
-            {name: 'CHEQUEO', type: 'bool'},
-            {name: 'INSC'},
-            {name: 'ID'}
-        ],
-        url: _compravino.URL + '/x_get_info_bancos',
-        deleterow: function (rowid, commit) {
-            commit(true);
-        }
-    };
-    $("#jqxgridcius").jqxGrid({
-        width: '98%',
-        height: '200px',
-        source: source,
-        theme: 'energyblue',
-        editable: true,
-        ready: function () {
-            $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
-            if (_arr_cius.length > 0) {
-                //colocar
-                $.each(_arr_cius, function (k, v) {
-                    var data = {
-                        'NUM': v.ciu_num,
-                        'KGRS': v.ciu_kgrs,
-                        'AZUCAR': v.ciu_azucar,
-                        'CHEQUEO': v.ciu_chequeo,
-                        'INSC': v.ciu_insc,
-                        'ID': 'DDDDDDD',
-                        'uid': 1
-                    }
-                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                });
-            }
-        },
-        columnsresize: true,
-        localization: getLocalization(),
-        showstatusbar: true,
-        renderstatusbar: function (statusbar) {
-            var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-            var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
-            container.append(deleteButton);
-            statusbar.append(container);
-            deleteButton.jqxButton({theme: theme, width: 65, height: 20});
-            deleteButton.click(function (event) {
-                var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex < rowscount) {
-
-                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
-                        if (r == true) {
-
-                            if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                var id = $("#jqxgridcius").jqxGrid('getrowid', selectedrowindex);
-                                $("#jqxgridcius").jqxGrid('deleterow', id);
-                            }
-
-                            //actualizar suma
-                            var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-                            var _arr_aportes_tmp = [];
-                            for (var i = 0; i < griddata.rowscount; i++)
-                                _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-                            var total = 0;
-                            var total1 = 0;
-                            if (griddata.rowscount == 0) {
-                                $("#suma_aporte").html('');
-                                $(".suma_aportes").hide();
-                            } else {
-                                if (_arr_aportes_tmp.length > 0) {
-                                    //colocar
-                                    $.each(_arr_aportes_tmp, function (k, v) {
-                                        total = total + parseFloat(v.KGRS);
-                                        total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-                                    });
-                                    total1 = total1 / total;
-                                    $(".suma_aportes").show();
-                                    $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-                                    $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
-                    });
-                    return false;
-                }
-            });
-        },
-        columns: [
-            {text: 'NUM CIU', datafield: 'NUM', width: '20%', editable: false},
-            {text: 'KILOGRAMOS', datafield: 'KGRS', width: '30%', editable: false, cellsformat: 'c2'},
-            {text: 'AZUCAR', datafield: 'AZUCAR', width: '30%', editable: false},
-            {text: 'INSCR', datafield: 'INSC', width: '30%', editable: false},
-            {text: 'VERIFICACION', datafield: 'CHEQUEO', width: '20%', columntype: 'checkbox', editable: true},
-            {text: 'ID', datafield: 'ID', width: '0%', editable: false}
-        ]
-    });
-    $("#add_cius").off().on('click', function () {
-
-        if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
-                || $("#frm_cargacius input#ciu_azucar").val() == '') {
-            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius input").first().select();
-            });
-            return false;
-        }
-
-        var ciu_num = $("#ciu_num").val();
-        var ciu_kgrs = $("#ciu_kgrs").val();
-        var ciu_azucar = $("#ciu_azucar").val();
-        var ciu_insc = $("#ciu_insc").val();
-        if (!isnumeroCiu(ciu_num)) {
-            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius input").first().select();
-            });
-            return false;
-        }
-
-        if (!isnumeroCiuIns(ciu_insc)) {
-            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
-                $("#frm_cargacius #ciu_insc").first().next().next().select();
-            });
-            return false;
-        }
-
-//recorrer el grid, si ya eciste el ciu, alertar y no agregar
-        var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-        var _arr_cius = [];
-        for (var i = 0; i < griddata.rowscount; i++)
-            _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-        sw1 = 0;
-        if (_arr_cius) {
-            $.each(_arr_cius, function (index, value) {
-                if (value.NUM == ciu_num) {
-                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
-                        $("#ciu_num").select();
-                    });
-                    sw1 = 1;
-                    return false;
-                }
-            });
-        }
-
-        if (sw1 == 1) {
-            return false;
-        }
-
-//validar ciu a traves de todas las bd
-        $.ajax({
-            url: _compravino.URL + "/x_verificarciu",
-            data: {
-                nciu: ciu_num
-            },
-            dataType: "json",
-            type: "post",
-            success: function (data) {
-                console.dir(data);
-                if (data <= 0) {
-                    var data = {
-                        'NUM': ciu_num,
-                        'KGRS': ciu_kgrs,
-                        'AZUCAR': ciu_azucar,
-                        'CHEQUEO': 0,
-                        'INSC': ciu_insc,
-                        'ID': 'DDDDDDD',
-                        'uid': 1
-                    }
-
-                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-                    //$('#jqxgridbancos').jqxGrid( { editable: true} );
-                    //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
-
-
-                    //actualizar suma
-                    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-                    var _arr_aportes_tmp = [];
-                    for (var i = 0; i < griddata.rowscount; i++)
-                        _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-                    var total = 0;
-                    var total1 = 0;
-                    if (griddata.rowscount == 0) {
-                        $("#suma_aporte").html('');
-                        $(".suma_aportes").hide();
-                    } else {
-                        if (_arr_aportes_tmp.length > 0) {
-                            //colocar
-                            $.each(_arr_aportes_tmp, function (k, v) {
-                                total = total + parseFloat(v.KGRS);
-                                total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-                            });
-                            total1 = total1 / total;
-                            $(".suma_aportes").show();
-                            $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-                            $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-                        }
-                    }
-
-                    $("#frm_cargacius input").not('#add_cius').val('');
-                    $("#frm_cargacius input").first().focus();
-                } else {
-                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
-                        $.unblockUI();
-                    });
-                }
-
-            }
-        });
-        return false;
-    });
-}
+//function agregarCIUS(_arr_cius) {
+//
+//    _arr_cius || (_arr_cius = []);
+//    var source = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'NUM'},
+//            {name: 'KGRS', type: 'number'},
+//            {name: 'AZUCAR'},
+//            {name: 'CHEQUEO', type: 'bool'},
+//            {name: 'INSC'},
+//            {name: 'ID'}
+//        ],
+//        url: _agencia.URL + '/x_get_info_bancos',
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        }
+//    };
+//    $("#jqxgridcius").jqxGrid({
+//        width: '98%',
+//        height: '200px',
+//        source: source,
+//        theme: 'energyblue',
+//        editable: true,
+//        ready: function () {
+//            $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
+//            if (_arr_cius.length > 0) {
+//                //colocar
+//                $.each(_arr_cius, function (k, v) {
+//                    var data = {
+//                        'NUM': v.ciu_num,
+//                        'KGRS': v.ciu_kgrs,
+//                        'AZUCAR': v.ciu_azucar,
+//                        'CHEQUEO': v.ciu_chequeo,
+//                        'INSC': v.ciu_insc,
+//                        'ID': 'DDDDDDD',
+//                        'uid': 1
+//                    }
+//                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
+//                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
+//                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+//                });
+//            }
+//        },
+//        columnsresize: true,
+//        localization: getLocalization(),
+//        showstatusbar: true,
+//        renderstatusbar: function (statusbar) {
+//            var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
+//            var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
+//            container.append(deleteButton);
+//            statusbar.append(container);
+//            deleteButton.jqxButton({theme: theme, width: 65, height: 20});
+//            deleteButton.click(function (event) {
+//                var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex < rowscount) {
+//
+//                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
+//                        if (r == true) {
+//
+//                            if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                                var id = $("#jqxgridcius").jqxGrid('getrowid', selectedrowindex);
+//                                $("#jqxgridcius").jqxGrid('deleterow', id);
+//                            }
+//
+//                            //actualizar suma
+//                            var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+//                            var _arr_aportes_tmp = [];
+//                            for (var i = 0; i < griddata.rowscount; i++)
+//                                _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+//                            var total = 0;
+//                            var total1 = 0;
+//                            if (griddata.rowscount == 0) {
+//                                $("#suma_aporte").html('');
+//                                $(".suma_aportes").hide();
+//                            } else {
+//                                if (_arr_aportes_tmp.length > 0) {
+//                                    //colocar
+//                                    $.each(_arr_aportes_tmp, function (k, v) {
+//                                        total = total + parseFloat(v.KGRS);
+//                                        total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
+//                                    });
+//                                    total1 = total1 / total;
+//                                    $(".suma_aportes").show();
+//                                    $("#suma_aporte").html(dec(precise_round(total, 2), 2));
+//                                    $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
+//                                }
+//                            }
+//                        }
+//                    });
+//                } else {
+//                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
+//                    });
+//                    return false;
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'NUM CIU', datafield: 'NUM', width: '20%', editable: false},
+//            {text: 'KILOGRAMOS', datafield: 'KGRS', width: '30%', editable: false, cellsformat: 'c2'},
+//            {text: 'AZUCAR', datafield: 'AZUCAR', width: '30%', editable: false},
+//            {text: 'INSCR', datafield: 'INSC', width: '30%', editable: false},
+//            {text: 'VERIFICACION', datafield: 'CHEQUEO', width: '20%', columntype: 'checkbox', editable: true},
+//            {text: 'ID', datafield: 'ID', width: '0%', editable: false}
+//        ]
+//    });
+////    $("#add_cius").off().on('click', function () {
+////
+////        if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
+////                || $("#frm_cargacius input#ciu_azucar").val() == '') {
+////            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius input").first().select();
+////            });
+////            return false;
+////        }
+////
+////        var ciu_num = $("#ciu_num").val();
+////        var ciu_kgrs = $("#ciu_kgrs").val();
+////        var ciu_azucar = $("#ciu_azucar").val();
+////        var ciu_insc = $("#ciu_insc").val();
+////        if (!isnumeroCiu(ciu_num)) {
+////            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius input").first().select();
+////            });
+////            return false;
+////        }
+////
+////        if (!isnumeroCiuIns(ciu_insc)) {
+////            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
+////                $("#frm_cargacius #ciu_insc").first().next().next().select();
+////            });
+////            return false;
+////        }
+////
+//////recorrer el grid, si ya eciste el ciu, alertar y no agregar
+////        var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+////        var _arr_cius = [];
+////        for (var i = 0; i < griddata.rowscount; i++)
+////            _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+////        sw1 = 0;
+////        if (_arr_cius) {
+////            $.each(_arr_cius, function (index, value) {
+////                if (value.NUM == ciu_num) {
+////                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
+////                        $("#ciu_num").select();
+////                    });
+////                    sw1 = 1;
+////                    return false;
+////                }
+////            });
+////        }
+////
+////        if (sw1 == 1) {
+////            return false;
+////        }
+////
+//////validar ciu a traves de todas las bd
+////        $.ajax({
+////            url: _agencia.URL + "/x_verificarciu",
+////            data: {
+////                nciu: ciu_num
+////            },
+////            dataType: "json",
+////            type: "post",
+////            success: function (data) {
+////                console.dir(data);
+////                if (data <= 0) {
+////                    var data = {
+////                        'NUM': ciu_num,
+////                        'KGRS': ciu_kgrs,
+////                        'AZUCAR': ciu_azucar,
+////                        'CHEQUEO': 0,
+////                        'INSC': ciu_insc,
+////                        'ID': 'DDDDDDD',
+////                        'uid': 1
+////                    }
+////
+////                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
+////                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
+////                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
+////                    //$('#jqxgridbancos').jqxGrid( { editable: true} );
+////                    //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
+////
+////
+////                    //actualizar suma
+////                    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
+////                    var _arr_aportes_tmp = [];
+////                    for (var i = 0; i < griddata.rowscount; i++)
+////                        _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
+////                    var total = 0;
+////                    var total1 = 0;
+////                    if (griddata.rowscount == 0) {
+////                        $("#suma_aporte").html('');
+////                        $(".suma_aportes").hide();
+////                    } else {
+////                        if (_arr_aportes_tmp.length > 0) {
+////                            //colocar
+////                            $.each(_arr_aportes_tmp, function (k, v) {
+////                                total = total + parseFloat(v.KGRS);
+////                                total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
+////                            });
+////                            total1 = total1 / total;
+////                            $(".suma_aportes").show();
+////                            $("#suma_aporte").html(dec(precise_round(total, 2), 2));
+////                            $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
+////                        }
+////                    }
+////
+////                    $("#frm_cargacius input").not('#add_cius').val('');
+////                    $("#frm_cargacius input").first().focus();
+////                } else {
+////                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
+////                        $.unblockUI();
+////                    });
+////                }
+////
+////            }
+////        });
+////        return false;
+////    });
+//}
 
 
 function initGrid(id_usuario) {
@@ -2776,7 +2603,7 @@ function addEventsRequerimientos(idnr) {
             var yo = $(this);
             var el = $(this).prev();
             $.ajax({
-                url: _compravino.URL + "/x_delupload_nota",
+                url: _agencia.URL + "/x_delupload_nota",
                 data: {
                     idnotareq: idnr,
                     ruta: nom
@@ -2844,7 +2671,7 @@ function addEventsRequerimientos(idnr) {
 //console.dir( obj_req );
 
         $.ajax({
-            url: _compravino.URL + "/x_sendnota",
+            url: _agencia.URL + "/x_sendnota",
             data: {
                 obj: obj_req
             },
@@ -2890,7 +2717,7 @@ function agregar_nota(idobjeto, ver) {
     idobjeto || (idobjeto = []);
     ver || (ver = -1);
     $.ajax({
-        url: _compravino.URL + "/x_getform_agregar_requerimiento",
+        url: _agencia.URL + "/x_getform_agregar_requerimiento",
         data: {
             idr: idobjeto
         },
@@ -2940,7 +2767,7 @@ function process_vincular(iid_nr, carpeta) {
 
     carpeta || (carpeta = '0');
     $.ajax({
-        url: _compravino.URL + "/x_getvincular",
+        url: _agencia.URL + "/x_getvincular",
         data: {
             idusu: _USUARIO_SESION_ACTUAL
         },
@@ -2990,7 +2817,7 @@ function process_vincular(iid_nr, carpeta) {
                 jConfirm('Esta seguro de realizar esta Asignación?.', $.ucwords(_etiqueta_modulo), function (r) {
                     if (r == true) {
                         $.ajax({
-                            url: _compravino.URL + "/x_vincular_nr",
+                            url: _agencia.URL + "/x_vincular_nr",
                             data: {
                                 idnr: idnr,
                                 idcarpeta: idcarpeta
@@ -3028,7 +2855,7 @@ function process_asignar(iidnota) {
     opt_area = [4];
     opt_puesto = 6;
     $.ajax({
-        url: _compravino.URL + "/x_getenviar_a1",
+        url: _agencia.URL + "/x_getenviar_a1",
         data: {
             puesto_in: opt_puesto, // parametro opcional
             area: opt_area
@@ -3067,7 +2894,7 @@ function process_asignar(iidnota) {
                 var apuesto_in = $(this).data('puesto_in');
                 apuesto_in = isNaN(apuesto_in) ? '' : apuesto_in;
                 $.ajax({
-                    url: _compravino.URL + "/x_getenviar_a2",
+                    url: _agencia.URL + "/x_getenviar_a2",
                     data: {
                         id_area: iid,
                         puesto_in: apuesto_in
@@ -3137,7 +2964,7 @@ function process_asignar(iidnota) {
                                     estado = '1'
 
                                     $.ajax({
-                                        url: _compravino.URL + "/x_guardar_traza_nota",
+                                        url: _agencia.URL + "/x_guardar_traza_nota",
                                         data: {
                                             id_req_nota: id_send,
                                             destinatario: iid,
@@ -3213,7 +3040,7 @@ function loadChild(val) {
     if (working == false) {
         working = true;
         $.ajax({
-            url: _compravino.URL + "/x_getlocalidad",
+            url: _agencia.URL + "/x_getlocalidad",
             async: false,
             data: {
                 idp: val
@@ -3281,13 +3108,13 @@ function initGridListadoRevision(id_usuario) {
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
-            accion: "getFacturasCuva",
-            idtipo: 1,
+            accion: "getFacturasAgencia",
+            idtipo: 2,
             estado: '12' // en revision
         },
         async: false,
         deleterow: function (rowid, commit) {
-            process_data(_compravino.URL + "/x_delete_facturas_cu", mydata);
+            process_data(_agencia.URL + "/x_delete_facturas_cu", mydata);
 //            console.dir(mydata);
             commit(true);
         }
@@ -3404,9 +3231,9 @@ function initGridListado(id_usuario) {
             {name: 'CBU', type: 'string'},
             {name: 'NUMERO', type: 'string'},
             {name: 'FECHA', type: 'string'},
-            {name: 'BODEGA', type: 'string'},
-            {name: 'ID_BODEGA', type: 'int'},
-            {name: 'LITROS', type: 'string'},
+//            {name: 'BODEGA', type: 'string'},
+//            {name: 'ID_BODEGA', type: 'int'},
+//            {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
             {name: 'USU_CARGA', type: 'string'},
             {name: 'USU_CHEQUEO', type: 'string'},
@@ -3421,15 +3248,15 @@ function initGridListado(id_usuario) {
             {name: 'VALORPAGAR', type: 'float'},
             {name: 'NUMCUOTA', type: 'int'},
             {name: 'FECHA_VEN', type: 'string'},
-            {name: 'CHECK_ESTADO', type: 'string'},
-            {name: 'ID_CONTABLE', type: 'int'},
+//            {name: 'CHECK_ESTADO', type: 'string'},
+//            {name: 'ID_CONTABLE', type: 'int'},
             {name: 'FORMULA', type: 'string'},
             {name: 'IID', type: 'string'}
         ],
         url: 'general/extends/extra/carpetas.php',
         data: {
-            accion: "getFacturasCuva",
-            idtipo: 1,
+            accion: "getFacturasAgencia",
+            idtipo: 2,
             idpro: _provincia
         },
         async: false,
@@ -3470,28 +3297,15 @@ function initGridListado(id_usuario) {
         selectionmode: 'multiplerows',
         columnsresize: true,
         showtoolbar: true,
-        //sortable: true,
-//        groupable: true,
-//        filterable: true,
-//        showfilterrow: true,
         localization: getLocalization(),
         rendertoolbar: function (toolbar) {
             var me = this;
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
             var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
-//            var container2 = $("<div style='margin: 5px;'></div>");
-//            var span2 = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'> Fecha: </span>");
-//            var input2 = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='fechaField' style='height: 23px; float: left; width: 223px; z-index:999;'/>");
-////            <input type="text" class="tip-right" title="" id="fecha" data-prompt-position="centerRight" value=""> 
             toolbar.append(container);
             container.append(span);
             container.append(input);
-//            toolbar.append(container2);
-//            container.append(span2);
-//            container.append(input2);
-//            $("#fechaField").datepicker();
-
             if (theme != "") {
                 input.addClass('jqx-widget-content-' + theme);
                 input.addClass('jqx-rc-all-' + theme);
@@ -3505,8 +3319,6 @@ function initGridListado(id_usuario) {
             });
         },
         columns: [
-            {text: 'ID_CONTABLE', datafield: 'ID_CONTABLE', hidden: true, width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
@@ -3515,11 +3327,6 @@ function initGridListado(id_usuario) {
             {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-//            {text: 'DEPARTAMENTO', datafield: 'DEPARTAMENTO', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-//            {text: 'KGRS', datafield: 'KGRS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false},
-            {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
@@ -3533,7 +3340,6 @@ function initGridListado(id_usuario) {
             {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
             {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-//            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
             {text: 'IID', datafield: 'IID', width: '0%'}
         ]
     });
@@ -3605,7 +3411,7 @@ function editar_factura(name_grid) {
         });
         return false;
     }
-    var urlh = "backend/carpeta/compravino/init/12/3/" + mydata.ID;
+    var urlh = "backend/carpeta/agencia/init/12/3/" + mydata.ID;
     $(location).attr('href', urlh);
 }
 function editar_operatoria(name_grid) {
@@ -3626,7 +3432,7 @@ function editar_operatoria(name_grid) {
         });
         return false;
     }
-    var urlh = "backend/carpeta/compravino/init/12/9/" + mydata.ID_OPERATORIA;
+    var urlh = "backend/carpeta/agencia/init/12/9/" + mydata.ID_OPERATORIA;
     $(location).attr('href', urlh);
 }
 
@@ -3650,9 +3456,9 @@ function editar_estado_cu(name_grid) {
 //        });
 //        return false;
 //    }
-    var urlh = "backend/carpeta/compravino/init/12/10/" + mydata.ID;
+    var urlh = "backend/carpeta/agencia/init/12/10/" + mydata.ID;
     $(location).attr('href', urlh);
-//    var urlh = "backend/carpeta/compravino/init/" + _provincia + "/10";
+//    var urlh = "backend/carpeta/agencia/init/" + _provincia + "/10";
 //    $(location).attr('href', urlh);
 }
 
@@ -3686,17 +3492,14 @@ function lote_pago() {
             if (reg.CHECK_ESTADO == 'S/Confirmar') {
                 swa = 2;
             }
-            if (reg.ID_CONTABLE == 0) {
-                swa = 4;
-            }
             if (reg.NUMCUOTA == "") {
                 id_ref_devolver = reg.ID;
                 swa = 5;
             }
             $.ajax({
-                url: _compravino.URL + "/x_verificar_enviadas",
+                url: _agencia.URL + "/x_verificar_enviadas",
                 data: {
-                    provincia: _compravino._provincia,
+                    provincia: _agencia._provincia,
                     obj: reg
                 },
                 dataType: "json",
@@ -3712,29 +3515,20 @@ function lote_pago() {
 
             _arr_sel.push(reg);
         });
-
         if (swa == '1') {
             jAlert('La seleccion contiene comprobantes ya procesados.', $.ucwords(_etiqueta_modulo), function () {
-            });
-            return false;
-        } else if (swa == '2') {
-            jAlert('Comprobantes seleccionados sin el cambio de titularidad realizado.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '3') {
             jAlert('Comprbantes seleccionados con pagos registrados.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
-        } else if (swa == '4') {
-            jAlert('El fideicomiso de la operatoria no tiene asignado un fideicomiso contable.', $.ucwords(_etiqueta_modulo), function () {
-            });
-            return false;
         } else if (swa == '5') {
-            jAlert('En la factura ID '+id_ref_devolver+' no hay mas cuotas para enviar. Ya fueron procesadas todas.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('En la factura ID ' + id_ref_devolver + ' no hay cuotas para enviar.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '6') {
-            jAlert('La cuota de la factura con el ID '+id_referencia_devolver+' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('La cuota de la factura con el ID ' + id_referencia_devolver + ' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '10') {
@@ -3746,9 +3540,9 @@ function lote_pago() {
             if (r == true) {
                 $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
                 $.ajax({
-                    url: _compravino.URL + "/x_guardarlote",
+                    url: _agencia.URL + "/x_guardarlote",
                     data: {
-                        provincia: _compravino._provincia,
+                        provincia: _agencia._provincia,
                         obj: _arr_sel
                     },
                     dataType: "json",
@@ -3757,14 +3551,13 @@ function lote_pago() {
                         console.dir(data);
                         if (data > 0) {
                             jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-//                                imprimir_listado_seleccionado();
-//                                show_btns();
-//                                limpiar_form_fact();
-//                                //$('#send').hide();
-//                                $("#jqxgrid_listado").show();
-//                                $("#jqxgrid_listado").jqxGrid('updatebounddata');
-//                                $("#wpopup").html('');
-                                window.location.href = "backend/carpeta/compravino/init/12/2";
+                                imprimir_listado_seleccionado();
+                                show_btns();
+                                limpiar_form_fact();
+                                //$('#send').hide();
+                                $("#jqxgrid_listado").show();
+                                $("#jqxgrid_listado").jqxGrid('updatebounddata');
+                                $("#wpopup").html('');
                             });
                         } else {
                             jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
@@ -3823,7 +3616,7 @@ function post_upload(nombre, nombre_tmp, etapa) {
                     var ruta = $this.data('tmp');
                     //x_borrar_file
                     $.ajax({
-                        url: _compravino.URL + "/x_borrar_file",
+                        url: _agencia.URL + "/x_borrar_file",
                         data: {
                             ruta: ruta
                         },
@@ -3848,75 +3641,35 @@ function post_upload(nombre, nombre_tmp, etapa) {
     });
 }
 
-function importar_procesar() {
-    if ($("#op_vino").length > 0) {
-        $.fancybox(
-                $("#op_vino").html(),
-                {
-                    'padding': 15,
-                    'autoScale': true,
-                    'scrolling': 'auto'
-                }
-        );
-        $("#lst_op_vino li").on('click', function () {
-            $("#lst_op_vino li").each(function () {
-                $(this).removeClass('sel-op');
-            });
-            $(this).addClass('sel-op');
-        });
-    } else {
-        jAlert('No existen operatorias, debe crear una operatoria para procesar la solicitud', $.ucwords(_etiqueta_modulo));
-    }
-}
-
-function imp_procesar() {
-    if ($("#lst_op_vino li.sel-op").length > 0) {
-        _imp_procesar($("#lst_op_vino li.sel-op").attr('data-id'));
-    } else {
-        jAlert('Debe seleccionar una operatoria', $.ucwords(_etiqueta_modulo));
-    }
-}
-
-function _imp_procesar(id_op_vino) {
+function _imp_procesar() {
     jConfirm('Esta seguro de procesar estos archivos??.', $.ucwords(_etiqueta_modulo), function (r) {
         if (r == true) {
 // llamar ajax
             $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
             $.ajax({
-                url: _compravino.URL + "/x_importar_xls",
-                data: {
-                    fid_sanjuan: _fid_sanjuan,
-                    ope_sanjuan: _ope_sanjuan,
-                    id_op_vino: id_op_vino
-                },
+                url: _agencia.URL + "/x_importar_xls",
+                data: {fid_sanjuan: _fid_sanjuan, ope_sanjuan: _ope_sanjuan},
                 dataType: "json",
                 type: "post",
                 success: function (dat) {
                     console.dir(dat);
                     if (dat == -2) {
-                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {
-
-                        });
+                        jAlert('No existen archivos para la importación.', $.ucwords(_etiqueta_modulo), function () {});
                     } else if (dat == -1) {
-                        jAlert('No existe el archivo de cius para la importación. El proceso se continuo', $.ucwords(_etiqueta_modulo), function () {
-                            $.ajax({
-                                url: _compravino.URL + "/x_actualizarLista",
-                                data: {
-                                },
-                                //dataType: "json",
-                                type: "post",
-                                success: function (data) {
-                                    console.dir(data);
-                                    $('.lista_arch').html(data);
-                                    evento_lista_arch();
-                                }
-                            });
+                        $.ajax({url: _agencia.URL + "/x_actualizarLista", data: {},
+                            //dataType: "json",
+                            type: "post",
+                            success: function (data) {
+                                console.dir(data);
+                                $('.lista_arch').html(data);
+                                evento_lista_arch();
+                            }
                         });
                     } else if (dat == 1) {
                         jAlert('Los datos fueron importados con exito.', $.ucwords(_etiqueta_modulo), function () {
                             //actualizar el listado
                             /*$.ajax({
-                             url: _compravino.URL + "/x_actualizarLista",
+                             url: _agencia.URL + "/x_actualizarLista",
                              data: {
                              },
                              //dataType: "json",
@@ -3927,9 +3680,10 @@ function _imp_procesar(id_op_vino) {
                              evento_lista_arch();
                              }
                              });*/
-                            window.location.href = "backend/carpeta/compravino/init/12/2";
+                            window.location.href = "backend/carpeta/agencia/init/12/2";
                         });
                     }
+
                 }
             });
         }
@@ -3938,15 +3692,16 @@ function _imp_procesar(id_op_vino) {
 
 function cambiarPrecio() {
     var precioAsignado = $('#fpago-select').find(':selected').attr('data-precio');
-    $('#precio').val(precioAsignado);
+//    $('#precio').val(precioAsignado);
     if ($('#precio').val() == 0) {
         $("#neto").val(0);
     } else {
-        var neto = $("#ltros").val() * $('#precio').val();
+        var neto = $('#precio').val();
         $("#neto").val(dec(neto, 2));
         var iva = $('#porcentaje_iva').val() * $("#neto").val() / 100;
         $("#iva").val(dec(iva, 2));
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
+//        if($('#retencion').val()!=0){total = total - ($('#retencion').val() * total / 100);}
         $("#total").val(dec(total, 2));
     }
 }
