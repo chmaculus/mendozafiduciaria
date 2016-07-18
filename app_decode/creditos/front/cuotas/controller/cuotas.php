@@ -320,7 +320,7 @@ class cuotas extends main_controller{
         }
         
         echo trim(json_encode($_SESSION['CAMBIO_TASAS']['RESULTADO']));
-        //unset($_SESSION['CAMBIO_TASAS']);
+        unset($_SESSION['CAMBIO_TASAS']);
         die();
     }
     

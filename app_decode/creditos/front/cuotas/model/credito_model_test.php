@@ -862,7 +862,7 @@ class credito_model_test extends credito_model {
     
     function getTasasCredito($id, $fecha) {
         $this->_db->select("POR_INT_COMPENSATORIO, POR_INT_SUBSIDIO, POR_INT_MORATORIO, POR_INT_PUNITORIO");
-        $this->_db->where("ID_CREDITO = '" . $id . "'");
+        $this->_db->where("ID_CREDITO = '" . $id . "' AND fecha<=$fecha");
         $this->_db->order_by("FECHA", "DESC");
         $this->_db->limit(0,1);
         $rtn = $this->_db->get_tabla("fid_creditos_eventos");
