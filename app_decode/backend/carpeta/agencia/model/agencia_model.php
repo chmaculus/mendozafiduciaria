@@ -54,7 +54,7 @@ class agencia_model extends main_model {
 //        return $rtn;
 //    }
     function sincronizarAgencia($datosBuscar) {
-       
+
         $j = 0;
         $this->_db->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, 
             IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, 
@@ -74,7 +74,7 @@ class agencia_model extends main_model {
         $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
             AND f.ID_PROVINCIA='12' AND f.TIPO=2 AND f.ID_ESTADO='5' AND cu.TIPO=2");
 //        log_this('log/VERDEBETRAERREGISTRO.log', $this->_db->last_query());
-        xdebug_break();
+
         foreach ($fact_enviadas as $value) {
             if (is_null($value['NUM_CUOTA'])) {
                 //No debe hacer nada si es null
@@ -99,7 +99,7 @@ class agencia_model extends main_model {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
                                 $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
                                 $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO='" . $value['NUMERO']."'");
+                                $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO='" . $value['NUMERO'] . "'");
 //                            log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
                         }
@@ -753,7 +753,7 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_fact);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo1'], "ORDEN_PAGO" => $array_post['ordenPago1']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=1 AND TIPO=2");
 
         $ins_audi_pag1 = array(
@@ -765,7 +765,7 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_pag1);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo2'], "ORDEN_PAGO" => $array_post['ordenPago2']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=2 AND TIPO=2");
 
         $ins_audi_pag2 = array(
@@ -777,7 +777,7 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_pag2);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo3'], "ORDEN_PAGO" => $array_post['ordenPago3']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=3 AND TIPO=2");
 
         $ins_audi_pag3 = array(
@@ -789,7 +789,7 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_pag3);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo4'], "ORDEN_PAGO" => $array_post['ordenPago4']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=4 AND TIPO=2");
 
         $ins_audi_pag4 = array(
@@ -801,7 +801,7 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_pag4);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo5'], "ORDEN_PAGO" => $array_post['ordenPago5']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=5 AND TIPO=2");
 
         $ins_audi_pag5 = array(
@@ -813,9 +813,9 @@ class agencia_model extends main_model {
         );
 
         $this->_db->insert('fid_audi_fact', $ins_audi_pag5);
-        
+
         $this->_db->update("fid_cu_pagos", array("ESTADO_CUOTA" => $array_post['estCuo6'], "ORDEN_PAGO" => $array_post['ordenPago6']), "NUM_FACTURA='" . $array_post['numFactura'] . "' AND NUM_CUOTA=6 AND TIPO=2");
-        
+
         $ins_audi_pag6 = array(
             "ID_AUDI" => '',
             "ID_USUARIO" => $_SESSION['USERADM'],
@@ -2168,7 +2168,7 @@ class agencia_model extends main_model {
                 $array_resultado1[$i] = $value1;
             }
             $i++;
-    }
+        }
 
         //Aqui se encuentran los elementos que estan en el array2 y no estan en el array1 y hay que quitarlos
         //echo "<br>\nElementos que sólo existen en array2<br>\n";
@@ -2304,14 +2304,6 @@ class agencia_model extends main_model {
         $res = array();
         $k = 0;
 
-//        $id_tipoentidad_bodega = $this->_db->get_tabla('fid_settings', "variable='compra_uva_id_tipo_entidad'");
-//        if ($id_tipoentidad_bodega) {$id_tipoentidad_bodega = $id_tipoentidad_bodega[0]['valor'];
-//        } else {die("Falta configurar sistema");}
-        /*
-          $id_operatoria = $this->getIdOperatoria();
-          $arr_ope = array('ID_OPERATORIA' => $id_operatoria,'FECHA_CRE' => date('Y-m-d'),'NOMBRE_OPE' => 'Operatoria importada #' . $id_operatoria);
-          $this->_db->insert('fid_operatoria_vino', $arr_ope); */
-//        $id_operatoria = $id_op_vino;$arr_proveedores = $arr_bodegas = array();$total_litros = 0;
         $precios_cuotas = array();
 
         while ($objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue() != '' ||
@@ -2367,130 +2359,124 @@ class agencia_model extends main_model {
                     "CU" => 2
                 );
                 $id_cliente = $this->_db->insert('fid_clientes', $arr_ins);
-                log_this('log/haceinsertcliente.log', $this->_db->last_query());
+//                log_this('log/haceinsertcliente.log', $this->_db->last_query());
             }
-
             // idfactura
             $numero = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
-            
-            if ($numero != "") {
-            //validar numero de factura
-            $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2") : FALSE;
-//            log_this('log/existelafactura.log', $this->_db->last_query() );
-            if ($numero && $existe_fact) {
-                $i++;
-                $k++;
-                continue;
-            }
-            $fecha = $objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue(); //??
-            //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
+            $contadorCaracteres = strlen($numero);
+//            log_this('log/existelafactura.log', $this->_db->last_query());
+            if ($numero != "" && ( $contadorCaracteres == 12 || $contadorCaracteres == 13)) {
+                //validar numero de factura
+//                $existe_fact = $convertir_numero1 ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $convertir_numero1 . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2") : FALSE;
+                $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2");
+                if ($numero && $existe_fact) {
+                    $i++;
+                    $k++;
+                    continue;
+                } else {
+                    $numero_sin = str_replace("-", "", $numero);
+                    $existe_fact_sin = $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero_sin . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2");
+                    if ($numero_sin && $existe_fact_sin) {
+                        $i++;
+                        $k++;
+                        continue;
+                    }
+                }
+                $numero = str_replace("-", "", $numero);
+
+                $fecha = $objPHPExcel->getActiveSheet()->getCell("O" . $i)->getValue(); //??
+                $fecha_fact_desem = $objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue(); //??
+                //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
 //            $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
 //            if (!$neto) {$neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());}
 //            $precio = $litros ? $neto / $litros : 0;
 //            $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
 //            if (!$iva) {$iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());}
-            $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
-            if (!$total) {
-                $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());
-            }
+                $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
+                if (!$total) {
+                    $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());
+                }
 //            $porc_iva = 0;
 //            if ($total && $neto) {
 //                $porc_iva = $iva * 100 / $neto;
 //            }
-//            $observaciones = $objPHPExcel->getActiveSheet()->getCell("U" . $i)->getValue();
-//            $observaciones .= $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() ? ' / ' . $objPHPExcel->getActiveSheet()->getCell("V" . $i)->getValue() : '';
 //            $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
 //            if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
 //                $precios_cuotas[$cuotas] = $precio;
 //            }
-//            $nro_vinedo = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
-//            $nro_inv = $objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue();
-            //$formula = $objPHPExcel->getActiveSheet()->getCell("AF" . $i)->getValue();
-            if (trim($fecha) == "-   -") {
-                $fecha = '';
-            } elseif (trim($fecha)) {
-                $fecha = loadDate_excel($fecha);
-            }
+                if (trim($fecha) == "-   -") {
+                    $fecha = '';
+                } elseif (trim($fecha)) {
+                    $fecha = loadDate_excel($fecha);
+                }
 //            if (trim($fechavto) == "-   -") {$fechavto = '';} elseif (trim($fechavto)) {$fechavto = loadDate_excel($fechavto);}
-            // local
-            $_fid_sanjuan = 88;
-            $_ope_sanjuan = 99;
-            $_fid_mendoza = 66;
-            $_ope_mendoza = 77;
-            $nolocal = 1;
-            if ($nolocal == 1) {
-                $_fid_sanjuan = 1;
-                $_ope_sanjuan = 16;
-                $_fid_mendoza = 1;
-                $_ope_mendoza = 16;
-            }
-            /* if ($id_provincia == '17') {
-              $save_ope = $_ope_sanjuan;
-              $save_fid = $_fid_sanjuan;
-              } else { */
-            $save_ope = $_ope_mendoza;
-            $save_fid = $_fid_mendoza;
-            //}
-            $arr_fact = array(
-                "NUMERO" => $numero,
-                "TIPO" => "2",
-                "TOTAL" => $total,
-                "ID_CLIENTE" => $id_cliente,
-                "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
-                    //"FECHAVTO" => $fechavto,//"CAI" => $cai,"ID_ESTADO" => $estado_fact,"FORMA_PAGO" => $cuotas,"PRECIO" => $precio,
-                    //"NETO" => $neto,"IVA" => $iva,"PORC_IVA" => $porc_iva,"OBSERVACIONES" => $observaciones,
-            );
-            if ($fecha) {
-                $arr_fact['FECHA'] = $fecha;
-            }
-            $arr_proveedores[] = $id_cliente;
-            //validaciones
-            $sw_error = 0;
-            $arr_error = array();
+                // local
+                $_fid_sanjuan = 88;
+                $_ope_sanjuan = 99;
+                $_fid_mendoza = 66;
+                $_ope_mendoza = 77;
+                $nolocal = 1;
+                if ($nolocal == 1) {
+                    $_fid_sanjuan = 1;
+                    $_ope_sanjuan = 16;
+                    $_fid_mendoza = 1;
+                    $_ope_mendoza = 16;
+                }
+                $save_ope = $_ope_mendoza;
+                $save_fid = $_fid_mendoza;
+                //}
+                $arr_fact = array(
+                    "NUMERO" => $numero,
+                    "TIPO" => "2",
+                    "TOTAL" => $total,
+                    "ID_CLIENTE" => $id_cliente,
+                    "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
+                        //"FECHAVTO" => $fechavto,//"CAI" => $cai,"ID_ESTADO" => $estado_fact,"FORMA_PAGO" => $cuotas,"PRECIO" => $precio,
+                        //"NETO" => $neto,"IVA" => $iva,"PORC_IVA" => $porc_iva,"OBSERVACIONES" => $observaciones,
+                );
+                if ($fecha) {
+                    $arr_fact['FECHA'] = $fecha;
+                }
+                $arr_proveedores[] = $id_cliente;
+                //validaciones
+                $sw_error = 0;
+                $arr_error = array();
 //            $arr_factor = $this->_db->get_tabla('fid_cliente_condicion_iva', "Id = $id_condicion_iva");
-            $factor = 0;
+                $factor = 0;
 //            if ($arr_factor) {$factor = $arr_factor[0]['VALOR'];}
 //            $iva = round($iva * 1, 2);
 //            $factor = round(($factor * $neto / 100) * 1, 2);
-            //log_this("iv-factor.txt", $iva . " - " . $factor);
-            /* if ((abs($iva - $factor) > 1)) {
-              $sw_error = 1;
-              $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
-              } */
+                //log_this("iv-factor.txt", $iva . " - " . $factor);
+                /* if ((abs($iva - $factor) > 1)) {
+                  $sw_error = 1;
+                  $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
+                  } */
 //            if ($total - ($neto + $iva) > 1) {
 //                $sw_error = 1;
 //                $arr_error[] = "Total observado";
 //            }
-            //verificar cbu
-            /* $existe_cbu = $this->verificar_cbu($cbu);
-              if ($existe_cbu['error']) {
-              $sw_error = 1;
-              $arr_error[] = $existe_cbu['result'];
-              } */
-            //verificar largo cuit
-            if (strlen($cuit) != 11) {
-                $sw_error = 1;
-                $arr_error[] = "Longitud de CUIT Observado";
-            }
-
-            if ($sw_error > 0) {
-                $arr_fact["ID_ESTADO"] = "12";
-                //$arr_fact["IMP_ERROR_COD"] = $sw_error;
-                if ($arr_error) {
-                    $texto_error = "";
-                    foreach ($arr_error as $err) {
-                        $texto_error .= $err . "-";
-                    }
-                    $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
+                if (strlen($cuit) != 11) {
+                    $sw_error = 1;
+                    $arr_error[] = "Longitud de CUIT Observado";
                 }
-            }
-            $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
+                if ($sw_error > 0) {
+                    $arr_fact["ID_ESTADO"] = "12";
+                    //$arr_fact["IMP_ERROR_COD"] = $sw_error;
+                    if ($arr_error) {
+                        $texto_error = "";
+                        foreach ($arr_error as $err) {
+                            $texto_error .= $err . "-";
+                        }
+                        $arr_fact["IMP_ERROR_TEXTO"] = substr($texto_error, 0, -1);
+                    }
+                }
+                $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
 //            log_this('log/QUIEROVERINSERTXLXS.log', $this->_db->last_query() );
-            $res[] = $resp;
+                $res[] = $resp;
             } // END IF -- >Se cierra el if que valida si el registro tiene numero de factura
             $i++;
             $k++;
-/*      if ($k==30){
+            /*      if ($k==30){
               break;
               } */
         }
@@ -2527,4 +2513,5 @@ class agencia_model extends main_model {
     }
 
 }
+
 ?>

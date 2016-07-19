@@ -23,8 +23,9 @@ if (nolocal == 1) {
 
 function guardar_factura() {
 //e.preventDefault();
-    var numOperatoria = $("#numOperatoria").val();
+//    var numOperatoria = $("#numOperatoria").val();
     var id = $("#idh").val();
+//    var numeroS = $("#numero").val();
     var numero = $("#numero").val();
     var fecha = $("#fecha").val();
     fecha = formattedDate_ui(fecha);
@@ -35,7 +36,7 @@ function guardar_factura() {
     var ltros = $("#ltros").val();
     var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
-    var azucar = $("#azucar").val();
+//    var azucar = $("#azucar").val();
     var precio = $("#precio").val();
     var neto = $("#neto").val();
     var iva = $("#iva").val();
@@ -43,9 +44,33 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
-    var numVinedo = $("#numVinedo").val();
-    var numRut = $("#numRut").val();
+//    var numVinedo = $("#numVinedo").val();
+//    var numRut = $("#numRut").val();
     iid = id ? id : 0;
+
+//    if (numeroS == '') {
+//        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#numero").focus();
+//        });
+//        return false;
+//    }
+//    if(num1.length != 4){
+//        jAlert('Ingrese correctamente el número de factura.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#numero").focus();
+//        });
+//        return false;
+//    }
+//    if(num2.length != 8){
+//        jAlert('Ingrese correctamente el número de factura.', $.ucwords(_etiqueta_modulo), function () {
+//            $("#numero").focus();
+//        });
+//        return false;
+//    }
+//    
+//    var num1 = numeroS.substring(0, 4);
+//    var num2 = numeroS.substring(4, 12);
+//
+//    var numero = num1 + "-" + num2;
 
 //validar campos
     if (numero == '') {
@@ -1511,9 +1536,20 @@ $(document).ready(function () {
         var total = 1 * $("#neto").val() + 1 * $("#iva").val();
         $("#total").val(dec(total, 2));
     });
+
     $("#precio").keyup(function () {
         cambiarPrecio();
     });
+
+//    $("#numero").keyup(function () {
+//        var largo = $("#numero").val().split("-").join("");
+//        console.log("LARGO DE " + largo.length);
+//        if (largo.length > 0) {
+//            largo = largo.match(new RegExp('.{1,4}', 'g')).join("-");
+//        }
+//        $("#numero").val(largo);
+//    });
+
 //    $("#precio,#retencion").keyup(function () {
 //        cambiarPrecio();
 //    });

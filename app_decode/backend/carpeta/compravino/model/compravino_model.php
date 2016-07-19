@@ -3011,17 +3011,25 @@ class compravino_model extends main_model {
 
             // idfactura
             $numero = $objPHPExcel->getActiveSheet()->getCell("Y" . $i)->getValue();
+            $contadorCaracteres = strlen($numero);
 
-            if ($numero != "") {
-                
+            if ($numero != "" && ( $contadorCaracteres == 12 || $contadorCaracteres == 13)) {
                 //validar numero de factura
-                $existe_fact = $numero ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=1") : FALSE;
-
+                $existe_fact = $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=1");
                 if ($numero && $existe_fact) {
                     $i++;
                     $k++;
                     continue;
+                } else {
+                    $numero_sin = str_replace("-", "", $numero);
+                    $existe_fact_sin_ = $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $numero . "' AND id_cliente=" . $id_cliente . "  AND TIPO=1");
+                    if ($numero_sin && $existe_fact_sin) {
+                        $i++;
+                        $k++;
+                        continue;
+                    }
                 }
+                $numero = str_replace("-", "", $numero);
 
                 $fecha = $objPHPExcel->getActiveSheet()->getCell("X" . $i)->getValue(); //??
                 $fechavto = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();  //??
@@ -3184,8 +3192,6 @@ class compravino_model extends main_model {
                 $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
                 //log_this('log/aaaaaa.log', $this->_db->last_query() );
                 $res[] = $resp;
-            
-                
             } // END IF -- >Se cierra el if que valida si el registro tiene numero de factura
 
             $i++;
