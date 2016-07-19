@@ -283,10 +283,6 @@ class cuotas extends main_controller{
             $tasa_mora = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_MORATORIA'];
             $tasa_pun = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_POR_PUNITORIOS'];
             
-            $_POST['tasa'] = $tasa_comp; 
-            $_POST['subsidio'] = $tasa_subs;
-            $_POST['moratorio'] = $tasa_mora;
-            $_POST['punitorio'] = $tasa_pun;
             
             $_POST['fecha'] = $_SESSION['CAMBIO_TASAS']['FECHA'];
             
@@ -296,31 +292,39 @@ class cuotas extends main_controller{
             }
             
             foreach ($creditos as $credito) {
+                $tasas = $this->mod->getTasas($credito['ID'], $_POST['fecha']);
+                if ($tasas) {
+                    $_POST['tasa'] = $tasa_comp >= 0 ? $tasa_comp : $tasas['POR_INT_COMPENSATORIO'];
+                    $_POST['subsidio'] = $tasa_subs >= 0 ? $tasa_subs : $tasas['POR_INT_SUBSIDIO'];
+                    $_POST['moratorio'] = $tasa_mora >= 0 ? $tasa_mora : $tasas['POR_INT_MORATORIO'];
+                    $_POST['punitorio'] = $tasa_pun >= 0 ? $tasa_pun : $tasas['POR_INT_PUNITORIO'];
                 
-                if ($cambiar_valores) {
-                    $tasas = $this->mod->getTasasCredito($credito['ID'], $_POST['fecha']);
-                    if ($tasa_comp === -1) {
-                        $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                    if ($cambiar_valores) {
+                        $tasas = $this->mod->getCambiosTasasCredito($credito['ID'], $_POST['fecha']);
+                    
+                        if ($tasa_comp === -1) {
+                            $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                        }
+                        if ($tasa_subs === -1) {
+                            $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
+                        }
+                        if ($tasa_mora === -1) {
+                            $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
+                        }
+                        if ($tasa_pun === -1) {
+                            $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
+                        }
                     }
-                    if ($tasa_subs === -1) {
-                        $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
-                    }
-                    if ($tasa_mora === -1) {
-                        $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
-                    }
-                    if ($tasa_pun === -1) {
-                        $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
-                    }
+                    $_POST['credito_id'] = $credito['ID'];
+                    $_POST['version_id'] = $credito['ID_VERSION'];
+                    
+                    $this->x_agregar_cambiotasa(TRUE);
                 }
-                $_POST['credito_id'] = $credito['ID'];
-                $_POST['version_id'] = $credito['ID_VERSION'];
-                
-                $this->x_agregar_cambiotasa(TRUE);
             }
         }
         
         echo trim(json_encode($_SESSION['CAMBIO_TASAS']['RESULTADO']));
-        unset($_SESSION['CAMBIO_TASAS']);
+        //unset($_SESSION['CAMBIO_TASAS']);
         die();
     }
     
@@ -365,7 +369,6 @@ class cuotas extends main_controller{
         
         foreach ($creditos as $credito_id) {
             $this->_reimputar($credito_id);
-            
             die();
         }
     }

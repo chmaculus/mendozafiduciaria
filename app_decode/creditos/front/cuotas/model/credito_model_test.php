@@ -860,14 +860,30 @@ class credito_model_test extends credito_model {
         $this->get_segmentos_cuota();
     }
     
-    function getTasasCredito($id, $fecha) {
+    function getCambiosTasasCredito($id, $fecha) {
         $this->_db->select("POR_INT_COMPENSATORIO, POR_INT_SUBSIDIO, POR_INT_MORATORIO, POR_INT_PUNITORIO");
         $this->_db->where("ID_CREDITO = '" . $id . "' AND fecha<=$fecha");
         $this->_db->order_by("FECHA", "DESC");
         $this->_db->limit(0,1);
         $rtn = $this->_db->get_tabla("fid_creditos_eventos");
+        if ($rtn) {
+            return $rtn[0];
+        } else {
+            return FALSE;
+        }
+    }
+    
+    function getTasas($id, $fecha) {
+        $this->_db->select("POR_INT_COMPENSATORIO, POR_INT_SUBSIDIO, POR_INT_MORATORIO, POR_INT_PUNITORIO");
+        $this->_db->where("ID_CREDITO = '" . $id . "' AND TIPO=0 AND fecha<=$fecha");
+        $rtn = $this->_db->get_tabla("fid_creditos_eventos");
         
-        return $rtn[0];
+        if ($rtn) {
+            return $rtn[0];
+        } else {
+            return FALSE;
+        }
+            
     }
 
     function get_monto_credito() {
