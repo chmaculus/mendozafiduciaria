@@ -266,7 +266,7 @@ class cobros_model extends credito_model{
         
         if (count($rtn)) {
             foreach ($rtn as $it) {
-                if ($it['monto'] == $monto) {
+                if (round($it['monto'], 2) == $monto) {
                     return TRUE;
                 }
             }
