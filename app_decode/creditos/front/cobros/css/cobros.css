@@ -63,11 +63,14 @@
     clear: both;
     width:100%;
     padding:15px 0px;
+    cursor: pointer
 }
 
 .lista_archivos ul{
     float: left;
     list-style: none;
+    display:block;
+    clear:both;
 }
 
 .lista_archivos ul.titulo{
@@ -163,3 +166,4 @@
     box-sizing: border-box;
 }
 .nimp{color:red}
+.tiene_pag{color:blue}

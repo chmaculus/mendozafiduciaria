@@ -36,6 +36,14 @@ class cobros_model extends credito_model{
         return $rtn;
     }
     
+    function get_archivos_bancarios_mes(){
+        $this->_db->select('FECHA_RENDICION');
+        $this->_db->group_by("YEAR( FROM_UNIXTIME( FECHA_RENDICION ) ) , MONTH( FROM_UNIXTIME( FECHA_RENDICION ) )");
+        $this->_db->order_by("FECHA_RENDICION", "DESC");
+        $rtn = $this->_db->get_tabla("fid_creditos_bancos_cobros", 'ID_CREDITO > 0');
+        return $rtn;
+    }
+    
     function get_archivo_bancario($id){
         $rtn = $this->_db->get_row("fid_creditos_bancos_files","ID = ".$id);
         return $rtn;
@@ -60,6 +68,19 @@ class cobros_model extends credito_model{
         $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID", "left");
         $this->_db->join("fid_clientes cl","cl.ID = c.POSTULANTES", "left");
         $datos = $this->_db->get_tabla("fid_creditos_bancos_cobros cb","cb.ID_FILE = ".$id);
+        //echo $this->_db->last_query();die();
+        return $datos;
+    }
+    
+    function get_cobros_bancos_mes($mes){
+        $this->_db->select("cb.*, cl.RAZON_SOCIAL");
+        
+        $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID", "left");
+        $this->_db->join("fid_clientes cl","cl.ID = c.POSTULANTES", "left");
+        $year = date('Y', $mes);
+        $mes = date('m', $mes);
+        $this->_db->order_by("cb.ID_CREDITO ASC, cb.CREDITO_VENCIMIENTO", "ASC");
+        $datos = $this->_db->get_tabla("fid_creditos_bancos_cobros cb","YEAR( FROM_UNIXTIME( FECHA_RENDICION ) ) = '$year' AND MONTH( FROM_UNIXTIME( FECHA_RENDICION ) ) = '$mes'");
         //echo $this->_db->last_query();die();
         return $datos;
     }
@@ -236,6 +257,21 @@ class cobros_model extends credito_model{
         $this->_db->delete("fid_creditos_bancos_files", "ID=$id");
         
         return TRUE;
+    }
+    
+    function get_pagos_creditos($id_credito, $fecha, $monto) {
+        $this->_db->select('SUM(MONTO) AS monto');
+        $this->_db->group_by('ID_VARIACION');
+        $rtn = $this->_db->get_tabla("fid_creditos_pagos", "ID_CREDITO=$id_credito AND FECHA=$fecha");
+        
+        if (count($rtn)) {
+            foreach ($rtn as $it) {
+                if (round($it['monto'], 2) == $monto) {
+                    return TRUE;
+                }
+            }
+        }
+        return FALSE;
     }
     
 }

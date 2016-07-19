@@ -3579,16 +3579,19 @@ ORDER BY T1.lvl DESC');
         
         $this->_db->select('*');
         $this->_db->where("ID_OPERATORIA = " . $this->_id_operatoria . " AND FECHA >= '$fecha'");
+        $this->_db->order_by("FECHA", "ASC");
         $cambiotasas = $this->_db->get_tabla("fid_operatoria_cambiotasas");
         
         if ($cambiotasas) {
             $data = array();
             $data['TIPO'] = EVENTO_TASA;
-        
-            $por_int_compensatorio = 0;
-            $por_int_subsidio = 0;
-            $por_int_moratorio = 0;
-            $por_int_punitorio = 0;
+            
+            $primera_variacion = reset($this->_variaciones);
+            
+            $por_int_compensatorio = $primera_variacion['POR_INT_COMPENSATORIO'];
+            $por_int_subsidio = $primera_variacion['POR_INT_SUBSIDIO'];
+            $por_int_moratorio = $primera_variacion['POR_INT_MORATORIO'];
+            $por_int_punitorio = $primera_variacion['POR_INT_PUNITORIO'];
             
             foreach ($cambiotasas as $ct) {
                 if ($ct['COMPENSATORIO'] == -1) {

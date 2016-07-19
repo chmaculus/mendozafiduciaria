@@ -1,10 +1,11 @@
 var _total = 0;
 
-$_clone_archivo_li = null;
+$_clone_archivo_li_mes = $_clone_archivo_li_archivo= null;
 
 
 $(document).ready(function(){
-    $_clone_archivo_li  = $(".lista_archivos ul.datos li").eq(0).clone();
+    $_clone_archivo_li_mes  = $(".lst_mes ul.datos li").eq(0).clone();
+    $_clone_archivo_li_archivo  = $(".lst_archivo ul.datos li").eq(0).clone();
     $(".lista_archivos ul.datos li").remove();
     $("a#inline").fancybox().hide();
     abrir_archivos_lista();
@@ -29,25 +30,27 @@ function uploadDone() {
 }
 
 function abrir_archivos_lista(){
+    $(".lst_archivo").hide();
+    $(".lst_mes ul.datos").html("");
+    $(".lst_mes").show();
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
-        url : _cobros.URL + "/x_get_archivos_bancos",
+        url : _cobros.URL + "/x_get_archivos_bancos_mes",
         type : "post", 
         async : false,
         dataType : "json",
         success : function(rtn){
-            $(".lista_archivos ul.datos").html("");
             for(var i = 0 ; i < rtn.length ; i++){
-                _agregar_item_html(rtn[i]);
+                _agregar_item_html2(rtn[i]);
             
             }
-
-            
+            $.unblockUI();
         }
     });
 }
 
 function _agregar_item_html(item){
-    var $li = $_clone_archivo_li.clone();
+    var $li = $_clone_archivo_li_archivo.clone();
     
     var fecha = new Date(item.FECHA_REC * 1000);    
     
@@ -60,9 +63,9 @@ function _agregar_item_html(item){
     if (item.ID_CREDITO) {
         $li.find(".archivo-nombre").addClass('nimp');
     }
-    $(".lista_archivos ul.datos").append($li);
+    $(".lst_archivo ul.datos").append($li);
     
-    $(".lista_archivos ul.datos li").off().on({
+    $(".lst_archivo ul.datos li").off().on({
         "mouseenter" : function(){
             $(this).addClass("over");
         },
@@ -70,9 +73,28 @@ function _agregar_item_html(item){
             $(this).removeClass("over");    
         }
     });
+}
+
+function _agregar_item_html2(item){
+    var $li = $_clone_archivo_li_mes.clone();
+    var fecha = new Date(item.FECHA_RENDICION * 1000);
+    var fecha_txt = ("0" + (fecha.getUTCMonth() + 1)).slice(-2) + "-" + fecha.getFullYear();
     
+    $li.find(".archivo-fecha").text(fecha_txt );
+    $li.data("id",item.FECHA_RENDICION);
+    if (item.ID_CREDITO) {
+        $li.find(".archivo-fecha").addClass('nimp');
+    }
+    $(".lst_mes ul.datos").append($li);
     
-    
+    $(".lst_mes ul.datos li").off().on({
+        "mouseenter" : function(){
+            $(this).addClass("over");
+        },
+        "mouseleave" : function(){
+            $(this).removeClass("over");    
+        }
+    });
 }
 
 function mostrar_archivo(){
@@ -114,6 +136,44 @@ function mostrar_archivo(){
     }
 }
 
+
+function mostrar_mes(){
+    var $over = $(".lista_archivos ul li.over");
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    if ($over.length==1){
+        var id = $over.data("id");
+        var rtn = _cobros.get_data_mes(id);
+        $("#div-mostrar-archivo").html(rtn);
+        $("#div-mostrar-archivo ul.datos").height($('.fancybox-skin').height() - 110);
+        var cantidad_total = $(".datos .opciones_chk input").length;
+        $(".datos .opciones_chk input").off().on({
+            "click" : function(){
+                var cantidad_seleccionados = $(".datos .opciones_chk input:checked").length;
+                if (cantidad_total===cantidad_seleccionados){
+                    $("#chkTodos").attr("checked","checked");
+                }
+                else{
+                    $("#chkTodos").removeAttr("checked");
+                }
+            }
+        });        
+
+        
+        $.unblockUI();
+        
+        $(".lista-extract ul li").off().on({
+            "mouseenter" : function(){
+                $(this).addClass("over");
+            },
+            "mouseleave" : function(){
+                $(this).removeClass("over");    
+            }
+        });
+        
+        $("a#inline").trigger("click");
+    }
+}
+
 _cobros.get_data_file = function(id){
     var rtn = false;
     $.ajax({
@@ -127,6 +187,22 @@ _cobros.get_data_file = function(id){
             rtn  =data;
             
             
+        }
+    });
+    return rtn;
+};
+
+_cobros.get_data_mes = function(mes){
+    var rtn = false;
+    $.ajax({
+        url : _cobros.URL + "/x_get_cobro_mes",
+        data : {
+            mes : mes
+        },
+        type : "post",
+        async : false,
+        success : function(data){
+            rtn  =data;
         }
     });
     return rtn;
@@ -221,6 +297,30 @@ function borrar_archivo() {
                 });
 
             }
+        }
+    });
+}
+
+function ver_mes() {
+    abrir_archivos_lista();
+}
+
+function ver_archivo() {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    $(".lst_mes").hide();
+    $(".lst_archivo").show();
+    $(".lst_archivo ul.datos").html("");
+    $.ajax({
+        url : _cobros.URL + "/x_get_archivos_bancos",
+        type : "post", 
+        async : false,
+        dataType : "json",
+        success : function(rtn){
+            for(var i = 0 ; i < rtn.length ; i++){
+                _agregar_item_html(rtn[i]);
+            
+            }
+            $.unblockUI();
         }
     });
 }
