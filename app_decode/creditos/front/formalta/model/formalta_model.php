@@ -86,6 +86,10 @@ class formalta_model extends credito_model {
             "POSTULANTES" => implode(",", $arr_clientes)
         );
         
+        if (isset($this->_iva)) {
+            $credito['IVA'] = $this->_iva;
+        }
+        
         $this->_db->select('RAZON_SOCIAL, CUIT');
         if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
             $credito['POSTULANTES_NOMBRES'] = $data_clientes['POSTULANTES_NOMBRES'];
@@ -283,6 +287,10 @@ class formalta_model extends credito_model {
         else{
             return $row['ultimo'];
         }
+    }
+    
+    function set_iva($iva){
+        $this->_iva = $iva;
     }
     
     

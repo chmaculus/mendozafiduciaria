@@ -172,6 +172,15 @@
                             <span ><input type="text" class="" id="txtGastosMin" value="<?= $credito['T_GASTOS_MIN'] ?>"/></span>
                         </div>
                     </div>
+
+                    <div class="row ">
+                        <div class="c5">
+                            <span>IVA</span>
+                        </div>
+                        <div class="c3">
+                            <input type="text" class="" id="txtIVA" value="<?= $credito['IVA'] ?>"/>
+                        </div>
+                    </div>
                 </div>                
                 
             </div>
