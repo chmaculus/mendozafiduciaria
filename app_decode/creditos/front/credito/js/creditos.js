@@ -431,17 +431,18 @@ function ver_detalle(id_evento,elem){
 }
 
 function eliminar_pago(id_evento){
-   
+    
     jConfirm("¿Esta seguro de eliminar pagos?", "Eliminar pagos de créditos", function (i) {
-        
         if (i) {
             jConfirm("¿Desea eliminar los pagos siguientes?", "Eliminar pagos de créditos", function (j) {
-                if(j) {
-                    var url_d =  "/x_eliminar_cobranza_s";
-                } else {
-                    var url_d =  "/x_eliminar_cobranza";
-                }
                 bloq();
+                var url_d;
+                if(j) {
+                    url_d =  "/x_eliminar_cobranza_s";
+                } else {
+                    url_d =  "/x_eliminar_cobranza";
+                }
+                
                 $.ajax({
                     url : _credito.URL + url_d,
                     data : {
@@ -449,7 +450,10 @@ function eliminar_pago(id_evento){
                         id_evento : id_evento
                     },
                     type : "post",
-                    async : false,
+                    fail: function() {
+                        $.unblockUI();
+                        jAlert('Hubo un problema, vuelva a intentar', "Eliminar archivo");
+                    },
                     success : function (rtn) {
                         if (rtn == "1") {
                             actualizar_informe();

@@ -85,6 +85,13 @@ class formalta_model extends credito_model {
             "ID_OPERATORIA" => $operacion ? $operacion['ID_OPERATORIA'] : 0,
             "POSTULANTES" => implode(",", $arr_clientes)
         );
+        
+        $this->_db->select('RAZON_SOCIAL, CUIT');
+        if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
+            $credito['POSTULANTES_NOMBRES'] = $data_clientes['POSTULANTES_NOMBRES'];
+            $credito['POSTULANTES_CUIT'] = $data_clientes['POSTULANTES_CUIT'];
+        }
+        
         $this->_db->update("fid_creditos",$credito,"ID = ".$this->_id_credito);
         echo $this->_db->last_query();
     }

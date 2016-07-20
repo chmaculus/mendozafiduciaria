@@ -253,7 +253,22 @@ class carpetas_model extends main_model {
             } else {
                 $rtn['PERIODICIDAD_TASA'] = 0;
             }
-
+            
+            if ($rtn['INTERES_VTO'] == '1969-12-31') { //parche para arreglar fecha mal guardada
+                $this->_db->select('FECHA_VENCIMIENTO');
+                $this->_db->order_by('CUOTAS_RESTANTES', 'DESC');
+                $INTERES_VTO = $this->_db->get_row('fid_creditos_cuotas', "ID_CREDITO=" . $id_credito);
+                if ($INTERES_VTO) {
+                    $rtn['INTERES_VTO'] = date('Y-m-d', $INTERES_VTO['FECHA_VENCIMIENTO']);
+                }
+                
+                $this->_db->select('FECHA_VENCIMIENTO');
+                $this->_db->order_by('CUOTAS_RESTANTES', 'DESC');
+                $INTERES_VTO = $this->_db->get_row('fid_creditos_cuotas', "ID_CREDITO=" . $id_credito . " AND CAPITAL_CUOTA>0");
+                if ($INTERES_VTO) {
+                    $rtn['CAPITAL_VTO'] = date('Y-m-d', $INTERES_VTO['FECHA_VENCIMIENTO']);
+                }
+            }
 
             return $rtn;
         }

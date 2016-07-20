@@ -3920,7 +3920,37 @@ ORDER BY T1.lvl DESC');
         );
         return $rtn;
     }
+    
+    function generar_clientes() {
+        $this->_db->select('POSTULANTES');
+        if ($creditos = $this->_db->get_tabla("fid_creditos", "ID=2173")) {
+            foreach ($creditos as $credito) {
+                print_r($credito);
+                if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
+                    $this->_db->update('fid_creditos', $data_clientes, 'ID = ' . $credito['ID']);
+                }
+            }
+        }
+    }
+    
+    function _generar_clientes($clientes = FALSE) {
+        if($clientes) {
+            $clientes = $this->_db->get_tabla("fid_clientes", "ID IN (" . str_replace("|", ',', $clientes) . ")");
+            if ($clientes) {
+                $nombres = array();
+                $cuits = array();
+                foreach ($clientes as $it_cl) {
+                    $nombres[] = $it_cl['RAZON_SOCIAL'];
+                    $cuits[] = $it_cl['CUIT'];
+                }
+                
+                return array(
+                    'POSTULANTES_NOMBRES' => implode(' | ', $nombres),
+                    'POSTULANTES_CUIT' => implode(' | ', $cuits),
+                    );
+            }
+        }
+        return FALSE;
+    }
   
 }
-                
-?>
