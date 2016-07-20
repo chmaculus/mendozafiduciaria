@@ -241,6 +241,9 @@ function agregar_variacion() {
         case 10:
             refinanciacion_caida();
             break;
+        case 11:
+            credito_caido();
+            break;
     }
 
     $("#txtMonto").val("");
@@ -1081,4 +1084,26 @@ function formaltabase(datos) {
 
     }); 
     
+}
+
+
+function credito_caido() {
+    $.ajax({
+        url: _cuotas.URL + "/x_credito_caido",
+        data: {
+            fecha: $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+            credito_id: _cuotas.ID_CREDITO
+        },
+        type: "post",
+        async : false,
+        success: function(result) {
+            if (result=='-1') {
+                ret = true;
+                return;
+            } else {
+                $(".div-result").html(result);
+                $(window).scrollTop($(".div-result").offset().top);
+            }
+        }
+    });
 }

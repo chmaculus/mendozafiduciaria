@@ -1468,6 +1468,34 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         }
     }
     
+    function x_credito_caido() {
+        $credito_id = $_POST['credito_id'];
+        $fecha = $_POST['fecha'];
+        $ret_reuda = FALSE;
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->set_version_active();        
+
+            $this->mod->set_fecha_actual($fecha);
+            $this->mod->set_fecha_calculo();
+
+
+            $this->mod->renew_datos();
+            //chequera = proyeccion teorica
+            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);    
+
+            $this->mod->generar_evento(array(), true, $fecha);
+            $ret_deuda = $this->mod->get_deuda($fecha, true);
+            print_r($ret_deuda);
+            die();
+            $ret_reuda['fecha_actual'] = $fecha;
+            echo $this->view("cuota",$ret_reuda);
+        
+        } else {
+            echo '-1';
+        }
+        die();
+    }
+    
 }
 
 

@@ -157,6 +157,34 @@ class credito extends main_controller{
         $id_evento = $_POST['id_evento'];
         
         if ($this->mod->set_credito_active($credito_id)) {
+            //die();
+            if ($evento = $this->mod->getEvento($id_evento)) {
+                $fecha = $evento['FECHA'];
+                $version = $evento['ID_VERSION'];
+                $this->mod->set_version_active($version);
+                $this->mod->renew_datos();
+                $this->mod->set_fecha_actual($fecha);
+
+                $pagos = $this->mod->desimputar_pago();
+                
+                $this->mod->set_version_active($version);
+                $this->mod->make_active_version();
+                foreach ($pagos as $pago) {
+                    if ($pago['id_evento'] != $id_evento) {
+                        $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                    }
+                }
+            }
+        }
+        
+        die("1");
+    }
+    
+    function x_eliminar_cobranza_s() {
+        $credito_id = $_POST['credito_id'];
+        $id_evento = $_POST['id_evento'];
+        
+        if ($this->mod->set_credito_active($credito_id)) {
             if ($this->mod->eliminar_pagos($id_evento)) {
                 die("1");
             }
