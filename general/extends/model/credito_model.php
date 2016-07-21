@@ -1260,7 +1260,7 @@ class credito_model extends main_model {
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
                         //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
-                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && $tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
+                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO']))) {
                             $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
                             $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
@@ -3447,6 +3447,133 @@ ORDER BY T1.lvl DESC');
         
     }
     
+    
+    public function emitir_credito_caido($fecha = FALSE) {
+        //hay que tomar el saldo del crédito, dejar una sola cuota con este valor, y fecha de vencimiento de cuota siguiente a la última cuota paga
+        $SALDO_CAPITAL = $this->_total_credito;
+        $key_cuota = FALSE;
+        $__cuota = FALSE;
+        
+        foreach ($this->_cuotas as $id => $cuota) {
+            $_compensatorios = $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA'];
+            if (isset($this->_pagos[$cuota['CUOTAS_RESTANTES']])) {
+                $SALDO_CAPITAL -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_CAPITAL];
+                $_compensatorios -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_COMPENSATORIO];
+                $_compensatorios -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_IVA_COMPENSATORIO];
+            }
+            
+            if ($key_cuota === FALSE && $_compensatorios > 0.2) {
+                $key_cuota = $cuota['FECHA_VENCIMIENTO'];
+                $SALDO_CAPITAL += $_compensatorios;
+                $__cuota = $id;
+            }
+        }
+        
+        $SALDO_CAPITAL = round($SALDO_CAPITAL, 2);
+            
+        $cuota_vencimiento['SALDO_CAPITAL'] = $SALDO_CAPITAL;
+        $cuota_vencimiento['CUOTAS_RESTANTES'] = 1;
+        $cuota_vencimiento['POR_INT_COMPENSATORIO'] = 1;
+        $cuota_vencimiento['FECHA_ENVIADA'] = $key_cuota;
+        $cuota_vencimiento['ID'] = $__cuota;
+        $cuota_vencimiento['E_AMORTIZACION'] = 0;
+        $cuota_vencimiento['ESTADO'] = '';
+        $cuota_vencimiento['FECHA_ENVIADA'] = $key_cuota;
+        $cuota_vencimiento['FECHA_INICIO'] = $key_cuota;
+        $cuota_vencimiento['FECHA_INICIO'] = $key_cuota;
+        //$cuota_vencimiento['FECHA_VENCIMIENTO'] = $key_cuota;
+        
+        $evento_inicial = false;
+        $evento_desembolso = false;
+        $eventos_tasas = array();
+        
+        foreach ($this->_variaciones as $variacion) {
+            $variacion['FECHA_INICIO'] = $key_cuota;
+            switch ($variacion['TIPO']) {
+                case EVENTO_INICIAL:
+                    $evento_inicial = $variacion;
+                    break;
+                case EVENTO_DESEMBOLSO:
+                    $evento_desembolso = $variacion;
+                    break;
+            }
+            
+            if ($evento_inicial && $evento_desembolso) {
+                break;
+            }
+        }
+        
+        foreach ($this->_variaciones as $variacion) {
+            switch ($variacion['TIPO']) {
+                case EVENTO_TASA:
+                    if ($variacion['FECHA'] < $fecha) {
+                        $eventos_tasas[] = $variacion;
+                    }
+                    break;
+            }
+        }
+        
+        $evento_inicial['FECHA'] =  $key_cuota - 1;
+        $evento_inicial['CAPITAL'] =  $SALDO_CAPITAL;
+        $evento_inicial['CUOTAS_GRACIA'] =  0;
+        $evento_inicial['CANTIDAD_CUOTAS'] =  1;
+        
+        $this->_variaciones = array();
+        $variacion = $evento_inicial;
+            //$variacion['POR_INT_COMPENSATORIO'] = 0;
+        $this->_variaciones[$variacion['ID']] = $variacion;
+        
+        if ($evento_desembolso) {
+            $variacion['ID'] = $evento_desembolso['ID'];
+            $variacion['TIPO'] = $evento_desembolso['TIPO'];
+            $variacion['ID_VERSION'] = $evento_desembolso['ID_VERSION'];
+            $evento_desembolso['ASOC']['CUOTAS_RESTANTES'] = 1;
+            $evento_desembolso['ASOC']['FECHA'] = $key_cuota;
+            $evento_desembolso['ASOC']['MONTO'] = $SALDO_CAPITAL;
+            $variacion['ASOC'] = $evento_desembolso['ASOC'];
+            $this->_variaciones[$variacion['ID']] = $variacion;
+        }
+        
+        $id_var = $variacion['ID'];
+        if ($eventos_tasas) {
+            foreach ($eventos_tasas as $t) {
+                $this->_variaciones[$t['ID']] = $t;
+                $this->_variaciones[$t['ID']]['CRED_CAIDO'] = TRUE;
+            }
+        }
+        
+        foreach ($this->_variaciones as $k => $v) {
+            $this->_variaciones[$k]['POR_INT_COMPENSATORIO'] = 0;
+        }
+        
+        //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
+        
+        $cuota_vencimiento['FECHA_VENCIMIENTO'] = $key_cuota;
+        $this->_actualizacion_compensatorios = 1;
+        //EVENTO_DESEMBOLSO
+                
+        $this->_cuotas = array();
+        $this->_cuotas[$__cuota] = $cuota_vencimiento;
+        
+                
+        $this->_pagos = array(
+            array(
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+                9 => 0,
+                10 => 0,
+                11 => 0,
+                12 => 0
+                )
+            );
+    }
+    
     public function updateFechaPago() {
         if ($creditos = $this->get_creditos()) {
             $fecha = strtotime(date('Y-m-d'));
@@ -3922,10 +4049,9 @@ ORDER BY T1.lvl DESC');
     }
     
     function generar_clientes() {
-        $this->_db->select('POSTULANTES');
-        if ($creditos = $this->_db->get_tabla("fid_creditos", "ID=2173")) {
+        $this->_db->select('POSTULANTES, ID');
+        if ($creditos = $this->_db->get_tabla("fid_creditos")) {
             foreach ($creditos as $credito) {
-                print_r($credito);
                 if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
                     $this->_db->update('fid_creditos', $data_clientes, 'ID = ' . $credito['ID']);
                 }

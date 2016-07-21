@@ -1480,15 +1480,23 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
 
 
             $this->mod->renew_datos();
+            $this->mod->emitir_credito_caido($fecha);
+
+            $this->mod->save_last_state(false);
+
+
             //chequera = proyeccion teorica
             $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);    
 
             $this->mod->generar_evento(array(), true, $fecha);
-            $ret_deuda = $this->mod->get_deuda($fecha, true);
-            print_r($ret_deuda);
-            die();
+
+
+            //segundo parametro: recalcular datos
+            //tercer parametro true para forzar la deuda con el compensatorio total
+
+            $ret_reuda = $this->mod->get_deuda($fecha, true);
             $ret_reuda['fecha_actual'] = $fecha;
-            echo $this->view("cuota",$ret_reuda);
+            echo $this->view("credito_caido",$ret_reuda);
         
         } else {
             echo '-1';
