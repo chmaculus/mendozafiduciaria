@@ -3450,9 +3450,35 @@ ORDER BY T1.lvl DESC');
     
     public function emitir_credito_caido($fecha = FALSE) {
         //hay que tomar el saldo del crédito, dejar una sola cuota con este valor, y fecha de vencimiento de cuota siguiente a la última cuota paga
-        $SALDO_CAPITAL = $this->_total_credito;
+        $SALDO_CAPITAL = 0;
         $key_cuota = FALSE;
         $__cuota = FALSE;
+        $id_ant = 0;
+        
+        $_compensatorios = 0;
+        $ret_reuda = $this->get_deuda($fecha, true);
+        foreach ($ret_reuda['cuotas'] as $k => $cuota) {
+            $SALDO_CAPITAL += $cuota['CAPITAL']['SALDO'];
+            
+            $saldo_cuota = $cuota['GASTOS_VARIOS']['SALDO'] + $cuota['CAPITAL']['SALDO'] + $cuota['COMPENSATORIO']['SALDO'];
+            $saldo_cuota += $cuota['MORATORIO']['SALDO'] + $cuota['PUNITORIO']['SALDO'];
+            $saldo_cuota += $cuota['IVA_GASTOS']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'] + $cuota['IVA_PUNITORIO']['SALDO'] + $cuota['IVA_MORATORIO']['SALDO'];
+            
+            if ($key_cuota === FALSE && $saldo_cuota > 0.5) {
+                $__cuota = $k;
+                $key_cuota = $cuota['_INFO']['HASTA'];
+                $_compensatorios = $cuota['COMPENSATORIO']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'];
+                if ($_compensatorios < 0.1 && isset($ret_reuda['cuotas'][$k])) {
+                    $_compensatorios = $ret_reuda['cuotas'][$k + 1]['COMPENSATORIO']['SALDO'] + $ret_reuda['cuotas'][$k + 1]['IVA_COMPENSATORIO']['SALDO'];
+                }
+            }
+        }
+        
+        $SALDO_CAPITAL += $_compensatorios;
+        if (!$key_cuota) {
+            $key_cuota = $fecha;
+        }
+        /*
         
         foreach ($this->_cuotas as $id => $cuota) {
             $_compensatorios = $cuota['INT_COMPENSATORIO'] + $cuota['INT_COMPENSATORIO_IVA'];
@@ -3462,13 +3488,18 @@ ORDER BY T1.lvl DESC');
                 $_compensatorios -= $this->_pagos[$cuota['CUOTAS_RESTANTES']][PAGO_IVA_COMPENSATORIO];
             }
             
+            print_r($cuota);
+            
             if ($key_cuota === FALSE && $_compensatorios > 0.2) {
-                $key_cuota = $cuota['FECHA_VENCIMIENTO'];
+                if (isset($this->_cuotas[$id - 1]))
+                    $key_cuota = $this->_cuotas[$id - 1]['FECHA_VENCIMIENTO'];
+                else
+                    $key_cuota = $cuota['FECHA_VENCIMIENTO'];
                 $SALDO_CAPITAL += $_compensatorios;
                 $__cuota = $id;
             }
         }
-        
+        die;*/
         $SALDO_CAPITAL = round($SALDO_CAPITAL, 2);
             
         $cuota_vencimiento['SALDO_CAPITAL'] = $SALDO_CAPITAL;
@@ -3481,7 +3512,7 @@ ORDER BY T1.lvl DESC');
         $cuota_vencimiento['FECHA_ENVIADA'] = $key_cuota;
         $cuota_vencimiento['FECHA_INICIO'] = $key_cuota;
         $cuota_vencimiento['FECHA_INICIO'] = $key_cuota;
-        //$cuota_vencimiento['FECHA_VENCIMIENTO'] = $key_cuota;
+        $cuota_vencimiento['FECHA_VENCIMIENTO'] = $key_cuota;
         
         $evento_inicial = false;
         $evento_desembolso = false;
@@ -3546,9 +3577,6 @@ ORDER BY T1.lvl DESC');
             $this->_variaciones[$k]['POR_INT_COMPENSATORIO'] = 0;
         }
         
-        //$cuota_vencimiento['FECHA_VENCIMIENTO'] = strtotime(date('Y-m-d')." 23:59:59");
-        
-        $cuota_vencimiento['FECHA_VENCIMIENTO'] = $key_cuota;
         $this->_actualizacion_compensatorios = 1;
         //EVENTO_DESEMBOLSO
                 
@@ -4076,6 +4104,45 @@ ORDER BY T1.lvl DESC');
                     );
             }
         }
+        return FALSE;
+    }
+    
+    public function get_last_cambiotasas($id_operatoria, $fecha) {
+        echo date('Y-m-d', $fecha);
+        if ($id_operatoria) {
+            if ($operatoria = $this->_db->get_row("fid_operatorias", 'ID=' . $id_operatoria)) {
+                $tasas = array(
+                    'COMPENSATORIO' => $operatoria['TASA_INTERES_COMPENSATORIA'],
+                    'MORATORIO' => $operatoria['TASA_INTERES_MORATORIA'],
+                    'PUNITORIO' => $operatoria['TASA_INTERES_POR_PUNITORIOS'],
+                    'SUBSIDIO' => $operatoria['TASA_SUBSIDIADA']
+                    );
+                
+                $this->_db->select('*');
+                $this->_db->where("ID_OPERATORIA = " . $id_operatoria . " AND FECHA <= '$fecha'");
+                $this->_db->order_by("FECHA", "ASC");
+                if ($cambiotasas = $this->_db->get_tabla("fid_operatoria_cambiotasas")) {
+                    foreach ($cambiotasas as $tasa) {
+                        if ($tasa['COMPENSATORIO'] >= 0) {
+                            $tasas['COMPENSATORIO'] = $tasa['COMPENSATORIO'];
+                        }
+                        if ($tasa['MORATORIO'] >= 0) {
+                            $tasas['MORATORIO'] = $tasa['MORATORIO'];
+                        }
+                        if ($tasa['PUNITORIO'] >= 0) {
+                            $tasas['PUNITORIO'] = $tasa['PUNITORIO'];
+                        }
+                        if ($tasa['SUBSIDIO'] >= 0) {
+                            $tasas['SUBSIDIO'] = $tasa['SUBSIDIO'];
+                        }
+                    }
+                }
+                
+                return $tasas;
+            }
+            
+        }
+        
         return FALSE;
     }
   

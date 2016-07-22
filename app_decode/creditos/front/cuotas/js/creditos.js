@@ -1063,8 +1063,17 @@ function prorroga() {
         0,//caducar
         _cuotas.ID_CREDITO,
         $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
-        false,
-        1 //credito prorroga
+        2//credito prorroga
+    ];
+    formaltabase(datos);
+}
+
+function caerCredito() {
+    var datos = [
+        0,//caducar
+        _cuotas.ID_CREDITO,
+        $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+        3//credito caido
     ];
     formaltabase(datos);
 }

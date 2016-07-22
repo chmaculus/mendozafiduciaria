@@ -252,5 +252,5 @@ foreach($cuotas as $kk=>$cuota){
 </ul>
 
 <div id="btn-caducar">
-    <input type="button"  onclick="caerCredito()" value="Emitir en una cuota">
+    <input type="button"  onclick="caerCredito()" value="Emitir en una cuota" style="width:130px" />
 </div>

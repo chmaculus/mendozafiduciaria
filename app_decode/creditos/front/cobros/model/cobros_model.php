@@ -79,7 +79,7 @@ class cobros_model extends credito_model{
         $this->_db->join("fid_clientes cl","cl.ID = c.POSTULANTES", "left");
         $year = date('Y', $mes);
         $mes = date('m', $mes);
-        $this->_db->order_by("cb.ID_CREDITO ASC, cb.CREDITO_VENCIMIENTO", "ASC");
+        $this->_db->order_by("cb.FECHA_RENDICION, cb.CREDITO_VENCIMIENTO", "ASC");
         $datos = $this->_db->get_tabla("fid_creditos_bancos_cobros cb","YEAR( FROM_UNIXTIME( FECHA_RENDICION ) ) = '$year' AND MONTH( FROM_UNIXTIME( FECHA_RENDICION ) ) = '$mes'");
         //echo $this->_db->last_query();die();
         return $datos;
