@@ -94,7 +94,7 @@ class formaltabase extends main_controller {
                 $credito['DESEMBOLSOS'] = array(
                     array(
                         'MONTO' => $credito['MONTO_CREDITO'],
-                        'FECHA' => $ret_reuda['cuotas'][0]['_INFO']['HASTA']
+                        'FECHA' => ($tipo_caducidad == 3) ? $fecha_caduca : $ret_reuda['cuotas'][0]['_INFO']['HASTA']
                     )
                 );
             }

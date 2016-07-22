@@ -345,7 +345,17 @@ class credito_model extends main_model {
                 }
             }
             
+            $fecha_desembolso = FALSE;
             
+            foreach ($this->_variaciones as $it) {
+                if (!$fecha_desembolso && $it['TIPO'] == EVENTO_DESEMBOLSO) {
+                    $fecha_desembolso = $it['FECHA'];
+                }
+            }
+            
+            if ($cuota['FECHA_VENCIMIENTO'] == $fecha_desembolso) { //fix cálculo en créditos de desembolso=fecha de vencimiento
+                $cuota['FECHA_VENCIMIENTO'] += 2;
+            }
             
             $arr_saldo = $this->_get_saldo_capital($cuota['FECHA_VENCIMIENTO'] - 1, true);
             $SALDO_CAPITAL = $arr_saldo['SALDO'];
@@ -920,11 +930,15 @@ class credito_model extends main_model {
 
 
             reset($this->_variaciones);
+            $fecha_1erdesembolso = FALSE;
             foreach ($this->_variaciones as $variacion) {
 
                 if ($variacion['FECHA'] >= $FECHA_INICIO_VARIACION && $variacion['ESTADO'] > -1 && ($variacion['FECHA'] <= $fecha_get || $variacion['TIPO'] == EVENTO_DESEMBOLSO)) {
 
                     $variaciones[] = $variacion;
+                }
+                if (!$fecha_1erdesembolso && $variacion['TIPO'] == EVENTO_DESEMBOLSO) {
+                    $fecha_1erdesembolso = $variacion['FECHA'];
                 }
             }
 
@@ -1144,6 +1158,9 @@ class credito_model extends main_model {
                     $tmp['INT_MORATORIO'] = $tmp['INT_PUNITORIO'] = 0;
                     /////
                     if($fecha_get >= $cuota['FECHA_VENCIMIENTO'] || $this->_tipo_devengamiento == TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO) {
+                        if ($fecha_1erdesembolso == $cuota['FECHA_VENCIMIENTO']) {
+                            $cuota['FECHA_VENCIMIENTO'] += 1;
+                        }
                     
                         $interes = $ranto_total_comp ? ($this->_calcular_interes($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp)) : 0;
                         $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
@@ -4108,7 +4125,6 @@ ORDER BY T1.lvl DESC');
     }
     
     public function get_last_cambiotasas($id_operatoria, $fecha) {
-        echo date('Y-m-d', $fecha);
         if ($id_operatoria) {
             if ($operatoria = $this->_db->get_row("fid_operatorias", 'ID=' . $id_operatoria)) {
                 $tasas = array(
