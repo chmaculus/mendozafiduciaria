@@ -199,11 +199,6 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
-                            var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
-                            var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;
-                            var imp_pun = $("#imp_pun").length ? $("#imp_pun:checked").val() : 0;
-                            var imp_subs = $("#imp_subs").length ? $("#imp_subs:checked").val() : 0;
-                            var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
                             var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
 
@@ -248,11 +243,6 @@ $(document).ready(function(){
                                 ID_PROCESO:id_proceso,
                                 IVA:ivaope,
                                 BANCO:bancoope,
-                                IMP_COMP:imp_comp,
-                                IMP_MORA:imp_mora,
-                                IMP_PUN:imp_pun,
-                                IMP_SUBS:imp_subs,
-                                IMP_FTASAS:imp_ftasas,
                                 ACT_COMPENS:act_compens
                             }
                           
@@ -369,18 +359,7 @@ $(document).ready(function(){
                             }
                         });
                         
-                        
-                        
-                        
-                        $("#fec_imp_tasas").datepicker({
-                            changeMonth: true,
-                            changeYear: true
-                        });
-                        $("#fec_imp_tasas").datepicker("option", "dateFormat", 'dd-mm-yy');
-                        
-                        $("#fec_imp_tasas").datepicker("setDate" , _fecha_tasa);
-                        
-                        
+                        init_cambiotasas();
                         $("#nombre").focus();
                         $(".chzn-select").chosen({ disable_search_threshold: 5 }); 
                         $("#btnBorrar").show();
@@ -610,11 +589,6 @@ $(document).ready(function(){
                             var cordope = $("#cordope").val();
                             var ivaope = $("#ivaope").val();
                             var bancoope = $("#bancoope").val();
-                            var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
-                            var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;
-                            var imp_pun = $("#imp_pun").length ? $("#imp_pun:checked").val() : 0;
-                            var imp_subs = $("#imp_subs").length ? $("#imp_subs:checked").val() : 0;
-                            var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
                             var act_compens = $("#act_compens").attr("checked") ? 1 : 0;
                             
                             var items = $("#listbox").jqxListBox('getCheckedItems');
@@ -657,11 +631,6 @@ $(document).ready(function(){
                                 COORDOPE:cordope,
                                 IVA:ivaope,
                                 BANCO:bancoope,
-                                IMP_COMP:imp_comp,
-                                IMP_MORA:imp_mora,
-                                IMP_PUN:imp_pun,
-                                IMP_SUBS:imp_subs,
-                                IMP_FTASAS:imp_ftasas,
                                 ACT_COMPENS:act_compens
                             }
                             
@@ -1248,4 +1217,144 @@ function error_post_upload(nombre){
     jAlert('El archivo ' + nombre + ' ya existe en el servidor.', $.ucwords(_etiqueta_modulo),function(){
          //agregarlo a la lista
     });
+}
+
+function impactar_cambiotasas() {
+    var imp_comp = $("#imp_comp").length ? $("#imp_comp:checked").val() : 0;
+    var imp_mora = $("#imp_mora").length ? $("#imp_mora:checked").val() : 0;
+    var imp_pun = $("#imp_pun").length ? $("#imp_pun:checked").val() : 0;
+    var imp_subs = $("#imp_subs").length ? $("#imp_subs:checked").val() : 0;
+    var imp_ftasas = $("#fec_imp_tasas").length ? $.datepicker.formatDate('@', $("#fec_imp_tasas").datepicker("getDate")) / 1000 : 0;
+    
+    if (_validar_impactar_tasas(imp_ftasas, imp_comp, imp_mora, imp_pun, imp_subs)) {
+        jConfirm('Este proceso puede demorar varios minutos', 'Está seguro?', function(r) {
+            if (!r)
+                return;
+            
+            $.ajax({
+                url : _operatorias.URL + "/x_impactar_tasas",
+                async:false,
+                data : {
+                    obj: {
+                        id: $("#idh").val(),
+                        TASA_INTERES_COMPENSATORIA: $("#tasa_ic").val(),
+                        TASA_INTERES_MORATORIA: $("#tasa_im").val(),
+                        TASA_INTERES_POR_PUNITORIOS:$("#tasa_ip").val(),
+                        TASA_SUBSIDIADA:$("#tasa_is").val(),
+                        IMP_COMP:imp_comp,
+                        IMP_MORA:imp_mora,
+                        IMP_PUN:imp_pun,
+                        IMP_SUBS:imp_subs,
+                        IMP_FTASAS:imp_ftasas
+                      },
+                },
+                dataType: "json",
+                type : "post",
+                success : function(r){
+                    if (!r) 
+                        return;
+                    
+                    if (r.result) {
+                        $("#cambio_tasa").replaceWith(r.html);
+                        init_cambiotasas();
+                        _reimp_ct(r.id, r.creditos);
+                    } else {
+                        jAlert(r.error, $.ucwords(_etiqueta_modulo));
+                    }
+                }
+            });
+        });
+    }
+}
+
+function _validar_impactar_tasas(imp_ftasas, imp_comp, imp_mora, imp_pun, imp_subs) {
+    if (!imp_ftasas) {
+        jAlert('Debe ingresar una fecha de impacto');
+        return false;
+    } else if (!(imp_comp || imp_mora || imp_pun || imp_subs)) {
+        jAlert('Debe indicar al menos un tipo de tasa a impactar');
+        return false;
+    } else if ($("#tasa_ic").val() === '' || $("#tasa_im").val() === '' || $("#tasa_ip").val() === '' || $("#tasa_is").val() === '') {
+        jAlert('Algunas de las tasas tiene un valor incorrecto');
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function del_ct(id) {
+    jConfirm('Está seguro de borrar el cambio de tasa?', $.ucwords(_etiqueta_modulo),function(r){
+        if(r==true){
+            //borrar archivo en la bd y fisicamente
+            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+            $.ajax({
+                url : _operatorias.URL + "/x_del_cambiotasa",
+                data : {
+                    id: id
+                },
+                dataType : "json",
+                type : "post",
+                success : function(data){
+                    $.unblockUI();
+                    if (data && data.result) {
+                        $('.ct-' + id).hide();
+                    }
+                }
+            });
+        }
+    });
+}
+
+function reimp_ct(id) {
+    jConfirm('Está seguro de reimputar pagos según cambios de tasas?', $.ucwords(_etiqueta_modulo),function(r){
+        if (r==true) {
+            $.ajax({
+                url : _operatorias.URL + "/x_del_cambiotasa",
+                data : {
+                    id: id
+                },
+                dataType : "json",
+                type : "post",
+                success : function(data){
+                    if (data) {
+                        
+                    }
+                }
+            });
+        }
+    });
+}
+
+function _reimp_ct(id, creditos) {
+    if (creditos.length > 0) {
+        $.each(creditos, function(key, value) {
+            $('#pct').html('Impactando cambio de tasa ' + (key + 1) + ' de ' + creditos.length + ' créditos' );
+            $.ajax({
+                async: false,
+                url : "creditos/front/cuotas/x_imp_cambiotasas",
+                data : {
+                    id: id,
+                    credito_id: value.ID
+                },
+                dataType : "json",
+                type : "post",
+                success : function(data){
+                    if (key + 1 == creditos.length) {
+                        $('#pct').html('El proceso de impactacto de cambio de tasas ha finalizado correctamente' );
+                    }
+                }
+            });
+        });
+    } else {
+        $('#pct').html('No hay créditos para realizar impactación');
+    }
+}
+
+function init_cambiotasas() {
+    $("#fec_imp_tasas").datepicker({
+        changeMonth: true,
+        changeYear: true
+    });
+    $("#fec_imp_tasas").datepicker("option", "dateFormat", 'dd-mm-yy');
+    $("#fec_imp_tasas").datepicker("setDate" , $("#fec_imp_tasas").val());
 }

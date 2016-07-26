@@ -219,6 +219,15 @@ class operatoria_model extends main_model{
     }
     */
     
+    function ver_guardar_cambio_tasa($id, $fecha) {
+        $this->_db->select('ID_OPERATORIA');
+        $rtn = $this->_db->get_tabla("fid_operatoria_cambiotasas", "ID_OPERATORIA = " . $id . " AND FECHA=" . $fecha);
+        if ($rtn) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
     function guardar_cambio_tasa($obj, $fecha) {
         $arr_tasas = array(
             'ID_OPERATORIA' => $obj['id'],
@@ -229,7 +238,40 @@ class operatoria_model extends main_model{
             'FECHA' => $fecha
         );
         
-        $id = $this->_db->insert("fid_operatoria_cambiotasas",$arr_tasas);
+        return $id = $this->_db->insert("fid_operatoria_cambiotasas",$arr_tasas);
+    }
+    
+    function get_cambiotasas($id){
+        if ($id) {
+            $this->_db->select("*");
+            $this->_db->order_by("FECHA", 'ASC');
+            $rtn = $this->_db->get_tabla("fid_operatoria_cambiotasas", "ID_OPERATORIA = " . $id);
+            if ($rtn) {
+                return $rtn;
+            }
+        }
+        
+        return FALSE;
+    }
+    
+    function del_cambio_tasa($id) {
+        $this->_db->select("ID_OPERATORIA, FECHA");
+        $rtn = $this->_db->get_row("fid_operatoria_cambiotasas", "ID = " . $id);
+
+        if ($rtn) {
+            $this->_db->delete('fid_creditos_cambiotasas', 'ID_VARIACION IN (SELECT ce.ID FROM fid_creditos_eventos ce INNER JOIN fid_creditos c ON (c.ID = ce.ID_CREDITO AND c.ID_OPERATORIA = ' . $rtn['ID_OPERATORIA'] . ') WHERE ce.TIPO=' . EVENTO_TASA . ' AND ce.FECHA=' . $rtn['FECHA'] . ')');
+            $this->_db->delete('fid_creditos_eventos', 'FECHA = ' . $rtn['FECHA'] . ' AND TIPO=' . EVENTO_TASA . ' AND ID_CREDITO IN (SELECT ID FROM fid_creditos WHERE ID_OPERATORIA= ' . $rtn['ID_OPERATORIA'] . ')');
+            $this->_db->delete("fid_operatoria_cambiotasas", "ID = " . $id);
+            return TRUE;
+        }
+        return FALSE;
+    }
+    
+    function get_creditos_operatoria($id) {
+        $this->_db->select("ID");
+        $rtn = $this->_db->get_tabla("fid_creditos", "ID_OPERATORIA = " . $id);
+        
+        return $rtn;
     }
     
 }

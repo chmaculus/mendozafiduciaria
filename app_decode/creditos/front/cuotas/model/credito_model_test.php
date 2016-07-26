@@ -584,7 +584,7 @@ class credito_model_test extends credito_model {
     }
     
     function getTasas($id, $fecha) {
-        $this->_db->select("POR_INT_COMPENSATORIO, POR_INT_SUBSIDIO, POR_INT_MORATORIO, POR_INT_PUNITORIO");
+        $this->_db->select("POR_INT_COMPENSATORIO, POR_INT_SUBSIDIO, POR_INT_MORATORIO, POR_INT_PUNITORIO, ID_VERSION");
         $this->_db->where("ID_CREDITO = '" . $id . "' AND TIPO=0 AND fecha<=$fecha");
         $rtn = $this->_db->get_tabla("fid_creditos_eventos");
         
@@ -605,6 +605,23 @@ class credito_model_test extends credito_model {
         $this->_db->update("fid_creditos_bancos_cobros",array("FECHA_INGRESADO"=>$fecha ),"ID = ".$id);
     }
     
+    function get_cambiotasa_by_id($id) {
+        return $this->_db->get_row("fid_operatoria_cambiotasas", 'ID = ' . $id);
+    }
+    
+    function validar_cambiotasa($id_credito, $fecha) {
+        $rtn = $this->_db->get_row("fid_creditos_eventos", "ID_CREDITO = $id_credito AND FECHA > $fecha AND TIPO=" . EVENTO_INICIAL);
+        if ($rtn) {
+            return -1;
+        }
+        
+        $rtn = $this->_db->get_row("fid_creditos_cambiotasas", "ID_CREDITO = $id_credito AND FECHA = $fecha");
+        if ($rtn) {
+            return -2;
+        }
+        
+        return 0;
+    }
 
 }
 

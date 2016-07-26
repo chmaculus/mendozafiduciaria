@@ -1504,6 +1504,58 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         die();
     }
     
+    function x_imp_cambiotasas() {
+        set_time_limit(0);
+        if ($tasas = $this->mod->get_cambiotasa_by_id($_POST['id'])) {
+            $tasa_comp = $tasas['COMPENSATORIO'];
+            $tasa_subs = $tasas['SUBSIDIO'];
+            $tasa_mora = $tasas['MORATORIO'];
+            $tasa_pun = $tasas['PUNITORIO'];
+            $fecha = $tasas['FECHA'];
+            
+            if (($rtn = $this->mod->validar_cambiotasa($_POST['credito_id'], $fecha)) < 0) {
+                echo json_encode(array('result' => $rtn));
+                exit();
+            }
+
+            $cambiar_valores = FALSE;
+            if ($tasa_comp === -1 || $tasa_subs === -1 || $tasa_mora === -1 || $tasa_pun === -1) {
+                $cambiar_valores = TRUE;
+            }
+            
+            if ($tasas = $this->mod->getTasas($_POST['credito_id'], $fecha)) {
+                $_POST['tasa'] = $tasa_comp >= 0 ? $tasa_comp : $tasas['POR_INT_COMPENSATORIO'];
+                $_POST['subsidio'] = $tasa_subs >= 0 ? $tasa_subs : $tasas['POR_INT_SUBSIDIO'];
+                $_POST['moratorio'] = $tasa_mora >= 0 ? $tasa_mora : $tasas['POR_INT_MORATORIO'];
+                $_POST['punitorio'] = $tasa_pun >= 0 ? $tasa_pun : $tasas['POR_INT_PUNITORIO'];
+
+                if ($cambiar_valores) {
+                    $tasas = $this->mod->getCambiosTasasCredito($credito['ID'], $fecha);
+
+                    if ($tasa_comp === -1) {
+                        $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                    }
+                    if ($tasa_subs === -1) {
+                        $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
+                    }
+                    if ($tasa_mora === -1) {
+                        $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
+                    }
+                    if ($tasa_pun === -1) {
+                        $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
+                    }
+                }
+                $_POST['credito_id'] = $_POST['credito_id'];
+                $_POST['version_id'] = $tasas['ID_VERSION'];
+                $_POST['fecha'] = $fecha;
+
+                $this->x_agregar_cambiotasa(TRUE);
+                echo "FIN";
+            }
+            
+        }
+    }
+    
 }
 
 

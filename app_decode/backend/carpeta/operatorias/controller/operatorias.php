@@ -137,60 +137,8 @@ class operatorias extends main_controller{
         unset($obj['entidades']);
           */
         //$obj_tipo_entidades = $_POST['tipo_entidades'];
-        $imp_comp = $imp_mora = $imp_pun = $imp_subs = FALSE;
-        if (isset($obj['IMP_COMP'])) {
-            $imp_comp = $obj['IMP_COMP'];
-            unset($obj['IMP_COMP']);
-        }
-        if (isset($obj['IMP_MORA'])) {
-            $imp_mora = $obj['IMP_MORA'];
-            unset($obj['IMP_MORA']);
-        }
-        if (isset($obj['IMP_PUN'])) {
-            $imp_pun = $obj['IMP_PUN'];
-            unset($obj['IMP_PUN']);
-        }
-        if (isset($obj['IMP_SUBS'])) {
-            $imp_subs = $obj['IMP_SUBS'];
-            unset($obj['IMP_SUBS']);
-        }
-
-        $impactar_tasas = $imp_comp || $imp_mora || $imp_pun || $imp_subs;
-            
-        if ($impactar_tasas) {
-            $fecha_imp_tasas = $obj['IMP_FTASAS'];
-        }
-        
-        if (isset($obj['IMP_FTASAS'])) {
-            unset($obj['IMP_FTASAS']);
-        }
         
         $rtn = $this->mod->sendobj($obj, $checklist, $adjuntos );
-        
-        if ($impactar_tasas) {
-            if(!$imp_comp) {
-                $obj['TASA_INTERES_COMPENSATORIA'] = -1;
-            }
-            if(!$imp_mora) {
-                $obj['TASA_INTERES_MORATORIA'] = -1;
-            }
-            if(!$imp_pun) {
-                $obj['TASA_INTERES_POR_PUNITORIOS'] = -1;
-            }
-            if(!$imp_subs) {
-                $obj['TASA_SUBSIDIADA'] = -1;
-            }
-            
-            $_SESSION['CAMBIO_TASAS'] = array(
-                'OPERATORIA' => $obj,
-                'FECHA' => $fecha_imp_tasas,
-                'RESULTADO' => $rtn
-            );
-            
-            $this->mod->guardar_cambio_tasa($obj, $fecha_imp_tasas);
-            header("Location: " . '/' . URL_PATH . '/creditos/front/cuotas/impactar_tasas');
-            exit();
-        }
         
         echo trim(json_encode($rtn?$rtn:array()));
     }
@@ -333,6 +281,7 @@ class operatorias extends main_controller{
             $data['cad'] = $cad;
             $chk_array = json_encode($data['cad']);
             $data['lst_uploads'] = $this->x_get_uploads( $tmp[0]['ID'] );
+            $data['lst_cambiotasas'] = $this->mod->get_cambiotasas($obj);
             $data['imputacion_tasas'] = TRUE;
         }
         else{
@@ -456,8 +405,90 @@ class operatorias extends main_controller{
         }    
 
     }
+
+    function x_impactar_tasas() {
+        $obj = $_POST['obj'];
+        
+        $result = array('result' => FALSE, 'error' => '');
+        
+        $imp_comp = $imp_mora = $imp_pun = $imp_subs = FALSE;
+        if (isset($obj['IMP_COMP'])) {
+            $imp_comp = $obj['IMP_COMP'];
+            unset($obj['IMP_COMP']);
+        }
+        if (isset($obj['IMP_MORA'])) {
+            $imp_mora = $obj['IMP_MORA'];
+            unset($obj['IMP_MORA']);
+        }
+        if (isset($obj['IMP_PUN'])) {
+            $imp_pun = $obj['IMP_PUN'];
+            unset($obj['IMP_PUN']);
+        }
+        if (isset($obj['IMP_SUBS'])) {
+            $imp_subs = $obj['IMP_SUBS'];
+            unset($obj['IMP_SUBS']);
+        }
+
+        $impactar_tasas = $imp_comp || $imp_mora || $imp_pun || $imp_subs;
+            
+        if ($impactar_tasas) {
+            $fecha_imp_tasas = $obj['IMP_FTASAS'];
+        }
+        
+        if ($this->mod->ver_guardar_cambio_tasa($obj['id'], $fecha_imp_tasas)) {
+            $result['error'] = "Hay un evento de cambio de tasa para tal fecha";
+            echo json_encode($result);
+            die();
+        }
+        
+        if (isset($obj['IMP_FTASAS'])) {
+            unset($obj['IMP_FTASAS']);
+        }
+        
+        if ($impactar_tasas) {
+            if(!$imp_comp) {
+                $obj['TASA_INTERES_COMPENSATORIA'] = -1;
+            }
+            if(!$imp_mora) {
+                $obj['TASA_INTERES_MORATORIA'] = -1;
+            }
+            if(!$imp_pun) {
+                $obj['TASA_INTERES_POR_PUNITORIOS'] = -1;
+            }
+            if(!$imp_subs) {
+                $obj['TASA_SUBSIDIADA'] = -1;
+            }
+            
+            $_SESSION['CAMBIO_TASAS'] = array(
+                'OPERATORIA' => $obj,
+                'FECHA' => $fecha_imp_tasas
+            );
+            
+            if ($id = $this->mod->guardar_cambio_tasa($obj, $fecha_imp_tasas)) {
+                $result['result'] = TRUE;
+                $result['id'] = $id;
+                $result['creditos'] = $this->mod->get_creditos_operatoria($obj['id']);
+                
+                $data = array();
+                $data['lst_cambiotasas'] = $this->mod->get_cambiotasas($obj['id']);
+                $data['imputacion_tasas'] = TRUE;
+
+                $result['html'] = $this->view("cambio_tasas", $data);
+            }
+            
+            //$this->cuotas_model = $this->_init_model("credito_model_test", false, "creditos/front/cuotas");
+            //$this->cuotas_model->impactar_tasas($obj, $fecha_imp_tasas);
+            
+        }
+        
+        echo json_encode($result);
+    }
     
-    
+    function x_del_cambiotasa() {
+        if ($this->mod->del_cambio_tasa($_POST['id'])) {
+            echo json_encode(array('result' => TRUE));
+        }
+    }
 }
 
 class SelectBox{
