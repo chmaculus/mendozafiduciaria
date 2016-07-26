@@ -257,7 +257,6 @@ function notifMain( iid ){
                         },
                         async:false,
                         success : function(){
-//                            alert(" PASO");
                              actualizaNotif();
                             regresar_a_listado();
                             jAlert('Carpeta vista.', 'Carpetas',function(){

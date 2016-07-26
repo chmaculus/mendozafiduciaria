@@ -166,17 +166,24 @@ function guardar_factura() {
                 });
             } else { // no existe
                 $.ajax({
-                    url: _compravino.URL + "/x_sendobj",
-                    data: {obj: objsave, cambio_titularidad: cambio_titularidad, },
-                    dataType: "json", type: "post", async: "false", });
-                /*Verificar si tiene cuotas sino generar*/
-                $.ajax({
-                    url: _compravino.URL + "/x_verificarCuotas",
-                    data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha},
-                    dataType: "json", type: "post", async: "false", });
-                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/compravino/init/12/2";
-                    $(location).attr('href', urlh);
+                    url: _compravino.URL + "/x_cuit_consulta_id",
+                    data: {cuit: cuitform},
+                    dataType: "json", type: "post", async: "false",
+                    success: function (data_id) {
+                        $.ajax({
+                            url: _compravino.URL + "/x_sendobj",
+                            data: {obj: objsave, cambio_titularidad: cambio_titularidad},
+                            dataType: "json", type: "post", async: "false", });
+                        /*Verificar si tiene cuotas sino generar*/
+                        $.ajax({
+                            url: _compravino.URL + "/x_verificarCuotas",
+                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha,idCliente:data_id[0]['ID'] },
+                            dataType: "json", type: "post", async: "false", });
+                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                            var urlh = "backend/carpeta/compravino/init/12/2";
+                            $(location).attr('href', urlh);
+                        });
+                    }
                 });
             }
         }
@@ -3636,8 +3643,6 @@ function editar_estado_cu(name_grid) {
     var selectedrowindex = $("#" + name_grid).jqxGrid('getselectedrowindex');
     var selectedrowindexes = $("#" + name_grid).jqxGrid('getselectedrowindexes');
     mydata = $('#' + name_grid).jqxGrid('getrowdata', selectedrowindex);
-    console.log("LALALALALA");
-    console.log(mydata);
 //    if (mydata == null) {
 //        jAlert('Seleccione una factura.', $.ucwords(_etiqueta_modulo), function () {
 //            $.unblockUI();
@@ -3730,11 +3735,11 @@ function lote_pago() {
             });
             return false;
         } else if (swa == '5') {
-            jAlert('En la factura ID '+id_ref_devolver+' no hay mas cuotas para enviar. Ya fueron procesadas todas.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('En la factura ID ' + id_ref_devolver + ' no hay mas cuotas para enviar. Ya fueron procesadas todas.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '6') {
-            jAlert('La cuota de la factura con el ID '+id_referencia_devolver+' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('La cuota de la factura con el ID ' + id_referencia_devolver + ' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '10') {

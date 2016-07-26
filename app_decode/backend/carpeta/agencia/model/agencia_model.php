@@ -15,16 +15,13 @@ class agencia_model extends main_model {
     }
 
     function getDetalleCu($id_fac) {
-
         if (!$id_fac)
             return array();
-
-        $this->_db->where("NUM_FACTURA ='" . $id_fac . "'");
+        $this->_db->where("NUM_FACTURA ='" . $id_fac . "' AND TIPO=2");
         $rtn = $this->_db->get_tabla("fid_cu_pagos");
         $rtn_n = array();
         $i = 0;
         foreach ($rtn as $value) {
-
             if ($value['ESTADO_CUOTA'] == '0') {
                 $value['ESTADO_CUOTA'] = 'No enviado';
             } else if ($value['ESTADO_CUOTA'] == '1') {
@@ -34,7 +31,6 @@ class agencia_model extends main_model {
             } else {
                 $value['ESTADO_CUOTA'] = '';
             }
-
             $rtn_n[$i] = $value;
             $i++;
         }
@@ -48,13 +44,7 @@ class agencia_model extends main_model {
         return $rtn;
     }
 
-//    function getclientessql() {
-//        //$rtn = $this->_db->get_tabla('fid_usuarios');
-//        $rtn = $this->_dbsql->get_tabla('VENDEDORES');
-//        return $rtn;
-//    }
     function sincronizarAgencia($datosBuscar) {
-
         $j = 0;
         $this->_db->select("IFNULL(CONCAT(u1.NOMBRE,' ',u1.APELLIDO), '-') AS USU_CARGA, 
             IFNULL(CONCAT(u2.NOMBRE,' ',u2.APELLIDO), '-') AS USU_CHEQUEO, f.ID AS IID,f.ID AS ID,f.TOTAL AS TOTAL, f.IVA AS IVA, 
@@ -88,19 +78,16 @@ class agencia_model extends main_model {
                         if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
                             if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
+                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=2 AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
                                 $arr_act_fact = array("ID_ESTADO" => 1);
                                 $this->_db->update('fid_cu_factura', $arr_act_fact, " NUMERO='" . $value['NUMERO'] . "'");
-//                                log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
-//            log_this('log/qqqqqqqUpdate2.log', $this->_db->last_query() );
                         } else if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] == $solicitud_adm[$j][0]['CCU']) {
                             if ($solicitud_adm[$j][0]['ESTADO'] == 2) {
                                 $arr_ins_cu = array("ESTADO_CUOTA" => 2, "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
-                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
+                                $this->_db->update('fid_cu_pagos', $arr_ins_cu, " NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=2 AND NUM_CUOTA=" . $solicitud_adm[$j][0]['UCU']);
                                 $arr_ins = array("ID_ESTADO" => '9', "ORDEN_PAGO" => $solicitud_adm[$j][0]['ORDEN_PAGO']);
                                 $this->_db->update('fid_cu_factura', $arr_ins, " ID=" . $value['ID'] . " AND NUMERO='" . $value['NUMERO'] . "'");
-//                            log_this('log/UPDATE111.log', $this->_db->last_query());
                             }
                         }
                     }
@@ -111,16 +98,13 @@ class agencia_model extends main_model {
     }
 
     function guardarlote($arr_obj) {
-
         $id_lote_new = 0;
         if ($arr_obj) {
             //insert cabezera
             $id_lote_new = $this->_db->insert('fid_cu_lotes', array("DESCRIPCION" => "descripcion"));
 
             foreach ($arr_obj as $ciu):
-
                 $id_factura = $ciu["IID"];
-
                 $arr_ins = array(
                     "ID_FACTURA" => $id_factura,
                     "ID_LOTE" => $id_lote_new,
@@ -156,7 +140,6 @@ class agencia_model extends main_model {
                         "ESTADO" => "1"
                     );
                     $this->_dbsql->insert('SOLICITUD_ADM', $arra_ins);
-//                    log_this('log/lalalalalalallskaldkasl.log', $this->_dbsql->last_query());
 
                     $arra_ins_cuota = array(
                         "CUIT" => $cuit_cli[0]['CUIT'],
@@ -253,9 +236,7 @@ class agencia_model extends main_model {
     }
 
     function actualizarTablasW() {
-
         //W_PROVEEDORES
-//        $rtn = $this->_db->get_tabla('fid_clientes', "CU=1");
         $rtn = $this->_db->get_tabla('fid_clientes');
 
         if ($rtn) {
@@ -418,13 +399,6 @@ class agencia_model extends main_model {
             $rtn["CHECK_TITULARIDAD"] = 0;
             return $rtn;
         }
-    }
-
-    function getoperatoria($id_objeto) {
-        $this->_db->select("*");
-        $rtn = $this->_db->get_tabla('fid_operatoria_vino', "ID_OPERATORIA = '" . $id_objeto . "'");
-//         log_this('log/lalalalalalallskaldkasl.log', $this->_db->last_query());
-        return $rtn;
     }
 
     function sendPago1($array_post) {
@@ -906,19 +880,16 @@ class agencia_model extends main_model {
     }
 
     function sendobjcli($obj) {
-        //log_this('log/aaaaa.log',print_r($obj,1));
         $iid = $obj["id"];
         unset($obj["id"]);
         $obj["CU"] = 1;
 
         if ($iid == 0)://agregar
             $resp = $this->_db->insert('fid_clientes', $obj);
-            //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "add";
             $id_new = $resp;
         else://editar
             $resp = $this->_db->update('fid_clientes', $obj, "id='" . $iid . "'");
-            //log_this('log/aaaaa.log', $this->_db->last_query());
             $acc = "edit";
             $id_new = $iid;
         endif;
@@ -963,17 +934,19 @@ class agencia_model extends main_model {
     }
 
     function verificar_enviadas($arr_obj) {
-        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'" .
-                " AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
+        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'" 
+                . " AND CUIT='" . $arr_obj['CUIT'] . "' AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
         return $verificar_enviadas;
         die;
     }
 
-    function sendobj($obj, $cambio_titularidad) {
-        $numero_factura = $obj['NUMERO'];
+    function sendobj($obj) {
+        $num_factura = $obj['NUMERO'];
         $iid = $obj["id"];
         $cuit = $obj["CUIT"];
+        $neto = $obj["NETO"];
+        $iva = $obj["IVA"];
         $cli = $this->_db->get_tabla("fid_clientes", "CUIT='" . $cuit . "'");
         $valor_actual = 0;
         $valor_nuevo = 0;
@@ -1001,6 +974,7 @@ class agencia_model extends main_model {
             if ($obj["FORMA_PAGO"] == 1) {
                 /* Forma de pago 1 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1024,6 +998,7 @@ class agencia_model extends main_model {
             } else if ($obj["FORMA_PAGO"] == 2) {
                 /* Forma de pago 2 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1044,6 +1019,7 @@ class agencia_model extends main_model {
                 $ins_cuotas1['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas2['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
                 $ins_cuotas2['TIPO'] = 2;
@@ -1063,6 +1039,7 @@ class agencia_model extends main_model {
             } else if ($obj["FORMA_PAGO"] == 3) {
                 /* Forma de pago 3 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1083,6 +1060,7 @@ class agencia_model extends main_model {
                 $ins_cuotas1['FECHA_VEN'] = end($ven);
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas2['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
                 $ins_cuotas2['TIPO'] = 2;
@@ -1100,6 +1078,7 @@ class agencia_model extends main_model {
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas3['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas3['NUM_CUOTA'] = 3;
                 $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
                 $ins_cuotas3['TIPO'] = 2;
@@ -1119,6 +1098,7 @@ class agencia_model extends main_model {
             } else if ($obj["FORMA_PAGO"] == 4) {
                 /* Forma de pago 4 */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1140,6 +1120,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas2['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 4);
                 $ins_cuotas2['TIPO'] = 2;
@@ -1159,6 +1140,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas3['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas3['NUM_CUOTA'] = 3;
                 $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 4);
                 $ins_cuotas3['TIPO'] = 2;
@@ -1178,6 +1160,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas4['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 4);
                 $ins_cuotas4['TIPO'] = 2;
@@ -1201,6 +1184,7 @@ class agencia_model extends main_model {
                  * Forma de pago 5
                  * ********************************************************************************************* */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 5) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1222,6 +1206,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas2['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 5);
                 $ins_cuotas2['TIPO'] = 2;
@@ -1241,6 +1226,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas3['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas3['NUM_CUOTA'] = 3;
                 $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 5);
                 $ins_cuotas3['TIPO'] = 2;
@@ -1259,6 +1245,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas4['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 5);
                 $ins_cuotas4['TIPO'] = 2;
@@ -1278,6 +1265,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas5['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
                 $ins_cuotas5['VALOR_CUOTA'] = ($obj["NETO"] / 5);
                 $ins_cuotas5['TIPO'] = 2;
@@ -1299,6 +1287,7 @@ class agencia_model extends main_model {
                  * Forma de pago 6
                  * ********************************************************************************************* */
                 $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas1['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas1['NUM_CUOTA'] = 1;
                 $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
                 $ins_cuotas1['TIPO'] = 2;
@@ -1320,6 +1309,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
                 $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas2['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas2['NUM_CUOTA'] = 2;
                 $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 6);
                 $ins_cuotas2['TIPO'] = 2;
@@ -1337,6 +1327,7 @@ class agencia_model extends main_model {
                 $ins_cuotas2['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
                 $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+                $ins_cuotas3['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas3['NUM_CUOTA'] = 3;
                 $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 6);
                 $ins_cuotas3['TIPO'] = 2;
@@ -1356,6 +1347,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
                 $ins_cuotas4['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas4['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas4['NUM_CUOTA'] = 4;
                 $ins_cuotas4['VALOR_CUOTA'] = ($obj["NETO"] / 6);
                 $ins_cuotas4['TIPO'] = 2;
@@ -1375,6 +1367,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
                 $ins_cuotas5['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas4['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas5['NUM_CUOTA'] = 5;
                 $ins_cuotas5['VALOR_CUOTA'] = ($obj["NETO"] / 6);
                 $ins_cuotas5['TIPO'] = 2;
@@ -1394,6 +1387,7 @@ class agencia_model extends main_model {
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
 
                 $ins_cuotas6['NUM_FACTURA'] = $obj['NUMERO'];
+                $ins_cuotas6['ID_CLIENTE'] = $obj["ID_CLIENTE"];
                 $ins_cuotas6['NUM_CUOTA'] = 6;
                 $ins_cuotas6['VALOR_CUOTA'] = ($obj["NETO"] / 6);
                 $ins_cuotas6['TIPO'] = 2;
@@ -1411,47 +1405,27 @@ class agencia_model extends main_model {
                 $ins_cuotas5['FECHA_VEN'] = $fecha;
                 $this->_db->insert('fid_cu_pagos', $ins_cuotas6);
             }
-            if ($cambio_titularidad == 'true') {
-                $arr_cambio_titu = array(
-                    "ID_FACTURA" => $numero_factura,
-                    "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => date("Y-m-d H:i:s"),
-                    "CHECK_ESTADO" => 1,
-                );
-                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-            }
 
             $acc = "add";
             $id_new = $resp;
         } else {//editar
-            $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "'");
+            $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "' AND TIPO=2");
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
-            $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
-            if (count($titu) == 0 && $cambio_titularidad == 'true') {
-                $arr_cambio_titu = array(
-                    "ID_FACTURA" => $numero_factura,
-                    "ID_USUARIO" => $_SESSION['USERADM'],
-                    "FECHA" => date("Y-m-d H:i:s"),
-                    "CHECK_ESTADO" => 1,
-                );
-                $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                log_this('quieroverquetrae.log', $this->_db->last_query());
-            }
-
+            
             $acc = "edit";
             $id_new = $iid;
         }
         $rtn = array("accion" => $acc, "result" => $id_new);
-        //log_this('log/aaaaa.log', $this->_db->last_query());
         return $rtn;
     }
 
-    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha) {
+    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha,$idCliente) {
         if ($cant_cu == 1) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $cuota1 = (float) $neto + (float) $iva;
             $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['VALOR_CUOTA'] = $cuota1;
             $ins_cuotas1['TIPO'] = 2;
 
@@ -1475,6 +1449,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
         } else if ($cant_cu == 2) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 2) + (float) $iva;
             $ins_cuotas1['TIPO'] = 2;
@@ -1496,6 +1471,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['ID_CLIENTE'] = $idCliente;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 2);
             $ins_cuotas2['TIPO'] = 2;
@@ -1513,9 +1489,8 @@ class agencia_model extends main_model {
             $ins_cuotas2['FECHA_VEN'] = $fecha;
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
         } else if ($cant_cu == 3) {
-
-
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 3) + (float) $iva;
             $ins_cuotas1['TIPO'] = 2;
@@ -1537,6 +1512,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['ID_CLIENTE'] = $idCliente;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 3);
             $ins_cuotas2['TIPO'] = 2;
@@ -1556,6 +1532,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['ID_CLIENTE'] = $idCliente;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 3);
             $ins_cuotas3['TIPO'] = 2;
@@ -1577,6 +1554,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
         } else if ($cant_cu == 4) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['NUM_CUOTA'] = 1;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 4) + (float) $iva;
             $ins_cuotas1['TIPO'] = 2;
@@ -1598,6 +1576,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['ID_CLIENTE'] = $idCliente;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 4);
             $ins_cuotas2['TIPO'] = 2;
@@ -1616,6 +1595,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['ID_CLIENTE'] = $idCliente;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 4);
             $ins_cuotas3['TIPO'] = 2;
@@ -1635,6 +1615,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['ID_CLIENTE'] = $idCliente;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 4);
             $ins_cuotas4['TIPO'] = 2;
@@ -1654,6 +1635,7 @@ class agencia_model extends main_model {
         } else if ($cant_cu == 5) {
 
             $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 5) + (float) $iva;
             $ins_cuotas1['TIPO'] = 2;
             $primerVen = 15;
@@ -1674,6 +1656,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['ID_CLIENTE'] = $idCliente;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 5);
             $ins_cuotas2['TIPO'] = 2;
@@ -1692,6 +1675,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['ID_CLIENTE'] = $idCliente;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 5);
             $ins_cuotas3['TIPO'] = 2;
@@ -1710,6 +1694,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['ID_CLIENTE'] = $idCliente;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 5);
             $ins_cuotas4['TIPO'] = 2;
@@ -1728,6 +1713,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas5['ID_CLIENTE'] = $idCliente;
             $ins_cuotas5['NUM_CUOTA'] = 5;
             $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 5);
             $ins_cuotas5['TIPO'] = 2;
@@ -1747,6 +1733,7 @@ class agencia_model extends main_model {
         } else if ($cant_cu == 6) {
 
             $ins_cuotas1['NUM_CUOTA'] = 1;
+            $ins_cuotas1['ID_CLIENTE'] = $idCliente;
             $ins_cuotas1['VALOR_CUOTA'] = ((float) $neto / 6) + (float) $iva;
             $ins_cuotas1['TIPO'] = 2;
             $primerVen = 15;
@@ -1768,6 +1755,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas1);
 
             $ins_cuotas2['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas2['ID_CLIENTE'] = $idCliente;
             $ins_cuotas2['NUM_CUOTA'] = 2;
             $ins_cuotas2['VALOR_CUOTA'] = ((float) $neto / 6);
             $ins_cuotas2['TIPO'] = 2;
@@ -1786,6 +1774,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas2);
 
             $ins_cuotas3['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas3['ID_CLIENTE'] = $idCliente;
             $ins_cuotas3['NUM_CUOTA'] = 3;
             $ins_cuotas3['VALOR_CUOTA'] = ((float) $neto / 6);
             $ins_cuotas3['TIPO'] = 2;
@@ -1804,6 +1793,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas3);
 
             $ins_cuotas4['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas4['ID_CLIENTE'] = $idCliente;
             $ins_cuotas4['NUM_CUOTA'] = 4;
             $ins_cuotas4['VALOR_CUOTA'] = ((float) $neto / 6);
             $ins_cuotas4['TIPO'] = 2;
@@ -1823,6 +1813,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas4);
 
             $ins_cuotas5['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas5['ID_CLIENTE'] = $idCliente;
             $ins_cuotas5['NUM_CUOTA'] = 5;
             $ins_cuotas5['VALOR_CUOTA'] = ((float) $neto / 6);
             $ins_cuotas5['TIPO'] = 2;
@@ -1842,6 +1833,7 @@ class agencia_model extends main_model {
             $this->_db->insert('fid_cu_pagos', $ins_cuotas5);
 
             $ins_cuotas6['NUM_FACTURA'] = $num_factura;
+            $ins_cuotas6['ID_CLIENTE'] = $idCliente;
             $ins_cuotas6['NUM_CUOTA'] = 6;
             $ins_cuotas6['VALOR_CUOTA'] = ((float) $neto / 6);
             $ins_cuotas6['TIPO'] = 2;
@@ -1864,8 +1856,6 @@ class agencia_model extends main_model {
 
     function delobj($id) {
         $this->_db->delete($this->_tablamod, "id =' " . $id . "'");
-        //borrar adjunto
-        //borrar fisico
         $lst_uploads = $this->get_arruploads($id);
         if ($lst_uploads) {
             foreach ($lst_uploads as $rsu) {
@@ -1994,8 +1984,6 @@ class agencia_model extends main_model {
         $iid = $obj["idreqh"];
         unset($obj["idreqh"]);
 
-        //$fecha_actual = date("Y-m-d H:i:s");
-        //$fecha_actual = date("Y-m-d H:i:s",  strtotime($obj['FCREA']));
         $id_new = $iid;
         if ($iid == 0) { //agregar
             $obj['FOJAS'] = "";
@@ -2012,8 +2000,6 @@ class agencia_model extends main_model {
         }
 
         //si el usuario actual es el cordinador, pedir autorizacion de
-        //log_this('zzzzz11.log',print_r($obj,1));
-
         if ($adjuntos):
             foreach ($adjuntos as $key => $value):
                 if (isset($value['nombre_tmp'])):
@@ -2066,20 +2052,25 @@ class agencia_model extends main_model {
         return $rtn;
     }
 
-    function verificarCuotas($num_factura) {
-        $rtn = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $num_factura . "' AND TIPO=2");
+    function verificarCuotas($num_factura,$idCliente) {
+        $rtn = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=$idCliente AND TIPO=2");
         if (count($rtn) > 0) {
             return 1;
         } else {
             return 0;
         }
     }
-
+    
+    function cuit_consulta_id($cuit) {
+        $this->_db->select("ID");
+        $rtn = $this->_db->get_tabla("fid_clientes", "CUIT='" . $cuit . "'");
+        return $rtn;
+    }
+    
     function verificarnumfactura($numero, $cuit) {
         $this->_db->select("*");
         $this->_db->join("fid_clientes c", "f.ID_CLIENTE = c.ID");
         $rtn = $this->_db->get_tabla("fid_cu_factura f", "f.NUMERO='" . $numero . "' AND c.CUIT='" . $cuit . "' AND f.TIPO=2");
-//        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO=" . $numero);
         if (count($rtn) > 0) {
             return 1;
         } else {
@@ -2118,13 +2109,6 @@ class agencia_model extends main_model {
             else
                 return array("result" => true, "error" => false);
         }
-    }
-
-    function get_bodegas() {
-        $this->_db->select("l.LOCALIDAD as LOCAL,b.ID as ID, b.NOMBRE AS NOMBRE");
-        $this->_db->join("fid_localidades l", "l.ID=b.ID_DEPARTAMENTO");
-        $rtn = $this->_db->get_tabla("fid_bodegas b");
-        return $rtn;
     }
 
     function get_coordinadores() {
@@ -2389,7 +2373,6 @@ class agencia_model extends main_model {
                 //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
 //            $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
 //            if (!$neto) {$neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());}
-//            $precio = $litros ? $neto / $litros : 0;
 //            $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
 //            if (!$iva) {$iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());}
                 $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
