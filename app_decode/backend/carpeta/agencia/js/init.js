@@ -33,10 +33,8 @@ function guardar_factura() {
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
     var proveedor_list = $("#proveedor-jquery").val();
-    var ltros = $("#ltros").val();
     var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
-//    var azucar = $("#azucar").val();
     var precio = $("#precio").val();
     var neto = $("#neto").val();
     var iva = $("#iva").val();
@@ -44,35 +42,9 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
-//    var numVinedo = $("#numVinedo").val();
-//    var numRut = $("#numRut").val();
     iid = id ? id : 0;
 
-//    if (numeroS == '') {
-//        jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#numero").focus();
-//        });
-//        return false;
-//    }
-//    if(num1.length != 4){
-//        jAlert('Ingrese correctamente el número de factura.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#numero").focus();
-//        });
-//        return false;
-//    }
-//    if(num2.length != 8){
-//        jAlert('Ingrese correctamente el número de factura.', $.ucwords(_etiqueta_modulo), function () {
-//            $("#numero").focus();
-//        });
-//        return false;
-//    }
-//    
-//    var num1 = numeroS.substring(0, 4);
-//    var num2 = numeroS.substring(4, 12);
-//
-//    var numero = num1 + "-" + num2;
-
-//validar campos
+    //validar campos
     if (numero == '') {
         jAlert('Ingrese el número de factura.', $.ucwords(_etiqueta_modulo), function () {
             $("#numero").focus();
@@ -99,9 +71,9 @@ function guardar_factura() {
         });
         return false;
     }
-    if (ltros == '') {
-        jAlert('Ingrese el valor de los Ltros.', $.ucwords(_etiqueta_modulo), function () {
-            $("#ltros").focus();
+    if (precio == '') {
+        jAlert('Ingrese el precio.', $.ucwords(_etiqueta_modulo), function () {
+            $("#precio").focus();
         });
         return false;
     }
@@ -125,7 +97,6 @@ function guardar_factura() {
             tmp_fid = _fid_sanjuan;
         }
     }
-
     objsave = {
         id: iid,
         NUMERO: numero,
@@ -135,10 +106,11 @@ function guardar_factura() {
         FECHAVTO: fechavto,
         CUIT: cuitform,
         PRECIO: precio,
+        NETO: precio,
         ID_ESTADO: 1,
         USU_CARGA: _USUARIO_SESION_ACTUAL,
         NETO: neto,
-        IVA: iva,
+                IVA: iva,
         TOTAL: total,
         FORMA_PAGO: fpago,
         OBSERVACIONES: observacion_fact,
@@ -165,17 +137,24 @@ function guardar_factura() {
                 });
             } else { // no existe
                 $.ajax({
-                    url: _agencia.URL + "/x_sendobj",
-                    data: {obj: objsave},
-                    dataType: "json", type: "post", async: "false", });
-                /*Verificar si tiene cuotas sino generar*/
-                $.ajax({
-                    url: _agencia.URL + "/x_verificarCuotas",
-                    data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha},
-                    dataType: "json", type: "post", async: "false", });
-                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                    var urlh = "backend/carpeta/agencia/init/12/2";
-                    $(location).attr('href', urlh);
+                    url: _agencia.URL + "/x_cuit_consulta_id",
+                    data: {cuit: cuitform},
+                    dataType: "json", type: "post", async: "false",
+                    success: function (data_id) {
+                        $.ajax({
+                            url: _agencia.URL + "/x_sendobj",
+                            data: {obj: objsave},
+                            dataType: "json", type: "post", async: "false", });
+                        /*Verificar si tiene cuotas sino generar*/
+                        $.ajax({
+                            url: _agencia.URL + "/x_verificarCuotas",
+                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                            dataType: "json", type: "post", async: "false", });
+                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                            var urlh = "backend/carpeta/agencia/init/12/2";
+                            $(location).attr('href', urlh);
+                        });
+                    }
                 });
             }
         }
@@ -3514,7 +3493,7 @@ function lote_pago() {
     var _arr_sel = [];
     if (rowindexes.length > 0) {
         var swa = 0;
-        var id_referencia_devolver = "";
+//        var id_referencia_devolver = "";
         var id_ref_devolver = 0;
         $.each(rowindexes, function (index, value) {
             var reg = $('#jqxgrid_listado').jqxGrid('getrowdata', value);
@@ -3543,7 +3522,7 @@ function lote_pago() {
                 async: false,
                 success: function (data) {
                     if (data.length > 0) {
-                        id_referencia_devolver = data[0].IDFACTURAINT;
+//                        id_referencia_devolver = data[0].IDFACTURAINT;
                         swa = 6;
                     }
                 }
@@ -3564,7 +3543,7 @@ function lote_pago() {
             });
             return false;
         } else if (swa == '6') {
-            jAlert('La cuota de la factura con el ID ' + id_referencia_devolver + ' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
+            jAlert('La cuota de la factura con el ID ' + _arr_sel[0]['ID'] + ' ya se encuentra en el destino.', $.ucwords(_etiqueta_modulo), function () {
             });
             return false;
         } else if (swa == '10') {

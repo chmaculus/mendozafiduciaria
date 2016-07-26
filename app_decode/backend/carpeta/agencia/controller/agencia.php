@@ -268,10 +268,17 @@ class agencia extends main_controller {
         $neto = $_POST['neto'];
         $iva = $_POST['iva'];
         $fecha = $_POST['fecha'];
-        $rtn = $this->mod->verificarCuotas($num_factura);
+        $idCliente = $_POST['idCliente'];
+        $rtn = $this->mod->verificarCuotas($num_factura,$idCliente);
         if (!$rtn) {
-            $rtn_cuotas = $this->mod->crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha);
+            $rtn_cuotas = $this->mod->crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha,$idCliente);
         }
+    }
+    
+    function x_cuit_consulta_id() {
+        $cuit = $_POST['cuit'];
+        $obj = $this->mod->cuit_consulta_id($cuit);
+        echo trim(json_encode($obj ? $obj : array()));
     }
 
     function x_getTitularidad() {
@@ -373,9 +380,7 @@ class agencia extends main_controller {
 
     function x_sendobj() {
         $obj = $_POST['obj'];
-        $cambio_titularidad = false;
-        $cambio_titularidad = $_POST['cambio_titularidad'];
-        $rtn = $this->mod->sendobj($obj, $cambio_titularidad);
+        $rtn = $this->mod->sendobj($obj);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 

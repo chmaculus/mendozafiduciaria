@@ -460,9 +460,10 @@ class compravino extends main_controller {
         $neto = $_POST['neto'];
         $iva = $_POST['iva'];
         $fecha = $_POST['fecha'];
-        $rtn = $this->mod->verificarCuotas($num_factura);
+        $idCliente = $_POST['idCliente'];
+        $rtn = $this->mod->verificarCuotas($num_factura,$idCliente);
         if (!$rtn) {
-            $rtn_cuotas = $this->mod->crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha);
+            $rtn_cuotas = $this->mod->crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha,$idCliente);
         }
     }
 
@@ -845,6 +846,12 @@ class compravino extends main_controller {
         $numero = $_POST['numero'];
         $cuit = $_POST['cuit'];
         $obj = $this->mod->verificarnumfactura($numero,$cuit);
+        echo trim(json_encode($obj ? $obj : array()));
+    }
+    
+    function x_cuit_consulta_id() {
+        $cuit = $_POST['cuit'];
+        $obj = $this->mod->cuit_consulta_id($cuit);
         echo trim(json_encode($obj ? $obj : array()));
     }
 
