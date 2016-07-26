@@ -1,9 +1,8 @@
 <?php
 
-class compravino extends main_controller {
-
-    function compravino() {
-        $this->mod = $this->model("compravino_model");
+class agencia extends main_controller {
+    function agencia() {
+        $this->mod = $this->model("agencia_model");
     }
 
     function init($provincia = 0, $opcion = 0, $id_objeto = 0) {
@@ -78,7 +77,7 @@ class compravino extends main_controller {
         $datax = array();
         $datax['main'] = $this->_obtener_main($arr_permiso_mod, $provincia, $opcion, $id_objeto);
         $datax['titulo'] = "Administracion";
-        $datax['etiqueta_modulo'] = "Compra Vino";
+        $datax['etiqueta_modulo'] = "Agencia";
         $datax['name_modulo'] = $this->get_controller_name();
         $this->_js_var['_etiqueta_modulo'] = $datax['etiqueta_modulo'];
         $this->_js_var['_USER_ROL'] = $_SESSION["USER_ROL"];
@@ -101,29 +100,12 @@ class compravino extends main_controller {
             $data['lst_provincias'] = $this->x_getprovincias();
             $xxx = $data['lst_condicioniva'] = $this->x_getcondicioniva();
             $data['lst_condicioniibb'] = $this->x_getcondicioniibb();
-            $data['lst_bodegas'] = $this->x_getbodegas();
-            //START Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-            //        $data['lst_bodegas_vino'] = $this->x_getbodegas_vino();
-            //END Esta es la que modifique para que cargue las bodegas de la ultima operatoria en la que fueron cargadas
-            $data['lst_bodegas_ope'] = $this->x_getOpeBodegas();
             $data['lst_usu_coordinadores'] = $this->x_getCoordinadores();
             $data['lst_usu_jefeoperaciones'] = $this->x_getJefe();
-            $data['lst_proveedores'] = $this->x_getProveedores();
-            $data['lst_checkHumana'] = $this->x_getChecklistHumana();
-            $data['lst_checkJuridica'] = $this->x_getChecklistJuridica();
         }
-//        $data['lst_checkHumanaFact'] = $this->x_getChecklistHumanaFact();
-//        $data['lst_checkJuridicaFact'] = $this->x_getChecklistJuridicaFact();
-        //$data['lst_formulas'] = $this->x_getformulas();
-        //$this->x_actualizarT_tmp();
-        //$data['clientes_sql'] = $this->x_getclientessql();
-        //log_this('log/usuarios.log', print_r($data['clientes_sql'],1));
-        //$data['provincia'] = $this->x_getbodegas();
-        //$data['opcion'] = $this->x_getbodegas();
         $this->_js_var['_provincia'] = $provincia;
         $this->_js_var['_opcion'] = $opcion;
         $this->_js_var['_id_objeto'] = $id_objeto;
-
         //return $this->view("notas", $data);
         /* permiso mostrar */
         if (1 || $_SESSION["USER_ROL"] == 1 || $arr_permiso_mod['MOSTRAR'] == 1):
@@ -131,19 +113,15 @@ class compravino extends main_controller {
             if ($provincia == 4):
                 return $this->view("vista6_revision", $data);
             elseif ($provincia == 3):
-                $data['lst_operatorias'] = $this->mod->get_operatorias_importacion();
+//                $data['lst_operatorias'] = $this->mod->get_operatorias_importacion();
                 return $this->view("vista5_importar", $data);
             elseif ($provincia == 0):
                 return $this->view("vista1", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 3)):
                 return $this->view("vista3", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 1)):
-//                $id_operatoria = $_SESSION['OPERATORIA']
-//                if($_SESSION['OPERATORIA']){
-//                $data['lst_bodegas_vino'] = $this->x_getbodegas_vino($_SESSION['OPERATORIA']);
                 return $this->view("vista3", $data);
-//                }
-//                ;
+
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 2)):
                 return $this->view("vista4_listado", $data);
             elseif (($provincia == 12 || $provincia == 17) && ($opcion == 7)):
@@ -178,27 +156,6 @@ class compravino extends main_controller {
         $tmp = $obj ? $obj : array();
         return $tmp;
     }
-
-    function x_getChecklistHumana() {
-        $obj = $this->mod->getChecklistHumana();
-        return $obj;
-    }
-
-    function x_getChecklistJuridica() {
-        $obj = $this->mod->getChecklistJuridica();
-        return $obj;
-    }
-
-    function x_getChecklistJuridicaFact() {
-        $obj = $this->mod->getChecklistJuridicaFact();
-        return $obj;
-    }
-
-//    function x_getformulas(){
-//        $obj = $this->mod->getformulassql();
-//        $tmp = $obj ? $obj : array();
-//        return $tmp;
-//    }
 
     function x_getbodegas() {
         $obj = $this->mod->get_bodegas();
@@ -272,9 +229,9 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
 
-    function x_sincronizarVino() {
+    function x_sincronizarAgencia() {
         $datosBuscar = $_POST['datosBuscar'];
-        $rtn = $this->mod->sincronizarVino($datosBuscar);
+        $rtn = $this->mod->sincronizarAgencia($datosBuscar);
 //        $_SESSION['OPERATORIA'] = $rtn[0]['ID_OPERATORIA'];
 //        echo trim(json_encode($rtn ? $rtn[0] : array()));
     }
@@ -291,165 +248,16 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
-    function x_getAlgunasBodegas() {
-        $data_bodega = $this->mod->getbodegas_vino($_POST['id']);
-        $html = '<select class="chzn-select medium-select select" id="bodega-jquery" >
-                <option value="">Elegir Bodega</option>';
-        foreach ($data_bodega as $value) {
-            $html .= '<option data-local="' . $value["ID"] . '" data-connection="' . $value["ID"] .
-                    '" value="' . $value["ID"] . '">' . $value["NOMBRE"] . '</option>';
-        }
-        $html .= '</select>';
-        echo $html;
-    }
-
-    function x_getChecklistHumanaFact() {
-        $list_check = $this->mod->getChecklistOp($_POST['id']);
-        $html = '';
-        if ($list_check[0]['CHECKLIST_PERSONA']) {
-            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
-            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
-            $html = '<table id="humana">';
-            if ($data_check_humana) {
-                $html .= '
-            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
-            <tr>
-            <th class="numCheck" style="width: 5%;">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-            </tr>';
-                foreach ($data_check_humana as $valueH) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueH['ID'] . '</td>
-                    <td>' . $valueH['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-            if ($data_check_juridica) {
-                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
-                <tr>
-                <th class="numCheck">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-                </tr>';
-                foreach ($data_check_juridica as $valueJ) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueJ['ID'] . '</td>
-                    <td>' . $valueJ['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-//            $html .= '</table>';
-        }
-        $html .= '</table><br><br><br><br>
-                <div id="trar-todo">
-                <div class="elem elem_med">
-                <label>Cambio de Titularidad:</label>
-                <div class="indent formtext">
-                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
-                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
-                <label id="comentario-titularidad"></label></div></div><br><br><br><br>
-                <div id="activo-titularidad"></div></div>';
-        echo $html;
-    }
-
-    function x_getChecklistHumanaFactTitu() {
-        $list_check = $this->mod->getChecklistOp($_POST['id']);
-        $id_objeto = $_POST['num_factura'];
-        $html = '';
-        if ($list_check[0]['CHECKLIST_PERSONA']) {
-            $data_check_humana = $this->mod->getChecklistHumanaFact($list_check[0]['CHECKLIST_PERSONA']);
-            $data_check_juridica = $this->mod->getChecklistJuridicaFact($list_check[0]['CHECKLIST_PERSONA']);
-            $html = '<table id="humana">';
-            if ($data_check_humana) {
-                $html .= '
-            <tr><th colspan="3">Seleccionar Requerimientos para Persona Humana</th></tr>
-            <tr>
-            <th class="numCheck" style="width: 5%;">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-            </tr>';
-                foreach ($data_check_humana as $valueH) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueH['ID'] . '</td>
-                    <td>' . $valueH['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" class="opeOpcion" value="' . $valueH['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-            if ($data_check_juridica) {
-                $html .= '<tr><th colspan="3">Seleccionar Requerimientos para Persona Jurídica</th></tr>
-                <tr>
-                <th class="numCheck">N°</th>
-                <th>DATOS</th>
-                <th>OPCION</th>
-                </tr>';
-                foreach ($data_check_juridica as $valueJ) {
-                    $html .= '
-                <tr class="op">
-                    <td class="numCheck">' . $valueJ['ID'] . '</td>
-                    <td>' . $valueJ['DESCRIPCION'] . '</td>
-                    <td><input type="checkbox" name="opeOpcion" class="opeOpcion" value="' . $valueJ['ID'] . '" /></td>
-                </tr>';
-                }
-            }
-            $rtn_titu = $this->mod->getTitularidad($id_objeto);
-            $agregar_mensaje = "El usuario " . $rtn_titu[0]['NOMBRE'] . " activo la casilla. Fecha " . $rtn_titu[0]['FECHA'];
-            $html .= '</table><br><br><br><br>
-                <div id="trar-todo">
-                <div class="elem elem_med">
-                <label>Cambio de Titularidad:</label>
-                <div class="indent formtext">
-                <input type="checkbox" id="cambio_titularidad" name="cambio_titularidad" value="1"/> 
-                <input type="checkbox" id="cambio_titularidad_true" name="cambio_titularidad_true" value="1" disabled/>
-                <label id="comentario-titularidad"> ' . $agregar_mensaje . ' </label>
-                </div></div><br><br><br><br>
-                <div id="activo-titularidad"></div></div>';
-        }
-        echo $html;
-    }
-
     function x_getFormasPago() {
-        $forma_pago = $this->mod->getPagos($_POST['id']);
-        $j = 1;
         $html = '';
         $html = '<select class="chzn-select medium-select select" id="fpago-select" onchange="cambiarPrecio()" >
-                <option value="">Seleccione forma pago</option>';
-        foreach ($forma_pago[0] as $key => $value) {
-            $nombre_ver = '';
-            $posicion = 0;
-            if ($key == 'PRECIO_1') {
-                $nombre_ver = '1 PAGO';
-                $posicion = 1;
-            }
-            if ($key == 'PRECIO_2') {
-                $nombre_ver = '2 PAGOS';
-                $posicion = 2;
-            }
-            if ($key == 'PRECIO_3') {
-                $nombre_ver = '3 PAGOS';
-                $posicion = 3;
-            }
-            if ($key == 'PRECIO_4') {
-                $nombre_ver = '4 PAGOS';
-                $posicion = 4;
-            }
-            if ($key == 'PRECIO_5') {
-                $nombre_ver = '5 PAGOS';
-                $posicion = 5;
-            }
-            if ($key == 'PRECIO_6') {
-                $nombre_ver = '6 PAGOS';
-                $posicion = 6;
-            }
-            $html .= '<option id="precio_fp" value="' . $posicion . '" data-precio="' . $value . '">' . $nombre_ver . '</option>';
-            $j++;
-        }
+                <option value="">Seleccione forma pago</option>
+                <option value="1">1 Cuota</option>
+                <option value="2">2 Cuotas</option>
+                <option value="3">3 Cuotas</option>
+                <option value="4">4 Cuotas</option>
+                <option value="5">5 Cuotas</option>
+                <option value="6">6 Cuotas</option>';
         $html .= '</select>';
         echo $html;
     }
@@ -571,15 +379,15 @@ class compravino extends main_controller {
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
-    function x_guardarlote() {
-        $obj = $_POST['obj'];
-        $rtn = $this->mod->guardarlote($obj);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
-    
     function x_verificar_enviadas() {
         $obj = $_POST['obj'];
         $rtn = $this->mod->verificar_enviadas($obj);
+        echo trim(json_encode($rtn ? $rtn : array()));
+    }
+    
+    function x_guardarlote() {
+        $obj = $_POST['obj'];
+        $rtn = $this->mod->guardarlote($obj);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
@@ -616,34 +424,6 @@ class compravino extends main_controller {
         $obj_prov = $_POST['data_proveedores'];
         $nuevoID = $_POST['nuevoID'];
         $rtn = $this->mod->updateProveedores($obj_bod, $obj_prov, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
-
-    function x_sendBodegas() {
-        $obj = $_POST['data_bodegas'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->sendBodegas($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
-
-    function x_sendHumana() {
-        $obj = $_POST['checks_humana'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->sendHumana($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
-
-    function x_sendJuridica() {
-        $obj = $_POST['checks_juridica'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->sendJuridica($obj, $nuevoID);
-        echo trim(json_encode($rtn ? $rtn : array()));
-    }
-
-    function x_updateBodegas() {
-        $obj = $_POST['data_bodegas'];
-        $nuevoID = $_POST['nuevoID'];
-        $rtn = $this->mod->updateBodegas($obj, $nuevoID);
         echo trim(json_encode($rtn ? $rtn : array()));
     }
 
@@ -849,16 +629,12 @@ class compravino extends main_controller {
     }
 
     function x_importar_xls() {
-        $fid_sanjuan = $_POST['fid_sanjuan'];
-        $ope_sanjuan = $_POST['ope_sanjuan'];
-        $id_op_vino = $_POST['id_op_vino'];
-
+//$fid_sanjuan = $_POST['fid_sanjuan'];$ope_sanjuan = $_POST['ope_sanjuan'];
         $preg = $this->mod->validar_archivos_imp_f(); //validar si existe el archivo de la factura
         if ($preg > 0) {
-            echo $fact = $this->mod->importar_xls($fid_sanjuan, $ope_sanjuan, $id_op_vino);
+            echo $fact = $this->mod->importar_xls();
         } else {
-            //echo -1;
-            $preg1 = $this->mod->validar_archivos_imp_c(); //validar si existe archivo de los cius
+            echo -1;
         }
     }
 
@@ -911,14 +687,9 @@ class compravino extends main_controller {
             if ($subir == true) {
                 $file_name = FALSE;
 
-                $resultado = stripos($archivo['name'], 'vino_ciu');
+                $resultado = stripos($archivo['name'], 'agencia');
                 if ($resultado !== FALSE) {
-                    $file_name = 'imp_vino_cius.xlsx';
-                }
-
-                $resultado = stripos($archivo['name'], 'vino_fact');
-                if ($resultado !== FALSE) {
-                    $file_name = 'imp_vino_fact.xlsx';
+                    $file_name = 'imp_agencia_fact.xlsx';
                 }
 
                 $extencion = substr($archivo['name'], -3);
