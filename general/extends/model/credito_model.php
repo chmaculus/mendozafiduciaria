@@ -40,6 +40,7 @@ class credito_model extends main_model {
     var $_flag_pago_cuota_anterior = false;
     var $_caducado_de = 0;
     var $_prorroga_de = 0;
+    var $log_cuotas = 5;
     
     function clear() {
         $this->_i = 0;
@@ -1245,7 +1246,7 @@ class credito_model extends main_model {
                                     $IVA_INTERES_COMPENSATORIO += ($interes_act_comp * $this->_iva_operatoria);
                                     
                                     $INT_COMPENSATORIO_ACT += $interes_act_comp;
-                                    if($cuota['ID']==0) {
+                                    if($this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
                                         echo "IIIIIIIIIIIIIIIAC:$interes_act_comp<BR />";
                                         echo "SA:{$capital_arr['AMORTIZACION_CUOTA']}<BR />";
                                         echo "IM:$INT_MORATORIO<BR />";
@@ -1263,7 +1264,7 @@ class credito_model extends main_model {
                                 $INT_PUNITORIO = $tmp['INT_PUNITORIO'];
                             }
 
-                            if ($cuota['ID']==0) {
+                            if ($this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
                                 ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA {$cuota['ID']}<br />";
                                 echo "S:$SALDO_CUOTA<br />";
                                 echo "R:$rango_int_mor<br />";
@@ -3488,7 +3489,7 @@ ORDER BY T1.lvl DESC');
             $saldo_cuota += $cuota['IVA_GASTOS']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'] + $cuota['IVA_PUNITORIO']['SALDO'] + $cuota['IVA_MORATORIO']['SALDO'];
             
             if ($key_cuota === FALSE && $saldo_cuota > 0.5) {
-                $__cuota = $k;
+                $__cuota = $cuota['ID'];
                 $key_cuota = $cuota['_INFO']['HASTA'];
                 $_compensatorios = $cuota['COMPENSATORIO']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'];
                 if ($_compensatorios < 0.1 && isset($ret_reuda['cuotas'][$k])) {
