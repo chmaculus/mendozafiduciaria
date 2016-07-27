@@ -153,6 +153,7 @@ class credito extends main_controller{
     }
     
     function x_eliminar_cobranza() {
+        set_time_limit(0);
         $credito_id = $_POST['credito_id'];
         $id_evento = $_POST['id_evento'];
         
@@ -164,7 +165,8 @@ class credito extends main_controller{
                 $this->mod->set_version_active($version);
                 $this->mod->renew_datos();
                 $this->mod->set_fecha_actual($fecha);
-
+                
+                $this->mod->auditoria($credito_id, 'A', '');
                 $pagos = $this->mod->desimputar_pago();
                 
                 $this->mod->set_version_active($version);
@@ -185,6 +187,7 @@ class credito extends main_controller{
         $id_evento = $_POST['id_evento'];
         
         if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->auditoria($credito_id, 'B', '');
             if ($this->mod->eliminar_pagos($id_evento)) {
                 die("1");
             }

@@ -778,7 +778,8 @@ class credito_model extends main_model {
             'ID_USUARIO' => $_SESSION['USERADM'],
             'TABLA' => "creditos",
             'ACCION' => "B",
-            'Registro' => $cred
+            'Registro' => $cred,
+            'FECHA' => date('Y-m-d H:i:s')
         );
         $this->_db->insert("fid_auditoria", $array);
         $this->_db->delete("fid_creditos", "ID = " . $cred);
@@ -2369,7 +2370,12 @@ class credito_model extends main_model {
 
                 $fecha2 = $this->_anc_version_array[$i + 1]['FECHA_VERSION'];
 
-                $or_where[] = "((cv.ID_VERSION = " . $version . " AND cv.FECHA >= " . $fecha . " AND cv.FECHA < " . $ultimo['FECHA_VERSION'] . ") )";
+                if ($fecha == $ultimo['FECHA_VERSION']) {
+                    $or_where[] = "((cv.ID_VERSION = " . $version . "))";
+                } else {
+                    $or_where[] = "((cv.ID_VERSION = " . $version . " AND cv.FECHA >= " . $fecha . " AND cv.FECHA < " . $ultimo['FECHA_VERSION'] . ") )";
+                }
+                
             }
         }
         $this->_db->where(" (" . implode(" OR ", $or_where) . ") ");
@@ -2711,7 +2717,7 @@ ORDER BY T1.lvl DESC');
         $this->_db->order_by("FECHA");
         $this->_db->where("cv.ESTADO >= 0");
         $variaciones = $this->get_tabla_variaciones();
-
+        
 
         foreach ($variaciones as $variacion) {
             switch ($variaciones[$variacion['ID']]['TIPO']) {

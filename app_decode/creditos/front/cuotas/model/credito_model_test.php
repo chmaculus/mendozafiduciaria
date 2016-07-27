@@ -622,6 +622,19 @@ class credito_model_test extends credito_model {
         
         return 0;
     }
+    
+    function validar_monto_desembolsos($monto) {
+        $this->_db->select('SUM(MONTO) AS DESEM');
+        $rtn = $this->_db->get_row("fid_creditos_desembolsos", "ID_CREDITO = " . $this->_id_credito);
+        
+        if ($rtn) {
+            if ($rtn['DESEM'] + $monto > $this->_total_credito) {
+                return FALSE;
+            }
+        }
+        
+        return TRUE;
+    }
 
 }
 

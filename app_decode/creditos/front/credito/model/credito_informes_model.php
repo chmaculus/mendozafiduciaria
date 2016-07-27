@@ -478,5 +478,16 @@ class credito_informes_model extends credito_model {
         }        
         return $tasas;
     }
+    
+    function auditoria($id_credito, $accion, $descripcion) {
+        $array = array(
+            'ID_USUARIO' => $_SESSION['USERADM'],
+            'TABLA' => "creditos_pagos",
+            'ACCION' => $accion,
+            'Registro' => $id_credito,
+            'FECHA' => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert("fid_auditoria", $array);
+    }
 
 }

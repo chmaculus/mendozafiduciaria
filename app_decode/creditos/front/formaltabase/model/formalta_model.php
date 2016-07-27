@@ -69,7 +69,8 @@ class formalta_model extends credito_model {
             'ID_USUARIO' => $_SESSION['USERADM'],
             'TABLA' => "creditos",
             'ACCION' => "A",
-            'Registro' => $this->_id_credito
+            'Registro' => $this->_id_credito,
+            'FECHA' => date('Y-m-d H:i:s')
         );
         $this->_db->insert("fid_auditoria", $array);
         

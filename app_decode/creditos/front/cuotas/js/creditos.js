@@ -333,8 +333,11 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
                     }
                 });*/
                  _cuotas.agregar_desembolso(id_credito, monto, tipo, fecha, 1, true);
-            }
-            else {
+            } else if (result === "-2") {
+                jAlert("El monto total de desembolsos realizados es superior al total del crédito", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
+            } else {
                 $(".div-result").html(result);
                 _events_lista();
                 if (_version_change){

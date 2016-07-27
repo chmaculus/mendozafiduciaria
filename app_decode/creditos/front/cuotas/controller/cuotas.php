@@ -107,6 +107,14 @@ class cuotas extends main_controller{
         $version_id = $_POST['version_id'];
         $tipo = $_POST['tipo'];
         
+        $data = array();
+        $data['monto'] = $_POST['monto'];
+        
+        $this->mod->set_credito_active($credito_id);
+        if (!$this->mod->validar_monto_desembolsos($data['monto'])) {
+            die('-2');
+        }
+        
         $this->mod->set_credito_active($credito_id);
         $this->mod->set_version_active($version_id);
         $desembolso_solicitud = isset($_POST['desembolso']) ? $_POST['desembolso'] : 0;
@@ -116,8 +124,7 @@ class cuotas extends main_controller{
             $this->mod->agregar_desembolso_solicitado($desembolso_solicitud);
         }
 
-        $data = array();
-        $data['monto'] = $_POST['monto'];
+        
         $reset = isset($_POST['reset']) ? $_POST['reset'] : 0;
         
         
@@ -728,6 +735,7 @@ class cuotas extends main_controller{
     }
     
     function _recalcular_pagos($fecha = false){
+        set_time_limit(0);
         $this->mod->renew_datos();
         
         $this->mod->save_last_state(true);
