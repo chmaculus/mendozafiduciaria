@@ -23,15 +23,16 @@ if (nolocal == 1) {
 
 function guardar_factura() {
 //e.preventDefault();
-//    var numOperatoria = $("#numOperatoria").val();
     var id = $("#idh").val();
-//    var numeroS = $("#numero").val();
+    var cuit = $("#cuitform").val();
     var numero = $("#numero").val();
     var fecha = $("#fecha").val();
     fecha = formattedDate_ui(fecha);
     var cai = $("#cai").val();
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
+    var fechavto_desemb = $("#fechavto_desemb").val();
+//    fechavto_desemb = formattedDate_ui(fechavto_desemb);
     var proveedor_list = $("#proveedor-jquery").val();
     var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
@@ -104,6 +105,7 @@ function guardar_factura() {
         CAI: cai,
         ID_PROVINCIA: _provincia,
         FECHAVTO: fechavto,
+        FECHAVTO_DESEMB: fechavto_desemb,
         CUIT: cuitform,
         PRECIO: precio,
         NETO: precio,
@@ -141,19 +143,88 @@ function guardar_factura() {
                     data: {cuit: cuitform},
                     dataType: "json", type: "post", async: "false",
                     success: function (data_id) {
+                        /***********************************************************************************************************/
+                        /***********************************************************************************************************/
                         $.ajax({
-                            url: _agencia.URL + "/x_sendobj",
-                            data: {obj: objsave},
-                            dataType: "json", type: "post", async: "false", });
-                        /*Verificar si tiene cuotas sino generar*/
-                        $.ajax({
-                            url: _agencia.URL + "/x_verificarCuotas",
-                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
-                            dataType: "json", type: "post", async: "false", });
-                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                            var urlh = "backend/carpeta/agencia/init/12/2";
-                            $(location).attr('href', urlh);
+                            url: _agencia.URL + "/x_verifica_numero_cuotas",
+                            data: {numero: numero, cuit: cuit},
+                            dataType: "json", type: "post", async: "false",
+                            success: function (data_fpago) {
+                                if (data_fpago.length > 0) {
+                                    if (data_fpago[0]['FORMA_PAGO'] != fpago) {
+                                        jConfirm('Se ha modificado la cantidad de cuotas. Al generar las cuotas \n\
+                                                nuevamente ,las existentes seran eliminadas. \n\
+                                                Esta seguro/a de continuar.', 'Confirmar Edicion', function (r) {
+                                            if (r == true) {
+                                                $.ajax({
+                                                    url: _agencia.URL + "/x_borrar_cuotas",
+                                                    data: {numero: numero, idCliente: data_id[0]['ID']},
+                                                    type: "post", async: "false",
+                                                    success: function () {
+                                                        /*Verificar si tiene cuotas sino generar*/
+                                                        $.ajax({
+                                                            url: _agencia.URL + "/x_sendobj",
+                                                            data: {obj: objsave},
+                                                            dataType: "json", type: "post", async: "false", });
+                                                        /*Verificar si tiene cuotas sino generar*/
+                                                        $.ajax({
+                                                            url: _agencia.URL + "/x_verificarCuotas",
+                                                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                                            dataType: "json", type: "post", async: "false", });
+                                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                                            var urlh = "backend/carpeta/agencia/init/12/2";
+                                                            $(location).attr('href', urlh);
+                                                        });
+                                                    }});
+                                            } else {
+                                                return false;
+                                            }
+                                        });
+                                    } else {
+                                        $.ajax({
+                                            url: _agencia.URL + "/x_sendobj",
+                                            data: {obj: objsave},
+                                            dataType: "json", type: "post", async: "false", });
+                                        /*Verificar si tiene cuotas sino generar*/
+                                        $.ajax({
+                                            url: _agencia.URL + "/x_verificarCuotas",
+                                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                            dataType: "json", type: "post", async: "false", });
+                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                            var urlh = "backend/carpeta/agencia/init/12/2";
+                                            $(location).attr('href', urlh);
+                                        });
+                                    }
+                                } else {
+                                    $.ajax({
+                                        url: _agencia.URL + "/x_sendobj",
+                                        data: {obj: objsave},
+                                        dataType: "json", type: "post", async: "false", });
+                                    /*Verificar si tiene cuotas sino generar*/
+                                    $.ajax({
+                                        url: _agencia.URL + "/x_verificarCuotas",
+                                        data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                        dataType: "json", type: "post", async: "false", });
+                                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                        var urlh = "backend/carpeta/agencia/init/12/2";
+                                        $(location).attr('href', urlh);
+                                    });
+                                }
+                            }
                         });
+//                        $.ajax({
+//                            url: _agencia.URL + "/x_sendobj",
+//                            data: {obj: objsave},
+//                            dataType: "json", type: "post", async: "false", });
+//                        /*Verificar si tiene cuotas sino generar*/
+//                        $.ajax({
+//                            url: _agencia.URL + "/x_verificarCuotas",
+//                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+//                            dataType: "json", type: "post", async: "false", });
+//                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+//                            var urlh = "backend/carpeta/agencia/init/12/2";
+//                            $(location).attr('href', urlh);
+//                        });
                     }
                 });
             }
@@ -1500,6 +1571,7 @@ $(document).ready(function () {
     $("#cbu").numeric({negative: false, decimal: false});
     init_datepicker('#fecha', '-3', '+5', '0', 0);
     init_datepicker('#fechavto', '-3', '+5', '0', 0);
+    init_datepicker('#fechavto_desemb', '-3', '+5', '0', 0);
     $("input[type=file]").change(function () {
         $(this).parents(".uploader").find(".filename").val($(this).val());
     });
@@ -1612,11 +1684,23 @@ function editar_formulario() {
                 var fecha_string = data.FECHA;
                 $("#fecha").val(fecha_string.substr(0, 10));
                 var fecha_vto_string = '';
+                var fecha_desemb_string = '';
                 if (data.FECHAVTO != null) {
                     fecha_vto_string = data.FECHAVTO;
                     $("#fechavto").val(fecha_vto_string.substr(0, 10));
                 } else {
                     $("#fechavto").val('');
+                }
+ 
+                if (data.FECHAVTO_DESEMB == '0000-00-00 00:00:00') {
+                    $("#fechavto_desemb").val('');
+                } else {
+                    if (data.FECHAVTO_DESEMB != null) {
+                        fecha_desemb_string = data.FECHAVTO_DESEMB;
+                        $("#fechavto_desemb").val(fecha_desemb_string.substr(0, 10));
+                    } else {
+                        $("#fechavto_desemb").val('');
+                    }
                 }
 
                 $("#fecha").datepicker('disable');
@@ -1624,8 +1708,7 @@ function editar_formulario() {
                 $("#numero").val(data.NUMERO).attr("readonly", "readonly");
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
-                //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
-
+//            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
 //                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
                 $("#observacion_fact").val(data.OBSERVACIONES);
@@ -1643,7 +1726,6 @@ function editar_formulario() {
                     async: false,
                     data: {id: data.NUMERO},
                     success: function (data) {
-
                         $('#fpago').html(data);
                         $("#fpago-select").chosen({width: "220px"});
                         $("#fpago-select").val(forma_pago).trigger("chosen:updated");
@@ -1734,6 +1816,7 @@ function editar_formulario() {
             } else {
                 $("#fecha").val();
                 $("#fechavto").val();
+                $("#fechavto_desemb").val();
                 $("#numero").val();
                 $("#cai").val();
                 $("#bodega").chosen({width: "220px"});
@@ -3486,6 +3569,7 @@ function limpiar_form_nf() {
     $(".cabezera_frm_ciu").show();
     $("#fecha").datepicker('enable');
     $("#fechavto").datepicker('enable');
+//    $("#fechavto_desemb").datepicker('enable');
 }
 
 function lote_pago() {

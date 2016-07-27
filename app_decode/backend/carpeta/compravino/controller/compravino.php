@@ -849,6 +849,20 @@ class compravino extends main_controller {
         echo trim(json_encode($obj ? $obj : array()));
     }
     
+    function x_verifica_numero_cuotas() {
+        $numero = $_POST['numero'];
+        $cuit = $_POST['cuit'];
+        $obj = $this->mod->verifica_numero_cuotas($numero,$cuit);
+        echo trim(json_encode($obj ? $obj : array()));
+    }
+    
+    function x_borrar_cuotas() {
+        $numero = $_POST['numero'];
+        $idCliente = $_POST['idCliente'];
+        $obj = $this->mod->borrar_cuotas($numero,$idCliente);
+//        echo trim(json_encode($obj ? $obj : array()));
+    }
+    
     function x_cuit_consulta_id() {
         $cuit = $_POST['cuit'];
         $obj = $this->mod->cuit_consulta_id($cuit);

@@ -934,7 +934,7 @@ class agencia_model extends main_model {
     }
 
     function verificar_enviadas($arr_obj) {
-        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'" 
+        $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'"
                 . " AND CUIT='" . $arr_obj['CUIT'] . "' AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
 //        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
         return $verificar_enviadas;
@@ -1410,9 +1410,38 @@ class agencia_model extends main_model {
             $id_new = $resp;
         } else {//editar
             $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "' AND TIPO=2");
+
+            $ins_audi = array(
+                "ID_AUDI" => '',
+                "ID_USUARIO" => $_SESSION['USERADM'],
+                "ACCION" => "Modifica la factura " . $num_factura . " para cliente ID " . $cod_cli . ".",
+                "SECTOR" => "Agencia",
+                "FECHA_ACCION" => date('Y-m-d H:i:s')
+            );
+
+            $this->_db->insert('fid_audi_fact', $ins_audi);
+
+            $neto_nuevo = $obj["NETO"];
+            $iva_nuevo = $obj["IVA"];
+
+            $cant_cuotas_fp = $obj["FORMA_PAGO"];
+            $cuota_valor = ($neto_nuevo / $cant_cuotas_fp) + $iva_nuevo;
+            $cuota_uno = array("VALOR_CUOTA" => $cuota_valor);
+
+            $this->_db->update(' fid_cu_pagos ', $cuota_uno, " NUM_CUOTA=1 AND TIPO=2 AND NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=" . $cod_cli);
+//            log_this('log/UPDATECuotas1.log', $this->_db->last_query());
+
+            if ($cant_cuotas_fp > 1) {
+                $cuota_rest_valor = $neto_nuevo / $cant_cuotas_fp;
+                $cuotas_rest = array("VALOR_CUOTA" => $cuota_rest_valor);
+
+                $this->_db->update(' fid_cu_pagos ', $cuotas_rest, " NUM_CUOTA>1 AND TIPO=2 AND NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=" . $cod_cli);
+//              log_this('log/UPDATECuotas2.log', $this->_db->last_query());
+            }
+
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
-            
+
             $acc = "edit";
             $id_new = $iid;
         }
@@ -1420,7 +1449,7 @@ class agencia_model extends main_model {
         return $rtn;
     }
 
-    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha,$idCliente) {
+    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha, $idCliente) {
         if ($cant_cu == 1) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $cuota1 = (float) $neto + (float) $iva;
@@ -2052,7 +2081,7 @@ class agencia_model extends main_model {
         return $rtn;
     }
 
-    function verificarCuotas($num_factura,$idCliente) {
+    function verificarCuotas($num_factura, $idCliente) {
         $rtn = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=$idCliente AND TIPO=2");
         if (count($rtn) > 0) {
             return 1;
@@ -2060,13 +2089,13 @@ class agencia_model extends main_model {
             return 0;
         }
     }
-    
+
     function cuit_consulta_id($cuit) {
         $this->_db->select("ID");
         $rtn = $this->_db->get_tabla("fid_clientes", "CUIT='" . $cuit . "'");
         return $rtn;
     }
-    
+
     function verificarnumfactura($numero, $cuit) {
         $this->_db->select("*");
         $this->_db->join("fid_clientes c", "f.ID_CLIENTE = c.ID");
@@ -2284,7 +2313,7 @@ class agencia_model extends main_model {
         $objPHPExcel = $objReader->load("_tmp/importar/imp_agencia_fact.xlsx");
         $objPHPExcel->setActiveSheetIndex(0);
 
-        $i = 5;
+        $i = 3;
         $res = array();
         $k = 0;
 
@@ -2294,61 +2323,38 @@ class agencia_model extends main_model {
         $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue() != '') {
 
             $iid = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue();
-            $cuit = $objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue();
-            $razonsocial = $objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue();
-            $tipo_prov = substr($objPHPExcel->getActiveSheet()->getCell("E" . $i)->getValue(), 0, 22);
+            $cuit = $objPHPExcel->getActiveSheet()->getCell("B" . $i)->getValue(); //C
+            $razonsocial = $objPHPExcel->getActiveSheet()->getCell("C" . $i)->getValue(); //D
+            $tipo_prov = strtolower($objPHPExcel->getActiveSheet()->getCell("D" . $i)->getValue()); //D
             $cuit = str_replace('-', '', strval($cuit));
             $existecli = $this->_db->get_tabla('fid_clientes', 'CUIT="' . $cuit . '"');
-//            $estado_fact = $objPHPExcel->getActiveSheet()->getCell("AE" . $i)->getValue();
-//            switch ($estado_fact) {
-//                case 'DESISTIDO':$estado_fact = 2;break;
-//                case 'DESISTIDO':$estado_fact = 2;break;
-//                case 'RECHAZADO':$estado_fact = 3;break;
-//                case 'APROBADO':case 'APROBADA':$estado_fact = 1;break;
-//                default:$estado_fact = 1;break;
-//            }
+            $tasa = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
+
+            $num_tipo_prov = 0;
+            if($tipo_prov =='mayorista'){
+                $num_tipo_prov = 1;
+            }
+            
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
             } else {
-//                if ($id_condicion_iva && $condicion_iva = 
-//                        $this->_db->get_tabla('fid_cliente_condicion_iva', 
-//                                'CONDICION LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $id_condicion_iva) . '%\'')) {
-//                    $id_condicion_iva = (int) $condicion_iva[0]['ID'];
-//                }
-//                if (!$id_condicion_iva || !is_int($id_condicion_iva)) {
-//                    $i++;
-//                    $k++;
-//                    continue;
-//                }
-//                if ($id_condicion_iibb && $condicion_iibb = 
-//                        $this->_db->get_tabla('fid_cliente_condicion_iibb', 
-//                                'CONDICION LIKE \'%' . str_replace(array(' ', '.'), array('%', '%'), $id_condicion_iibb) . '%\'')) {
-//                    $id_condicion_iibb = $condicion_iibb[0]['ID'];
-//                }
                 $arr_ins = array(
                     "CUIT" => $cuit,
                     "RAZON_SOCIAL" => $razonsocial,
                     "FECHA_ALTA" => "",
-//                    "DIRECCION" => $direccion,
-//                    "TELEFONO" => $telefono,
-//                    "OBSERVACION" => $observacion,
                     "ID_PROVINCIA" => 0,
                     "ID_DEPARTAMENTO" => 0,
-//                    "ID_CONDICION_IVA" => $id_condicion_iva,
-//                    "ID_CONDICION_IIBB" => $id_condicion_iibb,
-//                    "INSCRIPCION_IIBB" => "",
-                    //"CBU" => $cbu,
                     "CORREO" => "",
-                    "CU" => 2
+                    "CU" => 2,
+                    "MAYORISTA" => $num_tipo_prov
                 );
                 $id_cliente = $this->_db->insert('fid_clientes', $arr_ins);
 //                log_this('log/haceinsertcliente.log', $this->_db->last_query());
             }
             // idfactura
-            $numero = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
+            $numero = $objPHPExcel->getActiveSheet()->getCell("K" . $i)->getValue(); //H
             $contadorCaracteres = strlen($numero);
-//            log_this('log/existelafactura.log', $this->_db->last_query());
             if ($numero != "" && ( $contadorCaracteres == 12 || $contadorCaracteres == 13)) {
                 //validar numero de factura
 //                $existe_fact = $convertir_numero1 ? $this->_db->get_tabla('fid_cu_factura', "NUMERO='" . $convertir_numero1 . "' AND id_cliente=" . $id_cliente . "  AND TIPO=2") : FALSE;
@@ -2366,31 +2372,31 @@ class agencia_model extends main_model {
                         continue;
                     }
                 }
+                
                 $numero = str_replace("-", "", $numero);
-
-                $fecha = $objPHPExcel->getActiveSheet()->getCell("O" . $i)->getValue(); //??
-                $fecha_fact_desem = $objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue(); //??
-                //$precio = $objPHPExcel->getActiveSheet()->getCell("A" . $i)->getValue(); //??
-//            $neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getValue());
-//            if (!$neto) {$neto = floatval($objPHPExcel->getActiveSheet()->getCell("AB" . $i)->getCalculatedValue());}
-//            $iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getValue());
-//            if (!$iva) {$iva = floatval($objPHPExcel->getActiveSheet()->getCell("AC" . $i)->getCalculatedValue());}
-                $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
+                $fecha = $objPHPExcel->getActiveSheet()->getCell("R" . $i)->getValue(); //O
+                $fecha_vto_desemb = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue(); //I
+                $neto = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
+                if (!$neto) {$neto = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());}
+                $iva = floatval($objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue());
+                if (!$iva) {$iva = floatval($objPHPExcel->getActiveSheet()->getCell("I" . $i)->getCalculatedValue());}
+                $total = floatval($objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue()); //G
                 if (!$total) {
-                    $total = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());
+                    $total = floatval($objPHPExcel->getActiveSheet()->getCell("J" . $i)->getCalculatedValue()); //G
                 }
-//            $porc_iva = 0;
-//            if ($total && $neto) {
-//                $porc_iva = $iva * 100 / $neto;
-//            }
-//            $cuotas = $objPHPExcel->getActiveSheet()->getCell("W" . $i)->getValue();
-//            if ($neto && $total && !isset($precios_cuotas[$cuotas])) {
-//                $precios_cuotas[$cuotas] = $precio;
-//            }
+                $porc_iva = 0;
+                if ($total && $neto) {
+                    $porc_iva = $iva * 100 / $neto;
+                }
                 if (trim($fecha) == "-   -") {
                     $fecha = '';
                 } elseif (trim($fecha)) {
                     $fecha = loadDate_excel($fecha);
+                }
+                if (trim($fecha_vto_desemb) == "-   -") {
+                    $fecha_vto_desemb = '';
+                } elseif (trim($fecha_vto_desemb)) {
+                    $fecha_vto_desemb = loadDate_excel($fecha_vto_desemb);
                 }
 //            if (trim($fechavto) == "-   -") {$fechavto = '';} elseif (trim($fechavto)) {$fechavto = loadDate_excel($fechavto);}
                 // local
@@ -2414,6 +2420,12 @@ class agencia_model extends main_model {
                     "TOTAL" => $total,
                     "ID_CLIENTE" => $id_cliente,
                     "ID_PROVINCIA" => 12, //MENDOZA HARDCODING
+                    "NETO" => $neto,
+                    "PRECIO" => $neto,
+                    "IVA" => $iva,
+                    "PORC_IVA" => $porc_iva,
+                    "FECHA" => $fecha,
+                    "FECHAVTO_DESEMB" => $fecha_vto_desemb
                         //"FECHAVTO" => $fechavto,//"CAI" => $cai,"ID_ESTADO" => $estado_fact,"FORMA_PAGO" => $cuotas,"PRECIO" => $precio,
                         //"NETO" => $neto,"IVA" => $iva,"PORC_IVA" => $porc_iva,"OBSERVACIONES" => $observaciones,
                 );
@@ -2424,27 +2436,13 @@ class agencia_model extends main_model {
                 //validaciones
                 $sw_error = 0;
                 $arr_error = array();
-//            $arr_factor = $this->_db->get_tabla('fid_cliente_condicion_iva', "Id = $id_condicion_iva");
                 $factor = 0;
-//            if ($arr_factor) {$factor = $arr_factor[0]['VALOR'];}
-//            $iva = round($iva * 1, 2);
-//            $factor = round(($factor * $neto / 100) * 1, 2);
-                //log_this("iv-factor.txt", $iva . " - " . $factor);
-                /* if ((abs($iva - $factor) > 1)) {
-                  $sw_error = 1;
-                  $arr_error[] = "Monto IVA observado(viene:$iva - calculado:$factor)";
-                  } */
-//            if ($total - ($neto + $iva) > 1) {
-//                $sw_error = 1;
-//                $arr_error[] = "Total observado";
-//            }
                 if (strlen($cuit) != 11) {
                     $sw_error = 1;
                     $arr_error[] = "Longitud de CUIT Observado";
                 }
                 if ($sw_error > 0) {
                     $arr_fact["ID_ESTADO"] = "12";
-                    //$arr_fact["IMP_ERROR_COD"] = $sw_error;
                     if ($arr_error) {
                         $texto_error = "";
                         foreach ($arr_error as $err) {
@@ -2454,24 +2452,13 @@ class agencia_model extends main_model {
                     }
                 }
                 $resp = $this->_db->insert('fid_cu_factura', $arr_fact);
-//            log_this('log/QUIEROVERINSERTXLXS.log', $this->_db->last_query() );
+//                log_this('log/QUIEROVERINSERTXLXS_AGENCIA.log', $this->_db->last_query());
                 $res[] = $resp;
             } // END IF -- >Se cierra el if que valida si el registro tiene numero de factura
             $i++;
             $k++;
-            /*      if ($k==30){
-              break;
-              } */
+//            log_this('log/existelafactura.log', $this->_db->last_query());
         }
-//        if (count($precios_cuotas)) {
-//            $temp_arr = array();
-//            $arr_precios = array('PRECIO_1', 'PRECIO_2', 'PRECIO_3', 'PRECIO_4', 'PRECIO_5', 'PRECIO_6');
-//            foreach ($precios_cuotas as $cuota => $precio) {
-//                if (in_array('PRECIO_' . $cuota, $arr_precios)) {
-//                    $arr_update_factura['PRECIO_' . $cuota] = $precio;
-//                }
-//            }
-//        }
         rename("_tmp/importar/imp_agencia_fact.xlsx", "_tmp/importar/imp_agencia_fact_procesado_" . date('Ymd') . ".xlsx");
         //TRUNCATE TABLE `fid_cu_factura`;TRUNCATE TABLE `fid_operatoria_vino`;TRUNCATE TABLE `fid_op_vino_bodegas`;TRUNCATE TABLE `fid_op_vino_proveedores`;
         return 1;
@@ -2495,6 +2482,28 @@ class agencia_model extends main_model {
         }
     }
 
-}
+    function verifica_numero_cuotas($numero, $cuit) {
+        $this->_db->select("ID ");
+        $rtn_cli_id = $this->_db->get_tabla(" fid_clientes ", " CUIT='" . $cuit . "'");
+        $this->_db->select("FORMA_PAGO");
+        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO='" . $numero . "' AND TIPO=2 AND ID_CLIENTE=" . $rtn_cli_id[0]['ID']);
+        if (count($rtn) > 0) {
+            return $rtn;
+        } else {
+            return 0;
+        }
+    }
 
+    function borrar_cuotas($numero, $idCliente) {
+        $ins_audi = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Modifica cantidad de cuotas Factura " . $numero . " para cliente ID " . $idCliente . ".",
+            "SECTOR" => "Agencia",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert('fid_audi_fact', $ins_audi);
+        $this->_db->query("DELETE FROM fid_cu_pagos WHERE NUM_FACTURA='" . $numero . "' AND TIPO=2 AND ID_CLIENTE=" . $idCliente);
+    }
+}
 ?>

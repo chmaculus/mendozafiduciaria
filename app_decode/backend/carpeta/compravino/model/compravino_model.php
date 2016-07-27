@@ -85,7 +85,7 @@ class compravino_model extends main_model {
                     $solicitud_adm[$j] = $this->_dbsql->get_tabla("SOLICITUD_ADM", "IDFACTURAINT=" . $value['ID'] .
                             " AND NUMFACTURA='" . $value['NUMERO'] . "'" . " AND TIPO='OP' AND UCU=" . $value['NUM_CUOTA'] . " "
                             . "AND BODEGA=" . $value['ID_BODEGA']);
-                    log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query());
+//                    log_this('log/VARIASCONSULTAS.log', $this->_dbsql->last_query());
                     if ($solicitud_adm[$j]) {
 
                         if ($solicitud_adm[$j][0]['TIPO'] == 'OP' && $solicitud_adm[$j][0]['UCU'] != $solicitud_adm[$j][0]['CCU']) {
@@ -1666,6 +1666,35 @@ class compravino_model extends main_model {
             $id_new = $resp;
         } else {//editar
             $resp = $this->_db->update('fid_cu_factura', $obj, "id='" . $iid . "'");
+
+            $ins_audi = array(
+                "ID_AUDI" => '',
+                "ID_USUARIO" => $_SESSION['USERADM'],
+                "ACCION" => "Modifica la factura " . $numero_factura  . " para cliente ID " . $cod_cli . ".",
+                "SECTOR" => "Compra Vino",
+                "FECHA_ACCION" => date('Y-m-d H:i:s')
+            );
+
+            $this->_db->insert('fid_audi_fact', $ins_audi);
+
+            $neto_nuevo = $obj["NETO"];
+            $iva_nuevo = $obj["IVA"];
+
+            $cant_cuotas_fp = $obj["FORMA_PAGO"];
+            $cuota_valor = ($neto_nuevo / $cant_cuotas_fp) + $iva_nuevo;
+            $cuota_uno = array("VALOR_CUOTA" => $cuota_valor);
+
+            $this->_db->update(' fid_cu_pagos ', $cuota_uno, " NUM_CUOTA=1 AND TIPO=1 AND NUM_FACTURA='" . $numero_factura . "' AND ID_CLIENTE=" . $cod_cli);
+//            log_this('log/UPDATECuotas1.log', $this->_db->last_query());
+
+            if ($cant_cuotas_fp > 1) {
+                $cuota_rest_valor = $neto_nuevo / $cant_cuotas_fp;
+                $cuotas_rest = array("VALOR_CUOTA" => $cuota_rest_valor);
+
+                $this->_db->update(' fid_cu_pagos ', $cuotas_rest, " NUM_CUOTA>1 AND TIPO=1 AND NUM_FACTURA='" . $numero_factura . "' AND ID_CLIENTE=" . $cod_cli);
+//              log_this('log/UPDATECuotas2.log', $this->_db->last_query());
+            }
+
             $this->_db->select("*");
             $this->_db->order_by("FECHA", "DESC LIMIT 1");
             $titu = $this->_db->get_tabla("fid_op_vino_cambio_tit", "ID_FACTURA=" . $numero_factura);
@@ -1677,18 +1706,16 @@ class compravino_model extends main_model {
                     "CHECK_ESTADO" => 1,
                 );
                 $this->_db->insert('fid_op_vino_cambio_tit', $arr_cambio_titu);
-                log_this('quieroverquetrae.log', $this->_db->last_query());
+//                log_this('log/quieroverquetrae.log', $this->_db->last_query());
             }
-
             $acc = "edit";
             $id_new = $iid;
         }
         $rtn = array("accion" => $acc, "result" => $id_new);
-        //log_this('log/aaaaa.log', $this->_db->last_query());
         return $rtn;
     }
 
-    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha,$idCliente) {
+    function crearCuotas($num_factura, $cant_cu, $neto, $iva, $fecha, $idCliente) {
         if ($cant_cu == 1) {
             $ins_cuotas1['NUM_FACTURA'] = $num_factura;
             $cuota1 = (float) $neto + (float) $iva;
@@ -2342,7 +2369,7 @@ class compravino_model extends main_model {
         return $rtn;
     }
 
-    function verificarCuotas($num_factura,$idCliente) {
+    function verificarCuotas($num_factura, $idCliente) {
         $rtn = $this->_db->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=$idCliente AND TIPO=1");
         if (count($rtn) > 0) {
             return 1;
@@ -2367,6 +2394,33 @@ class compravino_model extends main_model {
         } else {
             return 0;
         }
+    }
+
+    function verifica_numero_cuotas($numero, $cuit) {
+        $this->_db->select("ID ");
+        $rtn_cli_id = $this->_db->get_tabla(" fid_clientes ", " CUIT='" . $cuit . "'");
+        $this->_db->select("FORMA_PAGO");
+        $rtn = $this->_db->get_tabla("fid_cu_factura", "NUMERO='" . $numero . "' AND TIPO=1 AND ID_CLIENTE=" . $rtn_cli_id[0]['ID']);
+        if (count($rtn) > 0) {
+            return $rtn;
+        } else {
+            return 0;
+        }
+    }
+
+    function borrar_cuotas($numero, $idCliente) {
+
+        $ins_audi = array(
+            "ID_AUDI" => '',
+            "ID_USUARIO" => $_SESSION['USERADM'],
+            "ACCION" => "Modifica cantidad de cuotas Factura " . $numero . " para cliente ID " . $idCliente . ".",
+            "SECTOR" => "Compra Vino",
+            "FECHA_ACCION" => date('Y-m-d H:i:s')
+        );
+
+        $this->_db->insert('fid_audi_fact', $ins_audi);
+
+        $this->_db->query("DELETE FROM fid_cu_pagos WHERE NUM_FACTURA='" . $numero . "' AND TIPO=1 AND ID_CLIENTE=" . $idCliente);
     }
 
     function verificarciu($nciu) {

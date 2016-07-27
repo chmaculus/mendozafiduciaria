@@ -31,6 +31,7 @@ if (nolocal == 1) {
 function guardar_factura() {
 //e.preventDefault();
     var numOperatoria = $("#numOperatoria").val();
+    var cuit = $("#cuitform").val();
     var id = $("#idh").val();
     var numero = $("#numero").val();
     var fecha = $("#fecha").val();
@@ -153,12 +154,8 @@ function guardar_factura() {
 //numero
     $.ajax({
         url: _compravino.URL + "/x_verificarnumfactura",
-        data: {
-            numero: numero,
-            cuit: cuitform,
-        },
-        dataType: "json",
-        type: "post",
+        data: {numero: numero, cuit: cuitform, async: "false", },
+        dataType: "json", type: "post",
         success: function (data) {
             // 1 existe // 0 no existe
             if (data > 0 && _opcion != 3) {//existe
@@ -171,17 +168,70 @@ function guardar_factura() {
                     dataType: "json", type: "post", async: "false",
                     success: function (data_id) {
                         $.ajax({
-                            url: _compravino.URL + "/x_sendobj",
-                            data: {obj: objsave, cambio_titularidad: cambio_titularidad},
-                            dataType: "json", type: "post", async: "false", });
-                        /*Verificar si tiene cuotas sino generar*/
-                        $.ajax({
-                            url: _compravino.URL + "/x_verificarCuotas",
-                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha,idCliente:data_id[0]['ID'] },
-                            dataType: "json", type: "post", async: "false", });
-                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                            var urlh = "backend/carpeta/compravino/init/12/2";
-                            $(location).attr('href', urlh);
+                            url: _compravino.URL + "/x_verifica_numero_cuotas",
+                            data: {numero: numero, cuit: cuit},
+                            dataType: "json", type: "post", async: "false",
+                            success: function (data_fpago) {
+                                if (data_fpago.length > 0) {
+                                    if (data_fpago[0]['FORMA_PAGO'] != fpago) {
+                                        jConfirm('Se ha modificado la cantidad de cuotas. Al generar las cuotas \n\
+                                                nuevamente ,las existentes seran eliminadas. \n\
+                                                Esta seguro/a de continuar.', 'Confirmar Edicion', function (r) {
+                                            if (r == true) {
+                                                $.ajax({
+                                                    url: _compravino.URL + "/x_borrar_cuotas",
+                                                    data: {numero: numero, idCliente: data_id[0]['ID']},
+                                                    type: "post", async: "false",
+                                                    success: function () {
+                                                        $.ajax({
+                                                            url: _compravino.URL + "/x_sendobj",
+                                                            data: {obj: objsave, cambio_titularidad: cambio_titularidad},
+                                                            dataType: "json", type: "post", async: "false", });
+                                                        /*Verificar si tiene cuotas sino generar*/
+                                                        $.ajax({
+                                                            url: _compravino.URL + "/x_verificarCuotas",
+                                                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                                            dataType: "json", type: "post", async: "false", });
+                                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                                            var urlh = "backend/carpeta/compravino/init/12/2";
+                                                            $(location).attr('href', urlh);
+                                                        });
+                                                    }});
+                                            } else {
+                                                return false;
+                                            }
+                                        });
+                                    } else {
+                                        $.ajax({
+                                            url: _compravino.URL + "/x_sendobj",
+                                            data: {obj: objsave, cambio_titularidad: cambio_titularidad},
+                                            dataType: "json", type: "post", async: "false", });
+                                        /*Verificar si tiene cuotas sino generar*/
+                                        $.ajax({
+                                            url: _compravino.URL + "/x_verificarCuotas",
+                                            data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                            dataType: "json", type: "post", async: "false", });
+                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                            var urlh = "backend/carpeta/compravino/init/12/2";
+                                            $(location).attr('href', urlh);
+                                        });
+                                    }
+                                } else {
+                                    $.ajax({
+                                        url: _compravino.URL + "/x_sendobj",
+                                        data: {obj: objsave, cambio_titularidad: cambio_titularidad},
+                                        dataType: "json", type: "post", async: "false", });
+                                    /*Verificar si tiene cuotas sino generar*/
+                                    $.ajax({
+                                        url: _compravino.URL + "/x_verificarCuotas",
+                                        data: {numFactura: numero, cant_cu: fpago, neto: neto, iva: iva, fecha: fecha, idCliente: data_id[0]['ID']},
+                                        dataType: "json", type: "post", async: "false", });
+                                    jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                        var urlh = "backend/carpeta/compravino/init/12/2";
+                                        $(location).attr('href', urlh);
+                                    });
+                                }
+                            }
                         });
                     }
                 });
