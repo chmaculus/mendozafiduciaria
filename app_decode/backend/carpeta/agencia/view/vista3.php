@@ -211,6 +211,12 @@
             <input type="text" class="validate[required] tip-right" title="Ingrese Destino" id="fechavto" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
+    <div class="elem elem_med">
+        <label class="der">Fecha Vto/Desembolso:</label>
+        <div class="indent formtext">
+            <input type="text" class="validate[required] tip-right" title="Vto Desemb" id="fechavto_desemb" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+        </div>
+    </div>
     <!--<div style="margin-top:10px;" class="clear"></div>-->
     <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med">

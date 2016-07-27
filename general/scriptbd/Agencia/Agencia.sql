@@ -37,3 +37,9 @@ ALTER TABLE  `fid_cu_factura` ADD  `RETENCION_PORC` FLOAT NOT NULL
 */
 ALTER TABLE  `fid_cu_pagos` ADD  `TIPO` INT NOT NULL
 
+/*
+* 27/07/2016
+* Se agrega campo para guardar la fecha de desembols / vencimiento en agencia
+*/
+ALTER TABLE  `fid_cu_factura` ADD  `FECHAVTO_DESEMB` DATETIME NULL
+
