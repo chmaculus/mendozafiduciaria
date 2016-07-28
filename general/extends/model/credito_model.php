@@ -289,10 +289,9 @@ class credito_model extends main_model {
     }
 
     //obtiene un array del estado de todas las cuotas a la fecha dada
-    function get_deuda($fecha = false, $renew = true) {
+    function get_deuda($fecha = false, $renew = true, $monto_pago = 0) {
 
-
-
+        $temp_saldo = 0;
         $IVA = $this->_iva_operatoria;
 
         $fecha = !$fecha ? time() : strtotime(date("Y-m-d", $fecha)) + 86399;
@@ -602,7 +601,8 @@ class credito_model extends main_model {
             
             
             if ($cuota['FECHA_VENCIMIENTO'] < $fecha) {
-                
+                $total_a_pagar = $SALDO_CUOTA + $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'] + $arr_punitorio['SALDO'] + $arr_moratorio['SALDO'] + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO'];
+                        
                 $arr_deuda['cuotas'][] = array(
                     "GASTOS" => $arr_gastos,
                     "GASTOS_VARIOS" => $arr_gastos_varios,
@@ -633,7 +633,7 @@ class credito_model extends main_model {
                         "SALDO_CUOTA" => $SALDO_CUOTA,
                         "TOT_INT_MOR_PUN" => $arr_punitorio['SALDO'] + $arr_moratorio['SALDO'],
                         "TOT_IVA_INT_MOR_PUN" => $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'],
-                        "TOTAL_PAGAR" => $SALDO_CUOTA + $arr_iva_punitorio['SALDO'] + $arr_iva_moratorio['SALDO'] + $arr_punitorio['SALDO'] + $arr_moratorio['SALDO'] + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO']
+                        "TOTAL_PAGAR" => $total_a_pagar
                     )
                     );
                 if ($cuota['ESTADO'] == PLAZO_SUBSIDIO_VENCIDO && $cuota['INT_COMPENSATORIO_SUBSIDIO'] > 0) {
@@ -643,6 +643,7 @@ class credito_model extends main_model {
                 }
             } else {
                 
+                $total_a_pagar = $SALDO_CUOTA + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO'];
                 $arr_deuda['cuotas'][] = array(
                     "GASTOS" => $arr_gastos,
                     "GASTOS_VARIOS" => $arr_gastos_varios,
@@ -673,7 +674,7 @@ class credito_model extends main_model {
                         "SALDO_CUOTA" => $SALDO_CUOTA,
                         "TOT_INT_MOR_PUN" => 0,
                         "TOT_IVA_INT_MOR_PUN" => 0,
-                        "TOTAL_PAGAR" => $SALDO_CUOTA + $arr_gastos_varios['SALDO'] + $arr_iva_gastos['SALDO']
+                        "TOTAL_PAGAR" => $total_a_pagar
                     )
                 );
                 /*
@@ -682,6 +683,10 @@ class credito_model extends main_model {
                 print_r($arr_iva_gastos);
                 die();*/
                 
+            }
+            
+            if ($monto_pago && ($monto_pago + 10) < $temp_saldo) { //+10 para asegurar saldo
+                return $arr_deuda;
             }
         }
         
@@ -2470,7 +2475,7 @@ class credito_model extends main_model {
         $this->_db->where("g.ID_VERSION <= " . $id_version);
 
         //funcion de seleccion de versiones
-        $WHERE_FUNC = ' g.ID_VERSION  = (SELECT max( ID_VERSION ) FROM fid_creditos_gastos g2  ) ';
+        $WHERE_FUNC = ' g.ID_VERSION  = (SELECT max( ID_VERSION ) FROM fid_creditos_gastos g2 WHERE g2.ID_CREDITO = ' . $this->_id_credito . ') ';
         $this->_db->where($WHERE_FUNC);
         $pagos = $this->_db->get_tabla("fid_creditos_gastos g");
         return $pagos;
@@ -3167,6 +3172,7 @@ ORDER BY T1.lvl DESC');
             
             $this->_db->select("ID");
             $this->_db->where("POSTULANTES  = '$id_cliente' AND ID>0");
+            $this->_db->where("CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
             if ($result = $this->_db->get_row("fid_creditos")) {
                 return $result['ID'];
             }
@@ -3830,7 +3836,7 @@ ORDER BY T1.lvl DESC');
 
         $this->set_log(true);
         $ret_evento_id = $ret_evento['ID'];
-        $ret_reduda = $this->get_deuda($fecha);
+        $ret_reduda = $this->get_deuda($fecha, true, $monto);
 
         //se elimina el evento
         $this->elimina_evento($ret_evento_id);

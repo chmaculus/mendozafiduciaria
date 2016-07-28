@@ -105,6 +105,7 @@ function _renew_versiones(){
 
 function existDesembolsosTeoricos(creadito_id, fecha){
     var ret = false;
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Verificando desembolsos</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_verificar_desembolsos_reales",
         data: {
@@ -115,6 +116,7 @@ function existDesembolsosTeoricos(creadito_id, fecha){
         type: "post",
         async : false,
         success: function(result) {
+            $.unblockUI();
             if (result=='-1'){
                 ret = true;
                 return;
@@ -852,7 +854,7 @@ function get_tasas_fecha(fecha){
 }
 
 function existEventosPosteriores(){
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Verificando otros eventos</h4>' });
     
     var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
     var ret = false;
