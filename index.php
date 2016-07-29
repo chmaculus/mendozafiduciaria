@@ -7,7 +7,7 @@ $encod = 0;
 date_default_timezone_set("America/Argentina/Mendoza");
 error_reporting(E_ALL | E_STRICT);
 session_start();
-
+$_SESSION['time_script'] = microtime(TRUE);
 
 include("core/helper/util.php");
 

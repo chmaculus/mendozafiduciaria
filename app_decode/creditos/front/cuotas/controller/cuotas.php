@@ -1215,12 +1215,11 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
     }
     
     function x_guardar_pagos_excel() {
-        if ($this->_guardar_pagos_excel()) {
-            $_SESSION['msg_ok'] = "El proceso de importación de pagos ha finalizado";
+        if ($total_pagos = $this->_guardar_pagos_excel()) {
+            $_SESSION['msg_importacion_ok'] = "Hay ($total_pagos) pagos listos para ser procesados";
         }
         
         header('Location:/' . URL_PATH . 'creditos/front/creditos');
-        die();
     }
     
     function _guardar_pagos_excel() {
@@ -1248,21 +1247,8 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 $creditos_err = array();
                 $cuit_creditos = array();
                 
-                //cambios de tasas
-                $cambios_tasas = array();
-                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
-                    $tmp_ct = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getCalculatedValue();
-                    if ($tmp_ct) {
-                        $tmp_ct = strtotime(date('Y-m-d', PHPExcel_Shared_Date::ExcelToPHP($tmp_ct) + 86400));
-                        $cambios_tasas[$tmp_ct]['TC'] = $objPHPExcel->getActiveSheet()->getCell("I" . $j)->getCalculatedValue();
-                        $cambios_tasas[$tmp_ct]['TS'] = $objPHPExcel->getActiveSheet()->getCell("J" . $j)->getCalculatedValue();
-                        $cambios_tasas[$tmp_ct]['TP'] = $objPHPExcel->getActiveSheet()->getCell("K" . $j)->getCalculatedValue();
-                        $cambios_tasas[$tmp_ct]['TM'] = $objPHPExcel->getActiveSheet()->getCell("L" . $j)->getCalculatedValue();
-                    } else {
-                        break;
-                    }
-                }
                 
+                $total_imp = 0;
                 for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
                     if (!$credito_id) {
@@ -1297,20 +1283,14 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $fpago = strtotime(date('Y-m-d', $fpago));
                         $_fpago = (int)$fpago;
                         
-                        if (isset($arr_creditos[$credito_id][$_fpago])) {
-                            $_fpago += $j;
-                        }
-                        
-                        if (!isset($arr_creditos[$credito_id]) ) {
-                            foreach ($cambios_tasas as $k_ct => $tmp_ct) {
-                                $arr_creditos[$credito_id][$k_ct-1] = $tmp_ct;
-                            }
-                        }
-                        
-                        $arr_creditos[$credito_id][$_fpago] = array(
-                            'FP' => $fpago,
-                            'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
+                        $temp_pago = array(
+                            'ID_CREDITO' => $credito_id,
+                            'FECHA' => $fpago,
+                            'MONTO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
                             );
+                        if ($this->mod->insert_importacion_pago($temp_pago)) {
+                            ++$total_imp;
+                        }
                     } else {
                         $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
                         if ($cuit) {
@@ -1319,76 +1299,13 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     }
                 }
                 
-                foreach ($arr_creditos as $credito_id=>$creditos) { //ordenamos los pagos
-                    ksort($creditos);
-                    $arr_creditos[$credito_id] = $creditos;
-                }
-                
                 if (count($creditos_err)>0) {
                     $_SESSION['msg_err'] = "Los siguientes créditos no se imputaron pagos: " . implode(", ", $creditos_err);
                 }
                 
-                foreach ($arr_creditos as $credito_id=>$creditos) {
-                    //obtener array de cuotas
-                    $this->mod->clear();
-                    if ($this->mod->set_credito_active($credito_id)) {
-                        $ultimo_pago = $this->mod->obtener_ultimo_pago();
-                        $this->mod->set_version_active();
-                        $this->mod->renew_datos();
-                        
-                        
-                        $monto_credito = $this->mod->get_monto_credito();
-                        $desembolsos = $this->mod->get_desembolsos(0);
-                        $desembolsado = 0;
-
-                        foreach($desembolsos as $desembolso){
-                            $desembolsado += $desembolso['MONTO'];
-                        }
-                        
-                        if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
-                            $err .= "El crédito $credito_id no se imputaron pagos porque no tiene el 100% de los desembolsos<br />";
-                        } else {
-                            $pagos_no = 0;
-                            foreach ($creditos as $fec => $pago) {
-                                if (isset($pago['TC'])) {
-                                    $data = array();
-                                    $data['por_int_compensatorio'] = $pago['TC'];
-                                    $data['por_int_subsidio'] = $pago['TS'];
-                                    $data['por_int_moratorio'] = $pago['TM'];
-                                    $data['por_int_punitorio'] = $pago['TP'];
-                                    $data['TIPO'] = EVENTO_TASA;
-
-                                    $ret = $this->mod->generar_evento($data, true, $fec + 1);
-                                    $cuotas_restantes = $this->mod->get_cuotas_restantes_pago();
-
-                                    $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
-                                    $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
-                                } elseif (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
-                                    $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
-                                } else {
-                                    ++$pagos_no;
-                                }
-                            }
-
-                            if ($pagos_no) {
-                                $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
-                            }
-                        }
-                        
-                        if(isset($cuit_creditos[$credito_id])) {
-                            $cuit = $cuit_creditos[$credito_id];
-                            unset($_SESSION['creditos_importados'][$cuit]);
-                        }
-                    } else {
-                        $err .= "El crédito $credito_id no existe<br />";
-                    }
+                if ($total_imp) {
+                    return $total_imp;
                 }
-                
-                if ($err) {
-                    $_SESSION['msg_err'] .= $err;
-                }
-                
-                RETURN TRUE;
             }
             
         } else {
@@ -1396,6 +1313,64 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         }
         
         return FALSE;
+    }
+    
+    
+    function x_procesar_imp_pago() {
+        if ($arr_creditos = $this->mod->get_credito_imp_pago()) {
+            
+            foreach ($arr_creditos as $credito) {
+                $credito_id = $credito['ID_CREDITO'];
+                $pagos = $this->mod->get_imp_pago($credito_id);
+
+                $this->mod->clear();
+                if ($this->mod->set_credito_active($credito_id)) {
+                    $ultimo_pago = $this->mod->obtener_ultimo_pago();
+                    $this->mod->set_version_active();
+                    $this->mod->renew_datos();
+
+                    $monto_credito = $this->mod->get_monto_credito();
+                    $desembolsos = $this->mod->get_desembolsos(0);
+                    $desembolsado = 0;
+                    
+                    foreach($desembolsos as $desembolso){
+                        $desembolsado += $desembolso['MONTO'];
+                    }
+                    if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
+                        $err .= "El crédito $credito_id no se imputaron pagos porque no tiene el 100% de los desembolsos<br />";
+                    } else {
+                        $pagos_no = 0;
+                        foreach ($pagos as $pago) {
+                            print_r($pago);die;
+                            if (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FECHA'])) {
+                                $this->mod->realizar_pago($pago['FECHA'], $pago['PAGO']);
+                            } else {
+                                ++$pagos_no;
+                            }
+                        }
+
+                        if ($pagos_no) {
+                            $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
+                        }
+                    }
+                    
+                    
+
+                    if(isset($cuit_creditos[$credito_id])) {
+                        $cuit = $cuit_creditos[$credito_id];
+                        unset($_SESSION['creditos_importados'][$cuit]);
+                    }
+                } else {
+                    $err .= "El crédito $credito_id no existe<br />";
+                }
+            }
+                
+            if ($err) {
+                $_SESSION['msg_err'] .= $err;
+            }
+        }
+
+        RETURN TRUE;
     }
     
     

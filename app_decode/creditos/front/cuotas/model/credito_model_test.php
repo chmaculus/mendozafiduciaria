@@ -635,6 +635,29 @@ class credito_model_test extends credito_model {
         
         return TRUE;
     }
+    
+    function insert_importacion_pago($datos) {
+        if ($this->_db->insert('fid_creditos_imp_pagos', $datos))
+            return TRUE;
+        else
+            return FALSE;
+    }
+    
+    function get_credito_imp_pago() {
+        $this->_db->select('ID_CREDITO');
+        $this->_db->group_by('ID_CREDITO');
+        $this->_db->where('ESTADO=0');
+        $this->_db->order_by('ID', 'ASC');
+        if ($rtn = $this->_db->get_tabla('fid_creditos_imp_pagos')) {
+            return $rtn;
+        } else {
+            return FALSE;
+        }
+    }
+    
+    function get_imp_pago($id_credito) {
+        return $this->_db->get_tabla('fid_creditos_imp_pagos', 'ID_CREDITO=' .$id_credito, 'FECHA ASC, ID ASC');
+    }
 
 }
 

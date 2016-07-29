@@ -148,10 +148,6 @@ $(document).ready(function(){
         $.unblockUI();
     });
     
-    $('#content').on('click', function(e){
-        $("#msgs").fadeOut(500);
-    });
-    
     $('#cmor table tr td').on('click', function(e){
         
         var clase = $(this).parent('tr').attr('class');
@@ -983,4 +979,15 @@ function exportReporteCobranza() {
         exclude: ".noExl",
         name: "Reporte Cobranza"
       });
+}
+
+function verificar_imp_pagos() {
+    $.ajax({
+        async:false,
+        url : "creditos/front/cuotas/x_verif_proc_imp_pago",
+        type : "post",
+        success : function(rtn){
+            console.log(rtn);
+        }
+    });
 }

@@ -40,11 +40,14 @@
 
 <div id="msgs">
     <?php
-    if (isset($_SESSION['msg_ok'])) {
+    if (isset($_SESSION['msg_importacion_ok'])) {
         ?>
-        <div id="msg_ok"><?= $_SESSION['msg_ok'] ?></div>
+        <div id="msg_ok"><?= $_SESSION['msg_importacion_ok'] ?></div>
+        <script type="text/javascript">
+            verificar();
+        </script>
         <?php
-        unset($_SESSION['msg_ok']);
+        unset($_SESSION['msg_importacion_ok']);
     }
 
     if (isset($_SESSION['msg_err'])) {
