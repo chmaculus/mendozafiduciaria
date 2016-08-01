@@ -385,20 +385,11 @@ class agencia_model extends main_model {
     }
 
     function getobj($id_objeto) {
-        $this->_db->select("c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,f.*");
+        $this->_db->select("c.CUIT AS CUIT,c.RAZON_SOCIAL AS RAZ,c.MAYORISTA AS MAYORISTA,f.*");
         $this->_db->join("fid_clientes c", "c.ID=f.ID_CLIENTE");
         $rtn["factura"] = $this->_db->get_tabla('fid_cu_factura f', "f.ID = '" . $id_objeto . "'");
         $rtn["factura"] = $rtn["factura"][0];
-        if ($rtn["factura"]["NUMERO"]) {
-            $this->_db->select("CHECK_ESTADO");
-            $this->_db->order_by("FECHA", "DESC");
-            $array_Check = $this->_db->get_tabla('fid_op_vino_cambio_tit', "ID_FACTURA=" . $rtn["factura"]["NUMERO"]);
-            $rtn["CHECK_TITULARIDAD"] = isset($array_Check[0]['CHECK_ESTADO']) ? $array_Check[0]['CHECK_ESTADO'] : 0;
-            return $rtn;
-        } else {
-            $rtn["CHECK_TITULARIDAD"] = 0;
-            return $rtn;
-        }
+        return $rtn;
     }
 
     function sendPago1($array_post) {
@@ -936,7 +927,6 @@ class agencia_model extends main_model {
     function verificar_enviadas($arr_obj) {
         $verificar_enviadas = $this->_dbsql->get_tabla("SOLICITUD_ADM", "NUMFACTURA='" . $arr_obj['NUMERO'] . "'"
                 . " AND CUIT='" . $arr_obj['CUIT'] . "' AND TIPO='OP' AND UCU=" . $arr_obj['NUMCUOTA']);
-//        log_this('log/VerSiBuscaOtraCuota.log', $this->_dbsql->last_query() );
         return $verificar_enviadas;
         die;
     }
@@ -1429,14 +1419,12 @@ class agencia_model extends main_model {
             $cuota_uno = array("VALOR_CUOTA" => $cuota_valor);
 
             $this->_db->update(' fid_cu_pagos ', $cuota_uno, " NUM_CUOTA=1 AND TIPO=2 AND NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=" . $cod_cli);
-//            log_this('log/UPDATECuotas1.log', $this->_db->last_query());
 
             if ($cant_cuotas_fp > 1) {
                 $cuota_rest_valor = $neto_nuevo / $cant_cuotas_fp;
                 $cuotas_rest = array("VALOR_CUOTA" => $cuota_rest_valor);
 
                 $this->_db->update(' fid_cu_pagos ', $cuotas_rest, " NUM_CUOTA>1 AND TIPO=2 AND NUM_FACTURA='" . $num_factura . "' AND ID_CLIENTE=" . $cod_cli);
-//              log_this('log/UPDATECuotas2.log', $this->_db->last_query());
             }
 
             $this->_db->select("*");
@@ -1459,7 +1447,6 @@ class agencia_model extends main_model {
             $ins_cuotas1['TIPO'] = 2;
 
             $primerVen = 15;
-//            if (intval($primerVen) <= 0)return false;
             $habiles = 0;
             $selectDias = "";
             $ven = array();
@@ -2331,10 +2318,10 @@ class agencia_model extends main_model {
             $tasa = $objPHPExcel->getActiveSheet()->getCell("H" . $i)->getValue();
 
             $num_tipo_prov = 0;
-            if($tipo_prov =='mayorista'){
+            if ($tipo_prov == 'mayorista') {
                 $num_tipo_prov = 1;
             }
-            
+
             if ($existecli) {
                 $id_cliente = $existecli[0]["ID"];
                 $id_condicion_iva = $existecli[0]["ID_CONDICION_IVA"];
@@ -2372,14 +2359,35 @@ class agencia_model extends main_model {
                         continue;
                     }
                 }
-                
+
                 $numero = str_replace("-", "", $numero);
                 $fecha = $objPHPExcel->getActiveSheet()->getCell("R" . $i)->getValue(); //O
-                $fecha_vto_desemb = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue(); //I
+
+                $fecha_vto_desemb = "";
+                $fecha_vto_desemb2 = "";
+                if ($num_tipo_prov == 0) {
+                    $fecha_separar = explode("-", $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue()); //I
+
+                    $fecha_separar[0] = str_replace('/', '-', $fecha_separar[0]);
+                    $fecha_vto_desemb = date('Ymd', strtotime($fecha_separar[0]));
+                    
+                    $fecha_separar[1] = str_replace('/', '-', $fecha_separar[1]);
+                    $fecha_vto_desemb2 = date('Ymd', strtotime($fecha_separar[1]));
+
+                } else {
+                    $fecha_formato = $objPHPExcel->getActiveSheet()->getCell("L" . $i)->getValue(); //I
+                    $fecha_formato = str_replace('/', '-', $fecha_formato);
+                    $fecha_vto_desemb = date('Ymd', strtotime($fecha_formato));
+                }
+
                 $neto = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getValue());
-                if (!$neto) {$neto = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());}
+                if (!$neto) {
+                    $neto = floatval($objPHPExcel->getActiveSheet()->getCell("G" . $i)->getCalculatedValue());
+                }
                 $iva = floatval($objPHPExcel->getActiveSheet()->getCell("I" . $i)->getValue());
-                if (!$iva) {$iva = floatval($objPHPExcel->getActiveSheet()->getCell("I" . $i)->getCalculatedValue());}
+                if (!$iva) {
+                    $iva = floatval($objPHPExcel->getActiveSheet()->getCell("I" . $i)->getCalculatedValue());
+                }
                 $total = floatval($objPHPExcel->getActiveSheet()->getCell("J" . $i)->getValue()); //G
                 if (!$total) {
                     $total = floatval($objPHPExcel->getActiveSheet()->getCell("J" . $i)->getCalculatedValue()); //G
@@ -2393,12 +2401,14 @@ class agencia_model extends main_model {
                 } elseif (trim($fecha)) {
                     $fecha = loadDate_excel($fecha);
                 }
-                if (trim($fecha_vto_desemb) == "-   -") {
-                    $fecha_vto_desemb = '';
-                } elseif (trim($fecha_vto_desemb)) {
-                    $fecha_vto_desemb = loadDate_excel($fecha_vto_desemb);
-                }
-//            if (trim($fechavto) == "-   -") {$fechavto = '';} elseif (trim($fechavto)) {$fechavto = loadDate_excel($fechavto);}
+//                if (trim($fecha_vto_desemb) == "-   -") {
+//                    $fecha_vto_desemb = '';
+//                } elseif (trim($fecha_vto_desemb)) {
+//                    $fecha_vto_desemb = loadDate_excel($fecha_vto_desemb);
+//                }
+                
+                $nro_desembolso = strtolower($objPHPExcel->getActiveSheet()->getCell("N" . $i)->getValue());
+
                 // local
                 $_fid_sanjuan = 88;
                 $_ope_sanjuan = 99;
@@ -2425,9 +2435,9 @@ class agencia_model extends main_model {
                     "IVA" => $iva,
                     "PORC_IVA" => $porc_iva,
                     "FECHA" => $fecha,
-                    "FECHAVTO_DESEMB" => $fecha_vto_desemb
-                        //"FECHAVTO" => $fechavto,//"CAI" => $cai,"ID_ESTADO" => $estado_fact,"FORMA_PAGO" => $cuotas,"PRECIO" => $precio,
-                        //"NETO" => $neto,"IVA" => $iva,"PORC_IVA" => $porc_iva,"OBSERVACIONES" => $observaciones,
+                    "FECHAVTO_DESEMB" => $fecha_vto_desemb,
+                    "FECHAVTO_DESEMB2" => $fecha_vto_desemb2,
+                    "NRO_DESEMBOLSO" => $nro_desembolso
                 );
                 if ($fecha) {
                     $arr_fact['FECHA'] = $fecha;
@@ -2505,5 +2515,6 @@ class agencia_model extends main_model {
         $this->_db->insert('fid_audi_fact', $ins_audi);
         $this->_db->query("DELETE FROM fid_cu_pagos WHERE NUM_FACTURA='" . $numero . "' AND TIPO=2 AND ID_CLIENTE=" . $idCliente);
     }
+
 }
 ?>
