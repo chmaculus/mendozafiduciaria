@@ -17,3 +17,24 @@ ADD `POSTULANTES_CUIT` VARCHAR( 45 ) NOT NULL AFTER `POSTULANTES_NOMBRES` ;
 
 ALTER TABLE `fid_creditos` ADD `IVA` FLOAT NOT NULL AFTER `T_GASTOS_MIN` ;
 UPDATE `fid_creditos` c JOIN `fid_operatorias` o ON c.ID_OPERATORIA = o.ID SET c.IVA=o.IVA;
+
+
+INSERT INTO `fid_menu` (`ID`, `NOMBRE`,`ESPADRE`, `PADRE`, `URL`, `ESTADO`) VALUES (NULL , 'Cobranzas de Créditos', '0', '23', 'creditos/front/cobranzas', '1');
+INSERT INTO `fid_permisos` (`ID`, `MODULO`, `PERMISO`, `CODIGO`) VALUES (NULL, 'Creditos', 'Cobranzas de Crédito', '40');
+INSERT INTO `fid_roles_menu` (`ID_ROL`, `ID_MENU`) VALUES ('20', '40');
+
+
+CREATE TABLE `fid_creditos_cobranzas` (
+`ID_CREDITO` INT NOT NULL ,
+`CUOTAS_RESTANTES` INT NOT NULL ,
+`NRO_CUOTA` INT NOT NULL ,
+`CAPITAL_CUOTA` FLOAT NOT NULL ,
+`INT_COMPENSATORIO` FLOAT NOT NULL ,
+`INT_COMPENSATORIO_IVA` FLOAT NOT NULL ,
+`FECHA` DATETIME NOT NULL
+) ENGINE = InnoDB;
+
+ALTER TABLE `fid_creditos_cobranzas` ADD UNIQUE (
+`ID_CREDITO` ,
+`CUOTAS_RESTANTES`
+);
