@@ -921,34 +921,32 @@ $(document).ready(function () {
         var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
-        var listrosMax = $("#listrosMax").val();
+//        var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
-        var maxHectareas = $("#hectMax").val();
+//        var maxHectareas = $("#hectMax").val();
         var nro_desembolso = $("#nro_desembolso").val();
-//        var opeProveedores = $("#opeProveedores").val();
-//        var opeBodega = $("#opeBodega").val();
         var opePrecio1 = $("#opeP1").val();
         var opePrecio2 = $("#opeP2").val();
         var opePrecio3 = $("#opeP3").val();
         var opePrecio4 = $("#opeP4").val();
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
-        var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
-        var rowscount_proveedores = rows_proveedores.length;
-        var data_proveedores = [];
-        for (var i = 0; i < rowscount_proveedores; i++) {
-            data_proveedores[i] = $('#jqxgrid_proveedores').jqxGrid('getrowdata', i);
-        }
-        var rows_bodegas = $('#jqxgrid_bodegas').jqxGrid('getrows');
-        var rowscount_bodegas = rows_bodegas.length;
-        var data_bodegas = [];
-        for (var i = 0; i < rowscount_bodegas; i++) {
-            data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
-        }
-        var data_checklists_persona = [];
-        $('.op input:checked').each(function () {
-            data_checklists_persona.push($(this).val());
-        })
+//        var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//        var rowscount_proveedores = rows_proveedores.length;
+//        var data_proveedores = [];
+//        for (var i = 0; i < rowscount_proveedores; i++) {
+//            data_proveedores[i] = $('#jqxgrid_proveedores').jqxGrid('getrowdata', i);
+//        }
+//        var rows_bodegas = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//        var rowscount_bodegas = rows_bodegas.length;
+//        var data_bodegas = [];
+//        for (var i = 0; i < rowscount_bodegas; i++) {
+//            data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
+//        }
+//        var data_checklists_persona = [];
+//        $('.op input:checked').each(function () {
+//            data_checklists_persona.push($(this).val());
+//        })
         if (opeNombre == '') {
             jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -967,18 +965,18 @@ $(document).ready(function () {
             });
             return false;
         }
-        if (listrosMax == '') {
-            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
-                $("#listrosMax").focus();
-            });
-            return false;
-        }
-        if (maxHectareas == '') {
-            jAlert('Ingrese el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
-                $("#maxHectareas").focus();
-            });
-            return false;
-        }
+//        if (listrosMax == '') {
+//            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#listrosMax").focus();
+//            });
+//            return false;
+//        }
+//        if (maxHectareas == '') {
+//            jAlert('Ingrese el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#maxHectareas").focus();
+//            });
+//            return false;
+//        }
         $.ajax({
             url: _agencia.URL + "/x_updateOperatoria",
             data: {
@@ -1017,282 +1015,280 @@ $(document).ready(function () {
             $(location).attr('href', urlh);
         });
     });
-    var accion_proveedores_new = '';
-    var id_proveedor = $('#opeProveedores').val();
-    $("#info-proveedores").show();
-    $("#jqxgrid_proveedores").show();
-    var sourceope = {
-        datatype: "json",
-        datafields: [
-            {name: 'ID', type: 'int'},
-            {name: 'RAZON_SOCIAL', type: 'string'}
-        ],
-        url: 'general/extends/extra/carpetas.php',
-        data: {
-            accion: "getProveedoresGrilla",
-            id_proveedor: id_proveedor,
-        },
-        async: false,
-        addrow: function (rowid, rowdata, position, commit) {
-            commit(true);
-        },
-        deleterow: function (rowid, commit) {
-            commit(true);
-        },
-        updaterow: function (rowid, newdata, commit) {
-            commit(true);
-        }
-    };
-    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-            {
-                formatData: function (data) {
-                    data.name_startsWith = $("#searchField").val();
-                    return data;
-                }
-            }
-    );
-    var generaterow_proveedores = function (i) {
-        var row = {};
-        var ids_proveedores = $("#opeProveedores").val();
-        var firstColumnData = [];
-        var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-        for (var i = 0; i < rows.length; i++) {
-            firstColumnData.push(rows[i].ID);
-        }
-        $.ajax({
-            url: _agencia.URL + "/x_getDatoProveedor",
-            data: {
-                ids_proveedores: ids_proveedores,
-                firstColumnData: firstColumnData
-            },
-            dataType: "json",
-            type: "post",
-            async: false,
-            success: function (datos) {
-                console.log("Q UE DEVUELVE");
-//                alert(datos[0]['ACCION']);
-                console.log(datos);
-                accion_proveedores_new = datos[0]['ACCION'];
-                for (var i = 0; i < datos.length; i++) {
-                    row['ID'] = datos[i]['ID'];
-                    row['RAZON_SOCIAL'] = datos[i]['RAZON_SOCIAL'];
-                    row['LIMLTRS'] = '0';
-                    row['MAXHECTAREAS'] = '0';
-                }
-            }
-        });
-        return row;
-    }
-    $("#jqxgrid_proveedores").jqxGrid({
-        width: '90%',
-        height: '200px',
-        source: dataAdapterope,
-        theme: 'energyblue',
-        showstatusbar: true,
-//            showaggregates: true,
-        editable: true,
-        selectionmode: 'singlerows',
-        localization: getLocalization(),
-        rendertoolbar: function (toolbar) {
-            var me = this;
-            var container = $("<div style='margin: 5px;'></div>");
-            toolbar.append(container);
-            $("#addrowbutton").jqxButton();
-            $("#addmultiplerowsbutton").jqxButton();
-            $("#deleterowbutton").jqxButton();
-            $("#updaterowbutton").jqxButton();
-            $("#updaterowbutton").on('click', function () {
-                var datarow = generaterow_proveedores();
-                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('updaterow', id, datarow);
-                    $("#jqxgrid_proveedores").jqxGrid('ensurerowvisible', selectedrowindex);
-                }
-            });
-            $('#opeProveedores').on('change', function () {
-                var datarow = generaterow_proveedores();
-                console.log("Viene a este llamado");
-                console.log(datarow);
-                console.log(accion_proveedores_new);
-                /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
-                 * 
-                 * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
-                 * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
-                 * */
-                if (accion_proveedores_new == 'AGREGAR') {
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
-                } else if (accion_proveedores_new == 'ELIMINAR') {
-                    var posicion = 0;
-                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                    for (var j = 0; j < rows.length; j++) {
-                        if (rows[j]['ID'] == datarow.ID) {
-                            posicion = j;
-                            break;
-                        }
-                    }
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', posicion);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                }
-            });
-            // delete row.
-            $("#deleterowbutton").on('click', function () {
-                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                    var firstColumnData = [];
-                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                    for (var i = 0; i < rows.length; i++) {
-                        firstColumnData.push(rows[i].ID);
-                    }
-                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                }
-            });
-        },
-        columns: [
-            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '49%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-            {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-        ]
-    });
-    var accion_bodegas_new = '';
-    var id_bodega = $('#opeBodega').val();
-    $("#info-bodegas").show();
-    $("#jqxgrid_bodegas").show();
-    var sourceope = {
-        datatype: "json",
-        datafields: [
-            {name: 'ID', type: 'int'},
-            {name: 'NOMBRE', type: 'string'}
-        ],
-        url: 'general/extends/extra/carpetas.php',
-        data: {
-            accion: "getBodegasGrilla",
-            id_bodega: id_bodega,
-        },
-        async: false,
-        addrow: function (rowid, rowdata, position, commit) {
-            commit(true);
-        },
-        deleterow: function (rowid, commit) {
-            commit(true);
-        },
-        updaterow: function (rowid, newdata, commit) {
-            commit(true);
-        }
-    };
-    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-            {
-                formatData: function (data) {
-                    data.name_startsWith = $("#searchField").val();
-                    return data;
-                }
-            }
-    );
-    var generaterow_bodegas = function (i) {
-        var row = {};
-        var ids_bodegas = $("#opeBodega").val();
-        var firstColumnData = [];
-        var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-        for (var i = 0; i < rows.length; i++) {
-            firstColumnData.push(rows[i].ID);
-        }
-        $.ajax({
-            url: _agencia.URL + "/x_getDatoBodega",
-            data: {
-                ids_bodegas: ids_bodegas,
-                firstColumnData: firstColumnData
-            },
-            dataType: "json",
-            type: "post",
-            async: false,
-            success: function (datos) {
-                console.log("VIENE ACA BODEGA");
-                console.log(datos);
-
-                accion_bodegas_new = datos[0]['ACCION'];
-                for (var i = 0; i < datos.length; i++) {
-                    row['ID'] = datos[i]['ID'];
-                    row['NOMBRE'] = datos[i]['NOMBRE'];
-                    row['LIMLTRS'] = '0';
-                }
-            }
-        });
-        return row;
-    }
-    $("#jqxgrid_bodegas").jqxGrid({
-        width: '70%',
-        height: '200px',
-        source: dataAdapterope,
-        theme: 'energyblue',
-        showstatusbar: true,
-        editable: true,
-        selectionmode: 'singlerows',
-        localization: getLocalization(),
-        rendertoolbar: function (toolbar) {
-            var me = this;
-            var container = $("<div style='margin: 5px;'></div>");
-            toolbar.append(container);
-            $("#addrowbutton").jqxButton();
-            $("#addmultiplerowsbutton").jqxButton();
-            $("#deleterowbutton").jqxButton();
-            $("#updaterowbutton").jqxButton();
-            $("#updaterowbutton").on('click', function () {
-                var datarow = generaterow_bodegas();
-                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('updaterow', id, datarow);
-                    $("#jqxgrid_bodegas").jqxGrid('ensurerowvisible', selectedrowindex);
-                }
-            });
-            $('#opeBodega').on('change', function () {
-                var datarow = generaterow_bodegas();
-                console.log("DONDE DEBERIA BORRAR");
-                console.log(datarow);
-                console.log(accion_bodegas_new);
-                if (accion_bodegas_new == 'AGREGAR') {
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
-                } else if (accion_bodegas_new == 'ELIMINAR') {
-                    var posicion = 0;
-                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                    for (var j = 0; j < rows.length; j++) {
-                        if (rows[j]['ID'] == datarow.ID) {
-                            posicion = j;
-                            break;
-                        }
-                    }
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', posicion);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                }
-            });
-            // delete row.
-            $("#deleterowbutton").on('click', function () {
-                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                    var firstColumnData = [];
-                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                    for (var i = 0; i < rows.length; i++) {
-                        firstColumnData.push(rows[i].ID);
-                    }
-                    $("#opeBodega").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                }
-            });
-        },
-        columns: [
-            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'NOMBRE', datafield: 'NOMBRE', width: '60%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
-        ]
-    });
+//    var accion_proveedores_new = '';
+//    var id_proveedor = $('#opeProveedores').val();
+//    $("#info-proveedores").show();
+//    $("#jqxgrid_proveedores").show();
+//    var sourceope = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'ID', type: 'int'},
+//            {name: 'RAZON_SOCIAL', type: 'string'}
+//        ],
+//        url: 'general/extends/extra/carpetas.php',
+//        data: {
+//            accion: "getProveedoresGrilla",
+//            id_proveedor: id_proveedor,
+//        },
+//        async: false,
+//        addrow: function (rowid, rowdata, position, commit) {
+//            commit(true);
+//        },
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        },
+//        updaterow: function (rowid, newdata, commit) {
+//            commit(true);
+//        }
+//    };
+//    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+//            {
+//                formatData: function (data) {
+//                    data.name_startsWith = $("#searchField").val();
+//                    return data;
+//                }
+//            }
+//    );
+//    var generaterow_proveedores = function (i) {
+//        var row = {};
+//        var ids_proveedores = $("#opeProveedores").val();
+//        var firstColumnData = [];
+//        var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//        for (var i = 0; i < rows.length; i++) {
+//            firstColumnData.push(rows[i].ID);
+//        }
+//        $.ajax({
+//            url: _agencia.URL + "/x_getDatoProveedor",
+//            data: {
+//                ids_proveedores: ids_proveedores,
+//                firstColumnData: firstColumnData
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (datos) {
+////                console.log("Q UE DEVUELVE");
+////                console.log(datos);
+//                accion_proveedores_new = datos[0]['ACCION'];
+//                for (var i = 0; i < datos.length; i++) {
+//                    row['ID'] = datos[i]['ID'];
+//                    row['RAZON_SOCIAL'] = datos[i]['RAZON_SOCIAL'];
+//                    row['LIMLTRS'] = '0';
+//                    row['MAXHECTAREAS'] = '0';
+//                }
+//            }
+//        });
+//        return row;
+//    }
+//    $("#jqxgrid_proveedores").jqxGrid({
+//        width: '90%',
+//        height: '200px',
+//        source: dataAdapterope,
+//        theme: 'energyblue',
+//        showstatusbar: true,
+//        editable: true,
+//        selectionmode: 'singlerows',
+//        localization: getLocalization(),
+//        rendertoolbar: function (toolbar) {
+//            var me = this;
+//            var container = $("<div style='margin: 5px;'></div>");
+//            toolbar.append(container);
+//            $("#addrowbutton").jqxButton();
+//            $("#addmultiplerowsbutton").jqxButton();
+//            $("#deleterowbutton").jqxButton();
+//            $("#updaterowbutton").jqxButton();
+//            $("#updaterowbutton").on('click', function () {
+//                var datarow = generaterow_proveedores();
+//                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('updaterow', id, datarow);
+//                    $("#jqxgrid_proveedores").jqxGrid('ensurerowvisible', selectedrowindex);
+//                }
+//            });
+//            $('#opeProveedores').on('change', function () {
+//                var datarow = generaterow_proveedores();
+//                console.log("Viene a este llamado");
+//                console.log(datarow);
+//                console.log(accion_proveedores_new);
+//                /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
+//                 * 
+//                 * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
+//                 * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
+//                 * */
+//                if (accion_proveedores_new == 'AGREGAR') {
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
+//                } else if (accion_proveedores_new == 'ELIMINAR') {
+//                    var posicion = 0;
+//                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//                    for (var j = 0; j < rows.length; j++) {
+//                        if (rows[j]['ID'] == datarow.ID) {
+//                            posicion = j;
+//                            break;
+//                        }
+//                    }
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', posicion);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
+//                }
+//            });
+//            // delete row.
+//            $("#deleterowbutton").on('click', function () {
+//                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
+//                    var firstColumnData = [];
+//                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//                    for (var i = 0; i < rows.length; i++) {
+//                        firstColumnData.push(rows[i].ID);
+//                    }
+//                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+//            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '49%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+//            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+//            {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+//        ]
+//    });
+//    var accion_bodegas_new = '';
+//    var id_bodega = $('#opeBodega').val();
+//    $("#info-bodegas").show();
+//    $("#jqxgrid_bodegas").show();
+//    var sourceope = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'ID', type: 'int'},
+//            {name: 'NOMBRE', type: 'string'}
+//        ],
+//        url: 'general/extends/extra/carpetas.php',
+//        data: {
+//            accion: "getBodegasGrilla",
+//            id_bodega: id_bodega,
+//        },
+//        async: false,
+//        addrow: function (rowid, rowdata, position, commit) {
+//            commit(true);
+//        },
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        },
+//        updaterow: function (rowid, newdata, commit) {
+//            commit(true);
+//        }
+//    };
+//    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+//            {
+//                formatData: function (data) {
+//                    data.name_startsWith = $("#searchField").val();
+//                    return data;
+//                }
+//            }
+//    );
+//    var generaterow_bodegas = function (i) {
+//        var row = {};
+//        var ids_bodegas = $("#opeBodega").val();
+//        var firstColumnData = [];
+//        var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//        for (var i = 0; i < rows.length; i++) {
+//            firstColumnData.push(rows[i].ID);
+//        }
+//        $.ajax({
+//            url: _agencia.URL + "/x_getDatoBodega",
+//            data: {
+//                ids_bodegas: ids_bodegas,
+//                firstColumnData: firstColumnData
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (datos) {
+//                console.log("VIENE ACA BODEGA");
+//                console.log(datos);
+//
+//                accion_bodegas_new = datos[0]['ACCION'];
+//                for (var i = 0; i < datos.length; i++) {
+//                    row['ID'] = datos[i]['ID'];
+//                    row['NOMBRE'] = datos[i]['NOMBRE'];
+//                    row['LIMLTRS'] = '0';
+//                }
+//            }
+//        });
+//        return row;
+//    }
+//    $("#jqxgrid_bodegas").jqxGrid({
+//        width: '70%',
+//        height: '200px',
+//        source: dataAdapterope,
+//        theme: 'energyblue',
+//        showstatusbar: true,
+//        editable: true,
+//        selectionmode: 'singlerows',
+//        localization: getLocalization(),
+//        rendertoolbar: function (toolbar) {
+//            var me = this;
+//            var container = $("<div style='margin: 5px;'></div>");
+//            toolbar.append(container);
+//            $("#addrowbutton").jqxButton();
+//            $("#addmultiplerowsbutton").jqxButton();
+//            $("#deleterowbutton").jqxButton();
+//            $("#updaterowbutton").jqxButton();
+//            $("#updaterowbutton").on('click', function () {
+//                var datarow = generaterow_bodegas();
+//                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('updaterow', id, datarow);
+//                    $("#jqxgrid_bodegas").jqxGrid('ensurerowvisible', selectedrowindex);
+//                }
+//            });
+//            $('#opeBodega').on('change', function () {
+//                var datarow = generaterow_bodegas();
+//                console.log("DONDE DEBERIA BORRAR");
+//                console.log(datarow);
+//                console.log(accion_bodegas_new);
+//                if (accion_bodegas_new == 'AGREGAR') {
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
+//                } else if (accion_bodegas_new == 'ELIMINAR') {
+//                    var posicion = 0;
+//                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//                    for (var j = 0; j < rows.length; j++) {
+//                        if (rows[j]['ID'] == datarow.ID) {
+//                            posicion = j;
+//                            break;
+//                        }
+//                    }
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', posicion);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
+//                }
+//            });
+//            // delete row.
+//            $("#deleterowbutton").on('click', function () {
+//                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
+//                    var firstColumnData = [];
+//                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//                    for (var i = 0; i < rows.length; i++) {
+//                        firstColumnData.push(rows[i].ID);
+//                    }
+//                    $("#opeBodega").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+//            {text: 'NOMBRE', datafield: 'NOMBRE', width: '60%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+//            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
+//        ]
+//    });
     $(".toolbar li:not(.sub)").click(function (e) {
         e.preventDefault();
         var top = $(this).data('top');
@@ -1325,14 +1321,6 @@ $(document).ready(function () {
 //        if (opeCoordinador == '') {jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
 //            return false;}
 //        if (opeJefe == '') {jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
-//            return false;}
-//        if (listrosMax == '') {jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
-//            return false;}
-//        if (maxHectareas == '') {jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;}
-//        if (opeProveedores == '') {jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;}
-//        if (opeBodega == '') {jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
 //            return false;}
             $.ajax({
                 url: _agencia.URL + "/x_sendCliente",
@@ -1521,15 +1509,12 @@ $(document).ready(function () {
         } else if (top == 'testing') {
             $.ajax({
                 url: _agencia.URL + "/x_testing",
-                data: {
-                },
+//                data: {},
                 dataType: "json",
                 type: "post",
-                success: function (data) {
-
-//                    alert(data);
-
-                }
+//                success: function (data) {
+////                    alert(data);
+//                }
             });
         }
     });
@@ -1577,7 +1562,6 @@ $(document).ready(function () {
 //        }
 //        $("#numero").val(largo);
 //    });
-
 //    $("#precio,#retencion").keyup(function () {
 //        cambiarPrecio();
 //    });
@@ -1648,10 +1632,8 @@ function editar_formulario() {
         dataType: "json",
         type: "post",
         success: function (rtn) {
-//            var arr_check = rtn.CHECK_TITULARIDAD;
             data = rtn.factura;
             $("#idh").val(data.ID);
-//            $("#numOperatoria").val(data.ID_OPERATORIA);
             $("#cuitform").val(data.CUIT);
             $("#nombre2").val(data.RAZ);
             var forma_pago = 0;
@@ -1690,7 +1672,6 @@ function editar_formulario() {
                         $("#fechavto_desemb2").val('');
                     }
                 }
-
                 if (data.MAYORISTA == 0) {
                     $("#tipo_m_f").val("Minorista");
                     $("#segunda_fecha").show();
@@ -1706,7 +1687,6 @@ function editar_formulario() {
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
 //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
-//            $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
                 $("#nro_desembolso").val(data.NRO_DESEMBOLSO);//.attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
                 $("#observacion_fact").val(data.OBSERVACIONES);
