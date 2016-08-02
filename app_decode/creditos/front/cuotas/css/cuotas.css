@@ -346,7 +346,7 @@ li.lista-desmbolsos-solicitados:hover{
 select, #txtFecha2{
     background-color: #FFFFFF;
     background-image: url("images/input.png");
-    border: 1px solid #E3E3E3;
+    border: 1px solid #c3c3c3;
     border-radius: 3px 3px 3px 3px;
     color: #575757;
     font-family: Helvetica,Arial,sans-serif;
