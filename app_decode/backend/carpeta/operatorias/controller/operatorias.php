@@ -475,10 +475,10 @@ class operatorias extends main_controller{
 
                 $result['html'] = $this->view("cambio_tasas", $data);
             }
-            
+
             //$this->cuotas_model = $this->_init_model("credito_model_test", false, "creditos/front/cuotas");
             //$this->cuotas_model->impactar_tasas($obj, $fecha_imp_tasas);
-            
+
         }
         
         echo json_encode($result);
