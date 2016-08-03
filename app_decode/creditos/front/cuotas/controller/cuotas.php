@@ -94,11 +94,13 @@ class cuotas extends main_controller{
             }
             
             if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
-                die("-1");
+                return FALSE;
             }
             
             $this->mod->realizar_pago($fecha,  $monto);
+            return TRUE;
         }
+        return FALSE;
     }
     
     
@@ -1468,8 +1470,9 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             $vencimiento_cuota = mktime(0, 0, 0, $m, $d, $y);
 
             if ($version =$this->mod->existCredito($ID_CREDITO)) {
-                $this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION']);
-                $this->mod->marcar_cobro_bancario($cobro['ID'], $fecha);
+                if ($this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION'])) {
+                    $this->mod->marcar_cobro_bancario($cobro['ID'], $fecha);
+                }
             } else {
                 echo "llega-----";
             }

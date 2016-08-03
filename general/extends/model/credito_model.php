@@ -2497,7 +2497,7 @@ class credito_model extends main_model {
     }
 
     function existCredito($id_credito) {
-        $rtn = $this->_db->get_row("fid_creditos_version", "ID_CREDITO_VERSION = " . $id_credito . " AND PARENT_ID = 0");
+        $rtn = $this->_db->get_row("fid_creditos_version", "ID_CREDITO_VERSION = " . $id_credito, 'FECHA_VERSION DESC');
         return $rtn;
     }
 
