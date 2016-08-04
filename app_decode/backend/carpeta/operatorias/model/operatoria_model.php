@@ -241,11 +241,23 @@ class operatoria_model extends main_model{
         return $id = $this->_db->insert("fid_operatoria_cambiotasas",$arr_tasas);
     }
     
+    function get_cambiotasas_x_op($id){
+        if ($id) {
+            $this->_db->select("*, (SELECT COUNT(c.ID) FROM fid_creditos_cambiotasas cct INNER JOIN fid_creditos c ON (c.ID = cct.ID_CREDITO) WHERE c.ID_OPERATORIA=ct.ID_OPERATORIA AND cct.FECHA = ct.FECHA) AS TC");
+            $this->_db->order_by("FECHA", 'ASC');
+            $rtn = $this->_db->get_tabla("fid_operatoria_cambiotasas ct", "ID_OPERATORIA = " . $id);
+            if ($rtn) {
+                return $rtn;
+            }
+        }
+        
+        return FALSE;
+    }
+    
     function get_cambiotasas($id){
         if ($id) {
             $this->_db->select("*");
-            $this->_db->order_by("FECHA", 'ASC');
-            $rtn = $this->_db->get_tabla("fid_operatoria_cambiotasas", "ID_OPERATORIA = " . $id);
+            $rtn = $this->_db->get_row("fid_operatoria_cambiotasas", "ID = " . $id);
             if ($rtn) {
                 return $rtn;
             }
@@ -267,11 +279,34 @@ class operatoria_model extends main_model{
         return FALSE;
     }
     
-    function get_creditos_operatoria($id) {
-        $this->_db->select("ID");
-        $rtn = $this->_db->get_tabla("fid_creditos", "ID_OPERATORIA = " . $id);
+    function get_creditos_operatoria($id, $fecha) {
+        $this->_db->select("c.ID");
+        $this->_db->join("fid_creditos_eventos e", 'c.ID=e.ID_CREDITO AND TIPO=0', 'INNER');
+        $this->_db->group_by('c.ID');
+        $this->_db->order_by('e.FECHA', 'ASC');
+        $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID_OPERATORIA = $id AND e.FECHA <= $fecha");
         
         return $rtn;
+    }
+    
+    function sinc_tasas($id, $fecha) {
+        if ($creditos = $this->get_creditos_operatoria($id, $fecha)) {
+            $_creditos = array();
+            foreach ($creditos as $c) {
+                $_creditos[] =  $c['ID'];
+            }
+            $_creditos = implode(', ', $_creditos);
+            
+            $this->_db->select("c.ID");
+            $this->_db->join("fid_creditos_cambiotasas cct", 'c.ID=cct.ID_CREDITO AND cct.FECHA=' . $fecha, 'LEFT');
+            $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID IN ($_creditos) AND cct.ID_CREDITO IS NULL");
+            
+            if ($rtn) {
+                return $rtn;
+            }
+        }
+        
+        return FALSE;
     }
     
 }

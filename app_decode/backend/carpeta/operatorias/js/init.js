@@ -1328,7 +1328,7 @@ function reimp_ct(id) {
 function _reimp_ct(id, creditos) {
     if (creditos.length > 0) {
         $.each(creditos, function(key, value) {
-            $('#pct').html('Impactando cambio de tasa ' + (key + 1) + ' de ' + creditos.length + ' créditos' );
+            $('#pct').html('<img src="general/images/block-loader.gif" /> Impactando cambio de tasa ' + (key + 1) + ' de ' + creditos.length + ' créditos' );
             $.ajax({
                 async: false,
                 url : "creditos/front/cuotas/x_imp_cambiotasas",
@@ -1336,11 +1336,26 @@ function _reimp_ct(id, creditos) {
                     id: id,
                     credito_id: value.ID
                 },
-                dataType : "json",
+                dataType : "html",
                 type : "post",
-                success : function(data){
-                    if (key + 1 == creditos.length) {
-                        $('#pct').html('El proceso de impactacto de cambio de tasas ha finalizado correctamente' );
+                success : function() {
+                    if ((key + 1) == creditos.length) {
+                        $.ajax({
+                            async: false,
+                            url : _operatorias.URL + "/x_get_cambiotasa",
+                            data : {
+                                id: id,
+                            },
+                            dataType : "json",
+                            type : "post",
+                            success : function(r){
+                                $('#pct').html('');
+                                if(r && r.result) {
+                                    $("#cambio_tasa").replaceWith(r.html);
+                                    $('#pct').html('El proceso de impacto de cambio de tasas ha finalizado correctamente' ).css('color', '#0044ff');
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -1357,4 +1372,28 @@ function init_cambiotasas() {
     });
     $("#fec_imp_tasas").datepicker("option", "dateFormat", 'dd-mm-yy');
     $("#fec_imp_tasas").datepicker("setDate" , $("#fec_imp_tasas").val());
+}
+
+function sinc_ct(id) {
+    jConfirm('Está seguro de resincronizar cambios de tasas?', $.ucwords(_etiqueta_modulo),function(r){
+        if(r==true){
+            //borrar archivo en la bd y fisicamente
+            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+            $.ajax({
+                url : _operatorias.URL + "/x_sinc_tasas",
+                data : {
+                    id: id
+                },
+                dataType : "json",
+                type : "post",
+                success : function(r){
+                    if (r && r.result) {
+                        _reimp_ct(id, r.creditos);
+                    } else {
+                        jAlert('No hay créditos para sincronizar', $.ucwords(_etiqueta_modulo));
+                    }
+                }
+            });
+        }
+    });
 }

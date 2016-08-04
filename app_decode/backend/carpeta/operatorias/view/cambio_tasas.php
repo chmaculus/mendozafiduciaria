@@ -6,29 +6,32 @@
                 <table width="95%">
                     <tr>
                         <th>Fecha</th>
+                        <th>Créditos</th>
                         <th>Int. Comp.</th>
                         <th>Int. Subs.</th>
                         <th>Int. Mor.</th>
                         <th>Int. Pun.</th>
-                        <th></th>
+                        <th>&nbsp;</th>
                     </tr>
                     <?php if ($lst_cambiotasas) { ?>
                         <?php foreach ($lst_cambiotasas as $ct) { ?>
                             <tr class="ct-<?php echo $ct['ID'] ?>">
                                 <td><?php echo date('d/m/Y', $ct['FECHA']) ?></td>
+                                <td><?php echo $ct['TC'] ?></td>
                                 <td><?php echo ($ct['COMPENSATORIO'] >= 0) ? $ct['COMPENSATORIO'] : '-' ?></td>
                                 <td><?php echo ($ct['SUBSIDIO'] >= 0) ? $ct['SUBSIDIO'] : '-' ?></td>
                                 <td><?php echo ($ct['MORATORIO'] >= 0) ? $ct['MORATORIO'] : '-' ?></td>
                                 <td><?php echo ($ct['PUNITORIO'] >= 0) ? $ct['PUNITORIO'] : '-' ?></td>
                                 <td>
                                     <i class="fa fa-remove" title="Eliminar cambio de tasa masivo" onclick="del_ct(<?php echo $ct['ID'] ?>)"></i>
-                                    <i class="fa fa-calculator" title="Regenerar cambio de tasa y recalcular cuotas y pagos" onclick="reimp_ct(<?php echo $ct['ID'] ?>)"></i>
+                                    <i class="fa fa-repeat" title="Sincronizar cambios de tasas" onclick="sinc_ct(<?php echo $ct['ID'] ?>)"></i>
+                                    <!-- <i class="fa fa-calculator" title="Regenerar cambio de tasa y recalcular cuotas y pagos" onclick="reimp_ct(<?php echo $ct['ID'] ?>)"></i> -->
                                 </td>
                             </tr>
                         <?php } ?>
                     <?php } else { ?>
                         <tr>
-                            <td colspan="5" align="center">No hay cambios de tasas</td>
+                            <td colspan="7" align="center">No hay cambios de tasas</td>
                         </tr>
                     <?php } ?>
                 </table>
