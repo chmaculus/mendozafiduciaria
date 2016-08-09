@@ -3056,7 +3056,7 @@ ORDER BY T1.lvl DESC');
         $pagos = array();
         foreach ($this->_variaciones as $variacion) {
             //Buscamos los pagos desde la fecha actual
-            if ($variacion['FECHA'] >= $fecha && $variacion['TIPO'] == EVENTO_RECUPERO) {
+            if ($variacion['FECHA'] > $fecha && $variacion['TIPO'] == EVENTO_RECUPERO) {
                 $tmp = 0;
 
                 //se suman todos sus conceptos

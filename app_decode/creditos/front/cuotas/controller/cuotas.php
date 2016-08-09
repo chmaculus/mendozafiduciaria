@@ -73,7 +73,9 @@ class cuotas extends main_controller{
     
     
     function x_set_pago(){
-        $this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id']);
+        if (!$this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id'])) {
+            die('-1');
+        }
         
         $this->mod->renew_datos();
         echo $this->_get_cuotas();
@@ -97,7 +99,18 @@ class cuotas extends main_controller{
                 return FALSE;
             }
             
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+            
             $this->mod->realizar_pago($fecha,  $monto);
+            
+            if ($pagos) {
+                set_time_limit(0);
+                foreach($pagos as $pago){
+                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                }
+            }
+                
             return TRUE;
         }
         return FALSE;
@@ -184,6 +197,16 @@ class cuotas extends main_controller{
             $this->mod->get_segmentos_cuota();
             $this->mod->renew_datos();
             
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+            
+            if ($pagos) {
+                set_time_limit(0);
+                foreach($pagos as $pago){
+                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                }
+            }
+            
             echo $this->_get_cuotas();
         }
     }
@@ -230,6 +253,8 @@ class cuotas extends main_controller{
                 $desimputar =TRUE;
             }
         }
+        
+        $desimputar = $desimputar ? $desimputar : (isset($_POST['reimputar']) && $_POST['reimputar']) ? TRUE : FALSE;
             
         $data['TIPO'] = EVENTO_TASA;
         //genero la variacion corerspondiente al desembolso
@@ -241,28 +266,30 @@ class cuotas extends main_controller{
         
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
-                
-        if ($retornar) {
-            if ($desimputar) {
-                $this->mod->set_credito_active($credito_id);
-                $this->mod->set_version_active($version);
         
-                $this->mod->renew_datos();
-                
-                $this->mod->save_last_state(true);
-                $this->mod->set_fecha_actual($fecha);
-                $pagos = $this->mod->desimputar_pago();
-                
-                //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
-                //$version_id = $data['VERSION'];
-                $version_id = $version;
-        
-                $this->mod->set_version_active($version_id);
-                $this->mod->make_active_version();
-                foreach($pagos as $pago){
-                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
-                }
+        if ($desimputar) {
+            set_time_limit(0);
+            $this->mod->set_credito_active($credito_id);
+            $this->mod->set_version_active($version);
+
+            $this->mod->renew_datos();
+
+            $this->mod->save_last_state(true);
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+
+            //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
+            //$version_id = $data['VERSION'];
+            $version_id = $version;
+
+            $this->mod->set_version_active($version_id);
+            $this->mod->make_active_version();
+            foreach($pagos as $pago){
+                $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
             }
+        }
+            
+        if ($retornar) {
             return;
         }
         //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
