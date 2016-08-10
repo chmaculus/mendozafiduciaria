@@ -140,7 +140,7 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
     }
 
     if (existEventosPosteriores() && !confirm){
-        jConfirm("¿Desea eliminar los eventos posteriores y generar este evento? ","MENDOZA FIDUCIARIA", function(e){
+        jConfirm("Hay eventos posteriores ¿Desea reimputar esos eventos? ","MENDOZA FIDUCIARIA", function(e){
             if (e){
                 agregar_pago(id_credito, fecha, monto);
             } else {

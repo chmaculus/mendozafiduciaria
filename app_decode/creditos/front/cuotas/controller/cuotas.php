@@ -1379,6 +1379,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         } else {
                             $pagos_no = 0;
                             foreach ($creditos as $fec => $pago) {
+                                $fec = $pago['FP'];
                                 if (isset($pago['TC'])) {
                                     $data = array();
                                     $data['por_int_compensatorio'] = $pago['TC'];
