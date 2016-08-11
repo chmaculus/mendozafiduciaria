@@ -368,7 +368,7 @@ iframe{
     background: url('../../../../../general/css/images/32x32/checked.png') no-repeat center 5px;
 }
 #vtab > ul > li.garantia{
-    background: url('../../../../../general/css/images/32x32/garantia.jpg') no-repeat center 5px;
+    background: url('../../../../../general/css/images/32x32/monedas.jpg') no-repeat center 5px;
 }
 #vtab > ul > li.sectores{
     background: url('../../../../../general/css/images/32x32/Search.png') no-repeat center 5px;
@@ -391,6 +391,15 @@ iframe{
 #vtab > ul > li.desembolsos{
     background: url('../../../../../general/css/images/32x32/contrato.png') no-repeat center 5px;
 }
+#vtab > ul > li.gastos {
+    background: url('../../../../../general/css/images/32x32/colapsar.png') no-repeat center 5px;
+}
+#vtab > ul > li.tasas {
+    background: url('../../../../../general/css/images/32x32/Stationery.png') no-repeat center 5px;
+}
+#vtab > ul > li.reporte {
+    background: url('../../../../../general/css/images/32x32/todas.jpg') no-repeat center 5px;
+}
 #vtab > ul > li.selected {
     opacity: 1;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
@@ -400,6 +409,7 @@ iframe{
     z-index: 10;
     background-color: #fafafa !important;
     position: relative;
+    box-shadow: -3px 0px 6px;
 }
 #vtab > ul > li.etapa_ready {
     opacity: 1;

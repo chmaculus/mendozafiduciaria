@@ -53,7 +53,10 @@ class formalta_model extends credito_model {
         $this->_id_operatoria = $id;
     }
     
-
+    function set_iva($iva){
+        $this->_iva = $iva;
+    }
+    
 
     function save_operacion_credito(){
         
@@ -66,7 +69,8 @@ class formalta_model extends credito_model {
             'ID_USUARIO' => $_SESSION['USERADM'],
             'TABLA' => "creditos",
             'ACCION' => "A",
-            'Registro' => $this->_id_credito
+            'Registro' => $this->_id_credito,
+            'FECHA' => date('Y-m-d H:i:s')
         );
         $this->_db->insert("fid_auditoria", $array);
         
@@ -123,6 +127,7 @@ class formalta_model extends credito_model {
             "T_MORATORIO" => $moratorio,
             "T_GASTOS" => $gastos,
             "T_GASTOS_MIN" => $gastosMin,
+            "IVA" => isset($this->_iva) ? $this->_iva : IMP_IVA * 100,
             "INTERES_CUOTAS" => $interes_cuotas,
             "INTERES_VTO" => date("Y-m-d",$primer_vencimiento),
             "INTERES_PERIODO" => 09,
@@ -144,36 +149,6 @@ class formalta_model extends credito_model {
         }
         
         $this->_db->insert("fid_creditos",$credito);
-    }
-    
-    function _generar_clientes($clientes = FALSE) {
-        if($clientes) {
-            $clientes = $this->_db->get_tabla("fid_clientes", "ID IN (" . str_replace("|", ',', $clientes) . ")");
-            if ($clientes) {
-                $nombres = array();
-                $cuits = array();
-                foreach ($clientes as $it_cl) {
-                    $nombres[] = $it_cl['RAZON_SOCIAL'];
-                    $cuits[] = $it_cl['CUIT'];
-                }
-                
-                return array(
-                    'POSTULANTES_NOMBRES' => implode(' | ', $nombres),
-                    'POSTULANTES_CUIT' => implode(' | ', $cuits),
-                    );
-            }
-        }
-        return FALSE;
-    }
-    
-    function generar_clientes() {
-        if ($creditos = $this->_db->get_tabla("fid_creditos")) {
-            foreach ($creditos as $credito) {
-                if ($data_clientes = $this->_generar_clientes($credito['POSTULANTES'])) {
-                    $this->_db->update('fid_creditos', $data_clientes, 'ID = ' . $credito['ID']);
-                }
-            }
-        }
     }
     
     
@@ -463,6 +438,44 @@ class formalta_model extends credito_model {
         return $fecha_vencimiento;
     }
     
+    function get_operatoria_tasas($id, $fecha) {
+        $id =  (int) $id;
+        $this->_db->select("*");
+        $rtn = $this->_db->get_row("fid_operatorias", "ID=" . $id);
+        if ($rtn) {
+            $arr = array(
+                'IVA' => $rtn['IVA'],
+                'COMPENSATORIO' => $rtn['TASA_INTERES_COMPENSATORIA'],
+                'PUNITORIO' => $rtn['TASA_INTERES_POR_PUNITORIOS'],
+                'MORATORIO' => $rtn['TASA_INTERES_MORATORIA'],
+                'SUBSIDIO' => $rtn['TASA_SUBSIDIADA']
+            );
+            
+            if ($fecha) {
+                $this->_db->select("FECHA, IVA, COMPENSATORIO, SUBSIDIO, MORATORIO, PUNITORIO");
+                $this->_db->join("fid_operatoria_cambiotasas oc","oc.ID_OPERATORIA = o.ID AND oc.FECHA<=" . $fecha);
+                $this->_db->order_by("FECHA", "ASC");
+                $rtn = $this->_db->get_tabla("fid_operatorias o", "ID=" . $id);
+                
+                foreach ($rtn as $r) {
+                    if ($r['COMPENSATORIO'] >= 0) {
+                        $arr['COMPENSATORIO'] = $r['COMPENSATORIO'];
+                    }
+                    if ($r['SUBSIDIO'] >= 0) {
+                        $arr['SUBSIDIO'] = $r['SUBSIDIO'];
+                    }
+                    if ($r['MORATORIO'] >= 0) {
+                        $arr['MORATORIO'] = $r['MORATORIO'];
+                    }
+                    if ($r['PUNITORIO'] >= 0) {
+                        $arr['PUNITORIO'] = $r['PUNITORIO'];
+                    }
+                }
+            }
+            
+            return $arr;
+        }
+    }
     
 }
 

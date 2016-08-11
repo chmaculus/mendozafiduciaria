@@ -117,9 +117,9 @@
     <div class="grid-1 tab" id="tabs">
       <div class="title-grid tabs">
           <ul class="tabNavigation">
-              <li><a href="#tabs-1"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/User.png" borde=""/>Créditos</a></li>
-              <li><a href="#tabs-2"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/System.png" borde=""/>Adjuntos</a></li>
-              <li><a href="#tabs-3"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/Template.png" borde=""/>Checklist</a></li>
+              <li><a href="#tabs-1"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/User.png" borde=""/>Créditos</a></li>
+              <li><a href="#tabs-2"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/System.png" borde=""/>Adjuntos</a></li>
+              <li><a href="#tabs-3"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/Template.png" borde=""/>Checklist</a></li>
           </ul>
       </div>
       <div class="content-gird">
@@ -140,9 +140,20 @@
                   </div>
                   
                   <div class="elem elem_med">
+                      <br /><br />
+                  </div>
+                  
+                  <div class="elem elem_med">
                       <label>IVA:</label>
                       <div class="indent formtext">
                           <input type="text" class="validate[required]" title="Ingrese Tasa de Interés Compensatoria" id="ivaope" value="<?php echo isset($entidad["IVA"])?$entidad["IVA"]:"" ?>"> 
+                      </div>
+                  </div>
+
+                  <div class="elem elem_med">
+                      <label>% Gastos:</label>
+                      <div class="indent formtext">
+                          <input type="text" class="" title="Ingrese Tasa de Gastos" id="tasa_gastos" value="<?php echo isset($entidad["TASA_GASTOS"])?$entidad["TASA_GASTOS"]:"" ?>"> 
                       </div>
                   </div>
                   
@@ -167,23 +178,16 @@
                       </div>
                   </div>
 
-                  <div class="elem elem_med">
-                      <label>Tasa Subsidiada:</label>
-                      <div class="indent formtext">
-                          <input type="text" class="" title="Ingrese Tasa Subsidiada" id="tasa_is" value="<?php echo isset($entidad["TASA_SUBSIDIADA"])?$entidad["TASA_SUBSIDIADA"]:"" ?>"> 
-                      </div>
-                  </div>
+                    <div class="elem elem_med">
+                        <label>Tasa Subsidiada:</label>
+                        <div class="indent formtext">
+                            <input type="text" class="" title="Ingrese Tasa Subsidiada" id="tasa_is" value="<?php echo isset($entidad["TASA_SUBSIDIADA"])?$entidad["TASA_SUBSIDIADA"]:"" ?>"> 
+                        </div>
+                    </div>
 
-                  <div class="elem elem_med">
-                      <label>Tasa Gastos:</label>
-                      <div class="indent formtext">
-                          <input type="text" class="" title="Ingrese Tasa de Gastos" id="tasa_gastos" value="<?php echo isset($entidad["TASA_GASTOS"])?$entidad["TASA_GASTOS"]:"" ?>"> 
-                      </div>
-                  </div>
-                  
-                  <div class="elem elem_med">
-                      <br /><br />
-                  </div>
+                  <hr />
+                  <?php if (isset($lst_cambiotasas)) include('cambio_tasas.php'); ?>
+                  <hr />
 
                   <div class="elem elem_med">
                       <label>Desembolsos:</label>
@@ -221,23 +225,7 @@
                   </div>
 
                   
-                  <?php if ($imputacion_tasas) { ?>
-                  <div class="cb" /><hr />
-
-                  <div class="elem elem_med">
-                      <label>Impactar cambio de tasas en créditos:</label>
-                      <div class="indent formtext impt">
-                          <input type="checkbox" id="impactar_tasas" />
-                      </div>
-                  </div>
-
-                  <div class="elem elem_med">
-                      <label>Fecha cambio de tasas créditos:</label>
-                      <div class="indent formtext">
-                          <input type="text" class="fecha" title="Ingrese fecha de cambio de tasas" id="fec_imp_tasas" value="<?=date('d-m-Y')?>"> 
-                      </div>
-                  </div>
-                  <?php } ?>
+                  
               </div>
           </div>
 

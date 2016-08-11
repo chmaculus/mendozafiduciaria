@@ -19,7 +19,7 @@
     </ul>
     <ul class="datos">
         <?php foreach($datos as $dato){ ?>
-        <li class="<?=$dato['INGRESADO']?>" data-id="<?=$dato['ID']?>" data-idcredito="<?=$dato['ID_CREDITO']?>" data-importe="<?=$dato['IMPORTE']?>" data-fecha="<?=$dato['FECHA_REC']?>" data-cvencimiento="<?=$dato['CREDITO_VENCIMIENTO']?>">
+        <li class="<?=$dato['INGRESADO'] . ($dato['PAGADO'] ? ' tiene_pag' : '')?>" data-id="<?=$dato['ID']?>" data-idcredito="<?=$dato['ID_CREDITO']?>" data-importe="<?=$dato['IMPORTE']?>" data-fecha="<?=$dato['FECHA_REC']?>" data-cvencimiento="<?=$dato['CREDITO_VENCIMIENTO']?>" <?=$dato['PAGADO'] ? 'title="Hay un pago ingresado"' : '' ?>>
             <span class="credito"><?=$dato['ID_CREDITO']?></span>
             <span class="razon_social"><?=($dato['RAZON_SOCIAL']?((strlen($dato['RAZON_SOCIAL'])>18)?substr($dato['RAZON_SOCIAL'],0,15).'...':$dato['RAZON_SOCIAL']):'&nbsp;')?></span>
             <span class="fecha_rec"><?=$dato['FECHA_REC']?></span>
@@ -28,7 +28,7 @@
             <span class="importe dinero"><span><?= number_format((float)$dato['IMPORTE'], 2, ',', '.')?></span></span>
             <span class="importe dinero"><span ><?= number_format((float)$dato['CREDITO_IMPORTE'], 2, ',', '.')?></span></span>
             <span class="importe"><?=$dato['CREDITO_VENCIMIENTO']?></span>
-            <span class="opciones_chk"><input type="checkbox" checked=""/></span>
+            <span class="opciones_chk"><input type="checkbox"<?= $dato['PAGADO'] ? '' : ' checked=""' ?>/></span>
         </li>
         <?php } ?>
     </ul>    

@@ -385,21 +385,20 @@ class sqldata {
         }
         $file = $dir . $accion . '_' . date('Y-m-d') . ".log";
         try {
-            if ($pfile = fopen($file,'a+')) {
+            if ($pfile = @fopen($file,'a+')) {
                 if (is_array($var)) {
                     fwrite($pfile, print_r($var, TRUE) . "\n");
                 } else {
                     fwrite($pfile, $var . "\n");
                 }
-            } else {
-                die("ERROR EN EL SISTEMA, contactar con soporte");
+                fclose($pfile);
             }
         
         } catch (Exception $ex) {
-            print_r($ex);die;
+            //print_r($ex);die;
         }
 
-        fclose($pfile);
+        
 
     }
 

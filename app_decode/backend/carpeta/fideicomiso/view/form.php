@@ -116,11 +116,11 @@
           <div class="grid-1 tab" id="tabs">
             <div class="title-grid tabs">
                 <ul class="tabNavigation">
-                    <li><a href="#tabs-1"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/User.png" borde=""/>Entidades</a></li>
-                    <li><a href="#tabs-2"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/System.png" borde=""/>Operatoria</a></li>
-                    <li><a href="#tabs-3"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/Template.png" borde=""/>Cuentas Bancarias</a></li>
-                    <li><a href="#tabs-4"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/Forward.png" borde=""/>Aportes</a></li>   
-                    <li><a href="#tabs-5"><img width="20" src="http://localhost/fideicomiso/general/css/images/32x32/Security.png" borde=""/>Adjuntos</a></li>
+                    <li><a href="#tabs-1"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/User.png" borde=""/>Entidades</a></li>
+                    <li><a href="#tabs-2"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/System.png" borde=""/>Operatoria</a></li>
+                    <li><a href="#tabs-3"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/Template.png" borde=""/>Cuentas Bancarias</a></li>
+                    <li><a href="#tabs-4"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/Forward.png" borde=""/>Aportes</a></li>   
+                    <li><a href="#tabs-5"><img width="20" src="<?=URL_SITIO ?>/general/css/images/32x32/Security.png" borde=""/>Adjuntos</a></li>
                 </ul>
              </div>
             <div class="content-gird">   
