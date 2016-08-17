@@ -1326,20 +1326,14 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $fpago = strtotime(date('Y-m-d', $fpago));
                         $_fpago = (int)$fpago;
                         
-                        if (!isset($arr_creditos[$credito_id]) ) {
-                            foreach ($cambios_tasas as $k_ct => $tmp_ct) {
-                                $arr_creditos[$credito_id][$k_ct-1] = $tmp_ct;
-                            }
-                        }
-                        
                         $_pago = $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue();
                         if (isset($arr_creditos[$credito_id][$_fpago])) {
+                            $arr_creditos[$credito_id][$_fpago]['PAGO'] += $_pago;
+                        } else {
                             $arr_creditos[$credito_id][$_fpago] = array(
                                 'FP' => $fpago,
                                 'PAGO' => $_pago
                                 );
-                        } else {
-                            $arr_creditos[$credito_id][$_fpago]['PAGO'] += $_pago;
                         }
                         
                     } else {
