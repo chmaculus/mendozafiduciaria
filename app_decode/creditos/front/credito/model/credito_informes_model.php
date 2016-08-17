@@ -463,12 +463,16 @@ class credito_informes_model extends credito_model {
                 $tmp['FECHA_DESDE'] = $variacion['FECHA'];
                 $tmp['FECHA_HASTA'] = 0;
 
+                if (isset($tasas[count($tasas)-1])) {
+                    $tasas[count($tasas)-1]['FECHA_HASTA'] = $variacion['FECHA'];
+                }
+                
+                if (count($tasas) > 0 && $tasas[count($tasas)-1]['FECHA'] == $tmp['FECHA']) {
+                    array_pop($tasas);
+                }
+                
                 $tasas[] = $tmp;
                 
-                if (isset($tasas[count($tasas)-2])) {
-                    $tasas[count($tasas)-2]['FECHA_HASTA'] = $variacion['FECHA'];
-                }
-
                 $fecha_posterior = $variacion['FECHA'];
             }
         }
@@ -487,6 +491,17 @@ class credito_informes_model extends credito_model {
             return trim($rtn[0]['valor']);
         else
             return 0;
+    }
+
+    function auditoria($id_credito, $accion, $descripcion) {
+        $array = array(
+            'ID_USUARIO' => $_SESSION['USERADM'],
+            'TABLA' => "creditos_pagos",
+            'ACCION' => $accion,
+            'Registro' => $id_credito,
+            'FECHA' => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert("fid_auditoria", $array);
     }
 
 }

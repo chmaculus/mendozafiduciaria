@@ -329,12 +329,18 @@ class cobros extends main_controller {
         echo json_encode($lista);
     }
 
+    function x_get_archivos_bancos_mes() {
+        $lista = $this->mod->get_archivos_bancarios_mes();
+        echo json_encode($lista);
+    }
+
     function x_get_cobro_file() {
         $id = $_POST['id'];
             
         $datos = $this->mod->get_cobros_bancos($id);
         //print_array($datos);
         for($i = 0 ; $i < count($datos) ; $i++){
+            $datos[$i]['PAGADO'] = $this->mod->get_pagos_creditos($datos[$i]['ID_CREDITO'], $datos[$i]['FECHA_RENDICION'], $datos[$i]['IMPORTE']);
             $datos[$i]['FECHA_REC'] = date("d/m/Y",$datos[$i]['FECHA_RECEPCION']);
             $datos[$i]['FECHA_REN'] = date("d/m/Y",$datos[$i]['FECHA_RENDICION']);
             $datos[$i]['CREDITO_VENCIMIENTO'] = date("d/m/Y",$datos[$i]['CREDITO_VENCIMIENTO']);
@@ -344,6 +350,22 @@ class cobros extends main_controller {
         echo $this->view("extract", array("datos" => $datos));
     }
 
+    function x_get_cobro_mes() {
+        $id = $_POST['mes'];
+            
+        $datos = $this->mod->get_cobros_bancos_mes($id);
+        //print_array($datos);
+        for($i = 0 ; $i < count($datos) ; $i++){
+            $datos[$i]['PAGADO'] = $this->mod->get_pagos_creditos($datos[$i]['ID_CREDITO'], $datos[$i]['FECHA_RENDICION'], $datos[$i]['IMPORTE']);
+            $datos[$i]['FECHA_REC'] = date("d/m/Y",$datos[$i]['FECHA_RECEPCION']);
+            $datos[$i]['FECHA_REN'] = date("d/m/Y",$datos[$i]['FECHA_RENDICION']);
+            $datos[$i]['CREDITO_VENCIMIENTO'] = date("d/m/Y",$datos[$i]['CREDITO_VENCIMIENTO']);
+            $datos[$i]['INGRESADO'] = $datos[$i]['FECHA_INGRESADO'] > 0? "ingresado" : "no_ingresado";
+        }
+
+        echo $this->view("extract", array("datos" => $datos));
+    }
+    /*
     function x_add_cobros() {
         $cobros = $_POST['cobros'];
 
@@ -372,7 +394,7 @@ class cobros extends main_controller {
             
         }
 
-    }
+    }*/
     
     function x_del_cobros() {
         $id = $_POST['id'];

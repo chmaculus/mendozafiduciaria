@@ -105,6 +105,7 @@ function _renew_versiones(){
 
 function existDesembolsosTeoricos(creadito_id, fecha){
     var ret = false;
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Verificando desembolsos</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_verificar_desembolsos_reales",
         data: {
@@ -115,6 +116,7 @@ function existDesembolsosTeoricos(creadito_id, fecha){
         type: "post",
         async : false,
         success: function(result) {
+            $.unblockUI();
             if (result=='-1'){
                 ret = true;
                 return;
@@ -127,6 +129,7 @@ function existDesembolsosTeoricos(creadito_id, fecha){
 
 _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
     confirm = confirm || false;
+    _version_change = false;
     if (!confirm){
         if (existDesembolsosTeoricos(id_credito, fecha)){
             jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function() {
@@ -137,34 +140,26 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
     }
 
     if (existEventosPosteriores() && !confirm){
-        jConfirm("¿Desea generar una nueva version a partir de la fecha del evento? ","MENDOZA FIDUCIARIA", function(e){
+        jConfirm("Hay eventos posteriores ¿Desea reimputar esos eventos? ","MENDOZA FIDUCIARIA", function(e){
             if (e){
-                _version_id = generar_nueva_version(id_credito, _version_id , fecha);
-
-                _cuotas.agregar_pago(id_credito,  fecha, monto, true);
-                
-                _renew_versiones();
-                _version_change = true;
-            }
-            else{
-                jConfirm("¿Desea eliminar los eventos posteriores y generar este evento? ","MENDOZA FIDUCIARIA", function(e){
-                    if (e){
-                        eliminar_eventos_posteriores(id_credito, _version_id , fecha);
-                        _cuotas.agregar_pago(id_credito,  fecha, monto, true);
-                    }
-                });
+                agregar_pago(id_credito, fecha, monto);
+            } else {
+                return;
             }
         });
-        return;
+    } else {
+        agregar_pago(id_credito, fecha, monto);
     }
-    
+};
+
+function agregar_pago(id_credito, fecha, monto) {
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_set_pago",
         data: {
             fecha: fecha,
             credito_id: id_credito,
-            version_id: _version_id || 0,
+            version_id: 0,
             monto: monto
         },
         type: "post",
@@ -175,18 +170,12 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
                 });
             } else {
                 $(".div-result").html(result);
-                if (_version_change){
-                    desimputar_pagos(id_credito, fecha, true);
-                }          
-                else{
-                    $.unblockUI();                
-                }
+                $.unblockUI();
                 _events_lista();
             }
         }
-    });    
-};
-
+    });
+}
 
 function agregar_variacion() {
     
@@ -241,6 +230,9 @@ function agregar_variacion() {
         case 10:
             refinanciacion_caida();
             break;
+        case 11:
+            credito_caido();
+            break;
     }
 
     $("#txtMonto").val("");
@@ -267,13 +259,13 @@ _cuotas.mostrar_estado = function(id_credito, fecha) {
             
             if (parseInt(result.rtn)===5){
                 jConfirm("Hay cuotas a las que se le han vencido los plazos de pago y el subsidio ha sido anulado, Desea generar una nueva version con reimputación de pagos ahora?", "ATENCION!",function(e) {
-                    if (e) {
+                  /*  if (e) {
                         _version_id = generar_nueva_version(id_credito, _version_id , result.fecha_vencimiento_subsidio);
                         var tasas = get_tasas_fecha(result.fecha_vencimiento_subsidio);
                         _version_change = true;
                         _cuotas.agregar_cambiotasa(id_credito, tasas.COMPENSATORIO, 0, tasas.MORATORIO, tasas.PUNITORIO, result.fecha_vencimiento_subsidio, true);
                         _renew_versiones();
-                    }
+                    }*/
                 });
             }
         }
@@ -283,30 +275,21 @@ _cuotas.mostrar_estado = function(id_credito, fecha) {
 _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, confirm) {
     
     confirm = confirm || false;
+    reset = reset || 0;
     
     if (existEventosPosteriores() && !confirm){
-        jConfirm("¿Desea generar una nueva version a partir de la fecha del evento ? ","MENDOZA FIDUCIARIA", function(e){
+        jConfirm("¿Hay eventos posteriores, desea reimputar estos eventos? ","MENDOZA FIDUCIARIA", function(e){
             if (e){
-                _version_id = generar_nueva_version(id_credito, _version_id , fecha);
-                $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
-                _cuotas.agregar_desembolso(id_credito, monto, tipo, fecha, reset, true);
-                _renew_versiones();
-                _version_change = true;
-            }
-            else{
-                jConfirm("¿Desea eliminar los eventos posteriores y generar este evento? ","MENDOZA FIDUCIARIA", function(e){
-                    if (e){
-                        $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
-                        eliminar_eventos_posteriores(id_credito, _version_id , fecha);
-                        _cuotas.agregar_desembolso(id_credito, monto, tipo, fecha, reset, true);
-                    }
-                });
+                agregar_desembolso(id_credito, monto, tipo, fecha, reset);
             }
         });
         return;
     }
+    
+    agregar_desembolso(id_credito, monto, tipo, fecha, reset);
+};
 
-    reset = reset || 0;
+function agregar_desembolso(id_credito, monto, tipo, fecha, reset) {
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_agregar_desembolso",
@@ -330,22 +313,22 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
                     }
                 });*/
                  _cuotas.agregar_desembolso(id_credito, monto, tipo, fecha, 1, true);
-            }
-            else {
+            } else if (result === "-2") {
+                jAlert("El monto total de desembolsos realizados es superior al total del crédito", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
+            } else {
                 $(".div-result").html(result);
                 _events_lista();
-                if (_version_change){
-                    desimputar_pagos(id_credito, fecha, true);
-                }
-                else{
-                    $.unblockUI();
-                }
+                $.unblockUI();
             }
         }
     });
-};
+}
 
 _cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion) {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    
     $.ajax({
         url: _cuotas.URL + "/x_agregar_gasto",
         type: "post",
@@ -357,6 +340,7 @@ _cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion) {
             fecha: fecha
         },
         success: function(result) {
+            $.unblockUI();
             if (result=='-1'){
                 jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function(e) {
                     return;
@@ -379,25 +363,20 @@ _cuotas.agregar_cambiotasa = function(id_credito, tasa, subsidio, moratorio, pun
     confirm = confirm || false;
 
     if (existEventosPosteriores() && !confirm){
-        jConfirm("¿Desea generar una nueva version a partir de la fecha del evento ? ","MENDOZA FIDUCIARIA", function(e){
+        jConfirm("Hay eventos posteriores. ¿Desea reimputar los pagos? ","MENDOZA FIDUCIARIA", function(e){
             if (e){
-                _version_id = generar_nueva_version(id_credito, _version_id , fecha);
-                //_cuotas.agregar_desembolso(id_credito, fecha, true);
-                _cuotas.agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha, true);
-                _renew_versiones();
-                _version_change = true;
-            }
-            else{
-                jConfirm("¿Desea eliminar los eventos posteriores y generar este evento? ","MENDOZA FIDUCIARIA", function(e){
-                    if (e){
-                        eliminar_eventos_posteriores(id_credito, _version_id , fecha);
-                        _cuotas.agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha, true);
-                    }
-                });
+                agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha, true);
             }
         });
         return;
-    }    
+    }
+    
+    agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha);
+}
+
+function agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha, reimputar) {
+    reimputar = reimputar || false;
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     
     $.ajax({
         url: _cuotas.URL + "/x_agregar_cambiotasa",
@@ -408,21 +387,18 @@ _cuotas.agregar_cambiotasa = function(id_credito, tasa, subsidio, moratorio, pun
             subsidio : subsidio,
             moratorio : moratorio,
             punitorio : punitorio,
-            version_id: _version_id || 0,
-            fecha: fecha
+            version_id: 0,
+            fecha: fecha,
+            reimputar: reimputar
         },
         success: function(result) {
-            if (_version_change){
-                desimputar_pagos(id_credito, fecha, true);
-            }
-            
-            
+            $.unblockUI();
             if (result=='-1'){
                 jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function(e) {
                     return;
                 });                
                 return;
-            }            
+            }
             $(".div-result").html(result);
             _events_lista();
         }
@@ -838,15 +814,14 @@ function get_tasas_fecha(fecha){
               PUNITORIO : rtn.PUNITORIO
             };
             
-    
-            $.unblockUI();            
+            $.unblockUI();
         }
     });
     return rtn_tasas;
 }
 
 function existEventosPosteriores(){
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Verificando otros eventos</h4>' });
     
     var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
     var ret = false;
@@ -1060,8 +1035,17 @@ function prorroga() {
         0,//caducar
         _cuotas.ID_CREDITO,
         $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
-        false,
-        1 //credito prorroga
+        2//credito prorroga
+    ];
+    formaltabase(datos);
+}
+
+function caerCredito() {
+    var datos = [
+        0,//caducar
+        _cuotas.ID_CREDITO,
+        $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+        3//credito caido
     ];
     formaltabase(datos);
 }
@@ -1081,4 +1065,26 @@ function formaltabase(datos) {
 
     }); 
     
+}
+
+
+function credito_caido() {
+    $.ajax({
+        url: _cuotas.URL + "/x_credito_caido",
+        data: {
+            fecha: $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
+            credito_id: _cuotas.ID_CREDITO
+        },
+        type: "post",
+        async : false,
+        success: function(result) {
+            if (result=='-1') {
+                ret = true;
+                return;
+            } else {
+                $(".div-result").html(result);
+                $(window).scrollTop($(".div-result").offset().top);
+            }
+        }
+    });
 }

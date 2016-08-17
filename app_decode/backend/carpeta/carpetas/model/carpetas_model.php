@@ -52,7 +52,7 @@ class carpetas_model extends main_model {
     function get_legales_et4($idope) {
         $this->_db->select("DESTINO");
         $rtn = $this->_db->get_tabla('fid_traza', " OBSERVACION='ENVIADO' AND ETAPA='4' AND ID_OPERACION='" . $idope . "' ");
-        //log_this('eeeeee.log', $this->_db->last_query());
+        //log_this('log/eeeeee.log', $this->_db->last_query());
         if ($rtn) {
             return $rtn[0]["DESTINO"];
         } else {
@@ -71,28 +71,24 @@ class carpetas_model extends main_model {
         $this->_db->select("count(*) as cont");
         $this->_db->where("ID_CREDITO='" . $idcredito . "'");
         $rtn = $this->_db->get_tabla('fid_creditos_cuotas');
-        //log_this('eeeeee.log', $this->_db->last_query());
         return $rtn[0]["cont"];
     }
 
     function get_carterade($id) {
         $this->_db->select(" CONCAT(NOMBRE,' ', APELLIDO) as nombrecarterade ");
         $rtn = $this->_db->get_tabla('fid_usuarios', "ID='" . $id . "'");
-        log_this('get_carterade.log', $this->_db->last_query());
         return $rtn;
     }
 
     function get_etapaactual($id) {
         $this->_db->select(" NOMBRE ");
         $rtn = $this->_db->get_tabla('fid_etapas', "ID='" . $id . "'");
-        log_this('get_etapaactual.log', $this->_db->last_query());
         return $rtn;
     }
 
     function get_proceso($id) {
         $this->_db->select(" NOMBRE ");
         $rtn = $this->_db->get_tabla('fid_procesos', "ID='" . $id . "'");
-        log_this('get_proceso.log', $this->_db->last_query());
         return $rtn;
     }
 
@@ -119,7 +115,6 @@ class carpetas_model extends main_model {
         $this->_db->select("o.JEFEOP,o.COORDOPE");
         $this->_db->join("fid_operatorias o", "o.ID=op.ID_OPERATORIA");
         $rtn = $this->_db->get_tabla('fid_operaciones op', "op.ID='" . $idope . "'");
-        //log_this('eeeeee.log', $this->_db->last_query());
         return $rtn;
     }
 
@@ -149,14 +144,12 @@ class carpetas_model extends main_model {
         $this->_db->join("fid_usuarios u", "u.ID=a.ID_USUARIO");
         $this->_db->join("fid_etapas e", "e.ID=a.ID_ETAPA");
         $rtn = $this->_db->get_tabla('fid_operacion_adjunto a');
-        //log_this('xxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 
     function get_uploads_req($id) {
         $this->_db->where("ID_NOTA_REQ = '" . $id . "'");
         $rtn = $this->_db->get_tabla('fid_nota_req_adjunto');
-        //log_this('xxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 
@@ -165,7 +158,6 @@ class carpetas_model extends main_model {
         $this->_db->where("ID_GARANTIA = '" . $idgar . "'");
         $this->_db->join("fid_usuarios u", "u.ID=ga.ID_USUARIO");
         $rtn = $this->_db->get_tabla('fid_garantia_adjunto ga');
-        //log_this('xxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 
@@ -174,7 +166,6 @@ class carpetas_model extends main_model {
         if ($rtn) {
             $idoperatoria = $rtn[0]['ID_OPERATORIA'];
             $rtnope = $this->_db->get_tabla("fid_operatoria_adjunto", "ID_OPERATORIA='" . $idoperatoria . "'");
-            //log_this('xxxxx111.log', $this->_db->last_query() );
             return $rtnope;
         }
         return false;
@@ -189,7 +180,6 @@ class carpetas_model extends main_model {
     function get_req($id) {
         $this->_db->where("ID = '" . $id . "'");
         $rtn = $this->_db->get_tabla('fid_nota_req');
-        //log_this('xxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 
@@ -216,7 +206,6 @@ class carpetas_model extends main_model {
 
     function get_desembolso_checklist($idope) {
         $rtn = $this->_db->get_tabla('fid_operacion_condicionesprevias', "ID_OPERACION='" . $idope . "' and ESTADO='1'  and TIPO='2'");
-        //log_this('rrrrrrr.log',$this->_db->last_query() );
         return $rtn;
     }
 
@@ -253,7 +242,22 @@ class carpetas_model extends main_model {
             } else {
                 $rtn['PERIODICIDAD_TASA'] = 0;
             }
-
+            
+            if ($rtn['INTERES_VTO'] == '1969-12-31') { //parche para arreglar fecha mal guardada
+                $this->_db->select('FECHA_VENCIMIENTO');
+                $this->_db->order_by('CUOTAS_RESTANTES', 'DESC');
+                $INTERES_VTO = $this->_db->get_row('fid_creditos_cuotas', "ID_CREDITO=" . $id_credito);
+                if ($INTERES_VTO) {
+                    $rtn['INTERES_VTO'] = date('Y-m-d', $INTERES_VTO['FECHA_VENCIMIENTO']);
+                }
+                
+                $this->_db->select('FECHA_VENCIMIENTO');
+                $this->_db->order_by('CUOTAS_RESTANTES', 'DESC');
+                $INTERES_VTO = $this->_db->get_row('fid_creditos_cuotas', "ID_CREDITO=" . $id_credito . " AND CAPITAL_CUOTA>0");
+                if ($INTERES_VTO) {
+                    $rtn['CAPITAL_VTO'] = date('Y-m-d', $INTERES_VTO['FECHA_VENCIMIENTO']);
+                }
+            }
 
             return $rtn;
         }
@@ -275,7 +279,7 @@ class carpetas_model extends main_model {
     }
 
     function get_clientes_ope_nombre($id) {
-        $this->_db->select("oc.ID_CLIENTE, c.CORREO as CORREO, c.RAZON_SOCIAL as RAZON_SOCIAL,c.CUIT as CUIT, op.NOMBRE as OPERATORIA, civa.CONDICION AS CONDIVA, c.DIRECCION AS DOMICILIO, d.LOCALIDAD AS DEPARTAMENTO, op.TASA_SUBSIDIADA as TASA_SUBSIDIADA, op.TASA_INTERES_COMPENSATORIA as TASA_INTERES_COMPENSATORIA, op.TASA_INTERES_MORATORIA as TASA_INTERES_MORATORIA, op.TASA_INTERES_POR_PUNITORIOS as TASA_INTERES_POR_PUNITORIOS, op.TASA_GASTOS AS TASA_GASTOS, o.DESTINO as DESTINO, o.ID as CODIGO ");
+        $this->_db->select("oc.ID_CLIENTE, c.CORREO as CORREO, c.RAZON_SOCIAL as RAZON_SOCIAL,c.CUIT as CUIT, op.NOMBRE as OPERATORIA, civa.CONDICION AS CONDIVA, c.DIRECCION AS DOMICILIO, d.LOCALIDAD AS DEPARTAMENTO, op.TASA_SUBSIDIADA as TASA_SUBSIDIADA, op.TASA_INTERES_COMPENSATORIA as TASA_INTERES_COMPENSATORIA, op.TASA_INTERES_MORATORIA as TASA_INTERES_MORATORIA, op.TASA_INTERES_POR_PUNITORIOS as TASA_INTERES_POR_PUNITORIOS, op.TASA_GASTOS AS TASA_GASTOS, o.DESTINO as DESTINO, o.ID as CODIGO, op.IVA ");
         $this->_db->join("fid_clientes c", "c.ID=oc.ID_CLIENTE");
         $this->_db->join("fid_operaciones o", "o.ID=oc.ID_OPERACION");
         $this->_db->join("fid_operatorias op", "op.ID=o.ID_OPERATORIA");
@@ -2231,7 +2235,6 @@ class carpetas_model extends main_model {
     function avisar_gerente($operacion){
 //        $rtn = $this->_db->query("SELECT ID_NOTIFICAR FROM fid_semaforo "
 //                . "WHERE id_carpeta = '".$operacion."' AND id_etapa = 2");
-////        print_r($rtn);die("DE ACA SACER EL ID");
 //        $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
 //                . "WHERE id= '".$rtn[0]['ID_NOTIFICAR']."'");
         $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
@@ -2282,7 +2285,6 @@ class carpetas_model extends main_model {
 //    $fecha_aviso = $value['FECHA_AVISO'];
 //    $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fecha_aviso ) ) ;
 //    $fecha_repetir = date ( 'Y-m-j H:i:s' , $fecha_repetir );
-////    print_r($obj);die("VIENA LA FECHAAAAAAAAA");
 //    $arr_datos_traza = array(
 //                    "ID_OPERACION"=> $value['ID_CARPETA'],
 //                    "CARTERADE"=>$value['CARTERADE'],
@@ -2298,17 +2300,9 @@ class carpetas_model extends main_model {
 //                    "HAB"=>2,
 //                    "FECHA_REPETIR"=>$fecha_repetir
 //                );
-//                
-////                echo " valuuuuuuuuuuueeeeeeeeee ";
-////print_r($value);
 //                $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
 //            $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$valor_id."'");
-////                echo $valor_id." ------------ ";
-////print_r($arr_datos_traza);
-////print_r($arr_datos_sem);
 //            }
-////die(" LPMMMMMMMMMMMMMMMMM 2aaa// ");
-////            echo "CONTADOR = ".$contador;
 //}
     function guardar_traza_alertas_repetir($obj_repetir) {
     $valores_insert = $obj_repetir[0]['ID_NOTIFICAR'];
@@ -2316,14 +2310,11 @@ class carpetas_model extends main_model {
     $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fechaActual ) ) ;
     $valor_id = $obj_repetir[0]['ID'];  
     
-//    print_r($obj_repetir);die("REPETIRRRR");
     foreach ($obj_repetir as $value) {
     
     $fecha_aviso = $value['FECHA_REPETIR'];
     $fecha_repetir = strtotime ( '+24 hour' , strtotime ( $fecha_aviso ) ) ;
     $fecha_repetir = date ( 'Y-m-j H:i:s' , $fecha_repetir );
-                
-                
                 
                 $arr_datos_traza = array(
                     "ID_OPERACION"=> $value['ID_CARPETA'],
@@ -2339,8 +2330,6 @@ class carpetas_model extends main_model {
                 $arr_datos_sem = array(
                     "FECHA_REPETIR"=>$fecha_repetir
                 );
-//                echo $arr_datos_traza['ID_OPERACION']." - ";
-//                print_r($arr_datos_sem);die("LPK");
             $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
             $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem,"ID='".$value['ID']."'");
             }

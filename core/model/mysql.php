@@ -385,7 +385,7 @@ class sqldata {
         }
         $file = $dir . $accion . '_' . date('Y-m-d') . ".log";
         try {
-            if ($pfile = fopen($file,'a+')) {
+            if ($pfile = @fopen($file,'a+')) {
                 if (is_array($var)) {
                     fwrite($pfile, print_r($var, TRUE) . "\n");
                 } else {

@@ -61,6 +61,38 @@ _formaltabase.start = function(){
         var fecha_str = curr_date + "-" + curr_month + "-" + curr_year;
         _agregar_desembolso_generar(fecha_str, _formaltabase.DESEMBOLSOS[i].MONTO);
     }
+    
+    $('#comboOperatorias').on('change', function() {
+        var fecha = 0;
+        var tmpf;
+        if ($('.div-desembolsos .ul-desembolsos .data .fecha_desembolso').length > 0) {
+            $('.div-desembolsos .ul-desembolsos .data .fecha_desembolso').each(function(k, v) {
+                tmpf = Date.parse($(v).text().replace('-', '/').replace('-', '/')) / 1000;
+                console.log(tmpf)
+                if (tmpf && (fecha == 0 || tmpf < fecha)) {
+                    fecha = tmpf;
+                }
+            });
+            $.ajax({
+                url : _formaltabase.URL + "/x_get_data_operatoria/",
+                type: "post",
+                data: {
+                    id: $("#comboOperatorias").val(),
+                    fecha: fecha
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data && data !== 'false') {
+                        $("#txtInteresCompensatorio").val(data.COMPENSATORIO);
+                        $("#txtInteresPunitorio").val(data.PUNITORIO);
+                        $("#txtInteresMoratorio").val(data.MORATORIO);
+                        $("#txtTasaSubsidio").val(data.SUBSIDIO);
+                        $("#txtIVA").val(data.IVA);
+                    }
+                }
+            });
+        }
+    })
 }
 
 function change_interes() {
@@ -201,13 +233,14 @@ function _generar_cuotas(simulacion){
     var int_compensatorio = $("#txtInteresCompensatorio").val();
     var int_subsidio = $("#txtTasaSubsidio").val();
     var int_punitorio = $("#txtInteresPunitorio").val();
-    var int_moratorio= $("#txtIntereeMoratorio").val();
+    var int_moratorio= $("#txtInteresMoratorio").val();
     var gastos= $("#txtGastos").val();
     var gastosMin= $("#txtGastosMin").val();
     
     var plazo_compensatorio = $("#txtPeriodicidadCalculoCompensatorio").val();
     var plazo_moratorio = $("#txtPeriodicidadCalculoMoratorio").val();
     var plazo_punitorio = $("#txtPeriodicidadCalculoPunitorio").val();
+    var tasa_iva = $("#txtIVA").val();
     
     var periodicidad = $("#txtPeriodicidad").val();
     var periodicidad_tasa = $("#txtPeriodicidadTasa").val();
@@ -276,6 +309,7 @@ function _generar_cuotas(simulacion){
             int_moratorio : int_moratorio,
             int_gastos : gastos,
             int_gastos_min : gastosMin,
+            tiva : tasa_iva,
             periodicidad : periodicidad,
             periodicidad_tasa : periodicidad_tasa,
             plazo_compensatorio : plazo_compensatorio || 0,

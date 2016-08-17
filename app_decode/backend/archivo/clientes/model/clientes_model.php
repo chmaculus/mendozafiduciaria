@@ -50,6 +50,8 @@ class clientes_model extends main_model{
         $unidosEdit = $nombreEdit." - ".$cuitEdit;
 
             $resp = $this->_db->update($this->_tablamod, $obj, "id='".$iid."'");
+            //log_this('qqqq.log',$this->_db->last_query());
+            log_this("updateclientemay.log", $this->_db->last_query());
            $arr_razon = array(
                         "BENEF"=>$unidosEdit
                     );    

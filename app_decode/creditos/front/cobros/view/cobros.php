@@ -23,10 +23,27 @@
 
     
     
-    <div class='lista_archivos'>
-        <span class="titulo-sp">ARCHIVOS RECIBIDOS</span>
+    <div class='lista_archivos lst_mes'>
+        <span class="titulo-sp" onclick="ver_archivo()">COBROS POR MES (ver archivos)</span>
         <ul class="titulo">
             <li>
+                <span class='archivo-fecha'>FECHA DE RENDICIÓN</span>
+                <span class='mostrar-archivo'>OPCIONES</span>
+            </li>
+        </ul>
+        <ul class="datos">
+            <li>
+                <span class='archivo-fecha'></span>
+                <span class='mostrar-archivo'><button onclick="mostrar_mes();">Mostrar</button></span>
+            </li>
+        </ul>
+    </div>
+    
+    <div class='lista_archivos lst_archivo' style="display:none;">
+        <span class="titulo-sp" onclick="ver_mes()">ARCHIVOS RECIBIDOS (ver meses)</span>
+        <ul class="titulo">
+            <li>
+                <span class='archivo-id'>ID</span>
                 <span class='archivo-nombre'>ARCHIVO</span>
                 <span class='archivo-fecha'>FECHA</span>
                 <span class='mostrar-archivo'>OPCIONES</span>
@@ -34,6 +51,7 @@
         </ul>
         <ul class="datos">
             <li>
+                <span class='archivo-id'></span>
                 <span class='archivo-nombre'></span>
                 <span class='archivo-fecha'></span>
                 <span class='mostrar-archivo'><button onclick="mostrar_archivo();">Mostrar</button> - <button onclick="borrar_archivo();">Eliminar</button></span>
