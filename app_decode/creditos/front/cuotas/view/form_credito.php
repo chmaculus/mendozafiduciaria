@@ -31,6 +31,7 @@
                     <option value="8" class="editar">Generar Chequeras</option>
                     <?php if (isset($vars['DE_CADUCADO']) && !$vars['DE_CADUCADO']) { ?>
                     <option value="9" class="editar">Refinanciar / Prórroga</option>
+                    <option value="11" class="editar">Crédito caido</option>
                     <?php } else { ?>
                     <option value="10" class="editar">Refinanciacion caida</option>
                     <?php } ?>

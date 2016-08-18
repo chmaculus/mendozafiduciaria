@@ -132,3 +132,6 @@ ALTER TABLE  `fid_cu_pagos` ADD  `ORDEN_PAGO` VARCHAR( 64 ) NOT NULL
 ALTER TABLE  `fid_fideicomiso` ADD  `ID_CONTABLE` INT NOT NULL AFTER  `ID`
 
 
+/*21/07/2016*/
+/*Se agrega la columna para identificarlos por id y numero de factura a las cuotas*/
+ALTER TABLE  `fid_cu_pagos` ADD  `ID_CLIENTE` INT NOT NULL AFTER  `NUM_FACTURA`

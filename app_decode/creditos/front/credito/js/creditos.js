@@ -37,7 +37,7 @@ $(document).ready(function(){
             e.preventDefault();
             var top = $(this).data('top');
             var obj = [];
-            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+            bloq();
             
             switch(top){
 
@@ -235,7 +235,7 @@ function get_multiple_informes(creditos_id){
 
 _credito.get_desembolso = function(id, fecha, chequera){
 
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
     
     $.ajax({
         url : _credito.URL + "/x_get_desembolsos",
@@ -255,7 +255,7 @@ _credito.get_desembolso = function(id, fecha, chequera){
 
 _credito.get_estado_cuotas = function(id, fecha, chequera, planchado){
 
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
     
     $.ajax({
         url : _credito.URL + "/x_obtener_cuotas",
@@ -360,7 +360,7 @@ _credito.get_evolucion_cuota = function(credito_id, id, fecha){
 
 _credito.get_pagos = function(id, fecha, chequera){
 
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
 
     $.ajax({
         url : _credito.URL + "/x_get_cobranzas",
@@ -424,31 +424,42 @@ function ver_detalle(id_evento,elem){
             _credito.get_detalle_pago(_credito.ID, id_evento, $parent.find(".detalle-pago-lista")  );
             $(elem).text("( - )");
         }
-        
-        
-        
     }
 }
 
 function eliminar_pago(id_evento){
-   
-    jConfirm("¿Esta seguro?, se eliminará también los pagos siguientes", "Eliminar pagos de créditos", function (i) {
+    
+    jConfirm("¿Esta seguro de eliminar pagos?", "Eliminar pagos de créditos", function (i) {
         if (i) {
-            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
-            $.ajax({
-                url : _credito.URL + "/x_eliminar_cobranza",
-                data : {
-                    credito_id : _credito.ID,
-                    id_evento : id_evento
-                },
-                type : "post",
-                async : false,
-                success : function (rtn) {
-                    $.unblockUI();
-                    if (rtn == "1") {
-                        actualizar_informe();
-                    }
+            jConfirm("¿Desea eliminar los pagos siguientes?", "Eliminar pagos de créditos", function (j) {
+                bloq();
+                var url_d;
+                if(j) {
+                    url_d =  "/x_eliminar_cobranza_s";
+                } else {
+                    url_d =  "/x_eliminar_cobranza";
                 }
+                
+                $.ajax({
+                    url : _credito.URL + url_d,
+                    data : {
+                        credito_id : _credito.ID,
+                        id_evento : id_evento
+                    },
+                    type : "post",
+                    fail: function() {
+                        $.unblockUI();
+                        jAlert('Hubo un problema, vuelva a intentar', "Eliminar archivo");
+                    },
+                    success : function (rtn) {
+                        if (rtn == "1") {
+                            actualizar_informe();
+                            $.unblockUI();
+                        } else{
+                            $.unblockUI();
+                        }
+                    }
+                }); 
             });
         }
     });
@@ -457,7 +468,7 @@ function eliminar_pago(id_evento){
 
 _credito.get_gastos = function(credito_id, fecha, chequera){
 
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
     
     $.ajax({
         url : _credito.URL + "/x_obtener_gastos",
@@ -478,7 +489,7 @@ _credito.get_gastos = function(credito_id, fecha, chequera){
 
 _credito.get_tasas = function(credito_id, fecha, chequera){
 
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
     
     $.ajax({
         url : _credito.URL + "/x_obtener_tasas",
@@ -498,7 +509,7 @@ _credito.get_tasas = function(credito_id, fecha, chequera){
 };
 
 _credito.get_reporte = function(credito_id, fecha) {
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
      $.ajax({
         url : _credito.URL + "/x_reporte_credito",
         data : {
@@ -515,7 +526,7 @@ _credito.get_reporte = function(credito_id, fecha) {
 }
 
 _credito.get_reporte2 = function(credito_id, fecha) {
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+    bloq();
     
     $.ajax({
         url : _credito.URL + "/x_reporte_credito",
@@ -593,7 +604,6 @@ _credito.get_reporte2 = function(credito_id, fecha) {
 
 function expreport() {
     
-    alert(_credito.URL + "s/x_getexportar");
     $.ajax({
         url : _credito.URL + "s/x_getexportar",
         type : "post",
@@ -645,4 +655,12 @@ function exportReporte() {
         exclude: ".noExl",
         name: "Reporte de credito"
       });
+}
+
+function bloq() {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+}
+
+function ver_print(id_evento){
+    window.open(_credito.URL + "/x_prints_credito/" + _credito.ID + '/' + id_evento, "credito_cuota", "width=300,height=300");
 }

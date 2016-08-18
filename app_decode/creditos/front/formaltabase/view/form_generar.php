@@ -1,7 +1,7 @@
     <input type="hidden" id="credito_caduca" value="<?=$credito['CREDITO_CADUCA'] ? $credito['CREDITO_CADUCA'] : ''?>" />
 <input type="hidden" id="fecha_caduca" value="<?=$credito['FECHA_CADUCA']?>" />
 <input type="hidden" id="credito_operatoria" value="<?=(isset($credito['ID_OPERATORIA']) && $credito['ID_OPERATORIA']) ? $credito['ID_OPERATORIA'] : ''?>" />
-<input type="hidden" id="prorroga" value="<?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 1 : 0 ?>" />
+<input type="hidden" id="prorroga" value="<?=(isset($credito['PRORROGA']) && $credito['PRORROGA'] == 2) ? 1 : 0 ?>" />
 <div class="form-content">
     <div class="form_generar">
             <div class="row c12 grupo">
@@ -64,7 +64,105 @@
                     <div class="c7">
                         <input type="text" class="fecha" id="txtPrimerVencimiento" value="<?= $credito['INTERES_VTO'] ?>"/>
                     </div>
-                </div>   
+                </div>
+                <div class="row">
+                    <div class="c5">
+                        <span >Capital Teorico </span>
+                    </div>
+                    <div class="c7">
+                        <input type="text" class="" id="txtMontoTotalDesembolsos" value="<?= $credito['MONTO_CREDITO'] ?>"/>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row c12 div-desembolsos grupo">
+            <div class="c3">
+                <span class="titulo-seccion">
+                    Desembolsos
+                </span>
+            </div>                  
+            <div class="c8 row">
+                <div class=" row">
+                    <div class="c5">
+                        <span >Fecha </span><br/>
+                        <input type="text" class="fecha" id="txtFechaDesembolso" value=""/>
+                    </div>
+                    <div class="c5">
+                        <span >Monto</span><br/>
+                        <input type="text" class="" id="txtMontoDesembolso" value=""/>
+                    </div>
+                    <div class="c1"><br/>
+                        <button onclick="agregar_desembolso_generar();">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="c8 row">
+                    <ul class="ul-desembolsos">
+                        <li class="titulo">
+                            <span class="fecha_desembolso">FECHA</span>
+                            <span class="monto_desembolso">MONTO</span>
+                            <span class="borrar_desembolso">ACCION</span>
+                        </li>
+                        <li class="data">
+                            <span class="fecha_desembolso"></span>
+                            <span class="monto_desembolso"></span>
+                            <span class="borrar_desembolso"><button onclick="quitar_desembolso_generar(this);">Borrar</button></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row c12 grupo" <?=($credito['CREDITO_CADUCA'])?'style="display:none"':''?>>
+
+            <div class="c3">
+                <span class="titulo-seccion">
+                    Vinculaciones
+                </span>
+            </div>                   
+            <div class="c8 row">
+                <div class="row">
+                    <div class="c5">
+                        <span >Fideicomiso</span>
+                    </div>
+
+                    <div class="c7">
+                        <select id="comboFideicomiso">
+                            <option value="0">Seleccione Fideicomiso</option>
+                            <?php foreach ($credito['FIDEICOMISOS'] as $fid) { ?>
+                                <option value="<?= $fid['ID'] ?>" <?=(isset($credito['ID_FIDEICOMISO']) && $credito['ID_FIDEICOMISO']==$fid['ID'])?'selected="selected"':''?>><?= $fid['NOMBRE'] ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="c5">
+                        <span >Operatorias</span>
+                    </div>
+
+                    <div class="c7">
+                        <select id="comboOperatorias">
+                            <option value="0">Seleccione un fideicomiso</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="c5">
+                        <span >Postulantes</span>
+                    </div>
+
+                    <div class="c7">
+                        <select id="comboClientes" multiple>
+                            <?php foreach ($credito['LPOSTULANTES'] as $cliente) { ?>
+                            <option value="<?= $cliente['ID'] ?>" <?=(isset($credito['POSTULANTES']) && $credito['POSTULANTES'] && $credito['POSTULANTES']==$cliente['ID'])?'selected="selected"':''?>><?= $cliente['RAZON_SOCIAL']." -  ".$cliente['CUIT'] ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+
+
             </div>
         </div>
         <div class="row c12 div-intereses grupo">
@@ -133,7 +231,7 @@
                             <input type="text" class="" id="txtInteresCompensatorio" value="<?= $credito['T_COMPENSATORIO'] ?>" />
                         </div>
                         <div class="c3">
-                            <input type="text" class="" id="txtPeriodicidadCalculoCompensatorio" value="<?= $credito['PLAZO_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA']) ? 'readonly="readonly"' : '' ?>/>
+                            <input type="text" class="" id="txtPeriodicidadCalculoCompensatorio" value="<?= $credito['PLAZO_COMPENSATORIO'] ?>" <?=(isset($credito['PRORROGA']) && $credito['PRORROGA'] == '2') ? 'readonly="readonly"' : '' ?>/>
                         </div>
                     </div>   
 
@@ -153,10 +251,18 @@
                             <span >Interes Moratorio</span>
                         </div>
                         <div class="c3">
-                            <span ><input type="text" class="" id="txtIntereeMoratorio" value="<?= $credito['T_MORATORIO'] ?>"/></span>
+                            <span ><input type="text" class="" id="txtInteresMoratorio" value="<?= $credito['T_MORATORIO'] ?>"/></span>
                         </div>
                         <div class="c3">
                             <span ><input type="text" class="" id="txtPeriodicidadCalculoPunitorio" value="<?= $credito['PLAZO_MORATORIO'] ?>"/></span>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="c5">
+                            <span >IVA</span>
+                        </div>
+                        <div class="c3">
+                            <span ><input type="text" class="" id="txtIVA" value="<?= $credito['IVA'] ?>"/></span>
                         </div>
                     </div>
                     <div class=" row titulo-intereses">
@@ -235,104 +341,6 @@
                 </div>
             </div>
         </div>
-        <div class="row c12 grupo" <?=($credito['CREDITO_CADUCA'])?'style="display:none"':''?>>
-
-            <div class="c3">
-                <span class="titulo-seccion">
-                    Vinculaciones
-                </span>
-            </div>                   
-            <div class="c8 row">
-                <div class="row">
-                    <div class="c5">
-                        <span >Fideicomiso</span>
-                    </div>
-
-                    <div class="c7">
-                        <select id="comboFideicomiso">
-                            <option value="0">Seleccione Fideicomiso</option>
-                            <?php foreach ($credito['FIDEICOMISOS'] as $fid) { ?>
-                                <option value="<?= $fid['ID'] ?>" <?=(isset($credito['ID_FIDEICOMISO']) && $credito['ID_FIDEICOMISO']==$fid['ID'])?'selected="selected"':''?>><?= $fid['NOMBRE'] ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="c5">
-                        <span >Operatorias</span>
-                    </div>
-
-                    <div class="c7">
-                        <select id="comboOperatorias">
-                            <option value="0">Seleccione un fideicomiso</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="c5">
-                        <span >Postulantes</span>
-                    </div>
-
-                    <div class="c7">
-                        <select id="comboClientes" multiple>
-                            <?php foreach ($credito['LPOSTULANTES'] as $cliente) { ?>
-                            <option value="<?= $cliente['ID'] ?>" <?=(isset($credito['POSTULANTES']) && $credito['POSTULANTES'] && $credito['POSTULANTES']==$cliente['ID'])?'selected="selected"':''?>><?= $cliente['RAZON_SOCIAL']." -  ".$cliente['CUIT'] ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-
-        <div class="row c12 div-desembolsos grupo">
-            <div class="c3">
-                <span class="titulo-seccion">
-                    Desembolsos
-                </span>
-            </div>                  
-            <div class="c8 row">
-                <div class="row">
-                    <div class="c5">
-                        <span >Capital Teorico </span>
-                    </div>
-                    <div class="c7">
-                        <input type="text" class="" id="txtMontoTotalDesembolsos" value="<?= $credito['MONTO_CREDITO'] ?>"/>
-
-                    </div>
-                </div>
-                <div class=" row">
-                    <div class="c5">
-                        <span >Fecha </span><br/>
-                        <input type="text" class="fecha" id="txtFechaDesembolso" value=""/>
-                    </div>
-                    <div class="c5">
-                        <span >Monto</span><br/>
-                        <input type="text" class="" id="txtMontoDesembolso" value=""/>
-                    </div>
-                    <div class="c1"><br/>
-                        <button onclick="agregar_desembolso_generar();">Agregar</button>
-                    </div>
-                </div>
-
-                <div class="c8 row">
-                    <ul class="ul-desembolsos">
-                        <li class="titulo">
-                            <span class="fecha_desembolso">FECHA</span>
-                            <span class="monto_desembolso">MONTO</span>
-                            <span class="borrar_desembolso">ACCION</span>
-                        </li>
-                        <li class="data">
-                            <span class="fecha_desembolso"></span>
-                            <span class="monto_desembolso"></span>
-                            <span class="borrar_desembolso"><button onclick="quitar_desembolso_generar(this);">Borrar</button></span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
     </div>
     <div class="c12 row">
         <div class="button-a blue send_generar_credito" onclick="simular_cuotas();"><span>Simular crédito</span></div>

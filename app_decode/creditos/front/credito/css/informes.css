@@ -43,8 +43,8 @@
 }
 
 .detalle-informe .line{
-    width:220px;
-    padding:7px 15px ; 
+    width:224px;
+    padding:7px 15px;
     float: left;
     clear: both;
 }
@@ -53,17 +53,17 @@
     line-height: 30px;    
     width:100%;
     float: left;
-    
     clear: both;
 }
 .detalle-informe .line span.data{
-    height:30px;
-    line-height: 30px;    
-    width:40%;
+    height:20px;
+    line-height: 20px;    
+    width:80px;
     margin-right: 10px;
     float: left;
     border: 1px solid #A4BED4;
     text-align: right;
+    padding:5px 10px;
 }
 
 
@@ -114,10 +114,10 @@
     width: 170px;
 }
 .lista-informe.pagos .recibo-ver{
-    width: 80px;
+    width: 120px;
 }
 .lista-informe.pagos .recibo-eliminar{
-    width: 80px;display:none;
+    width: 80px;
 }
 
 .lista-informe.pagos .recibo-eliminar button{color:#ff0000}

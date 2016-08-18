@@ -73,16 +73,19 @@ class cuotas extends main_controller{
     
     
     function x_set_pago(){
+        if (!$this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id'])) {
+            die('-1');
+        }
         
-        $fecha = $_POST['fecha'];
-        $credito_id = $_POST['credito_id'];
+        $this->mod->renew_datos();
+        echo $this->_get_cuotas();
+    }
+    
+    function _x_set_pago($credito_id, $fecha, $monto, $version) {
         
         if ($this->mod->set_credito_active($credito_id)) {
-            $version = $_POST['version_id'];
             $this->mod->set_version_active($version);
             $this->mod->renew_datos();
-
-            $monto = $_POST['monto'];
 
             $monto_credito = $this->mod->get_monto_credito();
             $desembolsos = $this->mod->get_desembolsos(0);
@@ -93,14 +96,24 @@ class cuotas extends main_controller{
             }
             
             if ($desembolsado == 0 || ($monto_credito - $desembolsado)) {
-                die("-1");
+                return FALSE;
             }
             
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+            
             $this->mod->realizar_pago($fecha,  $monto);
+            
+            if ($pagos) {
+                set_time_limit(0);
+                foreach($pagos as $pago){
+                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                }
+            }
+                
+            return TRUE;
         }
-        
-        $this->mod->renew_datos();
-        echo $this->_get_cuotas();
+        return FALSE;
     }
     
     
@@ -108,6 +121,14 @@ class cuotas extends main_controller{
         $credito_id = $_POST['credito_id'];
         $version_id = $_POST['version_id'];
         $tipo = $_POST['tipo'];
+        
+        $data = array();
+        $data['monto'] = $_POST['monto'];
+        
+        $this->mod->set_credito_active($credito_id);
+        if (!$this->mod->validar_monto_desembolsos($data['monto'])) {
+            die('-2');
+        }
         
         $this->mod->set_credito_active($credito_id);
         $this->mod->set_version_active($version_id);
@@ -118,8 +139,7 @@ class cuotas extends main_controller{
             $this->mod->agregar_desembolso_solicitado($desembolso_solicitud);
         }
 
-        $data = array();
-        $data['monto'] = $_POST['monto'];
+        
         $reset = isset($_POST['reset']) ? $_POST['reset'] : 0;
         
         
@@ -177,6 +197,16 @@ class cuotas extends main_controller{
             $this->mod->get_segmentos_cuota();
             $this->mod->renew_datos();
             
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+            
+            if ($pagos) {
+                set_time_limit(0);
+                foreach($pagos as $pago){
+                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                }
+            }
+            
             echo $this->_get_cuotas();
         }
     }
@@ -223,6 +253,8 @@ class cuotas extends main_controller{
                 $desimputar =TRUE;
             }
         }
+        
+        $desimputar = $desimputar ? $desimputar : (isset($_POST['reimputar']) && $_POST['reimputar']) ? TRUE : FALSE;
             
         $data['TIPO'] = EVENTO_TASA;
         //genero la variacion corerspondiente al desembolso
@@ -234,28 +266,30 @@ class cuotas extends main_controller{
         
         $this->mod->agregar_tasa( $data['por_int_compensatorio'], $data['por_int_subsidio'],$data['por_int_moratorio'],$data['por_int_punitorio'],$cuotas_restantes, $fecha);
         $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
-                
-        if ($retornar) {
-            if ($desimputar) {
-                $this->mod->set_credito_active($credito_id);
-                $this->mod->set_version_active($version);
         
-                $this->mod->renew_datos();
-                
-                $this->mod->save_last_state(true);
-                $this->mod->set_fecha_actual($fecha);
-                $pagos = $this->mod->desimputar_pago();
-                
-                //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
-                //$version_id = $data['VERSION'];
-                $version_id = $version;
-        
-                $this->mod->set_version_active($version_id);
-                $this->mod->make_active_version();
-                foreach($pagos as $pago){
-                    $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
-                }
+        if ($desimputar) {
+            set_time_limit(0);
+            $this->mod->set_credito_active($credito_id);
+            $this->mod->set_version_active($version);
+
+            $this->mod->renew_datos();
+
+            $this->mod->save_last_state(true);
+            $this->mod->set_fecha_actual($fecha);
+            $pagos = $this->mod->desimputar_pago();
+
+            //$data = $this->mod->agregar_version($fecha, 1, "VERSION CAMBIO TASA X OP");
+            //$version_id = $data['VERSION'];
+            $version_id = $version;
+
+            $this->mod->set_version_active($version_id);
+            $this->mod->make_active_version();
+            foreach($pagos as $pago){
+                $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
             }
+        }
+            
+        if ($retornar) {
             return;
         }
         //se verifica si la cuota a la fecha dada esta planchada.. de ser asi le saca el planchado 
@@ -285,39 +319,43 @@ class cuotas extends main_controller{
             $tasa_mora = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_MORATORIA'];
             $tasa_pun = $_SESSION['CAMBIO_TASAS']['OPERATORIA']['TASA_INTERES_POR_PUNITORIOS'];
             
-            $_POST['tasa'] = $tasa_comp; 
-            $_POST['subsidio'] = $tasa_subs;
-            $_POST['moratorio'] = $tasa_mora;
-            $_POST['punitorio'] = $tasa_pun;
             
             $_POST['fecha'] = $_SESSION['CAMBIO_TASAS']['FECHA'];
             
             $cambiar_valores = FALSE;
-            if ($tasa_comp === FALSE || $tasa_subs === FALSE || $tasa_mora === FALSE || $tasa_pun === FALSE) {
+            if ($tasa_comp === -1 || $tasa_subs === -1 || $tasa_mora === -1 || $tasa_pun === -1) {
                 $cambiar_valores = TRUE;
             }
             
             foreach ($creditos as $credito) {
+                $tasas = $this->mod->getTasas($credito['ID'], $_POST['fecha']);
+                if ($tasas) {
+                    $_POST['tasa'] = $tasa_comp >= 0 ? $tasa_comp : $tasas['POR_INT_COMPENSATORIO'];
+                    $_POST['subsidio'] = $tasa_subs >= 0 ? $tasa_subs : $tasas['POR_INT_SUBSIDIO'];
+                    $_POST['moratorio'] = $tasa_mora >= 0 ? $tasa_mora : $tasas['POR_INT_MORATORIO'];
+                    $_POST['punitorio'] = $tasa_pun >= 0 ? $tasa_pun : $tasas['POR_INT_PUNITORIO'];
                 
-                if ($cambiar_valores) {
-                    $tasas = $this->mod->getTasasCredito($credito['ID'], $_POST['fecha']);
-                    /*if ($tasa_comp === FALSE) {
-                        $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                    if ($cambiar_valores) {
+                        $tasas = $this->mod->getCambiosTasasCredito($credito['ID'], $_POST['fecha']);
+                    
+                        if ($tasa_comp === -1) {
+                            $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                        }
+                        if ($tasa_subs === -1) {
+                            $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
+                        }
+                        if ($tasa_mora === -1) {
+                            $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
+                        }
+                        if ($tasa_pun === -1) {
+                            $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
+                        }
                     }
-                    if ($tasa_subs === FALSE) {
-                        $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
-                    }
-                    if ($tasa_mora === FALSE) {
-                        $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
-                    }
-                    if ($tasa_pun === FALSE) {
-                        $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
-                    }*/
+                    $_POST['credito_id'] = $credito['ID'];
+                    $_POST['version_id'] = $credito['ID_VERSION'];
+                    
+                    $this->x_agregar_cambiotasa(TRUE);
                 }
-                $_POST['credito_id'] = $credito['ID'];
-                $_POST['version_id'] = $credito['ID_VERSION'];
-                
-                $this->x_agregar_cambiotasa(TRUE);
             }
         }
         
@@ -367,7 +405,6 @@ class cuotas extends main_controller{
         
         foreach ($creditos as $credito_id) {
             $this->_reimputar($credito_id);
-            
             die();
         }
     }
@@ -727,6 +764,7 @@ class cuotas extends main_controller{
     }
     
     function _recalcular_pagos($fecha = false){
+        set_time_limit(0);
         $this->mod->renew_datos();
         
         $this->mod->save_last_state(true);
@@ -1341,6 +1379,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         } else {
                             $pagos_no = 0;
                             foreach ($creditos as $fec => $pago) {
+                                $fec = $pago['FP'];
                                 if (isset($pago['TC'])) {
                                     $data = array();
                                     $data['por_int_compensatorio'] = $pago['TC'];
@@ -1441,8 +1480,122 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         set_time_limit(0);
         $this->mod->updateFechaPago();
     }
-}
 
+    function x_add_cobros() {
+        $cobros = $_POST['cobros'];
+
+        $fecha = time();
+        
+        set_time_limit(0);
+        //die();
+        foreach ($cobros as $cobro) {
+            $ID_CREDITO = $cobro['ID_CREDITO'];
+
+            list($d, $m, $y) = explode("/", $cobro['FECHA']);
+            $fecha = mktime(0, 0, 0, $m, $d, $y);
+
+            list($d, $m, $y) = explode("/", $cobro['CREDITO_VENCIMIENTO']);
+            $vencimiento_cuota = mktime(0, 0, 0, $m, $d, $y);
+
+            if ($version =$this->mod->existCredito($ID_CREDITO)) {
+                if ($this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION'])) {
+                    $this->mod->marcar_cobro_bancario($cobro['ID'], $fecha);
+                }
+            } else {
+                echo "llega-----";
+            }
+        }
+    }
+    
+    function x_credito_caido() {
+        $credito_id = $_POST['credito_id'];
+        $fecha = $_POST['fecha'];
+        $ret_reuda = FALSE;
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->set_version_active();        
+
+            $this->mod->set_fecha_actual($fecha);
+            $this->mod->set_fecha_calculo();
+
+
+            $this->mod->renew_datos();
+            $this->mod->emitir_credito_caido($fecha);
+
+            $this->mod->save_last_state(false);
+
+
+            //chequera = proyeccion teorica
+            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);    
+
+            $this->mod->generar_evento(array(), true, $fecha);
+
+
+            //segundo parametro: recalcular datos
+            //tercer parametro true para forzar la deuda con el compensatorio total
+
+            $ret_reuda = $this->mod->get_deuda($fecha, true);
+            $ret_reuda['fecha_actual'] = $fecha;
+            echo $this->view("credito_caido",$ret_reuda);
+        
+        } else {
+            echo '-1';
+        }
+        die();
+    }
+    
+    function x_imp_cambiotasas() {
+        set_time_limit(0);
+        if ($tasas = $this->mod->get_cambiotasa_by_id($_POST['id'])) {
+            $tasa_comp = $tasas['COMPENSATORIO'];
+            $tasa_subs = $tasas['SUBSIDIO'];
+            $tasa_mora = $tasas['MORATORIO'];
+            $tasa_pun = $tasas['PUNITORIO'];
+            $fecha = $tasas['FECHA'];
+            
+            if (($rtn = $this->mod->validar_cambiotasa($_POST['credito_id'], $fecha)) < 0) {
+                echo json_encode(array('result' => $rtn));
+                exit();
+            }
+
+            $cambiar_valores = FALSE;
+            if ($tasa_comp === -1 || $tasa_subs === -1 || $tasa_mora === -1 || $tasa_pun === -1) {
+                $cambiar_valores = TRUE;
+            }
+            
+            if ($tasas = $this->mod->getTasas($_POST['credito_id'], $fecha)) {
+                $_POST['tasa'] = $tasa_comp >= 0 ? $tasa_comp : $tasas['POR_INT_COMPENSATORIO'];
+                $_POST['subsidio'] = $tasa_subs >= 0 ? $tasa_subs : $tasas['POR_INT_SUBSIDIO'];
+                $_POST['moratorio'] = $tasa_mora >= 0 ? $tasa_mora : $tasas['POR_INT_MORATORIO'];
+                $_POST['punitorio'] = $tasa_pun >= 0 ? $tasa_pun : $tasas['POR_INT_PUNITORIO'];
+
+                if ($cambiar_valores) {
+                    $tasas = $this->mod->getCambiosTasasCredito($credito['ID'], $fecha);
+
+                    if ($tasa_comp === -1) {
+                        $_POST['tasa'] = $tasas['POR_INT_COMPENSATORIO'];
+                    }
+                    if ($tasa_subs === -1) {
+                        $_POST['subsidio'] = $tasas['POR_INT_SUBSIDIO'];
+                    }
+                    if ($tasa_mora === -1) {
+                        $_POST['moratorio'] = $tasas['POR_INT_MORATORIO'];
+                    }
+                    if ($tasa_pun === -1) {
+                        $_POST['punitorio'] = $tasas['POR_INT_PUNITORIO'];
+                    }
+                }
+                $_POST['credito_id'] = $_POST['credito_id'];
+                $_POST['version_id'] = $tasas['ID_VERSION'];
+                $_POST['fecha'] = $fecha;
+
+                $this->x_agregar_cambiotasa(TRUE);
+                echo "FIN";
+            }
+            
+        }
+    }
+    
+}
 
 
 // extend TCPF with custom functions

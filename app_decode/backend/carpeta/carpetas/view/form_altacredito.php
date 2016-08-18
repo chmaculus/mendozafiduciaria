@@ -7,7 +7,7 @@
         <input type="hidden" id="interes_capitalh" value="<?php echo isset($obj_credito["INTERES_CAPITAL"])?$obj_credito["INTERES_CAPITAL"]:"" ?>" />
         <input type="hidden" id="id_cliente" value="<?php echo isset($cad_obj["cad_obj"][0]['ID_CLIENTE'])?$cad_obj["cad_obj"][0]['ID_CLIENTE']:"" ?>" />
     
-        <div class="title">Alta de Credito</div>
+        <div class="title">Alta de Crédito</div>
         <div class="elem elem_med_alta">
             <label>Titular:</label>
             <div class="indent formtext">
@@ -322,7 +322,12 @@
                 <?php endif; ?>
             </div>
         </div>
-        
+        <div class="elem elem_med_alta save">
+            <label>IVA:</label>
+            <div class="indent formtext">
+                <input data-campo="IVA" type="text" class="" title="Ingrese a" id="alta_t_iva" value="<?php echo isset($obj_credito["IVA"]) ? $obj_credito["IVA"] : (isset($cad_obj["cad_obj"][0]["IVA"]) ? $cad_obj["cad_obj"][0]["IVA"] : IMP_IVA * 100); ?>">
+            </div>
+        </div>
         
         <div class="elem elem_med_alta">
             <label>AMORTIZACIÓN DE INTERESES:</label>

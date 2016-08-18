@@ -15,6 +15,7 @@
     <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Cuprum" />-->
     <link rel="stylesheet" href="general/css/style.css" />
     <link rel="stylesheet" href="general/css/jquery-ui-1.8.16.custom.css" media="screen"  />
+    <link rel="stylesheet" href="general/css/font-awesome.min.css" media="screen"  />
     <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <script src="general/js/jquery-ui-1.8.16.custom.min.js"></script>
     <script type="text/javascript" src="general/js/ddaccordion.js"></script>

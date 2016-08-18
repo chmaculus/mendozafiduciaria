@@ -154,10 +154,41 @@ class credito extends main_controller{
     }
     
     function x_eliminar_cobranza() {
+        set_time_limit(0);
         $credito_id = $_POST['credito_id'];
         $id_evento = $_POST['id_evento'];
         
         if ($this->mod->set_credito_active($credito_id)) {
+            //die();
+            if ($evento = $this->mod->getEvento($id_evento)) {
+                $fecha = $evento['FECHA'];
+                $version = $evento['ID_VERSION'];
+                $this->mod->set_version_active($version);
+                $this->mod->renew_datos();
+                $this->mod->set_fecha_actual($fecha);
+                
+                $this->mod->auditoria($credito_id, 'A', '');
+                $pagos = $this->mod->desimputar_pago();
+                
+                $this->mod->set_version_active($version);
+                $this->mod->make_active_version();
+                foreach ($pagos as $pago) {
+                    if ($pago['id_evento'] != $id_evento) {
+                        $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+                    }
+                }
+            }
+        }
+        
+        die("1");
+    }
+    
+    function x_eliminar_cobranza_s() {
+        $credito_id = $_POST['credito_id'];
+        $id_evento = $_POST['id_evento'];
+        
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->auditoria($credito_id, 'B', '');
             if ($this->mod->eliminar_pagos($id_evento)) {
                 die("1");
             }
@@ -361,7 +392,7 @@ class credito extends main_controller{
                     $cuota['COMPENSATORIO_ACT'] = number_format($item['COMPENSATORIO_ACT'], 2, ",", "");
                     $total_comp_act += $item['COMPENSATORIO_ACT'];
                     
-                    $iva_comp_act = $item['COMPENSATORIO_ACT'] * $item['IVA_COMPENSATORIO']['TOTAL'] / $item['COMPENSATORIO']['TOTAL'];
+                    $iva_comp_act = $item['COMPENSATORIO']['TOTAL'] ? $item['COMPENSATORIO_ACT'] * $item['IVA_COMPENSATORIO']['TOTAL'] / $item['COMPENSATORIO']['TOTAL'] : 0;
                     $total_comp_act_iva += $iva_comp_act;
                     $cuota['COMPENSATORIO_ACT_IVA'] = number_format($iva_comp_act, 2, ",", "");
                 } else {
@@ -433,6 +464,24 @@ class credito extends main_controller{
         $ret_deuda['fecha_actual'] = $fecha;
         
         echo $this->view("informes/reporte_credito", array('info' => $info, 'array_credito' => $arra_res, 'totales_credito' => $totales, "desembolsos" => $desembolsos));
+    }
+    
+    function x_prints_credito($id_credito, $id_evento) {
+        if (!$this->mod->set_credito_active($id_credito)) {
+            die("Error!");
+        }
+        
+        $this->mod->set_version_active();
+        $this->mod->renew_datos();
+        $this->mod->renew_datos();
+            
+        $data['info'] = array(
+            'credito' => $this->mod->get_datos_credito(),
+            'pago' => $this->mod->get_pago($id_evento)
+            );
+        
+        echo $this->view("credito_cobranza", $data['info']);
+        die;
     }
 
 }
