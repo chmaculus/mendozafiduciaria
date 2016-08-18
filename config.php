@@ -45,14 +45,12 @@ define ("ARR_MODULOS", serialize (array ("permisos", "usuarios", "entidades", "c
 define('MYSQL_SERVER', 'localhost');
 define('MYSQL_USER', 'root');
 define('MYSQL_PASS', '');
-//define('MYSQL_DATABASE', 'fiduciaria_prod');
 define('MYSQL_DATABASE', 'creditos_dalvian');
 
-
-define('SQL_SERVER', 'SVDESARROLLO\SQL2008R2');
-define('SQL_USER', 'sa');
-define('SQL_PASS', 'Xxzz@2014');
-define('SQL_DATABASE', 'MENDOZA_FID');
+define('SQL_SERVER', '.');
+define('SQL_USER', 'DEBO_HEAD');
+define('SQL_PASS', 'DEBO');
+define('SQL_DATABASE', 'DEBO_HEAD');
 
 define('SMTP_HOST', "smtp.gmail.com");
 define('SMTP_LOGIN', "mendoza.fiduciaria@gmail.com");
