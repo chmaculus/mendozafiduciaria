@@ -2720,7 +2720,7 @@ ORDER BY T1.lvl DESC');
     function _to_array_variaciones() {
         $this->_db->reset();
         $this->_db->set_key("ID");
-        $this->_db->order_by("FECHA");
+        $this->_db->order_by("FECHA, cv.ID");
         $this->_db->where("cv.ESTADO >= 0");
         $variaciones = $this->get_tabla_variaciones();
         
@@ -2952,6 +2952,9 @@ ORDER BY T1.lvl DESC');
                     foreach ($variacion['ASOC'] as $valor) {
                         $total_monto += $valor['MONTO'];
                     }
+                    $recibo = str_pad($this->_id_credito, 10, "0", STR_PAD_LEFT) . '-' . str_pad(count($this->_cuotas) + 1 - $variacion['ASOC'][count($variacion['ASOC'])-1]['CUOTAS_RESTANTES'], 3, "0", STR_PAD_LEFT);
+                } else {
+                    $recibo = '';
                 }
 
                 $pagos[] = array(
@@ -2959,7 +2962,8 @@ ORDER BY T1.lvl DESC');
                     "MONTO" => $total_monto,
                     "FECHA" => date("d/m/Y", $variacion['FECHA']),
                     "FECHA2" => $variacion['FECHA'],
-                    "ID_PAGO" => $variacion['ID']
+                    "ID_PAGO" => $variacion['ID'],
+                    "RECIBO" => $recibo
                 );
             }
         }

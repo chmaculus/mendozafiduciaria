@@ -424,9 +424,6 @@ function ver_detalle(id_evento,elem){
             _credito.get_detalle_pago(_credito.ID, id_evento, $parent.find(".detalle-pago-lista")  );
             $(elem).text("( - )");
         }
-        
-        
-        
     }
 }
 
@@ -607,7 +604,6 @@ _credito.get_reporte2 = function(credito_id, fecha) {
 
 function expreport() {
     
-    alert(_credito.URL + "s/x_getexportar");
     $.ajax({
         url : _credito.URL + "s/x_getexportar",
         type : "post",
@@ -663,4 +659,8 @@ function exportReporte() {
 
 function bloq() {
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+}
+
+function ver_print(id_evento){
+    window.open(_credito.URL + "/x_prints_credito/" + _credito.ID + '/' + id_evento, "credito_cuota", "width=300,height=300");
 }

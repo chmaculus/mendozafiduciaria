@@ -464,5 +464,23 @@ class credito extends main_controller{
         
         echo $this->view("informes/reporte_credito", array('info' => $info, 'array_credito' => $arra_res, 'totales_credito' => $totales, "desembolsos" => $desembolsos));
     }
+    
+    function x_prints_credito($id_credito, $id_evento) {
+        if (!$this->mod->set_credito_active($id_credito)) {
+            die("Error!");
+        }
+        
+        $this->mod->set_version_active();
+        $this->mod->renew_datos();
+        $this->mod->renew_datos();
+            
+        $data['info'] = array(
+            'credito' => $this->mod->get_datos_credito(),
+            'pago' => $this->mod->get_pago($id_evento)
+            );
+        
+        echo $this->view("credito_cobranza", $data['info']);
+        die;
+    }
 
 }
