@@ -106,6 +106,16 @@ class formalta_model extends credito_model {
         
         $this->_postulantes = is_array($this->_postulantes) ? $this->_postulantes : array();
         
+        $act_compensatorios = FALSE;
+        
+        if ($this->_id_operatoria) {
+            $this->_db->select('ACT_COMPENS');
+            $row_operatoria = $this->_db->get_row("fid_operatorias", "ID = " . $this->_id_operatoria);
+            if ($row_operatoria) {
+                $act_compensatorios = $row_operatoria['ACT_COMPENS'];
+            }
+        }
+        
         $credito = array(
             "ID"=>$this->_id_credito,
             "ID_OPERACION" => 0,
@@ -139,7 +149,8 @@ class formalta_model extends credito_model {
             "POSTULANTES" => implode("|",$this->_postulantes),
             "POSTULANTES_NOMBRES" => '',
             "POSTULANTES_CUIT" => '',
-            "TIPO_CREDITO" => $this->_tipo_credito
+            "TIPO_CREDITO" => $this->_tipo_credito,
+            "ACT_COMP" => $act_compensatorios
         );
         
         $this->_db->select('RAZON_SOCIAL, CUIT');

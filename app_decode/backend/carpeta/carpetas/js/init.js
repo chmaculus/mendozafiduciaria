@@ -5818,6 +5818,11 @@ function agregar_altacredito() {
                 if ((credito && credito > 0)) {
                     id_credito = credito;
                 }
+                
+                if (id_credito == 0) {
+                    //jAlert("El formulario no ha sido guardado", $.ucwords(_etiqueta_modulo));
+                    //return false;
+                }
                 //console.log( id_credito );
                 $.ajax({
                     url: _carpetas.URL + "/x_getform_altacredito",
@@ -5933,34 +5938,10 @@ function agregar_altacredito() {
 
                         $(".send_altacredito").on('click', function (e) {
                             var idcredito = $("#id_creditoh").val();
-
-                            //validar domicilio y actividad
-                            if ($("#alta_domproy").val() == '') {
-                                jAlert('Ingrese Domicilio del Proyecto.', $.ucwords(_etiqueta_modulo), function () {
-                                    $("#alta_domproy").focus();
-                                });
+                            
+                            if (!validar_alta()) {
                                 return false;
                             }
-                            if ($("#alta_actividadtitular").val() == '') {
-                                jAlert('Ingrese Actividad del Titular.', $.ucwords(_etiqueta_modulo), function () {
-                                    $("#alta_actividadtitular").focus();
-                                });
-                                return false;
-                            }
-                            //fechas
-                            if ($("#alta_int_vto").val() == '') {
-                                jAlert('Ingrese Fecha.', $.ucwords(_etiqueta_modulo), function () {
-                                    $("#alta_int_vto").focus();
-                                });
-                                return false;
-                            }
-                            if ($("#alta_cap_vto").val() == '') {
-                                jAlert('Ingrese Fecha.', $.ucwords(_etiqueta_modulo), function () {
-                                    $("#alta_cap_vto").focus();
-                                });
-                                return false;
-                            }
-
 
                             $.ajax({
                                 url: _carpetas.URL + "/x_get_tienecuotas",
@@ -6101,7 +6082,16 @@ function agregar_altacredito() {
                         $(".alta_de_credito").on('click', function () {
                             //preguntar si existe ya, el alta de credito 
                             //preguntar en la tabla fid_creditos_cuotas
+                            if (!validar_alta()) {
+                                return false;
+                            }
+                            
                             var idcredito = $("#id_creditoh").val();
+                            if (!idcredito || idcredito == '0') {
+                                jAlert('Debe guardar el formulario antes de continuar con el alta del crédito', $.ucwords(_etiqueta_modulo));
+                                return false;
+                            }
+                            
                             $.ajax({
                                 url: _carpetas.URL + "/x_get_tienecuotas",
                                 data: {
@@ -7673,3 +7663,34 @@ function agregar_nota(idobjeto, ver) {
 //};
 // 
 //inter();
+
+function validar_alta() {
+    //validar domicilio y actividad
+    if ($("#alta_domproy").val() == '') {
+        jAlert('Ingrese Domicilio del Proyecto.', $.ucwords(_etiqueta_modulo), function () {
+            $("#alta_domproy").focus();
+        });
+        return false;
+    }
+    if ($("#alta_actividadtitular").val() == '') {
+        jAlert('Ingrese Actividad del Titular.', $.ucwords(_etiqueta_modulo), function () {
+            $("#alta_actividadtitular").focus();
+        });
+        return false;
+    }
+    //fechas
+    if ($("#alta_int_vto").val() == '') {
+        jAlert('Ingrese Fecha.', $.ucwords(_etiqueta_modulo), function () {
+            $("#alta_int_vto").focus();
+        });
+        return false;
+    }
+    if ($("#alta_cap_vto").val() == '') {
+        jAlert('Ingrese Fecha.', $.ucwords(_etiqueta_modulo), function () {
+            $("#alta_cap_vto").focus();
+        });
+        return false;
+    }
+    
+    return true;
+}

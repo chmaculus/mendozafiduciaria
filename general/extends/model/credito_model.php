@@ -2519,6 +2519,7 @@ class credito_model extends main_model {
             $this->_tipo_credito = $row_credito['TIPO_CREDITO'];
             $this->_caducado_de = $row_credito['ID_CADUCADO'];
             $this->_prorroga_de = $row_credito['ID_PRORROGA'];
+            $this->_actualizacion_compensatorios = $row_credito['ACT_COMP'];
             return TRUE;
         } else {
             return FALSE;
@@ -3497,9 +3498,11 @@ ORDER BY T1.lvl DESC');
             if ($key_cuota === FALSE && $saldo_cuota > 0.5) {
                 $__cuota = $cuota['ID'];
                 $key_cuota = $cuota['_INFO']['HASTA'];
-                $_compensatorios = $cuota['COMPENSATORIO']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'];
-                if ($_compensatorios < 0.1 && isset($ret_reuda['cuotas'][$k])) {
-                    $_compensatorios = $ret_reuda['cuotas'][$k + 1]['COMPENSATORIO']['SALDO'] + $ret_reuda['cuotas'][$k + 1]['IVA_COMPENSATORIO']['SALDO'];
+                if ($k == 0) {
+                    $_compensatorios = $cuota['COMPENSATORIO']['SALDO'] + $cuota['IVA_COMPENSATORIO']['SALDO'];
+                    if ($_compensatorios < 0.1 && isset($ret_reuda['cuotas'][$k])) {
+                        $_compensatorios = $ret_reuda['cuotas'][$k + 1]['COMPENSATORIO']['SALDO'] + $ret_reuda['cuotas'][$k + 1]['IVA_COMPENSATORIO']['SALDO'];
+                    }
                 }
             }
         }
