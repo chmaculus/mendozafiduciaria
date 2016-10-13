@@ -285,7 +285,7 @@ function init_grid(id_usuario,tipo){
                         
     var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
 
-        if (value == 'PRORROGADO') {
+        if (value == 'PRORROGADO' || value == 'CANCELADO') {
             return '<div style="margin:4px;font-weight:bold;">' + value + '</div>';
         } else if (value == 'CADUCADO') {
             return '<div style="margin:4px;color:#ff0000;font-weight:bold;">' + value + '</div>';

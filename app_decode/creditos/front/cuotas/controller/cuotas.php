@@ -248,7 +248,7 @@ class cuotas extends main_controller{
         
         if ($retornar) {
             $this->mod->set_fecha_actual($fecha);
-            if ($this->mod->verificiar_eventos_posteriores()) {
+            if ($this->mod->verificiar_eventos_pagos_posteriores()) {
                 //return;
                 $desimputar =TRUE;
             }
@@ -806,7 +806,7 @@ class cuotas extends main_controller{
         $this->mod->renew_datos();
         
         $this->mod->set_fecha_actual($fecha);
-        if ($this->mod->verificiar_eventos_posteriores()){
+        if ($this->mod->verificiar_eventos_pagos_posteriores()){
             echo "1";
         }
         else{

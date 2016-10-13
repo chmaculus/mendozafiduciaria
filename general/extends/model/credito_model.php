@@ -105,6 +105,19 @@ class credito_model extends main_model {
         return false;
     }
 
+    function verificiar_eventos_pagos_posteriores() {
+
+        //se verifica la existencia de eventos descontando los desembolsos teoricos y el evento inicial
+        foreach ($this->_variaciones as $variacion) {
+            if ($variacion['FECHA'] > $this->_fecha_actual && $variacion['TIPO']) {
+                if (!($variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['ESTADO'] == 5) && $variacion['TIPO'] == EVENTO_RECUPERO) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     //cuando se genera un evento en un registro complementario se genera con un codigo temporal
     //que despues se llena en esta funcion una vez que se obtiene el id del evento de la 
     //tabla principal: fid_creditos_eventos
@@ -4158,15 +4171,22 @@ ORDER BY T1.lvl DESC');
     }
     
     public function get_last_cambiotasas($id_operatoria, $fecha) {
+        $tasas = FALSE;
+        if ($this->_id_credito) {
+            $this->_db->select('COMPENSATORIO, SUBSIDIO, MORATORIO, PUNITORIO');
+            $tasas = $this->_db->get_row('fid_creditos_cambiotasas', 'ID_CREDITO= ' . $this->_id_credito, 'FECHA ASC');   
+        }
+        
         if ($id_operatoria) {
             if ($operatoria = $this->_db->get_row("fid_operatorias", 'ID=' . $id_operatoria)) {
-                $tasas = array(
-                    'COMPENSATORIO' => $operatoria['TASA_INTERES_COMPENSATORIA'],
-                    'MORATORIO' => $operatoria['TASA_INTERES_MORATORIA'],
-                    'PUNITORIO' => $operatoria['TASA_INTERES_POR_PUNITORIOS'],
-                    'SUBSIDIO' => $operatoria['TASA_SUBSIDIADA']
-                    );
-                
+                if (!$tasas) {
+                    $tasas = array(
+                        'COMPENSATORIO' => $operatoria['TASA_INTERES_COMPENSATORIA'],
+                        'MORATORIO' => $operatoria['TASA_INTERES_MORATORIA'],
+                        'PUNITORIO' => $operatoria['TASA_INTERES_POR_PUNITORIOS'],
+                        'SUBSIDIO' => $operatoria['TASA_SUBSIDIADA']
+                        );
+                }
                 $this->_db->select('*');
                 $this->_db->where("ID_OPERATORIA = " . $id_operatoria . " AND FECHA <= '$fecha'");
                 $this->_db->order_by("FECHA", "ASC");
@@ -4186,13 +4206,11 @@ ORDER BY T1.lvl DESC');
                         }
                     }
                 }
-                
-                return $tasas;
             }
             
         }
         
-        return FALSE;
+        return $tasas;
     }
   
 }

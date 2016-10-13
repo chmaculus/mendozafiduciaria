@@ -565,7 +565,7 @@ class credito_model_test extends credito_model {
             
         }
         
-        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_ELIMINADO), "ID = " . $id_credito_caido);
+        $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CREDITO_CANCELADO), "ID = " . $id_credito_caido);
         $this->_db->update("fid_creditos", array("CREDITO_ESTADO" => ESTADO_CUOTA_PENDIENTE), "ID = " . $id_credito_padre);
         
     }

@@ -1011,15 +1011,16 @@ function caducarCuota() {
 }
 
 function refinanciacion_caida() {
-    jConfirm("¿Esta seguro de eliminar este crédito y volver al anterior?","Caducidad", function(i){
+    jConfirm("¿Esta seguro de cancelar este crédito y volver al anterior?","Caducidad", function(i){
         if(i){
+            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Refinanciaión caida</h4>' });
             $.ajax({
                 url: _cuotas.URL + "/x_refinanciacion_caida",
                 data: {
                     credito_id: _cuotas.ID_CREDITO
                 },
                 type: "post",
-                async : false,
+                async : true,
                 success: function(result) {
                     if (result) {
                         location.href="creditos/front/creditos";
@@ -1069,6 +1070,7 @@ function formaltabase(datos) {
 
 
 function credito_caido() {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando crédito caido</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_credito_caido",
         data: {
@@ -1076,7 +1078,6 @@ function credito_caido() {
             credito_id: _cuotas.ID_CREDITO
         },
         type: "post",
-        async : false,
         success: function(result) {
             if (result=='-1') {
                 ret = true;

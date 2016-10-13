@@ -36,6 +36,8 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getCreditos') {
             $estado = 'DEUDA';
         if ($credito['CR_ESTADO'] == 0)
             $estado = 'SIN VERIFICAR';
+        if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_CANCELADO)
+            $estado = 'CANCELADO';
         if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_CADUCADO)
             $estado = 'CADUCADO';
         if ($credito['CREDITO_ESTADO'] == ESTADO_CREDITO_PRORROGADO)
