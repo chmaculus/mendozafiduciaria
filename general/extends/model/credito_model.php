@@ -1183,10 +1183,10 @@ class credito_model extends main_model {
                             $cuota['FECHA_VENCIMIENTO'] += 1;
                         }
                     
-                        $interes = $ranto_total_comp ? ($this->_calcular_interes($SALDO_CAPITAL, $ranto_total_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) * ($rango_comp / $ranto_total_comp)) : 0;
+                        $interes = $rango_comp ? $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16) : 0;
                         $interes_subsidio = $this->_calcular_interes($SALDO_CAPITAL, $rango_comp, $INT_SUBSIDIO, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                         
-                        if ($cuota['ID']==0 && $interes) {
+                        if ($cuota['ID']==$this->log_cuotas && $interes) {
                             echo "FE".date("Y-m-d", $variacion['FECHA'])."<br />";
                             echo "FE".date("Y-m-d", $cuota['FECHA_VENCIMIENTO'])."<br />";
                             echo "INICIO $fecha_inicio2<br />FIN $fecha_fin2<br />RANGO $rango_comp<br />TASA:$INTERES_COMPENSATORIO_VARIACION<br />SALDO $SALDO_CAPITAL<br />INT: $interes<br />TIPO:{$variacion['TIPO']}<br /><br />";
@@ -1720,7 +1720,7 @@ class credito_model extends main_model {
         //0.3833 = 23 / 60
 
         $rtn = $monto * pow($base, $exponente) - $monto;
-
+        
 
 
         return $rtn;
@@ -2971,8 +2971,8 @@ ORDER BY T1.lvl DESC');
                 if ($fecha > 0 && $variacion['FECHA'] > $fecha)
                     break;
 
+                $total_monto = 0;
                 if ($variacion['ASOC']) {
-                    $total_monto = 0;
                     foreach ($variacion['ASOC'] as $valor) {
                         $total_monto += $valor['MONTO'];
                     }
@@ -4175,6 +4175,11 @@ ORDER BY T1.lvl DESC');
         if ($this->_id_credito) {
             $this->_db->select('COMPENSATORIO, SUBSIDIO, MORATORIO, PUNITORIO');
             $tasas = $this->_db->get_row('fid_creditos_cambiotasas', 'ID_CREDITO= ' . $this->_id_credito, 'FECHA ASC');   
+        }
+        
+        if (!$tasas) {
+            $this->_db->select('POR_INT_COMPENSATORIO AS COMPENSATORIO, POR_INT_SUBSIDIO AS SUBSIDIO, POR_INT_MORATORIO AS MORATORIO, POR_INT_PUNITORIO AS PUNITORIO');
+            $tasas = $this->_db->get_row('fid_creditos_eventos', 'TIPO=1 AND ID_CREDITO= ' . $this->_id_credito, 'FECHA ASC');   
         }
         
         if ($id_operatoria) {

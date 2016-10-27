@@ -97,9 +97,10 @@ foreach($cuotas as $kk=>$cuota){
     $total_compensatorio_act = $cuota['COMPENSATORIO_ACT'] ? '<br />' . number_format($cuota['COMPENSATORIO_ACT'],2,",",".") : '';
     $iva_compensatorio_act_total = '';
     if ($cuota['COMPENSATORIO_ACT'] && $cuota['COMPENSATORIO']['TOTAL']) {
-        $tmp_iva = number_format($iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'],2,",",".");
-        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
+        $tmp_iva = $iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'];
         $iva_compensatorio_total -= $tmp_iva;
+        $tmp_iva = number_format($tmp_iva,2,",",".");
+        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
     }
             
     $total_capital = $cuota['CAPITAL']['TOTAL'];

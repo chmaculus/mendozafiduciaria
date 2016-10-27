@@ -745,10 +745,11 @@ function get_eliminar(){
     else{
         
         var credito_selected = [];
-        $('#contenttablejqxgrid div > .jqx-grid-cell-selected:first-child').each(function() {
-            credito_selected.push($(this).text());
-        });
-        
+        var indexes = $("#jqxgrid").jqxGrid('selectedrowindexes');
+        for (var index in indexes) {
+            var data = $('#jqxgrid').jqxGrid('getrowdata', indexes[index]);
+            credito_selected.push(data.ID_CREDITO);
+        }
         var str_list_creditos = credito_selected.join(", ");
         
         console.log(str_list_creditos);
