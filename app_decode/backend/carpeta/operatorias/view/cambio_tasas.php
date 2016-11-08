@@ -3,7 +3,7 @@
     <table width="100%">
         <tr>
             <td valign="top">
-                <table width="95%">
+                <table width="95%" id="cambio_tasa2">
                     <tr>
                         <th>Fecha</th>
                         <th>Créditos</th>

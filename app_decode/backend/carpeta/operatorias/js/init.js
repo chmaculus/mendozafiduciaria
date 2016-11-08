@@ -1255,7 +1255,12 @@ function impactar_cambiotasas() {
                         return;
                     
                     if (r.result) {
-                        $("#cambio_tasa").replaceWith(r.html);
+                        $("#fec_imp_tasas").val('');
+                        $("#cambio_tasa2").html($(r.html).find("#cambio_tasa2").html());
+                        $("#cambio_tasa2, #cambio_tasa2 tr").css('border-collapse', 'collapse');
+                        $("#cambio_tasa2 td, #cambio_tasa2 th").css('border-collapse', 'collapse');
+                        $("#cambio_tasa2 td, #cambio_tasa2 th").css('text-align', 'center');
+                        $("#cambio_tasa2 td, #cambio_tasa2 th").css('border', '1px #777 solid');
                         init_cambiotasas();
                         _reimp_ct(r.id, r.creditos);
                     } else {
@@ -1328,7 +1333,7 @@ function reimp_ct(id) {
 function _reimp_ct(id, creditos) {
     if (creditos.length > 0) {
         $.each(creditos, function(key, value) {
-            $('#pct').html('<img src="general/images/block-loader.gif" /> Impactando cambio de tasa ' + (key + 1) + ' de ' + creditos.length + ' créditos' );
+            $('#pct').html('<img src="general/images/block-loader.gif" /> Impactando cambio de tasa ' + (key + 1) + ' de ' + creditos.length + ' créditos' ).css('color', '#1a6800').show();
             $.ajax({
                 async: false,
                 url : "creditos/front/cuotas/x_imp_cambiotasas",
@@ -1351,7 +1356,13 @@ function _reimp_ct(id, creditos) {
                             success : function(r){
                                 $('#pct').html('');
                                 if(r && r.result) {
-                                    $("#cambio_tasa").replaceWith(r.html);
+                                    //$("#cambio_tasa").replaceWith(r.html);
+                                    $("#fec_imp_tasas").val('');
+                                    $("#cambio_tasa2").html($(r.html).find("#cambio_tasa2").html());
+                                    $("#cambio_tasa2, #cambio_tasa2 tr").css('border-collapse', 'collapse');
+                                    $("#cambio_tasa2 td, #cambio_tasa2 th").css('border-collapse', 'collapse');
+                                    $("#cambio_tasa2 td, #cambio_tasa2 th").css('text-align', 'center');
+                                    $("#cambio_tasa2 td, #cambio_tasa2 th").css('border', '1px #777 solid');
                                     $('#pct').html('El proceso de impacto de cambio de tasas ha finalizado correctamente' ).css('color', '#0044ff');
                                 }
                             }
@@ -1361,7 +1372,7 @@ function _reimp_ct(id, creditos) {
             });
         });
     } else {
-        $('#pct').html('No hay créditos para realizar impactación');
+        $('#pct').html('No hay créditos para realizar impactación').css('color', 'red');
     }
 }
 
