@@ -1311,7 +1311,7 @@ class credito_model extends main_model {
                                 $INT_PUNITORIO = $tmp['INT_PUNITORIO'];
                             }
 
-                            if (FALSE && $this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
+                            if ($this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
                                 ECHO "ACAAAAAAAAAAAAAAAAAAAAAAAA {$cuota['ID']}<br />";
                                 echo "S:$SALDO_CUOTA<br />";
                                 echo "R:$rango_int_mor<br />";
