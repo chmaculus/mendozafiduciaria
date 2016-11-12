@@ -84,6 +84,12 @@ class cuotas extends main_controller{
     function _x_set_pago($credito_id, $fecha, $monto, $version) {
         
         if ($this->mod->set_credito_active($credito_id)) {
+            $monto = (float) $monto;
+            
+            if (!$monto || $monto !== ((float) $monto)) {
+                die("-2");
+            }
+            
             $this->mod->set_version_active($version);
             $this->mod->renew_datos();
 

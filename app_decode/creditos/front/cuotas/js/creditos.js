@@ -168,6 +168,10 @@ function agregar_pago(id_credito, fecha, monto) {
                 jAlert("No se guardó el recupero. Se deben cargar el 100% de desembolsos", "MENDOZA FIDUICIARIA", function(e) {
                     return;
                 });
+            } else if (result == '-2') {
+                jAlert("El monto ingresado es incorrecto", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
             } else {
                 $(".div-result").html(result);
                 $.unblockUI();
