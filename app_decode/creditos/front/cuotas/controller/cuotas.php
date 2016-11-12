@@ -86,7 +86,7 @@ class cuotas extends main_controller{
         if ($this->mod->set_credito_active($credito_id)) {
             $monto = (float) $monto;
             
-            if (!$monto || $monto !== ((float) $monto)) {
+            if (!$monto || $monto <= 0) {
                 die("-2");
             }
             
