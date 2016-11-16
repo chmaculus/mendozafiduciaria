@@ -208,7 +208,7 @@ function generar_cuotas(){
     
     
     if (cuotas_gracia >= cuotas){
-        jAlert("No pueden existir mas cuotas de gracia que cuotas de credito","ERROR DE GENERACION");
+        jAlert("No pueden existir mas cuotas de gracia que cuotas de crédito","ERROR DE GENERACIÓN");
         $("#txtCantidadCuotasGracia").addClass("error");
         return;
     }
@@ -218,8 +218,9 @@ function generar_cuotas(){
         micro = $("#chkMicro:checked").length;
         
         if (!(credito_id > 0)){
-            jAlert("Debe ingresar un numero entero en el numero de credito","ERROR DE GENERACION");
+            jAlert("Debe ingresar un número entero en el número de crédito","ERROR DE GENERACIÓN");
             $("#txtCreditoID-opc").addClass("error");
+            return;
         }
     }
     
@@ -266,9 +267,6 @@ function generar_cuotas(){
             jAlert("Se han generado las cuotas correctamente","Proceso Terminado con éxito", function(){
                 _formalta.finish(1);
             });
-            
-          
-            
         }
     });
 }

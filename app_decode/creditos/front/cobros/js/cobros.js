@@ -102,38 +102,41 @@ function mostrar_archivo(){
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     if ($over.length==1){
         var id = $over.data("id");
-        var rtn = _cobros.get_data_file(id);
-        $("#div-mostrar-archivo").html(rtn);
-
-        var cantidad_total = $(".datos .opciones_chk input").length;
-        $(".datos .opciones_chk input").off().on({
-            "click" : function(){
-                var cantidad_seleccionados = $(".datos .opciones_chk input:checked").length;
-
-                console.log(cantidad_total+"==="+cantidad_seleccionados);
-                if (cantidad_total===cantidad_seleccionados){
-                    $("#chkTodos").attr("checked","checked");
-                }
-                else{
-                    $("#chkTodos").removeAttr("checked");
-                }
-            }
-        });        
-
-        
-        $.unblockUI();
-        
-        $(".lista-extract ul li").off().on({
-            "mouseenter" : function(){
-                $(this).addClass("over");
-            },
-            "mouseleave" : function(){
-                $(this).removeClass("over");    
-            }
-        });
-        
-        $("a#inline").trigger("click");
+        _cobros.get_data_file(id);
     }
+}
+
+function _mostrar_archivo(rtn) {
+    $("#div-mostrar-archivo").html(rtn);
+
+    var cantidad_total = $(".datos .opciones_chk input").length;
+    $(".datos .opciones_chk input").off().on({
+        "click" : function(){
+            var cantidad_seleccionados = $(".datos .opciones_chk input:checked").length;
+
+            console.log(cantidad_total+"==="+cantidad_seleccionados);
+            if (cantidad_total===cantidad_seleccionados){
+                $("#chkTodos").attr("checked","checked");
+            }
+            else{
+                $("#chkTodos").removeAttr("checked");
+            }
+        }
+    });        
+
+
+    $.unblockUI();
+
+    $(".lista-extract ul li").off().on({
+        "mouseenter" : function(){
+            $(this).addClass("over");
+        },
+        "mouseleave" : function(){
+            $(this).removeClass("over");    
+        }
+    });
+
+    $("a#inline").trigger("click");
 }
 
 
@@ -142,70 +145,67 @@ function mostrar_mes(){
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     if ($over.length==1){
         var id = $over.data("id");
-        var rtn = _cobros.get_data_mes(id);
-        $("#div-mostrar-archivo").html(rtn);
-        $("#div-mostrar-archivo ul.datos").height($('.fancybox-skin').height() - 110);
-        var cantidad_total = $(".datos .opciones_chk input").length;
-        $(".datos .opciones_chk input").off().on({
-            "click" : function(){
-                var cantidad_seleccionados = $(".datos .opciones_chk input:checked").length;
-                if (cantidad_total===cantidad_seleccionados){
-                    $("#chkTodos").attr("checked","checked");
-                }
-                else{
-                    $("#chkTodos").removeAttr("checked");
-                }
-            }
-        });        
-
-        
-        $.unblockUI();
-        
-        $(".lista-extract ul li").off().on({
-            "mouseenter" : function(){
-                $(this).addClass("over");
-            },
-            "mouseleave" : function(){
-                $(this).removeClass("over");    
-            }
-        });
-        
-        $("a#inline").trigger("click");
+        _cobros.get_data_mes(id);
     }
 }
 
+function _mostrar_mes(rtn) {
+    $("#div-mostrar-archivo").html(rtn);
+    $("#div-mostrar-archivo ul.datos").height($('.fancybox-skin').height() - 110);
+    var cantidad_total = $(".datos .opciones_chk input").length;
+    $(".datos .opciones_chk input").off().on({
+        "click" : function(){
+            var cantidad_seleccionados = $(".datos .opciones_chk input:checked").length;
+            if (cantidad_total===cantidad_seleccionados){
+                $("#chkTodos").attr("checked","checked");
+            }
+            else{
+                $("#chkTodos").removeAttr("checked");
+            }
+        }
+    });        
+
+
+    $.unblockUI();
+
+    $(".lista-extract ul li").off().on({
+        "mouseenter" : function(){
+            $(this).addClass("over");
+        },
+        "mouseleave" : function(){
+            $(this).removeClass("over");    
+        }
+    });
+
+    $("a#inline").trigger("click");
+}
+
 _cobros.get_data_file = function(id){
-    var rtn = false;
     $.ajax({
         url : _cobros.URL + "/x_get_cobro_file",
         data : {
             id : id
         },
         type : "post",
-        async : false,
+        async : true,
         success : function(data){
-            rtn  =data;
-            
-            
+            _mostrar_archivo(data);
         }
     });
-    return rtn;
 };
 
 _cobros.get_data_mes = function(mes){
-    var rtn = false;
     $.ajax({
         url : _cobros.URL + "/x_get_cobro_mes",
         data : {
             mes : mes
         },
         type : "post",
-        async : false,
+        async : true,
         success : function(data){
-            rtn  =data;
+            _mostrar_mes(data);
         }
     });
-    return rtn;
 };
 
 function agregar_cobros_seleccionados(){
@@ -228,7 +228,7 @@ function agregar_cobros_seleccionados(){
 }
 
 _cobros.agregar_coboros_credito = function(cobros){
-    
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url : _cobros.URL.replace('front/cobros', 'front/cuotas') + "/x_add_cobros",
         data : {
@@ -237,6 +237,7 @@ _cobros.agregar_coboros_credito = function(cobros){
         type : "post",
         success : function(rtn){
             console.log(rtn);
+            $.unblockUI();
             $.fancybox.close();
         }
     });
@@ -247,13 +248,10 @@ function invertir_seleccion(){
     $("#chkTodos").attr("checked","checked");
     $(".datos .opciones_chk input[type=checkbox]").each(function(i){
         var checked = $(this).attr("checked") ? 1 : 0;
-        
-        
-        if (checked){
+        if (checked) {
             $("#chkTodos").removeAttr("checked");
             $(this).removeAttr("checked");
-        }
-        else{
+        } else {
             $(this).attr("checked","true");
         }
     });
@@ -313,7 +311,7 @@ function ver_archivo() {
     $.ajax({
         url : _cobros.URL + "/x_get_archivos_bancos",
         type : "post", 
-        async : false,
+        async : true,
         dataType : "json",
         success : function(rtn){
             for(var i = 0 ; i < rtn.length ; i++){

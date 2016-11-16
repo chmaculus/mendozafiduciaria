@@ -615,8 +615,8 @@ nav li #login-content ul {
     width:1110px;
     height: 1%;
     position: relative;
-    padding-left:20px;
-    padding-right:20px;
+    padding: 0 20px;
+    margin: 0 auto;
 }
 #middle:after {
     content: '.';

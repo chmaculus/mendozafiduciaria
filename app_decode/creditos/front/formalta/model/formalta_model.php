@@ -62,8 +62,6 @@ class formalta_model extends credito_model {
         $primera_cuota = reset($this->_cuotas);
         $primer_vencimiento = $primera_cuota['FECHA_VENCIMIENTO'];
         
-        echo "ID_CREDITO:".$this->_id_credito;
-        
         $credito = array(
             "MONTO_CREDITO" => $total,
             "PLAZO_COMPENSATORIO" => $this->_interese_compensatorio_plazo,
@@ -83,8 +81,17 @@ class formalta_model extends credito_model {
             "CAPITAL_PERIODO" => 0,
             "ID_FIDEICOMISO" =>  $operacion ? $operacion['ID_FIDEICOMISO'] : 0,
             "ID_OPERATORIA" => $operacion ? $operacion['ID_OPERATORIA'] : 0,
+            "ACT_COMP" => FALSE,
             "POSTULANTES" => implode(",", $arr_clientes)
         );
+
+        if ($credito['ID_OPERATORIA']) {
+            $this->_db->select('ACT_COMPENS');
+            $row_operatoria = $this->_db->get_row("fid_operatorias", "ID = " . $credito['ID_OPERATORIA']);
+            if ($row_operatoria) {
+                $credito['ACT_COMP'] = $row_operatoria['ACT_COMPENS'];
+            }
+        }
         
         if (isset($this->_iva)) {
             $credito['IVA'] = $this->_iva;
