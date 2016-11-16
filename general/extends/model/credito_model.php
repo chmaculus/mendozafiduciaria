@@ -1287,7 +1287,7 @@ class credito_model extends main_model {
                                 $dif_compens = $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $pagos_dif_compens;
                                 
                                 if ($SALDO_ACT_COMP > 0.50 && ($dif_compens > 0.5 || $pagos_dif_compens == 0 )) {
-                                    $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_int_mor, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                                    $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_comp_real, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                                     $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
                                     $INTERES_COMPENSATORIO += $interes_act_comp;
                                     $IVA_INTERES_COMPENSATORIO += ($interes_act_comp * $this->_iva_operatoria);
