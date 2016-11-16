@@ -1,4 +1,22 @@
-<style>table tr{text-align:left}td.iva{width:65px}</style>
+<style>
+    table tr{text-align:left}td.iva{width:65px}
+    p.dscr{font-weight:bold;font-size:1.2em;padding:10px 10px 20px;}
+</style>
+<?php
+if (!$desembolsos) {
+    echo '<p class="dscr">No hay desembolsos cargados</p>';
+    die();
+} else {
+    $desembolsado = 0;
+    foreach($desembolsos as $desembolso){
+        $desembolsado += $desembolso['MONTO'];
+    }
+    
+    if ($monto_credito != $desembolsos) {
+        echo '<p class="dscr">No están todos los desembolsos cargados</p>';
+    }
+}
+?>
 <ul class="lista-informe cuotas">
     <li class="titulo">
         <span class="numero-desembolso">NUMERO</span>
