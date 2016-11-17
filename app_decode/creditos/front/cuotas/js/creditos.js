@@ -183,6 +183,11 @@ function agregar_pago(id_credito, fecha, monto) {
 
 function agregar_variacion() {
     
+    var validar_fecha = $.datepicker.formatDate('dd-mm-yy', $("#txtFecha").datepicker("getDate"));
+    if (validar_fecha != $("#txtFecha").val()) {
+        jAlert("La fecha ingresada es incorrecta", "ERROR");
+        return;
+    }
     var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
     var opcion = parseInt($("#txtEvento option:selected").val());
 
