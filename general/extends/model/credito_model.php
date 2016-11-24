@@ -1169,9 +1169,14 @@ class credito_model extends main_model {
                     $calc_rango = ($variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['FECHA'] < $cuota['FECHA_VENCIMIENTO']);
                     $calc_rango = $calc_rango || ($variacion['TIPO'] == EVENTO_TASA && $variacion['FECHA'] < $cuota['FECHA_VENCIMIENTO'] && $variacion['ASOC']['COMPENSATORIO'] != $INTERES_COMPENSATORIO_VARIACION);
                     $calc_rango = $calc_rango || ($variacion['FECHA'] >= $cuota['FECHA_VENCIMIENTO']);
+                    $calc_rango = $calc_rango || (count($variaciones) - 1 == $iv);
                     
                     if ($calc_rango && $_fecha_inicio) {
-                        $f_rc_fin = ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) ? $cuota['FECHA_VENCIMIENTO'] : $variacion['FECHA'];
+                        if (count($variaciones) - 1 == $iv && $variacion['FECHA'] < $cuota['FECHA_VENCIMIENTO']) { //si no hay eventos dsp de la fecha de vencimiento de la cuota
+                            $f_rc_fin = $cuota['FECHA_VENCIMIENTO'];
+                        } else {
+                            $f_rc_fin = ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) ? $cuota['FECHA_VENCIMIENTO'] : $variacion['FECHA'];
+                        }
                         $rango_comp_real = ($f_rc_fin - $_fecha_inicio) / (24 * 3600);
                         $rango_comp_real = $rango_comp_real > 0 ? $rango_comp_real : 0;
                         if ($variacion['FECHA'] >= $cuota['FECHA_VENCIMIENTO'])
@@ -1208,7 +1213,7 @@ class credito_model extends main_model {
                         if ($cuota['ID']==$this->log_cuotas && $interes) {
                             echo "FE".date("Y-m-d", $variacion['FECHA'])."<br />";
                             echo "FE".date("Y-m-d", $cuota['FECHA_VENCIMIENTO'])."<br />";
-                            echo "INICIO $fecha_inicio2<br />FIN $fecha_fin2<br />RANGO $rango_comp<br />TASA:$INTERES_COMPENSATORIO_VARIACION<br />SALDO $SALDO_CAPITAL<br />INT: $interes<br />TIPO:{$variacion['TIPO']}<br /><br />";
+                            echo "INICIO $fecha_inicio2<br />FIN $fecha_fin2<br />RANGO $rango_comp_real<br />TASA:$INTERES_COMPENSATORIO_VARIACION<br />SALDO $SALDO_CAPITAL<br />INT: $interes<br />TIPO:{$variacion['TIPO']}<br /><br />";
                         }
 
                         $tmp['INT_COMPENSATORIO'] = $interes;
