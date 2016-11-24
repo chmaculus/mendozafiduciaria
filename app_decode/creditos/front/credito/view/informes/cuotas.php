@@ -12,7 +12,7 @@ if (!$desembolsos) {
         $desembolsado += $desembolso['MONTO'];
     }
     
-    if ($monto_credito != $desembolsos) {
+    if ($monto_credito != $desembolsado) {
         echo '<p class="dscr">No están todos los desembolsos cargados</p>';
     }
 }
