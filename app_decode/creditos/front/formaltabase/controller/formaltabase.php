@@ -238,7 +238,9 @@ class formaltabase extends main_controller {
                     $postulantes = array();
                     $_cuits = array();
                     foreach ($cuit as $cj=>$c) {
-                        $c = trim($c);
+                        //$c = trim($c);
+                        $c = preg_replace('/[^0-9-]+/', '', $c);
+                        
                         if (!($postulante = $this->mod->getClienteIdCUIT($c))) {
                             $cliente = array(
                                 'RAZON_SOCIAL' => trim(strip_tags($_postulantes[$cj])),

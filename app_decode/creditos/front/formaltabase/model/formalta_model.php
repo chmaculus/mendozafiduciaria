@@ -417,6 +417,9 @@ class formalta_model extends credito_model {
     }
     
     function guardar_postulante($cliente) {
+        if (isset($cliente['CUIT'])) {
+            $cliente['CUIT'] = preg_replace('/[^0-9-]+/', '', $cliente['CUIT']);
+        }
         return $this->_db->insert("fid_clientes", $cliente);
     }
    

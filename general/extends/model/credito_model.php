@@ -3214,13 +3214,20 @@ ORDER BY T1.lvl DESC');
             }
         }
         
-        
         if(count($arr_cliente)>0) {
             $id_cliente = implode("|", $arr_cliente);
             
             $this->_db->select("ID");
             $this->_db->where("POSTULANTES  = '$id_cliente' AND ID>0");
             $this->_db->where("CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
+            if ($result = $this->_db->get_row("fid_creditos")) {
+                return $result['ID'];
+            }
+            
+            $this->_db->select("ID");
+            $this->_db->where("POSTULANTES  LIKE '%$id_cliente%' AND ID>0");
+            $this->_db->where("CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
+            $this->_db->order_by("ID", "DESC");
             if ($result = $this->_db->get_row("fid_creditos")) {
                 return $result['ID'];
             }
