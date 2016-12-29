@@ -319,24 +319,6 @@ class credito_model extends main_model {
         $variacion_inicial = reset($this->_variaciones);
         
         $arr_deuda = array("gastos" => array(), "cuotas" => array(), "rtn" => 1, "fecha_reimputacion" => 0);
-
-        //GASTOS
-        $gastos_arr = array();
-        foreach ($gastos as $gasto) {
-            $this->_db->where("ID_TIPO = 8 AND CUOTAS_RESTANTES = " . $gasto['ID']);
-            $pago_gasto = $this->get_tabla_pagos();
-
-            $pago_gasto_tmp = array(
-                "TOTAL" => $gasto['MONTO'],
-                "PAGOS" => $pago_gasto,
-                "TIPO" => 8,
-                "SALDO" => $gasto['MONTO'] - $this->_get_saldo($pago_gasto),
-                "ID" => $gasto['ID'],
-                "ROW" => $gasto
-            );
-            $gastos_arr[] = $pago_gasto_tmp;
-            $arr_deuda['gastos'][] = $pago_gasto_tmp;
-        }
         
         if ($renew) {
             $this->get_segmentos_cuota();
@@ -344,6 +326,28 @@ class credito_model extends main_model {
         }
 
         $cuotas = $this->_cuotas;
+
+        //GASTOS
+        $gastos_arr = array();
+        foreach ($gastos as $gasto) {
+            foreach ($cuotas as $cuota) {
+                if ($gasto['FECHA'] > $cuota['FECHA_INICIO'] && $gasto['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
+                    $this->_db->where("ID_TIPO = 8 AND CUOTAS_RESTANTES = " . $cuota['CUOTAS_RESTANTES']);
+                    $pago_gasto = $this->get_tabla_pagos();
+
+                    $pago_gasto_tmp = array(
+                        "TOTAL" => $gasto['MONTO'],
+                        "PAGOS" => $pago_gasto,
+                        "TIPO" => 8,
+                        "SALDO" => $gasto['MONTO'] - $this->_get_saldo($pago_gasto),
+                        "ID" => $gasto['ID'],
+                        "ROW" => $gasto
+                    );
+                    $gastos_arr[] = $pago_gasto_tmp;
+                    $arr_deuda['gastos'][] = $pago_gasto_tmp;
+                }
+            }
+        }
 
         foreach ($cuotas as $cuota) {
             $pago = $this->_pagos[$cuota['CUOTAS_RESTANTES']];
@@ -1330,10 +1334,12 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
-                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO']))) {
-                            $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
-                            $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
+                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
+                        //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO']))) {
+                            if ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO'])) {
+                                $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
+                                $INTERES_COMPENSATORIO_VARIACION = $tv['POR_INT_COMPENSATORIO'];
+                            }
                             $PERIODICIDAD_TASA_VARIACION = $tv['PERIODICIDAD_TASA'];
                             $POR_INT_MORATORIO = $tv['POR_INT_MORATORIO'];
                             $POR_INT_PUNITORIO = $tv['POR_INT_PUNITORIO'];

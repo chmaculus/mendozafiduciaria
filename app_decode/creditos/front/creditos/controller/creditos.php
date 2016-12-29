@@ -420,7 +420,7 @@ class creditos extends main_controller{
                 $hoy = strtotime(date('Y-m-d'));
                 $nro_cuota_venc = 0;
                 $fecha_venc = 0;
-                $monto_cuota;
+                $monto_cuota = 0;
                 $capital_pagado = 0;
                 $fecha_ult_pago = 0;
                 
@@ -449,10 +449,14 @@ class creditos extends main_controller{
                 }
                 
                 if ($item['CUOTAS'] && $fecha_venc == 0 && $nro_cuota_venc == 0) { //si no hay pagos
-                    $ct = $item['CUOTAS'][0];
-                    $fecha_venc = $ct['FECHA_VENCIMIENTO'];
-                    ++$nro_cuota_venc;
-                    $monto_cuota = $ct['INT_COMPENSATORIO'] + $ct['INT_COMPENSATORIO_IVA'] + $ct['CAPITAL_CUOTA'];
+                    foreach ($item['CUOTAS'] as $ct) {
+                        ++$nro_cuota_venc;
+                        if ($ct['CAPITAL_CUOTA']) {
+                            $fecha_venc = $ct['FECHA_VENCIMIENTO'];
+                            $monto_cuota = $ct['INT_COMPENSATORIO'] + $ct['INT_COMPENSATORIO_IVA'] + $ct['CAPITAL_CUOTA'];
+                            break;
+                        }
+                    }
                 }
                 
                 $arr['DEUDOR'] = $item['RAZON_SOCIAL'];
@@ -460,7 +464,7 @@ class creditos extends main_controller{
                 $arr['ID'] = $item['ID'];
                 $arr['FIDEICOMISO'] = $item['FIDEICOMISO'];
                 $arr['CUOTA_VENCE'] = $nro_cuota_venc;
-                $arr['FECHA_VENCE'] = $fecha_venc ? date('Y-m-d', $fecha_venc) : '';
+                $arr['FECHA_VENCE'] = $fecha_venc ? date('Y-m-d', $fecha_venc) . ' 00:00:00' : '';
                 $arr['MONTO_CUOTA'] = number_format($monto_cuota, 2, ".", "");
                 $arr['SALDO_CAPITAL_MORA'] = number_format($item['MONTO_CREDITO'] - $capital_pagado, 2, ".", "");
                 $arr['ESTADO'] = '';
