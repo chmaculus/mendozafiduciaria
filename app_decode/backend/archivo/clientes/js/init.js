@@ -265,8 +265,7 @@ $(document).ready(function () {
                                                                 $("#jqxgrid").jqxGrid('updatebounddata');
                                                                 //actualizar contactos
                                                                 var $nuevo = _more.clone();
-                                                                $(".group").html('').append($nuevo);
-                                                                ;
+                                                                $.fancybox.close();
                                                             });
                                                         }
                                                     });
@@ -460,12 +459,11 @@ $(document).ready(function () {
                                         console.log('data::');
                                         console.dir(data);
 
-                                        if (data == 1) {
+                                        if (data == '1') {
                                             $.fancybox.close();
                                             $("#jqxgrid").jqxGrid('updatebounddata');
                                             $.unblockUI();
-                                        }
-                                        if (data == '-2') {
+                                        } else if (data == '-2') {
                                             jAlert('El cliente tiene dependencias (Carpetas, Creditos, Notas u Requerimientos). No puede ser borrado.', $.ucwords(_etiqueta_modulo), function () {
                                                 $.unblockUI();
                                             });
@@ -641,13 +639,12 @@ $(document).ready(function () {
                         dataType: "json",
                         type: "post",
                         success: function (data) {
-                            if (data > 0) {
+                            if (data == '1') {
                                 if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
                                     var id = $("#jqxgrid").jqxGrid('getrowid', selectedrowindex);
                                     var commit = $("#jqxgrid").jqxGrid('deleterow', id);
                                 }
-                            }
-                            if (data == '-2') {
+                            } else if (data == '-2') {
                                 jAlert('El cliente tiene dependencias (Carpetas, Creditos, Notas u Requerimientos). No puede ser borrado.', $.ucwords(_etiqueta_modulo), function () {
                                     $.unblockUI();
                                 });

@@ -212,11 +212,42 @@
         </div>
     </div>
     <div class="elem elem_med">
-        <label class="der">Fecha Vto/Desembolso:</label>
+        <label class="der">Fecha Liquidacion:</label>
         <div class="indent formtext">
             <input type="text" class="validate[required] tip-right" title="Vto Desemb" id="fechavto_desemb" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
         </div>
     </div>
+    
+    <div class="elem elem_med" id="segunda_fecha">
+        <label style="margin-left:-30px;" >-</label>
+        <input type="text" class="validate[required] tip-right" title="Vto Desemb" id="fechavto_desemb2" value="<?php echo (isset($entidad['DESTINO']) ? $entidad['DESTINO'] : "" ) ?>" data-prompt-position="topLeft" <?php echo (isset($entidad['ID']) ? "readonly" : "" ) ?>>
+    </div>
+    <div style="margin-top:10px;" class="clear"></div>
+    <!--Esto deberia mostrarse dependiendo si es mayorista o minorista TIPO y LIMITE-->
+    <div class="elem elem_med">
+        <label class="der">Tipo :</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="tipo_m_f" value="">
+        </div>
+    </div>
+
+    <div class="elem elem_med">
+        <label class="der">Nro. Desembolso :</label>
+        <div class="indent formtext">
+            <input type="text" title="" id="nro_desembolso" value="">
+        </div>
+    </div>
+    
+    <div id="ver_limite_m" style="display:none;">
+        <div class="elem elem_med">
+            <label class="der">Limite:</label>
+            <div class="indent formtext">
+                <input type="text" title="" id="limite_m_d_f" value="">
+            </div>
+        </div>
+    </div>
+    <!--Lo anterior deberia mostrarse dependiendo si es mayorista o minorista TIPO y LIMITE-->
+    
     <!--<div style="margin-top:10px;" class="clear"></div>-->
     <div style="margin-top:10px;" class="clear"></div>
     <div class="elem elem_med">

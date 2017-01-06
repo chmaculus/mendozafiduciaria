@@ -97,7 +97,7 @@ class carpetas extends main_controller {
         $data['hora_actual'] = date('d/m/Y H:i:s');
         $data['hora_mostrar'] = current(explode(' ', $data['hora_actual']));
         $data['hora_bd'] = $data['hora_actual'];
-        $arr_campos = array("NOMBRE","TIPO","DESCRIPCION","TOPE_PESOS","TASA_INTERES_COMPENSATORIA","TASA_INTERES_MORATORIA","TASA_INTERES_POR_PUNITORIOS","TASA_SUBSIDIADA","DESEMBOLSOS","DEVOLUCIONES","PERIODICIDAD","TASA_GASTOS");
+        $arr_campos = array("NOMBRE", "TIPO", "DESCRIPCION", "TOPE_PESOS", "TASA_INTERES_COMPENSATORIA", "TASA_INTERES_MORATORIA", "TASA_INTERES_POR_PUNITORIOS", "TASA_SUBSIDIADA", "DESEMBOLSOS", "DEVOLUCIONES", "PERIODICIDAD", "TASA_GASTOS");
         $this->_js_array['_campos'] = $arr_campos;
 
         $tmp = $this->x_getgerentes();
@@ -952,7 +952,7 @@ class carpetas extends main_controller {
             "ENVIADOA" => '',
             "CARTERADE" => $carterade
         );
-        
+
 //        $autor = isset($_POST['AUTOR']) ? $_POST['AUTOR'] : "0";
 //        $autor1 = isset($_POST['AUTOR1']) ? $_POST['AUTOR1'] : "0";
 //        $autor2 = isset($_POST['AUTOR2']) ? $_POST['AUTOR2'] : "0";
@@ -1011,7 +1011,6 @@ class carpetas extends main_controller {
             "AUTOR1" => $autor1,
             "AUTOR2" => $autor2,
             "SEM" => 0
-            
         );
         if ($notif > 0) {
             $usuario_notif = isset($_POST['usuario_notif']) ? $_POST['usuario_notif'] : "0";
@@ -1116,7 +1115,7 @@ class carpetas extends main_controller {
 //    [FECHA_AVISO] => 2015-11-5 10:45:29[ID_TRAZA] => 6833[ID_NOTIFICAR] => 62[CARTERADE] => 57[HAB] => 1)
 //OBTENCION DE LOS GERENTES
             }
-            } else if ($arr_traza['ETAPA'] == 4 && $arr_traza['ETAPA_ORIGEN'] == 3) {
+        } else if ($arr_traza['ETAPA'] == 4 && $arr_traza['ETAPA_ORIGEN'] == 3) {
 //SECTORES DE ANALISIS EXCEL LINEA 10 - 11 - 12
             $etapa_actualizar = 3;
             $ver_semaforo = $this->mod->ver_semaforo($operacion, $etapa_actualizar);
@@ -1128,7 +1127,7 @@ class carpetas extends main_controller {
                 "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                 "ID_ETAPA" => $arr_traza['ETAPA'],
                 "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$id_jefe_operaciones[0]['USERNAME'],
+                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
                 "FECHA_AVISO" => $fecha_aviso,
                 "ID_TRAZA" => $id_traza[0]['ID'],
                 "ID_NOTIFICAR" => $id_jefe_operaciones[0]['CARTERADE'],
@@ -1148,7 +1147,7 @@ class carpetas extends main_controller {
                 "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                 "ID_ETAPA" => $arr_traza['ETAPA'],
                 "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$id_jefe_operaciones[0]['USERNAME'],
+                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
                 "FECHA_AVISO" => $fecha_aviso,
                 "ID_TRAZA" => $id_traza[0]['ID'],
                 "ID_NOTIFICAR" => $id_jefe_operaciones[0]['CARTERADE'],
@@ -1168,7 +1167,7 @@ class carpetas extends main_controller {
                 "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                 "ID_ETAPA" => $arr_traza['ETAPA'],
                 "FECHA_CARGA" => $fecha_actual,
-                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$id_jefe_operaciones[0]['USERNAME'],
+                "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
                 "FECHA_AVISO" => $fecha_aviso,
                 "ID_TRAZA" => $id_traza[0]['ID'],
                 "ID_NOTIFICAR" => $id_jefe_operaciones[0]['CARTERADE'],
@@ -1185,18 +1184,18 @@ class carpetas extends main_controller {
             $id_gerentes_legales = $this->mod->gerente_legales();
             foreach ($id_gerentes_legales as $gerente) {
 //                foreach ($gerente as $id) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$gerente['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $gerente['ID'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                    "ID_ETAPA" => $arr_traza['ETAPA'],
+                    "FECHA_CARGA" => $fecha_actual,
+                    "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $gerente['USERNAME'],
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
+                    "ID_NOTIFICAR" => $gerente['ID'],
+                    "CARTERADE" => $arr_traza['DESTINO'],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
 //                }
             }
         } else if ($arr_traza['ETAPA'] == 3 && $arr_traza['ETAPA_ORIGEN'] == 5) {
@@ -1209,19 +1208,19 @@ class carpetas extends main_controller {
             $id_gerentes_legales = $this->mod->gerente_legales();
             foreach ($id_gerentes_legales as $gerente) {
 //                foreach ($gerente as $id) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                    "ID_ETAPA" => $arr_traza['ETAPA'],
+                    "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'Carpeta en Sectores de Analisis por mas de 72hs de 5 a 3',
-                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$gerente['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $gerente['ID'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                    "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $gerente['USERNAME'],
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
+                    "ID_NOTIFICAR" => $gerente['ID'],
+                    "CARTERADE" => $arr_traza['DESTINO'],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
 //                }
             }
         } else if ($arr_traza['ETAPA'] == 3 && $arr_traza['ETAPA_ORIGEN'] == 6) {
@@ -1233,19 +1232,19 @@ class carpetas extends main_controller {
             $id_gerentes_legales = $this->mod->gerente_legales();
             foreach ($id_gerentes_legales as $gerente) {
 //                foreach ($gerente as $id) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                    "ID_ETAPA" => $arr_traza['ETAPA'],
+                    "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'Carpeta en Sectores de Analisis por mas de 72hs de 6 a 3',
-                          "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$gerente['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $gerente['ID'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                    "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $gerente['USERNAME'],
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
+                    "ID_NOTIFICAR" => $gerente['ID'],
+                    "CARTERADE" => $arr_traza['DESTINO'],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
 //                }
             }
         } else if ($arr_traza['ETAPA'] == 8 && $arr_traza['ETAPA_ORIGEN'] == 3) {
@@ -1292,7 +1291,7 @@ class carpetas extends main_controller {
                 "CARTERADE" => $arr_traza['DESTINO'],
                 "HAB" => 1
             );
-            foreach ($AVISAR_GERENTE as $gerente_id){
+            foreach ($AVISAR_GERENTE as $gerente_id) {
                 $arr_semaforo = array(
                     "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                     "ID_ETAPA" => $arr_traza['ETAPA'],
@@ -1336,21 +1335,21 @@ class carpetas extends main_controller {
                 $fecha_aviso = strtotime('+48 hour', strtotime($fecha_actual));
                 $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
                 $obtener_gerentes = $this->mod->notificar_gerente();
-                 foreach ($obtener_gerentes as $value) {
-                $arr_semaforo = array(
-                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                    "ID_ETAPA" => $arr_traza['ETAPA'],
-                    "FECHA_CARGA" => $fecha_actual,
-                    "MENSAJE_ALERTA" => 'MÁS DE 48HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
-                    "FECHA_AVISO" => $fecha_aviso,
-                    "ID_TRAZA" => $id_traza[0]['ID'],
-                    "ID_NOTIFICAR" => $value['ID'],
-                    "CARTERADE" => $arr_traza['DESTINO'],
-                    "HAB" => 1
-                );
+                foreach ($obtener_gerentes as $value) {
+                    $arr_semaforo = array(
+                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                        "ID_ETAPA" => $arr_traza['ETAPA'],
+                        "FECHA_CARGA" => $fecha_actual,
+                        "MENSAJE_ALERTA" => 'MÁS DE 48HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
+                        "FECHA_AVISO" => $fecha_aviso,
+                        "ID_TRAZA" => $id_traza[0]['ID'],
+                        "ID_NOTIFICAR" => $value['ID'],
+                        "CARTERADE" => $arr_traza['DESTINO'],
+                        "HAB" => 1
+                    );
 
-                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
-                 }
+                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                }
             } else if ($arr_traza['DESCRIPCION'] == 'DE LEGALES A COORDINADOR PARA REVISION DE CONFECCION DE CONTRATO, ESPERANDO ACEPTACION') {
 //               lineas 30 - 31 - 32
                 $fecha_aviso = strtotime('+48 hour', strtotime($fecha_actual));
@@ -1383,7 +1382,7 @@ class carpetas extends main_controller {
                     "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                     "ID_ETAPA" => $arr_traza['ETAPA'],
                     "FECHA_CARGA" => $fecha_actual,
-                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'],
+                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
                     "FECHA_AVISO" => $fecha_aviso,
                     "ID_TRAZA" => $id_traza[0]['ID'],
                     "ID_NOTIFICAR" => $value['ID'],
@@ -1407,7 +1406,7 @@ class carpetas extends main_controller {
                     "ID_CARPETA" => $arr_traza['ID_OPERACION'],
                     "ID_ETAPA" => $arr_traza['ETAPA'],
                     "FECHA_CARGA" => $fecha_actual,
-                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME'],
+                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
 //                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." 12",
                     "FECHA_AVISO" => $fecha_aviso,
                     "ID_TRAZA" => $id_traza[0]['ID'],
@@ -1423,24 +1422,24 @@ class carpetas extends main_controller {
 //    [ETAPA] => 13[FECHA] => 2015-11-13 13:25:34[ETAPA_ORIGEN] => 12[ETAPA_REAL] => 12[AUTOR] => 0[AUTOR1] => 0[AUTOR2] => 0)
 //ESTO TRA LKA TRAZA
             //          ALTA DE CREDITO 8  EXCEL LINEAS 38 
-           $etapa_actualizar = 12;
-           $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
-                $obtener_adminitracion = $this->mod->notificar_gerente_administracion();
-                foreach ($obtener_adminitracion as $value) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
+            $etapa_actualizar = 12;
+            $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
+            $obtener_adminitracion = $this->mod->notificar_gerente_administracion();
+            foreach ($obtener_adminitracion as $value) {
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                    "ID_ETAPA" => $arr_traza['ETAPA'],
+                    "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME']." linea 38",
-                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '. $value['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $value['ID'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
-                }
+                    "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
+                    "ID_NOTIFICAR" => $value['ID'],
+                    "CARTERADE" => $arr_traza['DESTINO'],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+            }
         } else if ($arr_traza['ETAPA'] == 13 && $arr_traza['ETAPA_ORIGEN'] == 13) {
             //DESEMBOLSOS 
             $etapa_actualizar = 12;
@@ -1451,19 +1450,19 @@ class carpetas extends main_controller {
 //                LINEAS EXCEL 39 - 40 - 41
                 $fecha_aviso = strtotime('+72 hour', strtotime($fecha_actual));
                 $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
-                $id_jefe_operaciones =  $this->mod->jefe_operaciones($operacion);
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$id_jefe_operaciones[0]['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $id_jefe_operaciones[0]['CARTERADE'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                $id_jefe_operaciones = $this->mod->jefe_operaciones($operacion);
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                    "ID_ETAPA" => $arr_traza['ETAPA'],
+                    "FECHA_CARGA" => $fecha_actual,
+                    "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $id_jefe_operaciones[0]['USERNAME'],
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
+                    "ID_NOTIFICAR" => $id_jefe_operaciones[0]['CARTERADE'],
+                    "CARTERADE" => $arr_traza['DESTINO'],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
             }
 //          //EL que sigue es igual a una etapa que sigue mas adelante 
 //          else if($arr_traza['DESCRIPCION']=='DE COORDINADOR DE OPERACIONES A ADMINISTRATIVO CONTABLE PARA EMISION DESEMBOLSO, ESPERANDO ACEPTACION'){
@@ -1490,19 +1489,19 @@ class carpetas extends main_controller {
 
                 foreach ($id_jefe_administracion as $administracion) {
 //                      foreach ($administracion as $id) {
-                        $arr_semaforo = array(
-                            "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                            "ID_ETAPA" => $arr_traza['ETAPA'],
-                            "FECHA_CARGA" => $fecha_actual,
+                    $arr_semaforo = array(
+                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                        "ID_ETAPA" => $arr_traza['ETAPA'],
+                        "FECHA_CARGA" => $fecha_actual,
 //                            "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 24hs 13 3',
-                            "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$administracion['USERNAME'],
-                            "FECHA_AVISO" => $fecha_aviso,
-                            "ID_TRAZA" => $id_traza[0]['ID'],
-                            "ID_NOTIFICAR" => $administracion['ID'],
-                            "CARTERADE" => $arr_traza['DESTINO'],
-                            "HAB" => 1
-                        );
-                        $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $administracion['USERNAME'],
+                        "FECHA_AVISO" => $fecha_aviso,
+                        "ID_TRAZA" => $id_traza[0]['ID'],
+                        "ID_NOTIFICAR" => $administracion['ID'],
+                        "CARTERADE" => $arr_traza['DESTINO'],
+                        "HAB" => 1
+                    );
+                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
                 }
             } else if ($arr_traza['DESCRIPCION'] == 'DE ADMINISTRATIVO CONTABLE A COORDINADOR PARA OTRO DESEMBOLSO, AUDITORIA O ARCHIVO, ESPERANDO ACEPTACION') {
 //      EXCEL lineas 45 - 46
@@ -1515,7 +1514,7 @@ class carpetas extends main_controller {
                         "ID_ETAPA" => $arr_traza['ETAPA'],
                         "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 48hs 13 4', .$value['USERNAME']
-                        "MENSAJE_ALERTA" => 'MÁS DE 48HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'],
+                        "MENSAJE_ALERTA" => 'MÁS DE 48HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
                         "FECHA_AVISO" => $fecha_aviso,
                         "ID_TRAZA" => $id_traza[0]['ID'],
                         "ID_NOTIFICAR" => $value['ID'],
@@ -1540,7 +1539,7 @@ class carpetas extends main_controller {
                         "ID_ETAPA" => $arr_traza['ETAPA'],
                         "FECHA_CARGA" => $fecha_actual,
 //                        "MENSAJE_ALERTA" => 'Carpeta asignada por mas de 24hs 13 5',
-                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'].' valor 5',
+                        "MENSAJE_ALERTA" => 'MÁS DE 72HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'] . ' valor 5',
                         "FECHA_AVISO" => $fecha_aviso,
                         "ID_TRAZA" => $id_traza[0]['ID'],
                         "ID_NOTIFICAR" => $value['ID'],
@@ -1563,18 +1562,34 @@ class carpetas extends main_controller {
                 $fecha_aviso = strtotime('+24 hour', strtotime($fecha_actual));
                 $obtener_adminitracion = $this->mod->notificar_gerente_administracion();
                 foreach ($obtener_adminitracion as $value) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $arr_traza['ID_OPERACION'],
-                        "ID_ETAPA" => $arr_traza['ETAPA'],
-                        "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A '.$value['USERNAME'],
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
-                        "ID_NOTIFICAR" => $value['ID'],
-                        "CARTERADE" => $arr_traza['DESTINO'],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                    if ($arr_traza['ETAPA'] == 12) {
+                        $arr_semaforo = array(
+                            "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                            "ID_ETAPA" => $arr_traza['ETAPA'],
+                            "FECHA_CARGA" => $fecha_actual,
+                            "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
+                            "FECHA_AVISO" => $fecha_aviso,
+                            "ID_TRAZA" => $id_traza[0]['ID'],
+                            "ID_NOTIFICAR" => $value['ID'],
+                            "CARTERADE" => $arr_traza['DESTINO'],
+                            "HAB" => 4
+                        );
+                        $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                    } else {
+
+                        $arr_semaforo = array(
+                            "ID_CARPETA" => $arr_traza['ID_OPERACION'],
+                            "ID_ETAPA" => $arr_traza['ETAPA'],
+                            "FECHA_CARGA" => $fecha_actual,
+                            "MENSAJE_ALERTA" => 'MÁS DE 24HS ASIGNADA. SE NOTIFICO A ' . $value['USERNAME'],
+                            "FECHA_AVISO" => $fecha_aviso,
+                            "ID_TRAZA" => $id_traza[0]['ID'],
+                            "ID_NOTIFICAR" => $value['ID'],
+                            "CARTERADE" => $arr_traza['DESTINO'],
+                            "HAB" => 1
+                        );
+                        $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+                    }
                 }
             }
         }
@@ -1617,38 +1632,37 @@ class carpetas extends main_controller {
             );
             $obj = $this->mod->insertar_traza_notif($arr_traza_notif);
         }
-       
-if($etapa==11){
-                // SE LO QUEDA PARA ALTA DE CREDITO EXCEL LINEAS 33 - 34 - 35
-                
-        $etapa_actualizar = 11;
-                $fecha_aviso = strtotime('+48 hour', strtotime($fecha_actual));
-                $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
-                $obtener_gerentes = $this->mod->notificar_gerente();
-                $ver_semaforo = $this->mod->ver_semaforo($operacion, $etapa_actualizar);
-                $id_traza = $this->mod->traza_operacion($operacion);
-                foreach ($obtener_gerentes as $value) {
-                    $arr_semaforo = array(
-                        "ID_CARPETA" => $operacion,
-                        "ID_ETAPA" => $etapa,
-                        "FECHA_CARGA" => $fecha_actual,
-                        "MENSAJE_ALERTA" => 'MÁS DE 24HS EN ESPERA PARA ALTA DE CREDITO.',
-                        "FECHA_AVISO" => $fecha_aviso,
-                        "ID_TRAZA" => $id_traza[0]['ID'],
+
+        if ($etapa == 11) {
+            // SE LO QUEDA PARA ALTA DE CREDITO EXCEL LINEAS 33 - 34 - 35
+
+            $etapa_actualizar = 11;
+            $fecha_aviso = strtotime('+48 hour', strtotime($fecha_actual));
+            $fecha_aviso = date('Y-m-j H:i:s', $fecha_aviso);
+            $obtener_gerentes = $this->mod->notificar_gerente();
+            $ver_semaforo = $this->mod->ver_semaforo($operacion, $etapa_actualizar);
+            $id_traza = $this->mod->traza_operacion($operacion);
+            foreach ($obtener_gerentes as $value) {
+                $arr_semaforo = array(
+                    "ID_CARPETA" => $operacion,
+                    "ID_ETAPA" => $etapa,
+                    "FECHA_CARGA" => $fecha_actual,
+                    "MENSAJE_ALERTA" => 'MÁS DE 24HS EN ESPERA PARA ALTA DE CREDITO.',
+                    "FECHA_AVISO" => $fecha_aviso,
+                    "ID_TRAZA" => $id_traza[0]['ID'],
 //                        "ID_NOTIFICAR" => $value['ID'],
-                        // primero seria 63 por que va al glegales
-                        // despues mmmm
+                    // primero seria 63 por que va al glegales
+                    // despues mmmm
 //                        "ID_NOTIFICAR" => 63,
-                        "ID_NOTIFICAR" => $value['ID'],
-                        "CARTERADE" => $_SESSION["USERADM"],
-                        "HAB" => 1
-                    );
-                    $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
-                }
-    
-}
-        
-        
+                    "ID_NOTIFICAR" => $value['ID'],
+                    "CARTERADE" => $_SESSION["USERADM"],
+                    "HAB" => 1
+                );
+                $obj_insert = $this->mod->insertar_traza_semaforo($arr_semaforo);
+            }
+        }
+
+
         echo $obj;
     }
 

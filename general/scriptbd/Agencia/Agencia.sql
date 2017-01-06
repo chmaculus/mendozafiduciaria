@@ -43,3 +43,20 @@ ALTER TABLE  `fid_cu_pagos` ADD  `TIPO` INT NOT NULL
 */
 ALTER TABLE  `fid_cu_factura` ADD  `FECHAVTO_DESEMB` DATETIME NULL
 
+/*
+* 28/07/2016
+* Se cambia el tipo de campo por el formato en que se necesitan ingresar las fechas
+* Verificar si es necesario usarlo, se vuelve a datetime
+*/
+-- ALTER TABLE  `fid_cu_factura` CHANGE  `FECHAVTO_DESEMB`  `FECHAVTO_DESEMB` VARCHAR( 64 ) NULL DEFAULT NULL
+
+/*
+* 01/08/2016
+* Se agrega un campo mas por que si es minorista se le debe colocar un rango de fechas
+*/
+ALTER TABLE  `fid_cu_factura` ADD  `FECHAVTO_DESEMB2` DATETIME NULL
+
+/*
+* Se agrega el campo para guardar el numero de desembolso
+*/
+ALTER TABLE  `fid_cu_factura` ADD  `NRO_DESEMBOLSO` VARCHAR( 64 ) NOT NULL

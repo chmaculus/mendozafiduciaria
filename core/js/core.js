@@ -92,7 +92,7 @@ function load_app(mod, container, params, finit, ffinish, fcancel, js_extra, res
                         modulo: mod
                 },
                 type: "post",
-                async: false,
+                async: true,
                 success: function(rtn) {
 
 

@@ -494,6 +494,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getOperatoriaCompraUva') {
 if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
 
     $word = isset($_GET["name_startsWith"]) ? $_GET["name_startsWith"] : "";
+    $nro_desembolso = isset($_GET["name_startsWithD"]) ? $_GET["name_startsWithD"] : "";
     $idope = isset($_GET["idope"]) ? $_GET["idope"] : '0';
     $idpro = isset($_GET["idpro"]) ? $_GET["idpro"] : '0';
     $idestado = isset($_GET["estado"]) ? $_GET["estado"] : '0';
@@ -503,6 +504,11 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
     if ($fechaBuscar != '') {
 //        $condicion_fecha = "AND pa.FECHA_VEN <='".date("Ymd",$fechaBuscar)."'";
     }
+    $nrodesembolso = "";
+    if ($nro_desembolso != "") {
+        $nrodesembolso = " AND f.NRO_DESEMBOLSO LIKE '%".$nro_desembolso."%' ";
+    }
+    
     $cad_campos = "f.ID, c.CUIT, c.RAZON_SOCIAL";
     $arr_campos = explode(', ', $cad_campos);
     $cad_like = "";
@@ -518,7 +524,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
                 f.OBSERVACIONES AS OBSERVACIONES, f.IMP_ERROR_TEXTO AS IMP_ERROR_TEXTO, f.KGRS AS KGRS, f.LITROS AS LITROS,
                 ent.ID AS ID_BODEGA,ent.NOMBRE AS BODEGA, f.NUMERO AS NUMERO, DATE_FORMAT(f.FECHA, '%d/%m/%Y') AS FECHA, 
                 c.RAZON_SOCIAL AS CLIENTE, c.CUIT AS CUIT, c.CBU AS CBU, civa.CONDICION AS CONDIVA, ciibb.CONDICION AS CONDIIBB, 
-                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO, 
+                DATE(f.CREATEDON) AS CREATEDON, f.ORDEN_PAGO AS ORDEN_PAGO,f.NRO_DESEMBOLSO, 
                 f.FORMA_PAGO ");
     $cnn->join("fid_clientes c", "c.ID=f.ID_CLIENTE", "left");
     $cnn->join("fid_cliente_condicion_iva civa", "civa.ID=c.ID_CONDICION_IVA", "left");
@@ -527,19 +533,17 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
     $cnn->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
     $cnn->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
     $cnn->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
-//    $cnn->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
-//    $cnn->join("fid_op_vino_cambio_tit ti", "ti.ID_FACTURA=f.NUMERO", "left");
-//    $cnn->join("fid_fideicomiso fi", "fi.ID=of.ID_FIDEICOMISO", "left");
+
     if ($idestado > 0) {
         $cad_where = "( " . $cad_like . ") and f.ID_ESTADO = '" . $idestado . "'";
     } else {
         $cad_where = "( " . $cad_like . ") and f.ID_PROVINCIA='" . $idpro . "' and f.ID_ESTADO <> '12'";
     }
 //    $cad_where .= " AND TIPO=" . $idtipo . " " .$condicion_fecha;
-    $cad_where .= " AND TIPO=2  " .$condicion_fecha;
+    $cad_where .= " AND TIPO=2  " .$condicion_fecha . " ".$nrodesembolso ;
 
     $rtn = $cnn->get_tabla("fid_cu_factura f", $cad_where);
-//    file_put_contents('CONSULTAAGENCIA.log', $cnn->last_query());
+//    file_put_contents('log/CONSULTAAGENCIA.log', $cnn->last_query());
 
     foreach ($rtn as $value) {
 
@@ -649,12 +653,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
             }
         }
 
-//        if ($value['CHECK_ESTADO'] == '1') {
-//            $value['CHECK_ESTADO'] = 'Confirmada';
-//        } else {
-//            $value['CHECK_ESTADO'] = 'S/Confirmar';
-//        }
-        
         $cnn->select("ORDEN_PAGO");
         $rtn_orden = $cnn->get_tabla("fid_cu_pagos", "NUM_FACTURA='" . $value['NUMERO'] . "' AND TIPO=2 AND ORDEN_PAGO!='' ORDER BY NUM_CUOTA DESC LIMIT 1");
 
@@ -663,7 +661,6 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getFacturasAgencia') {
         }
         $array_cuotas[] = $value;
     }
-//    die("SSS");
     echo trim(json_encode($array_cuotas ? $array_cuotas : array()));
     die();
 }

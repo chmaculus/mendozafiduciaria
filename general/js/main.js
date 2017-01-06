@@ -200,19 +200,15 @@ $(document).ready(function(){
 
 
 function notifMain( iid ){
-    
     iid || ( iid = '-1' );
     
     var url_n = 'backend/notificaciones';
     if (iid>0)
         url_n = 'backend/notificaciones/init/' + iid;
-    
     $.ajax({
         url : url_n,
         type : "post",
-        data : {
-
-        },
+        data : {},
         async:false,
         type : "post",
         success : function(data){
@@ -231,11 +227,7 @@ function notifMain( iid ){
             var etapa = $(this).data('etapa');
             var meobj = $(this);
 //            var etapa = $(this).data('etapa');
-//            alert("id_operacion  "+id_operacion_sem);
-//            alert("etapa  "+etapa);
-//            
 //            var idope = $(this).data('idope');
-//            alert(idope);
                     var obst = 'AVISADO';
                     var dest = 'SE NOTIFICO SOBRE LA DEMORA AL USUARIO ';
 //                    registrar ingreso en traza

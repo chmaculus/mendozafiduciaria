@@ -346,6 +346,8 @@ class cobros extends main_controller {
             $datos[$i]['CREDITO_VENCIMIENTO'] = date("d/m/Y",$datos[$i]['CREDITO_VENCIMIENTO']);
             $datos[$i]['INGRESADO'] = $datos[$i]['FECHA_INGRESADO'] > 0? "ingresado" : "no_ingresado";
         }
+        
+        $datos['titulo_cobro'] = $datos ? "Cobros archivo " . $datos[0]['ARCHIVO'] : '';
 
         echo $this->view("extract", array("datos" => $datos));
     }
@@ -362,6 +364,8 @@ class cobros extends main_controller {
             $datos[$i]['CREDITO_VENCIMIENTO'] = date("d/m/Y",$datos[$i]['CREDITO_VENCIMIENTO']);
             $datos[$i]['INGRESADO'] = $datos[$i]['FECHA_INGRESADO'] > 0? "ingresado" : "no_ingresado";
         }
+        
+        $datos['titulo_cobro'] = $id ? "Cobros mes " . date ('m-Y', $id) : '';
 
         echo $this->view("extract", array("datos" => $datos));
     }

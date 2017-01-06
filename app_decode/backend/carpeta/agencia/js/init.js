@@ -32,7 +32,9 @@ function guardar_factura() {
     var fechavto = $("#fechavto").val();
     fechavto = formattedDate_ui(fechavto);
     var fechavto_desemb = $("#fechavto_desemb").val();
-//    fechavto_desemb = formattedDate_ui(fechavto_desemb);
+    fechavto_desemb = formattedDate_ui(fechavto_desemb);
+    var fechavto_desemb2 = $("#fechavto_desemb2").val();
+    fechavto_desemb2 = formattedDate_ui(fechavto_desemb2);
     var proveedor_list = $("#proveedor-jquery").val();
     var fpago = $("#fpago-select").val();
     var cuitform = $("#cuitform").val();
@@ -43,6 +45,7 @@ function guardar_factura() {
     var total = $("#total").val();
     var observacion_fact = $("#observacion_fact").val();
     var formula = $("#formula").val();
+    var nro_desembolso = $("#nro_desembolso").val();
     iid = id ? id : 0;
 
     //validar campos
@@ -106,19 +109,21 @@ function guardar_factura() {
         ID_PROVINCIA: _provincia,
         FECHAVTO: fechavto,
         FECHAVTO_DESEMB: fechavto_desemb,
+        FECHAVTO_DESEMB2: fechavto_desemb2,
         CUIT: cuitform,
         PRECIO: precio,
         NETO: precio,
         ID_ESTADO: 1,
         USU_CARGA: _USUARIO_SESION_ACTUAL,
         NETO: neto,
-                IVA: iva,
+        IVA: iva,
         TOTAL: total,
         FORMA_PAGO: fpago,
         OBSERVACIONES: observacion_fact,
         update_cius: 0,
         PORC_IVA: porcentaje_iva,
         FORMULA: formula,
+        NRO_DESEMBOLSO: nro_desembolso,
         TIPO: 2
     }
 
@@ -419,39 +424,7 @@ $(document).ready(function () {
         limpiar_form_nf();
         $("#porcentaje_iva").val('10.5');
         $('.env_form').hide();
-//        var trae_operatoria = 0;
-//        $.ajax({
-//            url: _agencia.URL + "/x_getNumOpe",
-//            data: {
-//                id_cliente: $("#id_buscar").val()
-//            },
-//            dataType: "json",
-//            type: "post",
-//            async: false,
-//            success: function (data_op) {
-//                trae_operatoria = 1;
-//                $("#numOperatoria").val(data_op.ID_OPERATORIA);
-//                $.ajax({
-//                    url: _agencia.URL + "/x_getAlgunosProveedores",
-//                    datatype: 'html',
-//                    type: 'post',
-//                    async: false,
-//                    data: {id: data_op.ID_OPERATORIA},
-//                    success: function (data) {
-//                        $('#indent_prueba').html(data);
-//                        $("#proveedor-jquery").chosen({width: "220px"});
-//                    }
-//                })
-//                $.ajax({
-//                    url: _agencia.URL + "/x_getChecklistHumanaFact",
-//                    datatype: 'html',
-//                    type: 'post',
-//                    async: false,
-//                    data: {id: data_op.ID_OPERATORIA},
-//                    success: function (data) {
-//                        $('#check_datos').html(data);
-//                    }
-//                })
+
         $.ajax({
             url: _agencia.URL + "/x_getFormasPago",
             datatype: 'html',
@@ -464,18 +437,17 @@ $(document).ready(function () {
             }
         })
         $('.nuevafact_form').show();
-//            }
-//        });
-//        if (trae_operatoria == 0) {
-//            jAlert('El proveedor no pertenece a una operatoria. Debe ser asignado previamente.', $.ucwords(_etiqueta_modulo), function () {
-//                var urlh = "backend/carpeta/agencia/init/12/7";
-//                $(location).attr('href', urlh);
-//            });
-//        }
-
         $("#nombre2").val($("#nombre").val());
         $("#retencion").val($("#retencionesD").val());
         $("#cuitform").val(cc);
+        $("#tipo_m_f").val($('#tipo_m').val());
+
+        if ($('#tipo_m').val() == "Minorista") {
+            $('#segunda_fecha').show();
+        } else {
+            $('#segunda_fecha').hide();
+        }
+
         show_btns(2);
     });
     refresGridevent();
@@ -679,8 +651,8 @@ $(document).ready(function () {
         var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
         var maxHectareas = $("#hectMax").val();
-        var opeProveedores = $("#opeProveedores").val();
-        var opeBodega = $("#opeBodega").val();
+//        var opeProveedores = $("#opeProveedores").val();
+//        var opeBodega = $("#opeBodega").val();
         var opePrecio1 = $("#opeP1").val();
         var opePrecio2 = $("#opeP2").val();
         var opePrecio3 = $("#opeP3").val();
@@ -688,6 +660,7 @@ $(document).ready(function () {
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
         var formaPago = $("#fpago-select").val();
+        var nro_desembolso = $("#nro_desembolso").val();
         var nuevoID = 0;
         var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
         var rowscount_proveedores = rows_proveedores.length;
@@ -749,6 +722,7 @@ $(document).ready(function () {
                         opePrecio5: opePrecio5,
                         opePrecio6: opePrecio6,
                         formaPago: formaPago,
+                        nro_desembolso: nro_desembolso,
                         maxHectareas: maxHectareas
                     },
                     dataType: "json", type: "post"});
@@ -863,15 +837,6 @@ $(document).ready(function () {
             if (row == fila)
                 return false;
         }
-        var cellsrenderer = function (row, column, value, defaultHtml) {
-            var fila = row;
-            if (column == 'CHECK_ESTADO' && value == 'Confirmada' && row == fila) {
-                var element = $(defaultHtml);
-                element.css({'background-color': '#32CD32', 'width': '100%', 'height': '100%', 'margin': '0px'});
-                return element[0].outerHTML;
-            }
-            return defaultHtml;
-        }
 
         $("#jqxgrid_listado").jqxGrid({
             width: '96%',
@@ -905,32 +870,32 @@ $(document).ready(function () {
                 });
             },
             columns: [
-                {text: 'ID_CONTABLE', datafield: 'ID_CONTABLE', hidden: true, width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-                {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+                {text: 'ID_CONTABLE', datafield: 'ID_CONTABLE', hidden: true, width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'TITULARIDAD', datafield: 'CHECK_ESTADO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit},
+                {text: 'BODEGA', datafield: 'BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'ID BODEGA', datafield: 'ID_BODEGA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true, cellbeginedit: cellbeginedit},
+                {text: 'LITROS', datafield: 'LITROS', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit},
+                {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+                {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit},
+                {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit},
 //            {text: 'FORMULA', datafield: 'FORMULA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2'},
                 {text: 'IID', datafield: 'IID', width: '0%'}
             ]
@@ -947,33 +912,32 @@ $(document).ready(function () {
         var opeFideicomiso = $("#opeFideicomiso").val();
         var opeCoordinador = $("#opeCoordinador").val();
         var opeJefe = $("#opeJefe").val();
-        var listrosMax = $("#listrosMax").val();
+//        var listrosMax = $("#listrosMax").val();
         var maxPesos = $("#maxPesos").val();
-        var maxHectareas = $("#hectMax").val();
-        var opeProveedores = $("#opeProveedores").val();
-        var opeBodega = $("#opeBodega").val();
+//        var maxHectareas = $("#hectMax").val();
+        var nro_desembolso = $("#nro_desembolso").val();
         var opePrecio1 = $("#opeP1").val();
         var opePrecio2 = $("#opeP2").val();
         var opePrecio3 = $("#opeP3").val();
         var opePrecio4 = $("#opeP4").val();
         var opePrecio5 = $("#opeP5").val();
         var opePrecio6 = $("#opeP6").val();
-        var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
-        var rowscount_proveedores = rows_proveedores.length;
-        var data_proveedores = [];
-        for (var i = 0; i < rowscount_proveedores; i++) {
-            data_proveedores[i] = $('#jqxgrid_proveedores').jqxGrid('getrowdata', i);
-        }
-        var rows_bodegas = $('#jqxgrid_bodegas').jqxGrid('getrows');
-        var rowscount_bodegas = rows_bodegas.length;
-        var data_bodegas = [];
-        for (var i = 0; i < rowscount_bodegas; i++) {
-            data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
-        }
-        var data_checklists_persona = [];
-        $('.op input:checked').each(function () {
-            data_checklists_persona.push($(this).val());
-        })
+//        var rows_proveedores = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//        var rowscount_proveedores = rows_proveedores.length;
+//        var data_proveedores = [];
+//        for (var i = 0; i < rowscount_proveedores; i++) {
+//            data_proveedores[i] = $('#jqxgrid_proveedores').jqxGrid('getrowdata', i);
+//        }
+//        var rows_bodegas = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//        var rowscount_bodegas = rows_bodegas.length;
+//        var data_bodegas = [];
+//        for (var i = 0; i < rowscount_bodegas; i++) {
+//            data_bodegas[i] = $('#jqxgrid_bodegas').jqxGrid('getrowdata', i);
+//        }
+//        var data_checklists_persona = [];
+//        $('.op input:checked').each(function () {
+//            data_checklists_persona.push($(this).val());
+//        })
         if (opeNombre == '') {
             jAlert('Ingrese Nombre Operatoria.', $.ucwords(_etiqueta_modulo), function () {
                 $("#opeNombre").focus();
@@ -992,18 +956,18 @@ $(document).ready(function () {
             });
             return false;
         }
-        if (listrosMax == '') {
-            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
-                $("#listrosMax").focus();
-            });
-            return false;
-        }
-        if (maxHectareas == '') {
-            jAlert('Ingrese el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
-                $("#maxHectareas").focus();
-            });
-            return false;
-        }
+//        if (listrosMax == '') {
+//            jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#listrosMax").focus();
+//            });
+//            return false;
+//        }
+//        if (maxHectareas == '') {
+//            jAlert('Ingrese el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {
+//                $("#maxHectareas").focus();
+//            });
+//            return false;
+//        }
         $.ajax({
             url: _agencia.URL + "/x_updateOperatoria",
             data: {
@@ -1015,6 +979,7 @@ $(document).ready(function () {
                 opeJefe: opeJefe,
                 listrosMax: listrosMax,
                 maxPesos: maxPesos,
+                nro_desembolso: nro_desembolso,
                 checklistsPersona: data_checklists_persona,
                 opePrecio1: opePrecio1,
                 opePrecio2: opePrecio2,
@@ -1041,282 +1006,280 @@ $(document).ready(function () {
             $(location).attr('href', urlh);
         });
     });
-    var accion_proveedores_new = '';
-    var id_proveedor = $('#opeProveedores').val();
-    $("#info-proveedores").show();
-    $("#jqxgrid_proveedores").show();
-    var sourceope = {
-        datatype: "json",
-        datafields: [
-            {name: 'ID', type: 'int'},
-            {name: 'RAZON_SOCIAL', type: 'string'}
-        ],
-        url: 'general/extends/extra/carpetas.php',
-        data: {
-            accion: "getProveedoresGrilla",
-            id_proveedor: id_proveedor,
-        },
-        async: false,
-        addrow: function (rowid, rowdata, position, commit) {
-            commit(true);
-        },
-        deleterow: function (rowid, commit) {
-            commit(true);
-        },
-        updaterow: function (rowid, newdata, commit) {
-            commit(true);
-        }
-    };
-    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-            {
-                formatData: function (data) {
-                    data.name_startsWith = $("#searchField").val();
-                    return data;
-                }
-            }
-    );
-    var generaterow_proveedores = function (i) {
-        var row = {};
-        var ids_proveedores = $("#opeProveedores").val();
-        var firstColumnData = [];
-        var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-        for (var i = 0; i < rows.length; i++) {
-            firstColumnData.push(rows[i].ID);
-        }
-        $.ajax({
-            url: _agencia.URL + "/x_getDatoProveedor",
-            data: {
-                ids_proveedores: ids_proveedores,
-                firstColumnData: firstColumnData
-            },
-            dataType: "json",
-            type: "post",
-            async: false,
-            success: function (datos) {
-                console.log("Q UE DEVUELVE");
-//                alert(datos[0]['ACCION']);
-                console.log(datos);
-                accion_proveedores_new = datos[0]['ACCION'];
-                for (var i = 0; i < datos.length; i++) {
-                    row['ID'] = datos[i]['ID'];
-                    row['RAZON_SOCIAL'] = datos[i]['RAZON_SOCIAL'];
-                    row['LIMLTRS'] = '0';
-                    row['MAXHECTAREAS'] = '0';
-                }
-            }
-        });
-        return row;
-    }
-    $("#jqxgrid_proveedores").jqxGrid({
-        width: '90%',
-        height: '200px',
-        source: dataAdapterope,
-        theme: 'energyblue',
-        showstatusbar: true,
-//            showaggregates: true,
-        editable: true,
-        selectionmode: 'singlerows',
-        localization: getLocalization(),
-        rendertoolbar: function (toolbar) {
-            var me = this;
-            var container = $("<div style='margin: 5px;'></div>");
-            toolbar.append(container);
-            $("#addrowbutton").jqxButton();
-            $("#addmultiplerowsbutton").jqxButton();
-            $("#deleterowbutton").jqxButton();
-            $("#updaterowbutton").jqxButton();
-            $("#updaterowbutton").on('click', function () {
-                var datarow = generaterow_proveedores();
-                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('updaterow', id, datarow);
-                    $("#jqxgrid_proveedores").jqxGrid('ensurerowvisible', selectedrowindex);
-                }
-            });
-            $('#opeProveedores').on('change', function () {
-                var datarow = generaterow_proveedores();
-                console.log("Viene a este llamado");
-                console.log(datarow);
-                console.log(accion_proveedores_new);
-                /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
-                 * 
-                 * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
-                 * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
-                 * */
-                if (accion_proveedores_new == 'AGREGAR') {
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
-                } else if (accion_proveedores_new == 'ELIMINAR') {
-                    var posicion = 0;
-                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                    for (var j = 0; j < rows.length; j++) {
-                        if (rows[j]['ID'] == datarow.ID) {
-                            posicion = j;
-                            break;
-                        }
-                    }
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', posicion);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                }
-            });
-            // delete row.
-            $("#deleterowbutton").on('click', function () {
-                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                    var firstColumnData = [];
-                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                    for (var i = 0; i < rows.length; i++) {
-                        firstColumnData.push(rows[i].ID);
-                    }
-                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                }
-            });
-        },
-        columns: [
-            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '49%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-            {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-        ]
-    });
-    var accion_bodegas_new = '';
-    var id_bodega = $('#opeBodega').val();
-    $("#info-bodegas").show();
-    $("#jqxgrid_bodegas").show();
-    var sourceope = {
-        datatype: "json",
-        datafields: [
-            {name: 'ID', type: 'int'},
-            {name: 'NOMBRE', type: 'string'}
-        ],
-        url: 'general/extends/extra/carpetas.php',
-        data: {
-            accion: "getBodegasGrilla",
-            id_bodega: id_bodega,
-        },
-        async: false,
-        addrow: function (rowid, rowdata, position, commit) {
-            commit(true);
-        },
-        deleterow: function (rowid, commit) {
-            commit(true);
-        },
-        updaterow: function (rowid, newdata, commit) {
-            commit(true);
-        }
-    };
-    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
-            {
-                formatData: function (data) {
-                    data.name_startsWith = $("#searchField").val();
-                    return data;
-                }
-            }
-    );
-    var generaterow_bodegas = function (i) {
-        var row = {};
-        var ids_bodegas = $("#opeBodega").val();
-        var firstColumnData = [];
-        var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-        for (var i = 0; i < rows.length; i++) {
-            firstColumnData.push(rows[i].ID);
-        }
-        $.ajax({
-            url: _agencia.URL + "/x_getDatoBodega",
-            data: {
-                ids_bodegas: ids_bodegas,
-                firstColumnData: firstColumnData
-            },
-            dataType: "json",
-            type: "post",
-            async: false,
-            success: function (datos) {
-                console.log("VIENE ACA BODEGA");
-                console.log(datos);
-
-                accion_bodegas_new = datos[0]['ACCION'];
-                for (var i = 0; i < datos.length; i++) {
-                    row['ID'] = datos[i]['ID'];
-                    row['NOMBRE'] = datos[i]['NOMBRE'];
-                    row['LIMLTRS'] = '0';
-                }
-            }
-        });
-        return row;
-    }
-    $("#jqxgrid_bodegas").jqxGrid({
-        width: '70%',
-        height: '200px',
-        source: dataAdapterope,
-        theme: 'energyblue',
-        showstatusbar: true,
-        editable: true,
-        selectionmode: 'singlerows',
-        localization: getLocalization(),
-        rendertoolbar: function (toolbar) {
-            var me = this;
-            var container = $("<div style='margin: 5px;'></div>");
-            toolbar.append(container);
-            $("#addrowbutton").jqxButton();
-            $("#addmultiplerowsbutton").jqxButton();
-            $("#deleterowbutton").jqxButton();
-            $("#updaterowbutton").jqxButton();
-            $("#updaterowbutton").on('click', function () {
-                var datarow = generaterow_bodegas();
-                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('updaterow', id, datarow);
-                    $("#jqxgrid_bodegas").jqxGrid('ensurerowvisible', selectedrowindex);
-                }
-            });
-            $('#opeBodega').on('change', function () {
-                var datarow = generaterow_bodegas();
-                console.log("DONDE DEBERIA BORRAR");
-                console.log(datarow);
-                console.log(accion_bodegas_new);
-                if (accion_bodegas_new == 'AGREGAR') {
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
-                } else if (accion_bodegas_new == 'ELIMINAR') {
-                    var posicion = 0;
-                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                    for (var j = 0; j < rows.length; j++) {
-                        if (rows[j]['ID'] == datarow.ID) {
-                            posicion = j;
-                            break;
-                        }
-                    }
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', posicion);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                }
-            });
-            // delete row.
-            $("#deleterowbutton").on('click', function () {
-                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                    var firstColumnData = [];
-                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                    for (var i = 0; i < rows.length; i++) {
-                        firstColumnData.push(rows[i].ID);
-                    }
-                    $("#opeBodega").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                }
-            });
-        },
-        columns: [
-            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-            {text: 'NOMBRE', datafield: 'NOMBRE', width: '60%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
-        ]
-    });
+//    var accion_proveedores_new = '';
+//    var id_proveedor = $('#opeProveedores').val();
+//    $("#info-proveedores").show();
+//    $("#jqxgrid_proveedores").show();
+//    var sourceope = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'ID', type: 'int'},
+//            {name: 'RAZON_SOCIAL', type: 'string'}
+//        ],
+//        url: 'general/extends/extra/carpetas.php',
+//        data: {
+//            accion: "getProveedoresGrilla",
+//            id_proveedor: id_proveedor,
+//        },
+//        async: false,
+//        addrow: function (rowid, rowdata, position, commit) {
+//            commit(true);
+//        },
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        },
+//        updaterow: function (rowid, newdata, commit) {
+//            commit(true);
+//        }
+//    };
+//    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+//            {
+//                formatData: function (data) {
+//                    data.name_startsWith = $("#searchField").val();
+//                    return data;
+//                }
+//            }
+//    );
+//    var generaterow_proveedores = function (i) {
+//        var row = {};
+//        var ids_proveedores = $("#opeProveedores").val();
+//        var firstColumnData = [];
+//        var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//        for (var i = 0; i < rows.length; i++) {
+//            firstColumnData.push(rows[i].ID);
+//        }
+//        $.ajax({
+//            url: _agencia.URL + "/x_getDatoProveedor",
+//            data: {
+//                ids_proveedores: ids_proveedores,
+//                firstColumnData: firstColumnData
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (datos) {
+////                console.log("Q UE DEVUELVE");
+////                console.log(datos);
+//                accion_proveedores_new = datos[0]['ACCION'];
+//                for (var i = 0; i < datos.length; i++) {
+//                    row['ID'] = datos[i]['ID'];
+//                    row['RAZON_SOCIAL'] = datos[i]['RAZON_SOCIAL'];
+//                    row['LIMLTRS'] = '0';
+//                    row['MAXHECTAREAS'] = '0';
+//                }
+//            }
+//        });
+//        return row;
+//    }
+//    $("#jqxgrid_proveedores").jqxGrid({
+//        width: '90%',
+//        height: '200px',
+//        source: dataAdapterope,
+//        theme: 'energyblue',
+//        showstatusbar: true,
+//        editable: true,
+//        selectionmode: 'singlerows',
+//        localization: getLocalization(),
+//        rendertoolbar: function (toolbar) {
+//            var me = this;
+//            var container = $("<div style='margin: 5px;'></div>");
+//            toolbar.append(container);
+//            $("#addrowbutton").jqxButton();
+//            $("#addmultiplerowsbutton").jqxButton();
+//            $("#deleterowbutton").jqxButton();
+//            $("#updaterowbutton").jqxButton();
+//            $("#updaterowbutton").on('click', function () {
+//                var datarow = generaterow_proveedores();
+//                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('updaterow', id, datarow);
+//                    $("#jqxgrid_proveedores").jqxGrid('ensurerowvisible', selectedrowindex);
+//                }
+//            });
+//            $('#opeProveedores').on('change', function () {
+//                var datarow = generaterow_proveedores();
+//                console.log("Viene a este llamado");
+//                console.log(datarow);
+//                console.log(accion_proveedores_new);
+//                /* AGREGAR AQUI VALIDACION DE SI EL USUARIO YA SE ENCUENTRA EN UNA OPERATORIA, SINO ASIGNAR OTRO
+//                 * 
+//                 * SELECT * FROM fid_operatoria_proveedores p JOIN fid_operatoria_vino o ON (o.ID_OPERATORIA=p.ID_OPERATORIA)
+//                 * WHERE p.id_proveedor=1 ORDER BY p.ID_OPERATORIA DESC
+//                 * */
+//                if (accion_proveedores_new == 'AGREGAR') {
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
+//                } else if (accion_proveedores_new == 'ELIMINAR') {
+//                    var posicion = 0;
+//                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//                    for (var j = 0; j < rows.length; j++) {
+//                        if (rows[j]['ID'] == datarow.ID) {
+//                            posicion = j;
+//                            break;
+//                        }
+//                    }
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', posicion);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
+//                }
+//            });
+//            // delete row.
+//            $("#deleterowbutton").on('click', function () {
+//                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
+//                    var firstColumnData = [];
+//                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
+//                    for (var i = 0; i < rows.length; i++) {
+//                        firstColumnData.push(rows[i].ID);
+//                    }
+//                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+//            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '49%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+//            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+//            {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
+//        ]
+//    });
+//    var accion_bodegas_new = '';
+//    var id_bodega = $('#opeBodega').val();
+//    $("#info-bodegas").show();
+//    $("#jqxgrid_bodegas").show();
+//    var sourceope = {
+//        datatype: "json",
+//        datafields: [
+//            {name: 'ID', type: 'int'},
+//            {name: 'NOMBRE', type: 'string'}
+//        ],
+//        url: 'general/extends/extra/carpetas.php',
+//        data: {
+//            accion: "getBodegasGrilla",
+//            id_bodega: id_bodega,
+//        },
+//        async: false,
+//        addrow: function (rowid, rowdata, position, commit) {
+//            commit(true);
+//        },
+//        deleterow: function (rowid, commit) {
+//            commit(true);
+//        },
+//        updaterow: function (rowid, newdata, commit) {
+//            commit(true);
+//        }
+//    };
+//    var dataAdapterope = new $.jqx.dataAdapter(sourceope,
+//            {
+//                formatData: function (data) {
+//                    data.name_startsWith = $("#searchField").val();
+//                    return data;
+//                }
+//            }
+//    );
+//    var generaterow_bodegas = function (i) {
+//        var row = {};
+//        var ids_bodegas = $("#opeBodega").val();
+//        var firstColumnData = [];
+//        var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//        for (var i = 0; i < rows.length; i++) {
+//            firstColumnData.push(rows[i].ID);
+//        }
+//        $.ajax({
+//            url: _agencia.URL + "/x_getDatoBodega",
+//            data: {
+//                ids_bodegas: ids_bodegas,
+//                firstColumnData: firstColumnData
+//            },
+//            dataType: "json",
+//            type: "post",
+//            async: false,
+//            success: function (datos) {
+//                console.log("VIENE ACA BODEGA");
+//                console.log(datos);
+//
+//                accion_bodegas_new = datos[0]['ACCION'];
+//                for (var i = 0; i < datos.length; i++) {
+//                    row['ID'] = datos[i]['ID'];
+//                    row['NOMBRE'] = datos[i]['NOMBRE'];
+//                    row['LIMLTRS'] = '0';
+//                }
+//            }
+//        });
+//        return row;
+//    }
+//    $("#jqxgrid_bodegas").jqxGrid({
+//        width: '70%',
+//        height: '200px',
+//        source: dataAdapterope,
+//        theme: 'energyblue',
+//        showstatusbar: true,
+//        editable: true,
+//        selectionmode: 'singlerows',
+//        localization: getLocalization(),
+//        rendertoolbar: function (toolbar) {
+//            var me = this;
+//            var container = $("<div style='margin: 5px;'></div>");
+//            toolbar.append(container);
+//            $("#addrowbutton").jqxButton();
+//            $("#addmultiplerowsbutton").jqxButton();
+//            $("#deleterowbutton").jqxButton();
+//            $("#updaterowbutton").jqxButton();
+//            $("#updaterowbutton").on('click', function () {
+//                var datarow = generaterow_bodegas();
+//                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('updaterow', id, datarow);
+//                    $("#jqxgrid_bodegas").jqxGrid('ensurerowvisible', selectedrowindex);
+//                }
+//            });
+//            $('#opeBodega').on('change', function () {
+//                var datarow = generaterow_bodegas();
+//                console.log("DONDE DEBERIA BORRAR");
+//                console.log(datarow);
+//                console.log(accion_bodegas_new);
+//                if (accion_bodegas_new == 'AGREGAR') {
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
+//                } else if (accion_bodegas_new == 'ELIMINAR') {
+//                    var posicion = 0;
+//                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//                    for (var j = 0; j < rows.length; j++) {
+//                        if (rows[j]['ID'] == datarow.ID) {
+//                            posicion = j;
+//                            break;
+//                        }
+//                    }
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', posicion);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
+//                }
+//            });
+//            // delete row.
+//            $("#deleterowbutton").on('click', function () {
+//                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
+//                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
+//                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
+//                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
+//                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
+//                    var firstColumnData = [];
+//                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
+//                    for (var i = 0; i < rows.length; i++) {
+//                        firstColumnData.push(rows[i].ID);
+//                    }
+//                    $("#opeBodega").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
+//                }
+//            });
+//        },
+//        columns: [
+//            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
+//            {text: 'NOMBRE', datafield: 'NOMBRE', width: '60%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
+//            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '40%', filtercondition: 'starts_with', editable: true},
+//        ]
+//    });
     $(".toolbar li:not(.sub)").click(function (e) {
         e.preventDefault();
         var top = $(this).data('top');
@@ -1349,14 +1312,6 @@ $(document).ready(function () {
 //        if (opeCoordinador == '') {jAlert('Seleccione Coordinador de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeCoordinador").focus();});
 //            return false;}
 //        if (opeJefe == '') {jAlert('Seleccione Jefe de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#opeJefe").focus();});
-//            return false;}
-//        if (listrosMax == '') {jAlert('Ingrese el limite de litros de la Operatoria.', $.ucwords(_etiqueta_modulo), function () {$("#listrosMax").focus();});
-//            return false;}
-//        if (maxHectareas == '') {jAlert('Seleccione el maximo de hectareas permitido.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;}
-//        if (opeProveedores == '') {jAlert('Seleccione proveedor/es.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
-//            return false;}
-//        if (opeBodega == '') {jAlert('Seleccione bodega/s.', $.ucwords(_etiqueta_modulo), function () {$("#maxHectareas").focus();});
 //            return false;}
             $.ajax({
                 url: _agencia.URL + "/x_sendCliente",
@@ -1545,15 +1500,12 @@ $(document).ready(function () {
         } else if (top == 'testing') {
             $.ajax({
                 url: _agencia.URL + "/x_testing",
-                data: {
-                },
+//                data: {},
                 dataType: "json",
                 type: "post",
-                success: function (data) {
-
-//                    alert(data);
-
-                }
+//                success: function (data) {
+////                    alert(data);
+//                }
             });
         }
     });
@@ -1572,6 +1524,7 @@ $(document).ready(function () {
     init_datepicker('#fecha', '-3', '+5', '0', 0);
     init_datepicker('#fechavto', '-3', '+5', '0', 0);
     init_datepicker('#fechavto_desemb', '-3', '+5', '0', 0);
+    init_datepicker('#fechavto_desemb2', '-3', '+5', '0', 0);
     $("input[type=file]").change(function () {
         $(this).parents(".uploader").find(".filename").val($(this).val());
     });
@@ -1600,7 +1553,6 @@ $(document).ready(function () {
 //        }
 //        $("#numero").val(largo);
 //    });
-
 //    $("#precio,#retencion").keyup(function () {
 //        cambiarPrecio();
 //    });
@@ -1671,10 +1623,8 @@ function editar_formulario() {
         dataType: "json",
         type: "post",
         success: function (rtn) {
-            var arr_check = rtn.CHECK_TITULARIDAD;
             data = rtn.factura;
             $("#idh").val(data.ID);
-            $("#numOperatoria").val(data.ID_OPERATORIA);
             $("#cuitform").val(data.CUIT);
             $("#nombre2").val(data.RAZ);
             var forma_pago = 0;
@@ -1685,13 +1635,14 @@ function editar_formulario() {
                 $("#fecha").val(fecha_string.substr(0, 10));
                 var fecha_vto_string = '';
                 var fecha_desemb_string = '';
+                var fecha_desemb2_string = '';
                 if (data.FECHAVTO != null) {
                     fecha_vto_string = data.FECHAVTO;
                     $("#fechavto").val(fecha_vto_string.substr(0, 10));
                 } else {
                     $("#fechavto").val('');
                 }
- 
+
                 if (data.FECHAVTO_DESEMB == '0000-00-00 00:00:00') {
                     $("#fechavto_desemb").val('');
                 } else {
@@ -1702,6 +1653,24 @@ function editar_formulario() {
                         $("#fechavto_desemb").val('');
                     }
                 }
+                if (data.FECHAVTO_DESEMB2 == '0000-00-00 00:00:00') {
+                    $("#fechavto_desemb2").val('');
+                } else {
+                    if (data.FECHAVTO_DESEMB2 != null) {
+                        fecha_desemb2_string = data.FECHAVTO_DESEMB2;
+                        $("#fechavto_desemb2").val(fecha_desemb2_string.substr(0, 10));
+                    } else {
+                        $("#fechavto_desemb2").val('');
+                    }
+                }
+                if (data.MAYORISTA == 0) {
+                    $("#tipo_m_f").val("Minorista");
+                    $("#segunda_fecha").show();
+                }
+                if (data.MAYORISTA == 1) {
+                    $("#tipo_m_f").val("Mayorista");
+                    $("#segunda_fecha").hide();
+                }
 
                 $("#fecha").datepicker('disable');
 //                $("#fechavto").datepicker('disable');
@@ -1709,7 +1678,7 @@ function editar_formulario() {
                 num_fact_buscar = data.NUMERO;
                 $("#cai").val(data.CAI).attr("readonly", "readonly");
 //            $("#fechavto").val(formattedDate(data.FECHAVTO));$("#fechavto").val(data.FECHAVTO);
-//                $("#ltros").val(data.LITROS);//.attr("readonly", "readonly");
+                $("#nro_desembolso").val(data.NRO_DESEMBOLSO);//.attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO);//.attr("readonly", "readonly");
                 $("#observacion_fact").val(data.OBSERVACIONES);
                 $("#neto").val(data.NETO).attr("readonly", "readonly");
@@ -1732,54 +1701,6 @@ function editar_formulario() {
                         $("#fpago-select").trigger('change');
                     }
                 })
-//                $.ajax({
-//                    url: _agencia.URL + "/x_getFormasPago",
-//                    datatype: 'html',
-//                    type: 'post',
-//                    async: false,
-//                    data: {id: data.ID_OPERATORIA},
-//                    success: function (data) {
-//                        $('#fpago').html(data);
-//                        $("#fpago-select").chosen({width: "220px"});
-//                    }
-//                })
-//                $("#fpago-select").val(data.FORMA_PAGO).attr('disabled', true).trigger("chosen:updated");
-//                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
-//                var data_checklists_persona = [];
-//                var listado_checklist = data.CHECKLIST_PERSONA;
-//                data_checklists_persona = listado_checklist.split(',');
-//                $('.op input').each(function () {
-//                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-//                        $(this).prop('checked', true);
-//                    }
-//                });
-//                if (arr_check == 1) {
-//                    $("#cambio_titularidad").attr('checked', true);
-//                    $.ajax({
-//                        url: _agencia.URL + "/x_getTitularidad",
-//                        datatype: 'html',
-//                        type: 'post',
-//                        async: false,
-//                        data: {num_factura: num_fact_buscar},
-//                        success: function (datos) {
-//                            $("#cambio_titularidad").hide();
-//                            $("#cambio_titularidad_true").show();
-//                            $("#cambio_titularidad_true").attr('checked', true);
-//                            $("#comentario-titularidad").text(datos);
-//                        }
-//                    })
-////                $.ajax({
-////                    url: _agencia.URL + "/x_getChecklistHumanaFactTitu",datatype: 'html',type: 'post',async: false,
-////                    data: {id: data.ID_OPERATORIA, num_factura: num_fact_buscar},
-////                    success: function (data) {$('#check_datos').html(data);$("#cambio_titularidad").hide();$("#cambio_titularidad_true").show();$("#cambio_titularidad_true").attr('checked', true);$("#comentario-titularidad").text(datos);}})
-//                } else {
-////                $.ajax({
-////                    url: _agencia.URL + "/x_getChecklistHumanaFact",datatype: 'html',type: 'post',async: false,
-////                    data: {id: data.ID_OPERATORIA},
-////                    success: function (data) {$('#check_datos').html(data);
-//                    $("#cambio_titularidad").attr('checked', false);
-////                    }})
-//                }
 
                 var sourceope_titularidad = {
                     datatype: "json",
@@ -1817,114 +1738,16 @@ function editar_formulario() {
                 $("#fecha").val();
                 $("#fechavto").val();
                 $("#fechavto_desemb").val();
+                $("#fechavto_desemb2").val();
                 $("#numero").val();
                 $("#cai").val();
-                $("#bodega").chosen({width: "220px"});
-                $("#bodega").val(data.ID_BODEGA).attr('disabled', true).trigger("chosen:updated");
-                $("#ltros").val(data.LITROS).attr("readonly", "readonly");
                 $("#precio").val(data.PRECIO).attr("readonly", "readonly");
-                $("#numVinedo").val(data.VINEDO);
-                $("#numRut").val(data.RUT);
+                $("#nro_desembolso").val();
                 $("#observacion_fact").val(data.OBSERVACIONES);
                 $("#neto").val(data.NETO).attr("readonly", "readonly");
                 $("#iva").val(data.IVA).attr("readonly", "readonly");
                 $("#total").val(data.TOTAL).attr("readonly", "readonly");
                 $("#porcentaje_iva").val(data.PORC_IVA).attr("readonly", "readonly");
-                $.ajax({
-                    url: _agencia.URL + "/x_getAlgunasBodegas",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#indent_prueba').html(data);
-                        $("#proveedor-jquery").chosen({width: "220px"});
-                    }
-                })
-                $("#proveedor-jquery").val(data.ID_BODEGA).attr('enable', true).trigger("chosen:updated");
-                $.ajax({
-                    url: _agencia.URL + "/x_getChecklistHumanaFact",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#check_datos').html(data);
-                    }
-                })
-//                var cant_pagos = 0;
-                $.ajax({
-                    url: _agencia.URL + "/x_getFormasPago",
-                    datatype: 'html',
-                    type: 'post',
-                    async: false,
-                    data: {id: data.ID_OPERATORIA},
-                    success: function (data) {
-                        $('#fpago').html(data);
-                        $("#fpago-select").chosen({width: "220px"});
-                    }
-                })
-                $("#fpago-select").val(data.FORMA_PAGO).attr('enable', true).trigger("chosen:updated");
-//                var data_checklists_persona = [];
-//                var listado_checklist = data.CHECKLIST_PERSONA;
-//                data_checklists_persona = listado_checklist.split(',');
-//                $('.op input').each(function () {
-//                    if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-//                        $(this).prop('checked', true);
-//                    }
-//                });
-                if (arr_check == 1) {
-                    $("#cambio_titularidad").attr('checked', true);
-                    $.ajax({
-                        url: _agencia.URL + "/x_getTitularidad",
-                        datatype: 'html',
-                        type: 'post',
-                        async: false,
-                        data: {num_factura: num_fact_buscar},
-                        success: function (datos) {
-                            console.log("VER Q TRAE");
-                            console.log(datos);
-                            $("#cambio_titularidad").hide();
-                            $("#cambio_titularidad_true").show();
-                            $("#cambio_titularidad_true").attr('checked', true);
-                            $("#comentario-titularidad").text(datos);
-                        }
-                    })
-                } else {
-                    $("#cambio_titularidad").attr('checked', false);
-                }
-
-                var sourceope_titularidad = {
-                    datatype: "json",
-                    type: "post",
-                    datafields: [
-                        {name: 'ID_FACTURA', type: 'int'}, {name: 'NOMBRE', type: 'string'},
-                        {name: 'FECHA', type: 'datetime'}, {name: 'CHECK_ESTADO', type: 'string'}
-                    ],
-                    url: _agencia.URL + "/x_getTitularidad",
-                    data: {num_factura: $("#numero").val()},
-                    async: false
-                };
-                var dataAdapterope_titularidad = new $.jqx.dataAdapter(sourceope_titularidad,
-                        {formatData: function (data) {
-                                data.name_startsWith = $("#searchField").val();
-                                return data;
-                            }}
-                );
-                $("#jqxgridtitularidad").jqxGrid({
-                    width: '50%',
-                    height: '200px',
-                    source: dataAdapterope_titularidad,
-                    theme: 'energyblue',
-                    selectionmode: 'singlerows',
-                    localization: getLocalization(),
-                    columns: [
-                        {text: 'ID_FACTURA', datafield: 'ID_FACTURA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-                        {text: 'USUARIO', datafield: 'NOMBRE', width: '25%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-                        {text: 'FECHA', datafield: 'FECHA', cellsalign: 'left', width: '50%', filtercondition: 'starts_with', editable: true},
-                        {text: 'ESTADO', datafield: 'CHECK_ESTADO', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-                    ]
-                });
                 $.unblockUI();
             }
         }
@@ -1933,9 +1756,6 @@ function editar_formulario() {
     $("#precio").keyup(function () {
         cambiarPrecio();
     });
-//    $("#precio").keyup(function () {
-//        cambiarPrecio();
-//    });
 }
 
 
@@ -2036,563 +1856,6 @@ function editar_formulario_estado_cu() {
         }
     });
 }
-
-function editar_formulario_operatoria() {
-    $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Cargando</h4>'});
-    var accion_proveedores = '';
-    var accion_bodegas = '';
-    var url_con_id = document.location.href;
-    var ultimo_id = url_con_id.split("/");
-    var el_id = ultimo_id[ultimo_id.length - 1];
-    $('#send').hide();
-    $('#send_edit').show();
-    $('#fecha_ven_edit').show();
-    $.ajax({
-        url: _agencia.URL + "/x_getoperatoria",
-        data: {id_objeto: el_id},
-        dataType: "json",
-        type: "post",
-        success: function (rtn) {
-            $("#opeNombre").val(rtn[0].NOMBRE_OPE);
-            $("#fechavto").datepicker('enable');
-//          $("#fechavto").val(formattedDate(data.FECHAVTO));
-//          $("#fechavto").val(data.FECHAVTO);
-            $("#fechavto").val(rtn[0].FECHA_VEN);
-            $("#opeDescripcion").val(rtn[0].DESCRIPCION_OPE);
-            $("#opeFideicomiso").val(rtn[0].ID_FIDEICOMISO).trigger("chosen:updated");
-            $("#listrosMax").val(rtn[0].LTRS_MAX);
-            $("#maxPesos").val(rtn[0].MAX_PESOS);
-            $("#hectMax").val(rtn[0].HECT_MAX);
-            $("#opeCoordinador").val(rtn[0].ID_COORDINADOR_OPE).attr('eneable', true).trigger("chosen:updated");
-            $("#opeJefe").val(rtn[0].ID_JEFE_OPE).attr('eneable', true).trigger("chosen:updated");
-            $("#opeP1").val(rtn[0].PRECIO_1);
-            $("#opeP2").val(rtn[0].PRECIO_2);
-            $("#opeP3").val(rtn[0].PRECIO_3);
-            $("#opeP4").val(rtn[0].PRECIO_4);
-            $("#opeP5").val(rtn[0].PRECIO_5);
-            $("#opeP6").val(rtn[0].PRECIO_6);
-            $("#opePCuota").val(rtn[0].PRECIO_CUOTA);
-            $("#opeTitular").val(rtn[0].TITULAR);
-            $("#opeCuit").val(rtn[0].CUIT);
-            $("#numVinedo").val(rtn[0].NUM_VINEDO);
-            $("#litrosOfrecidos").val(rtn[0].LITROS_OFRECIDOS);
-            $("#hectDeclaradas").val(rtn[0].HECT_DECLARADAS);
-            $("#bgaDep").val(rtn[0].BGA_DEP);
-            $("#deptBodega").val(rtn[0].DEPT_BODEGA);
-            $("#numINVBodega").val(rtn[0].NUM_INV_BODEGA);
-            $("#opetelefono").val(rtn[0].TELEFONO);
-            $("#opeCorreo").val(rtn[0].CORREO);
-            var data_checklists_persona = [];
-            var listado_checklist = rtn[0].CHECKLIST_PERSONA;
-            data_checklists_persona = listado_checklist.split(',');
-            $('.op input').each(function () {
-                if ($.inArray($(this).val(), data_checklists_persona) >= 0) {
-                    $(this).prop('checked', true);
-                }
-            });
-            $.ajax({
-                url: _agencia.URL + "/x_getOperatoriaProveedores",
-                data: {id_operatoria: el_id},
-                dataType: "json",
-                type: "post",
-                success: function (rtn_proveedores) {
-                    var cadena_ids = [];
-                    for (var i = 0; i < rtn_proveedores.length; i++) {
-                        cadena_ids.push(rtn_proveedores[i]['ID_PROVEEDOR']);
-                    }
-                    $("#opeProveedores").val(cadena_ids).attr('eneable', true).trigger("chosen:updated");
-                    $("#info-proveedores").show();
-                    $("#jqxgrid_proveedores").show();
-                    var sourceope_proveedores = {
-                        datatype: "json",
-                        type: "post",
-                        datafields: [
-                            {name: 'ID', type: 'int'},
-                            {name: 'RAZON_SOCIAL', type: 'string'},
-                            {name: 'LIMLTRS', type: 'number'},
-                            {name: 'MAXHECTAREAS', type: 'number'}
-                        ],
-                        url: _agencia.URL + "/x_getProveedoresEdit",
-                        data: {id_operatoria: el_id},
-                        async: false, addrow: function (rowid, rowdata, position, commit) {
-                            commit(true);
-                        },
-                        deleterow: function (rowid, commit) {
-                            commit(true);
-                        },
-                        updaterow: function (rowid, newdata, commit) {
-                            commit(true);
-                        }
-                    };
-                    var dataAdapterope_proveedores = new $.jqx.dataAdapter(sourceope_proveedores,
-                            {formatData: function (data) {
-                                    data.name_startsWith = $("#searchField").val();
-                                    return data;
-                                }
-                            }
-                    );
-                    var generaterow_proveedores = function (i) {
-                        var row = {};
-                        var ids_proveedores = $("#opeProveedores").val();
-                        var firstColumnData = [];
-                        var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                        for (var i = 0; i < rows.length; i++) {
-                            firstColumnData.push(rows[i].ID);
-                        }
-                        $.ajax({
-                            url: _agencia.URL + "/x_getDatoProveedor",
-                            data: {ids_proveedores: ids_proveedores, firstColumnData: firstColumnData},
-                            dataType: "json",
-                            type: "post",
-                            async: false,
-                            success: function (datos) {
-                                accion_proveedores = datos[0]['ACCION'];
-                                for (var i = 0; i < datos.length; i++) {
-                                    row['ID'] = datos[i]['ID'];
-                                    row['RAZON_SOCIAL'] = datos[i]['RAZON_SOCIAL'];
-                                    row['LIMLTRS'] = '0';
-                                    row['MAXHECTAREAS'] = '0';
-                                }
-                            }
-                        });
-                        return row;
-                    }
-                    $("#jqxgrid_proveedores").jqxGrid({
-                        width: '70%',
-                        height: '200px',
-                        source: dataAdapterope_proveedores,
-                        theme: 'energyblue',
-                        editable: true,
-                        selectionmode: 'singlerows',
-                        localization: getLocalization(),
-                        rendertoolbar: function (toolbar) {
-                            var me = this;
-                            var container = $("<div style='margin: 5px;'></div>");
-                            toolbar.append(container);
-                            $("#addrowbutton").jqxButton();
-                            $("#addmultiplerowsbutton").jqxButton();
-                            $("#deleterowbutton").jqxButton();
-                            $("#updaterowbutton").jqxButton();
-                            $("#updaterowbutton").on('click', function () {
-                                var datarow = generaterow_proveedores();
-                                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                                    var commit = $("#jqxgrid_proveedores").jqxGrid('updaterow', id, datarow);
-                                    $("#jqxgrid_proveedores").jqxGrid('ensurerowvisible', selectedrowindex);
-                                }
-                            });
-                            $('#opeProveedores').on('change', function () {
-                                var datarow = generaterow_proveedores();
-                                if (accion_proveedores == 'AGREGAR') {
-                                    var commit = $("#jqxgrid_proveedores").jqxGrid('addrow', null, datarow);
-                                } else if (accion_proveedores == 'ELIMINAR') {
-                                    console.log("PASO X ACA ELIMINAR");
-                                    var posicion = 0;
-                                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                                    for (var j = 0; j < rows.length; j++) {
-                                        if (rows[j]['ID'] == datarow.ID) {
-                                            posicion = j;
-                                            break;
-                                        }
-                                    }
-                                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', posicion);
-                                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                                }
-                            });
-                            // delete row.
-                            $("#deleterowbutton").on('click', function () {
-                                var selectedrowindex = $("#jqxgrid_proveedores").jqxGrid('getselectedrowindex');
-                                var rowscount = $("#jqxgrid_proveedores").jqxGrid('getdatainformation').rowscount;
-                                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                    var id = $("#jqxgrid_proveedores").jqxGrid('getrowid', selectedrowindex);
-                                    var commit = $("#jqxgrid_proveedores").jqxGrid('deleterow', id);
-                                    var firstColumnData = [];
-                                    var rows = $('#jqxgrid_proveedores').jqxGrid('getrows');
-                                    for (var i = 0; i < rows.length; i++) {
-                                        firstColumnData.push(rows[i].ID);
-                                    }
-                                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                                }
-                            });
-                        },
-                        columns: [
-                            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-                            {text: 'RAZON SOCIAL', datafield: 'RAZON_SOCIAL', width: '50%', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-                            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-                            {text: 'MAX. HECTAREAS', datafield: 'MAXHECTAREAS', cellsalign: 'left', width: '25%', filtercondition: 'starts_with', editable: true},
-                        ]
-                    });
-                }
-            });
-            $.ajax({
-                url: _agencia.URL + "/x_getOperatoriaBodegas",
-                data: {
-                    id_operatoria: el_id
-                },
-                dataType: "json",
-                type: "post",
-                success: function (rtn_bodegas) {
-                    var cadena_ids = [];
-                    for (var i = 0; i < rtn_bodegas.length; i++) {
-                        cadena_ids.push(rtn_bodegas[i]['ID_BODEGA']);
-                    }
-                    $("#opeBodega").val(cadena_ids).attr('eneable', true).trigger("chosen:updated");
-                    $("#info-bodegas").show();
-                    $("#jqxgrid_bodegas").show();
-                    var sourceope_bodegas = {
-                        datatype: "json",
-                        type: "post",
-                        datafields: [
-                            {name: 'ID', type: 'int'}, {name: 'NOMBRE', type: 'string'}, {name: 'LIMLTRS', type: 'number'}
-                        ],
-                        url: _agencia.URL + "/x_getBodegasEdit",
-                        data: {
-                            id_operatoria: el_id
-                        },
-                        async: false, addrow: function (rowid, rowdata, position, commit) {
-                            commit(true);
-                        },
-                        deleterow: function (rowid, commit) {
-                            commit(true);
-                        },
-                        updaterow: function (rowid, newdata, commit) {
-                            commit(true);
-                        }
-                    };
-                    var dataAdapterope_bodegas = new $.jqx.dataAdapter(sourceope_bodegas,
-                            {
-                                formatData: function (data) {
-                                    data.name_startsWith = $("#searchField").val();
-                                    return data;
-                                }
-                            }
-                    );
-                    var generaterow_bodegas = function (i) {
-                        var row = {};
-                        var ids_bodegas = $("#opeBodega").val();
-                        var firstColumnData = [];
-                        var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                        for (var i = 0; i < rows.length; i++) {
-                            firstColumnData.push(rows[i].ID);
-                        }
-                        $.ajax({
-                            url: _agencia.URL + "/x_getDatoBodega",
-                            data: {
-                                ids_bodegas: ids_bodegas,
-                                firstColumnData: firstColumnData
-                            },
-                            dataType: "json",
-                            type: "post",
-                            async: false,
-                            success: function (datos) {
-                                accion_bodegas = datos[0]['ACCION'];
-                                for (var i = 0; i < datos.length; i++) {
-                                    row['ID'] = datos[i]['ID'];
-                                    row['NOMBRE'] = datos[i]['NOMBRE'];
-                                    row['LIMLTRS'] = '0';
-                                }
-                            }
-                        });
-                        return row;
-                    }
-                    $("#jqxgrid_bodegas").jqxGrid({
-                        width: '90%',
-                        height: '200px',
-                        source: dataAdapterope_bodegas,
-                        theme: 'energyblue',
-                        editable: true,
-                        selectionmode: 'singlerows',
-                        localization: getLocalization(),
-                        rendertoolbar: function (toolbar) {
-                            var me = this;
-                            var container = $("<div style='margin: 5px;'></div>");
-                            toolbar.append(container);
-                            $("#addrowbutton").jqxButton();
-                            $("#addmultiplerowsbutton").jqxButton();
-                            $("#deleterowbutton").jqxButton();
-                            $("#updaterowbutton").jqxButton();
-                            $("#updaterowbutton").on('click', function () {
-                                var datarow = generaterow_bodegas();
-                                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                                    var commit = $("#jqxgrid_bodegas").jqxGrid('updaterow', id, datarow);
-                                    $("#jqxgrid_bodegas").jqxGrid('ensurerowvisible', selectedrowindex);
-                                }
-                            });
-                            $('#opeBodega').on('change', function () {
-                                var datarow = generaterow_bodegas();
-                                if (accion_bodegas == 'AGREGAR') {
-                                    var commit = $("#jqxgrid_bodegas").jqxGrid('addrow', null, datarow);
-                                } else if (accion_bodegas == 'ELIMINAR') {
-                                    var posicion = 0;
-                                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                                    for (var j = 0; j < rows.length; j++) {
-                                        if (rows[j]['ID'] == datarow.ID) {
-                                            posicion = j;
-                                            break;
-                                        }
-                                    }
-                                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', posicion);
-                                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                                }
-                            });
-                            // delete row.
-                            $("#deleterowbutton").on('click', function () {
-                                var selectedrowindex = $("#jqxgrid_bodegas").jqxGrid('getselectedrowindex');
-                                var rowscount = $("#jqxgrid_bodegas").jqxGrid('getdatainformation').rowscount;
-                                if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-                                    var id = $("#jqxgrid_bodegas").jqxGrid('getrowid', selectedrowindex);
-                                    var commit = $("#jqxgrid_bodegas").jqxGrid('deleterow', id);
-                                    var firstColumnData = [];
-                                    var rows = $('#jqxgrid_bodegas').jqxGrid('getrows');
-                                    for (var i = 0; i < rows.length; i++) {
-                                        firstColumnData.push(rows[i].ID);
-                                    }
-                                    $("#opeProveedores").val(firstColumnData).attr('eneable', true).trigger("chosen:updated");
-                                }
-                            });
-                        },
-                        columns: [
-                            {text: 'ID', datafield: 'ID', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, hidden: true},
-                            {text: 'NOMBRE', datafield: 'NOMBRE', cellsalign: 'left', filtercondition: 'starts_with', editable: false},
-                            {text: 'LIMITE LTRS', datafield: 'LIMLTRS', cellsalign: 'left', width: '30%', filtercondition: 'starts_with', editable: true}
-                        ]
-                    });
-                    $.unblockUI();
-                }
-            });
-        }
-    });
-}
-
-
-//function agregarCIUS(_arr_cius) {
-//
-//    _arr_cius || (_arr_cius = []);
-//    var source = {
-//        datatype: "json",
-//        datafields: [
-//            {name: 'NUM'},
-//            {name: 'KGRS', type: 'number'},
-//            {name: 'AZUCAR'},
-//            {name: 'CHEQUEO', type: 'bool'},
-//            {name: 'INSC'},
-//            {name: 'ID'}
-//        ],
-//        url: _agencia.URL + '/x_get_info_bancos',
-//        deleterow: function (rowid, commit) {
-//            commit(true);
-//        }
-//    };
-//    $("#jqxgridcius").jqxGrid({
-//        width: '98%',
-//        height: '200px',
-//        source: source,
-//        theme: 'energyblue',
-//        editable: true,
-//        ready: function () {
-//            $("#jqxgridcius").jqxGrid('hidecolumn', 'ID');
-//            if (_arr_cius.length > 0) {
-//                //colocar
-//                $.each(_arr_cius, function (k, v) {
-//                    var data = {
-//                        'NUM': v.ciu_num,
-//                        'KGRS': v.ciu_kgrs,
-//                        'AZUCAR': v.ciu_azucar,
-//                        'CHEQUEO': v.ciu_chequeo,
-//                        'INSC': v.ciu_insc,
-//                        'ID': 'DDDDDDD',
-//                        'uid': 1
-//                    }
-//                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-//                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-//                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-//                });
-//            }
-//        },
-//        columnsresize: true,
-//        localization: getLocalization(),
-//        showstatusbar: true,
-//        renderstatusbar: function (statusbar) {
-//            var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-//            var deleteButton = $("<div style='float: left; margin-left: 5px;'><img style='position: relative; margin-top: 2px;' src='general/css/images/delete.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>Borrar</span></div>");
-//            container.append(deleteButton);
-//            statusbar.append(container);
-//            deleteButton.jqxButton({theme: theme, width: 65, height: 20});
-//            deleteButton.click(function (event) {
-//                var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-//                var rowscount = $("#jqxgridcius").jqxGrid('getdatainformation').rowscount;
-//                if (selectedrowindex < rowscount) {
-//
-//                    jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo), function (r) {
-//                        if (r == true) {
-//
-//                            if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
-//                                var id = $("#jqxgridcius").jqxGrid('getrowid', selectedrowindex);
-//                                $("#jqxgridcius").jqxGrid('deleterow', id);
-//                            }
-//
-//                            //actualizar suma
-//                            var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-//                            var _arr_aportes_tmp = [];
-//                            for (var i = 0; i < griddata.rowscount; i++)
-//                                _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-//                            var total = 0;
-//                            var total1 = 0;
-//                            if (griddata.rowscount == 0) {
-//                                $("#suma_aporte").html('');
-//                                $(".suma_aportes").hide();
-//                            } else {
-//                                if (_arr_aportes_tmp.length > 0) {
-//                                    //colocar
-//                                    $.each(_arr_aportes_tmp, function (k, v) {
-//                                        total = total + parseFloat(v.KGRS);
-//                                        total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-//                                    });
-//                                    total1 = total1 / total;
-//                                    $(".suma_aportes").show();
-//                                    $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-//                                    $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-//                                }
-//                            }
-//                        }
-//                    });
-//                } else {
-//                    jAlert('Seleccione un item.', $.ucwords(_etiqueta_modulo), function () {
-//                    });
-//                    return false;
-//                }
-//            });
-//        },
-//        columns: [
-//            {text: 'NUM CIU', datafield: 'NUM', width: '20%', editable: false},
-//            {text: 'KILOGRAMOS', datafield: 'KGRS', width: '30%', editable: false, cellsformat: 'c2'},
-//            {text: 'AZUCAR', datafield: 'AZUCAR', width: '30%', editable: false},
-//            {text: 'INSCR', datafield: 'INSC', width: '30%', editable: false},
-//            {text: 'VERIFICACION', datafield: 'CHEQUEO', width: '20%', columntype: 'checkbox', editable: true},
-//            {text: 'ID', datafield: 'ID', width: '0%', editable: false}
-//        ]
-//    });
-////    $("#add_cius").off().on('click', function () {
-////
-////        if ($("#frm_cargacius input#ciu_iva").val() == '' || $("#frm_cargacius input#ciu_total").val() == ''
-////                || $("#frm_cargacius input#ciu_azucar").val() == '') {
-////            jAlert('Todos los campos son obligatorios.', $.ucwords(_etiqueta_modulo), function () {
-////                $("#frm_cargacius input").first().select();
-////            });
-////            return false;
-////        }
-////
-////        var ciu_num = $("#ciu_num").val();
-////        var ciu_kgrs = $("#ciu_kgrs").val();
-////        var ciu_azucar = $("#ciu_azucar").val();
-////        var ciu_insc = $("#ciu_insc").val();
-////        if (!isnumeroCiu(ciu_num)) {
-////            jAlert('El formato del Número de Ciu no es correcto (Ejem: A9854124).', $.ucwords(_etiqueta_modulo), function () {
-////                $("#frm_cargacius input").first().select();
-////            });
-////            return false;
-////        }
-////
-////        if (!isnumeroCiuIns(ciu_insc)) {
-////            jAlert('El formato del Número de Inscripcion no es correcto(Ejem: A-9854124).', $.ucwords(_etiqueta_modulo), function () {
-////                $("#frm_cargacius #ciu_insc").first().next().next().select();
-////            });
-////            return false;
-////        }
-////
-//////recorrer el grid, si ya eciste el ciu, alertar y no agregar
-////        var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-////        var _arr_cius = [];
-////        for (var i = 0; i < griddata.rowscount; i++)
-////            _arr_cius.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-////        sw1 = 0;
-////        if (_arr_cius) {
-////            $.each(_arr_cius, function (index, value) {
-////                if (value.NUM == ciu_num) {
-////                    jAlert('Este numero de CIU ya esta agregado.', $.ucwords(_etiqueta_modulo), function () {
-////                        $("#ciu_num").select();
-////                    });
-////                    sw1 = 1;
-////                    return false;
-////                }
-////            });
-////        }
-////
-////        if (sw1 == 1) {
-////            return false;
-////        }
-////
-//////validar ciu a traves de todas las bd
-////        $.ajax({
-////            url: _agencia.URL + "/x_verificarciu",
-////            data: {
-////                nciu: ciu_num
-////            },
-////            dataType: "json",
-////            type: "post",
-////            success: function (data) {
-////                console.dir(data);
-////                if (data <= 0) {
-////                    var data = {
-////                        'NUM': ciu_num,
-////                        'KGRS': ciu_kgrs,
-////                        'AZUCAR': ciu_azucar,
-////                        'CHEQUEO': 0,
-////                        'INSC': ciu_insc,
-////                        'ID': 'DDDDDDD',
-////                        'uid': 1
-////                    }
-////
-////                    var commit = $("#jqxgridcius").jqxGrid('addrow', null, data);
-////                    $('#jqxgridcius').jqxGrid('selectrow', data.uid);
-////                    var selectedrowindex = $("#jqxgridcius").jqxGrid('getselectedrowindex');
-////                    //$('#jqxgridbancos').jqxGrid( { editable: true} );
-////                    //var editable = $("#jqxgridbancos").jqxGrid('begincelledit', selectedrowindex, "BANCO");
-////
-////
-////                    //actualizar suma
-////                    var griddata = $('#jqxgridcius').jqxGrid('getdatainformation');
-////                    var _arr_aportes_tmp = [];
-////                    for (var i = 0; i < griddata.rowscount; i++)
-////                        _arr_aportes_tmp.push($('#jqxgridcius').jqxGrid('getrenderedrowdata', i));
-////                    var total = 0;
-////                    var total1 = 0;
-////                    if (griddata.rowscount == 0) {
-////                        $("#suma_aporte").html('');
-////                        $(".suma_aportes").hide();
-////                    } else {
-////                        if (_arr_aportes_tmp.length > 0) {
-////                            //colocar
-////                            $.each(_arr_aportes_tmp, function (k, v) {
-////                                total = total + parseFloat(v.KGRS);
-////                                total1 = total1 + parseFloat(v.AZUCAR * v.KGRS);
-////                            });
-////                            total1 = total1 / total;
-////                            $(".suma_aportes").show();
-////                            $("#suma_aporte").html(dec(precise_round(total, 2), 2));
-////                            $("#suma_aporte1").html(dec(precise_round(total1, 2), 2));
-////                        }
-////                    }
-////
-////                    $("#frm_cargacius input").not('#add_cius').val('');
-////                    $("#frm_cargacius input").first().focus();
-////                } else {
-////                    jAlert('Este numero de CIU ya existe. Vefique los datos por favor.', $.ucwords(_etiqueta_modulo), function () {
-////                        $.unblockUI();
-////                    });
-////                }
-////
-////            }
-////        });
-////        return false;
-////    });
-//}
-
 
 function initGrid(id_usuario) {
 
@@ -3329,9 +2592,6 @@ function initGridListado(id_usuario) {
             {name: 'CBU', type: 'string'},
             {name: 'NUMERO', type: 'string'},
             {name: 'FECHA', type: 'string'},
-//            {name: 'BODEGA', type: 'string'},
-//            {name: 'ID_BODEGA', type: 'int'},
-//            {name: 'LITROS', type: 'string'},
             {name: 'OBSERVACIONES', type: 'string'},
             {name: 'USU_CARGA', type: 'string'},
             {name: 'USU_CHEQUEO', type: 'string'},
@@ -3346,9 +2606,8 @@ function initGridListado(id_usuario) {
             {name: 'VALORPAGAR', type: 'float'},
             {name: 'NUMCUOTA', type: 'int'},
             {name: 'FECHA_VEN', type: 'string'},
-//            {name: 'CHECK_ESTADO', type: 'string'},
-//            {name: 'ID_CONTABLE', type: 'int'},
             {name: 'FORMULA', type: 'string'},
+            {name: 'NRO_DESEMBOLSO', type: 'string'},
             {name: 'IID', type: 'string'}
         ],
         url: 'general/extends/extra/carpetas.php',
@@ -3366,6 +2625,7 @@ function initGridListado(id_usuario) {
             {
                 formatData: function (data) {
                     data.name_startsWith = $("#searchField").val();
+                    data.name_startsWithD = $("#searchFieldDesembolso").val();
                     return data;
                 }
             }
@@ -3374,15 +2634,6 @@ function initGridListado(id_usuario) {
         var fila = row;
         if (row == fila)
             return false;
-    }
-    var cellsrenderer = function (row, column, value, defaultHtml) {
-        var fila = row;
-        if (column == 'CHECK_ESTADO' && value == 'Confirmada' && row == fila) {
-            var element = $(defaultHtml);
-            element.css({'background-color': '#32CD32', 'width': '100%', 'height': '100%', 'margin': '0px'});
-            return element[0].outerHTML;
-        }
-        return defaultHtml;
     }
 
     $("#jqxgrid_listado").jqxGrid({
@@ -3401,9 +2652,14 @@ function initGridListado(id_usuario) {
             var container = $("<div style='margin: 5px;'></div>");
             var span = $("<span style='float: left; margin-top: 5px; margin-right: 4px;'>Buscar: </span>");
             var input = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchField' type='text' style='height: 23px; float: left; width: 223px;' />");
+            var spanD = $("<span style='float: left; margin-left:4px; margin-top: 5px; margin-right: 4px;'> Nº Desembolso: </span>");
+            var inputD = $("<input class='jqx-input jqx-widget-content jqx-rc-all' id='searchFieldDesembolso' type='text' style='height: 23px; float: left; width: 223px;' />"); 
+            
             toolbar.append(container);
             container.append(span);
             container.append(input);
+            container.append(spanD);
+            container.append(inputD);
             if (theme != "") {
                 input.addClass('jqx-widget-content-' + theme);
                 input.addClass('jqx-rc-all-' + theme);
@@ -3415,77 +2671,38 @@ function initGridListado(id_usuario) {
                     dataAdapterope.dataBind();
                 }, 300);
             });
+            inputD.on('keydown', function (event) {
+                if (me.timer)
+                    clearTimeout(me.timer);
+                me.timer = setTimeout(function () {
+                    dataAdapterope.dataBind();
+                }, 300);
+            });
         },
         columns: [
-            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
-            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsformat: 'c2', cellbeginedit: cellbeginedit, cellsrenderer: cellsrenderer},
+            {text: 'ID', datafield: 'ID', width: '6%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'NRO.DESEMBOLSO', datafield: 'NRO_DESEMBOLSO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CLIENTE', datafield: 'CLIENTE', width: '30%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CUIT', datafield: 'CUIT', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CONDICION IVA', datafield: 'CONDIVA', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CONDICION IIBB', datafield: 'CONDIIBB', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CBU', datafield: 'CBU', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'FACTURA', datafield: 'NUMERO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'FECHA FACTURA', datafield: 'FECHA', width: '12%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, selectable: false, cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'OBSERVACIONES', datafield: 'OBSERVACIONES', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CARGA', datafield: 'USU_CARGA', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'CHEQUEO', datafield: 'USU_CHEQUEO', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellbeginedit: cellbeginedit},
+            {text: 'ESTADO', datafield: 'ESTADO', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false/*,cellsrenderer: cellsrenderer*/, cellbeginedit: cellbeginedit},
+            {text: 'PRECIO', datafield: 'PRECIO', width: '8%', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'NETO', datafield: 'NETO', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2', cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'IVA', datafield: 'IVA', width: '14%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2',  cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'CUOTA A PAGAR', datafield: 'VALORPAGAR', width: '15%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2',  cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'CUOTAS', datafield: 'CANT_CUOTAS', width: '7%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'VENCIMIENTO', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'TOTAL', datafield: 'TOTAL', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: false, cellsformat: 'c2',  cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'FECHA DE IMPORTACIÓN', datafield: 'CREATEDON', width: '18%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellsalign: 'right', cellbeginedit: cellbeginedit},
+            {text: 'ORDEN PAGO', datafield: 'ORDEN_PAGO', width: '16%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable: true, cellbeginedit: cellbeginedit},
             {text: 'IID', datafield: 'IID', width: '0%'}
-        ]
-    });
-    var sourceope_ope = {
-        datatype: "json",
-        datafields: [
-            {name: 'ID_OPERATORIA', type: 'int'},
-            {name: 'NOMBRE_OPE', type: 'string'},
-            {name: 'DESCRIPCION_OPE', type: 'string'},
-            {name: 'FECHA_CRE', type: 'datetime'},
-            {name: 'FECHA_VEN', type: 'datetime'},
-            {name: 'NOMBRE_COOR', type: 'string'},
-            {name: 'NOMBRE_JEFE', type: 'string'}
-        ],
-        url: 'general/extends/extra/carpetas.php',
-        data: {
-            accion: "getOperatoriaCompraUva"
-        },
-        async: false,
-        deleterow: function (rowid, commit) {
-            commit(true);
-        }
-    };
-    var dataAdapterope_ope = new $.jqx.dataAdapter(sourceope_ope,
-            {
-                formatData: function (data) {
-                    data.name_startsWith = $("#searchField").val();
-                    return data;
-                }
-            }
-    );
-    $("#jqxgrid_listado_operatoria").jqxGrid({
-        width: '96%',
-        source: dataAdapterope_ope,
-        theme: 'energyblue',
-        ready: function () {
-            $("#jqxgrid_listado").jqxGrid('hidecolumn', 'IID');
-        },
-        columnsresize: true,
-        localization: getLocalization(),
-        columns: [
-            {text: 'OPERATORIA', datafield: 'ID_OPERATORIA', width: '9%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'FECHA INICIO', datafield: 'FECHA_CRE', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'FECHA LIMITE', datafield: 'FECHA_VEN', width: '10%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'NOMBRE', datafield: 'NOMBRE_OPE', width: '22%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'DESCRIPCION', datafield: 'DESCRIPCION_OPE', width: '20%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'COORDINADOR', datafield: 'NOMBRE_COOR', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: false},
-            {text: 'JEFE', datafield: 'NOMBRE_JEFE', width: '15%', columntype: 'textbox', filtercondition: 'starts_with', filterable: true}
         ]
     });
 }
@@ -3540,8 +2757,6 @@ function editar_estado_cu(name_grid) {
     var selectedrowindex = $("#" + name_grid).jqxGrid('getselectedrowindex');
     var selectedrowindexes = $("#" + name_grid).jqxGrid('getselectedrowindexes');
     mydata = $('#' + name_grid).jqxGrid('getrowdata', selectedrowindex);
-    console.log("LALALALALA");
-    console.log(mydata);
 //    if (mydata == null) {
 //        jAlert('Seleccione una factura.', $.ucwords(_etiqueta_modulo), function () {
 //            $.unblockUI();

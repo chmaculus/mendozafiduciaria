@@ -1,9 +1,10 @@
 <ul class="toolbar">
     <li class="tb_add" data-top='informe'><div>Informes</div></li>
+    <?php if ($CREDITO_ESTADO == ESTADO_CREDITO_NORMAL) { ?>
     <li class="tb_edi" data-top='eventos'><div>Eventos</div></li>
     <li class="tb_edi" data-top='estructura'><div>Estructura</div></li>
     <li class="tb_edi" data-top='opciones'><div>Opciones</div></li>
-        
+    <?php } ?>
     
     <div class="tb_sep"></div>
     <li class="tb_lis" data-top='listado'  data-loc="creditos/front/creditos"><div>Listado</div></li>

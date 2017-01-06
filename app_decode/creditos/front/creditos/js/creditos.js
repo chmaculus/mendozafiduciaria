@@ -285,7 +285,7 @@ function init_grid(id_usuario,tipo){
                         
     var cellsrenderer = function (row, columnfield, value, defaulthtml, columnproperties, rowdata) {
 
-        if (value == 'PRORROGADO') {
+        if (value == 'PRORROGADO' || value == 'CANCELADO') {
             return '<div style="margin:4px;font-weight:bold;">' + value + '</div>';
         } else if (value == 'CADUCADO') {
             return '<div style="margin:4px;color:#ff0000;font-weight:bold;">' + value + '</div>';
@@ -745,10 +745,11 @@ function get_eliminar(){
     else{
         
         var credito_selected = [];
-        $('#contenttablejqxgrid div > .jqx-grid-cell-selected:first-child').each(function() {
-            credito_selected.push($(this).text());
-        });
-        
+        var indexes = $("#jqxgrid").jqxGrid('selectedrowindexes');
+        for (var index in indexes) {
+            var data = $('#jqxgrid').jqxGrid('getrowdata', indexes[index]);
+            credito_selected.push(data.ID_CREDITO);
+        }
         var str_list_creditos = credito_selected.join(", ");
         
         console.log(str_list_creditos);

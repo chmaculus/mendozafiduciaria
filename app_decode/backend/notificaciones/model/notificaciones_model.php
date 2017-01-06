@@ -13,9 +13,7 @@ class notificaciones_model extends main_model {
     function get_destino($idope) {
         $this->_db->select("ID,CARTERADE,DESTINO");
         $destino = $this->_db->get_tabla("fid_traza", "ACTIVO='1' AND OBSERVACION='AVISO' AND ID_OPERACION='" . $idope . "'");
-//           log_this('get_destino.log',$this->_db->last_query() );
-//                 echo "aca llegooo get :)";die();
-//        print_r($destino);die("AQUIII");
+//           log_this('log/get_destino.log',$this->_db->last_query() );
         if ($destino) {
             return $destino;
         } else {
@@ -36,31 +34,25 @@ class notificaciones_model extends main_model {
     }
 
     function send_traza($obj) {
-
         $fecha_actual = date("Y-m-d H:i:s");
         $etapa_actual = $obj['ETAPA'];
         $obj_del = array(
             "ACTIVO" => "0"
         );
-
         $carterade = "";
         if (is_array($obj['CARTERADE'])) {
             $carterade = $obj['CARTERADE'][0]['CARTERADE'];
         } else {
             $carterade = $obj['CARTERADE'];
         }
-//        print_r($carterade);die();
 //    $CARTERA_OPERADOR = $this->_db->query("SELECT CARTERADE FROM fid_traza WHERE id_operacion='".$obj['ID_OPERACION']."' AND estado=3 AND etapa=2");
         //actualizar carterade , de operaciones
         if ($obj["CARTERADE"]) {
-//            echo "Aqui no entra";die();
 //            $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
             $this->_db->update("fid_operaciones", array("CARTERADE" => $carterade, "ENVIADOA" => 0), "ID='" . $obj['ID_OPERACION'] . "'");
 //             log_this('updateoperaciones.log',$this->_db->last_query());
         }
-//        die("MATO TRAZA");
 //            $this->_db->update("fid_operaciones",array("CARTERADE"=>$obj["CARTERADE"],"ENVIADOA"=>0) ,"ID='".$obj['ID_OPERACION']."'");
-//        echo "PASO Y NO ENTRO";die();
         //poner el ultimo movimiento como activo
         $this->_db->update("fid_traza", $obj_del, "ID_OPERACION='" . $obj['ID_OPERACION'] . "'");
 //        $id_traza = $this->_db->query("select ID from fid_traza WHERE id_operacion='".$obj['ID_OPERACION']. "' order by id DESC LIMIT 1");
@@ -82,10 +74,7 @@ class notificaciones_model extends main_model {
         $text_aMostrar = ">> " . $carterade . " <<";
         $obj['CARTERADE'] = $carterade;
         $iid = $this->_db->insert("fid_traza", $obj);
-//        log_this('insert_traza_carterade.log', $this->_db->last_query());
-        //   log_this('insert_traza_carterade_print.log',print_r($obj,1));
-//       log_this('insert_traza_carterade_text.log',print_r($text_aMostrar,1));
-        //      $this->_db->insert('fid_semaforo', $arr_semaforo);
+//        log_this('log/insert_traza_carterade.log', $this->_db->last_query());
         return $iid;
     }
 
@@ -114,17 +103,19 @@ class notificaciones_model extends main_model {
             "SEM" => $sem
         );
         $this->_db->insert('fid_traza', $arr_datos_traza);
+//        log_this('log/INSERTATRAZA2.log', $this->_db->last_query());
+//        log_this('log/INSERUPDATETRAZ.log', $this->_db->last_query());
         $valor_activo = array(
             "ACTIVO" => 0
         );
         $this->_db->update('fid_traza', $valor_activo, "id_operacion='" . $obj['ID_OPERACION'] . "' AND destino='" . $id_usuario . "' AND activo=1");
-//        log_this('log/INSERTATRAZA2.log', $this->_db->last_query());
+//        log_this('log/UPDATETRAZA.log', $this->_db->last_query());
+//        log_this('log/INSERUPDATETRAZ.log', $this->_db->last_query());
         $iid = $this->_db->query("select ID from fid_traza order by id DESC LIMIT 1");
         return $iid;
     }
 
 //    function obtener_etapa_actual($obj){
-//            
 //            $fecha_actual_traza = date("Y-m-d H:i:s");
 //            $fecha_aviso = strtotime ( '+48 hour' , strtotime ( $fecha_actual_traza ) ) ;
 //            $fecha_aviso = date ( 'Y-m-j H:i:s' , $fecha_aviso );
@@ -138,12 +129,7 @@ class notificaciones_model extends main_model {
 //                "ID_NOTIFICAR"=>  $id_traza[0]['CARTERADE'],
 //                "HAB"=>1
 //                );
-//        print_r($arr_semaforo);die(" EL ID DE ETAPA");
 //            $this->_db->insert('fid_semaforo', $arr_semaforo);
-//          
-//        
-//        
-//        
 //        return $iid;
 //    }
 
@@ -157,11 +143,8 @@ class notificaciones_model extends main_model {
         //$this->_db->join("fid_usuarios u1","t.CARTERADE=u1.ID");
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
         $items = $this->_db->get_tabla("fid_traza t", "t.DESTINO='" . $id . "' AND AUTOR=''  AND AUTOR_REQ='' AND (  (ACTIVO=1 AND LEIDO='1') OR (NOTIF=1 AND LEIDO='1') ) or (t.AUTOR='" . $id . "' and t.LEIDO='1' ) or (AUTOR_REQ='" . $id . "' AND LEIDO='1')");
-//        log_this('ooiiioooo.log', $this->_db->last_query());
-//        
-//        echo "MEGADIE";
-//        var_dump($items);
-//        die();
+//        log_this('log/ooiiioooo.log', $this->_db->last_query());
+
         $ret = array();
         $c = 0;
         if ($items) {
@@ -219,7 +202,6 @@ class notificaciones_model extends main_model {
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
         $this->_db->join("fid_usuarios u", "t.CARTERADE=u.ID");
         $items = $this->_db->get_tabla("fid_traza t", "t.DESTINO='" . $id . "' AND AUTOR='' AND AUTOR_REQ='' AND (  (ACTIVO=1 AND LEIDO='1') OR (NOTIF=1 AND LEIDO='1') ) or (t.AUTOR='" . $id . "' and t.LEIDO='1' ) or (AUTOR_REQ='" . $id . "' AND LEIDO='1')");
-
 //        log_this('verqueconsultaCARPETAAAS.log',$this->_db->last_query() );
 
         $ret = 0;
@@ -235,7 +217,6 @@ class notificaciones_model extends main_model {
         $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='" . $fechaAct . "'  AND HAB=1 AND ID_NOTIFICAR='" . $idUser . "'");
 //        log_this('Lanzar_ALERTAS.log',$this->_db->last_query() );
 //        $rtn = $this->_db->get_tabla("fid_semaforo u", "FECHA_AVISO<='2015-11-03 17:30:45'  AND HAB=1");
-//        print_r($rtn);die();
         return $rtn;
     }
 
@@ -250,11 +231,8 @@ class notificaciones_model extends main_model {
     }
 
     function guardar_traza_alertas($obj) {
-        
-        
-        
-        /* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha */
-        /* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion */
+/* Las fechas que encuentas las trae y actualiza semaforo cambiando la fecha */
+/* Se inserta una nueva traza con el parametro SEM en 1 asi se muestra la notificacion */
 //    $valor_id = $obj[0]['ID'];  
 //    $valores_insert = $obj[0]['ID_NOTIFICAR'];
         $fechaActual = date("Y-m-d H:i:s");
@@ -293,7 +271,6 @@ class notificaciones_model extends main_model {
         $fecha_repetir = strtotime('+24 hour', strtotime($fechaActual));
         $valor_id = $obj_repetir[0]['ID'];
 
-//    print_r($obj_repetir);die("REPETIRRRR");
         foreach ($obj_repetir as $value) {
 
             $fecha_aviso = $value['FECHA_REPETIR'];
@@ -317,7 +294,9 @@ class notificaciones_model extends main_model {
                 "FECHA_REPETIR" => $fecha_repetir
             );
             $rtn = $this->_db->insert('fid_traza', $arr_datos_traza);
+//            log_this( 'log/InsertUPDATETRAZASEM3.log', $this->_db->last_query() );
             $rtn = $this->_db->update('fid_semaforo', $arr_datos_sem, "ID='" . $value['ID'] . "'");
+//            log_this( 'log/InsertUPDATETRAZASEM3.log', $this->_db->last_query() );
         }
     }
 

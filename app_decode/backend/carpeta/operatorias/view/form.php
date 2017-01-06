@@ -186,7 +186,7 @@
                     </div>
 
                   <hr />
-                  <?php include('cambio_tasas.php'); ?>
+                  <?php if (isset($lst_cambiotasas)) include('cambio_tasas.php'); ?>
                   <hr />
 
                   <div class="elem elem_med">
