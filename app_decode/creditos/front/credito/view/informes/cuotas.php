@@ -179,7 +179,7 @@ foreach($cuotas as $kk=>$cuota){
     $saldo_a_favor += $cuota['ADELANTO'];
     
     
-    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos;
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos + $cuota['COMPENSATORIO_ACT'];
     $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $saldo_gastos;
     $total_saldo = $total_saldo > 0.5 ? $total_saldo : 0;
     $total_saldo -= $saldo_a_favor;

@@ -1090,6 +1090,7 @@ class credito_model extends main_model {
                 $POR_INT_MORATORIO = 0;
                 $POR_INT_PUNITORIO = 0;
                 $INT_SUBSIDIO = 0;
+                $rango_act = 0;
                 
                 foreach($this->_variaciones as $iv => $variacion) {
                     if ($cuota['FECHA_INICIO'] >= $variacion['FECHA'] && $variacion['TIPO'] != EVENTO_INFORME) {
@@ -1278,6 +1279,7 @@ class credito_model extends main_model {
                             }
 
                             if ($this->_actualizacion_compensatorios) {
+                                $rango_act += $rango_int_mor;
                                 //traer el saldo - los pagado del saldo de la cuota
                                 //$pagos_arr = $this->_get_pagos_tipo($variacion['FECHA'], true);
                                 
@@ -1295,20 +1297,24 @@ class credito_model extends main_model {
                                 $pagos_dif_compens = $pagos[PAGO_COMPENSATORIO] + $pagos[PAGO_IVA_COMPENSATORIO];
                                 $dif_compens = $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $pagos_dif_compens;
                                 
-                                if ($SALDO_ACT_COMP > 0.50 && ($dif_compens > 0.5 || $pagos_dif_compens == 0 )) {
-                                    $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_comp_real, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
-                                    $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
-                                    $INTERES_COMPENSATORIO += $interes_act_comp;
-                                    $IVA_INTERES_COMPENSATORIO += ($interes_act_comp * $this->_iva_operatoria);
+                                if ($SALDO_ACT_COMP > 0.50) { //&& ($dif_compens > 0.5 || $pagos_dif_compens == 0 )
                                     
-                                    $INT_COMPENSATORIO_ACT += $interes_act_comp;
-                                    if($this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
-                                        echo "IIIIIIIIIIIIIIIAC:$interes_act_comp<BR />";
-                                        echo "SA:{$capital_arr['AMORTIZACION_CUOTA']}<BR />";
-                                        echo "IM:$INT_MORATORIO<BR />";
-                                        echo "S:$SALDO_ACT_COMP<br />";
-                                        echo "R:$rango_int_mor<br />";
-                                        echo "I:$interes_act_comp<br /><br />";
+                                    if ((count($variaciones) -1) == $iv || $variacion['TIPO'] == EVENTO_RECUPERO) {
+                                        $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_act, $INTERES_COMPENSATORIO_VARIACION, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
+                                        $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
+                                        $INTERES_COMPENSATORIO += $interes_act_comp;
+                                        $IVA_INTERES_COMPENSATORIO += ($interes_act_comp * $this->_iva_operatoria);
+
+                                        $INT_COMPENSATORIO_ACT += $interes_act_comp;
+                                        if($this->log_cuotas && $cuota['ID']==$this->log_cuotas) {
+                                            echo "IIIIIIIIIIIIIIIAC:$interes_act_comp<BR />";
+                                            echo "SA:{$capital_arr['AMORTIZACION_CUOTA']}<BR />";
+                                            echo "IM:$INT_MORATORIO<BR />";
+                                            echo "S:$SALDO_ACT_COMP<br />";
+                                            echo "R:$rango_act<br />";
+                                            echo "I:$interes_act_comp<br /><br />";
+                                        }
+                                        $rango_act = 0; //reseteo
                                     }
                                 }
                             }
