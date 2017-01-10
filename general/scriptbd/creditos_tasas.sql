@@ -24,7 +24,9 @@ INSERT INTO `fid_permisos` (`ID`, `MODULO`, `PERMISO`, `CODIGO`) VALUES (NULL, '
 INSERT INTO `fid_roles_menu` (`ID_ROL`, `ID_MENU`) VALUES ('20', '40');
 
 
+/*cobranzas*/
 CREATE TABLE `fid_creditos_cobranzas` (
+`ID_HO` BIGINT NOT NULL,
 `ID_CREDITO` INT NOT NULL ,
 `CUOTAS_RESTANTES` INT NOT NULL ,
 `NRO_CUOTA` INT NOT NULL ,
@@ -38,3 +40,5 @@ ALTER TABLE `fid_creditos_cobranzas` ADD UNIQUE (
 `ID_CREDITO` ,
 `CUOTAS_RESTANTES`
 );
+
+ALTER TABLE `fid_clientes` ADD `ID_CLIENTE_HO` INT NOT NULL AFTER `ID` 

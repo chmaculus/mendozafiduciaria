@@ -85,8 +85,24 @@ class cobranzas extends main_controller {
         echo trim(json_encode($this->mod->get_cuotas_a_facturar($periodo)));
         die;
     }
+    
+    function init_hoy() {
+        set_time_limit(0);
+        $fecha = strtotime('2016-12-15');
+        $fecha_operacion = date('Y-m-d H:i:s');
+        
+        $this->mod->init_log($fecha_operacion);
+        $creditos = $this->mod->get_cuotas_a_facturar_hoy($fecha);
+        if ($creditos) {
+            foreach ($creditos as $credito) {
+                $this->mod->generar_factura_c($credito, $fecha_operacion);
+            }
+        }
+        $this->mod->cerrar_generar_factura();
+    }
 
     function facturados_json() {
+        set_time_limit(0);
         $periodo = isset($_POST['fecha']) && $_POST['fecha'] ? strtotime('01-' . $_POST['fecha']) : time();
         echo trim(json_encode($this->mod->get_cuotas_facturadas($periodo)));
         die;
@@ -94,7 +110,13 @@ class cobranzas extends main_controller {
 
     function enviar_facturar() {
         $periodo = isset($_POST['fecha']) && $_POST['fecha'] ? strtotime('01-' . $_POST['fecha']) : time();
-        $this->mod->enviar_a_facturar($periodo, $_POST['creditos']);
+        
+        $fecha = date('Y-m-d H:i:s');
+        foreach ($_POST['creditos'] as $credito_id) {
+            if ($credito = $this->get_cuotas_a_facturar($periodo, $credito_id)) {
+                $this->mod->generar_factura_c($credito, $fecha);
+            }
+        }
     }
 
 }
