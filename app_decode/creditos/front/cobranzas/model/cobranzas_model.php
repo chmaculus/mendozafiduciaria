@@ -31,8 +31,8 @@ class cobranzas_model extends credito_model {
 
     public function _get_cuotas_a_facturar($credito_id = FALSE) {
         $this->_db->select("c.ID, c.IVA, POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, ifnull(o.NOMBRE,' - ') as OPERATORIA, cc.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, "
-                . "cc.CAPITAL_CUOTA, cc.INT_COMPENSATORIO, cc.INT_COMPENSATORIO_IVA, cc.INT_COMPENSATORIO_SUBSIDIO, cc.INT_MORATORIO, cc.INT_PUNITORIO, FECHA_VENCIMIENTO, "
+                . "ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, cc.FECHA_INICIO, FECHA_VENCIMIENTO, "
+                . "cc.CAPITAL_CUOTA, cc.INT_COMPENSATORIO, cc.INT_COMPENSATORIO_IVA, cc.INT_COMPENSATORIO_SUBSIDIO, cc.INT_MORATORIO, cc.INT_PUNITORIO, "
                 . "(SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, FROM_UNIXTIME(FECHA_VENCIMIENTO) AS FECHA_V_U");
         $this->_db->join("fid_operatorias o", "o.ID = c.ID_OPERATORIA", "left");
         $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
@@ -101,14 +101,17 @@ class cobranzas_model extends credito_model {
             foreach ($cuits_cliente as $k => $cui_cli) {
                 $id_cli_ho = $this->_dbsql->query("select DISTINCT CLI from amaefact where replace(cui, '-', '') ='$cui_cli' and emp=" . $credito['ID_CONT_FID']);
                 if (!$id_cli_ho) {
+                    $this->_log_creditos("Cliente ({$credito['ID']} - $cui_cli) no tiene facturas");
                     $id_cli_ho = $this->_dbsql->query("SELECT COD AS CLI FROM clientes WHERE COD > 0 AND REPLACE(CUI, '-', '') = '$cui_cli'");
+                    if ($id_cli_ho) {
+                        //$this->_log_creditos("Cliente ({$credito['ID']} - $cui_cli) se encontró por la tabla clientes");
+                    }
                 }
                 if ($id_cli_ho && count($id_cli_ho) > 1) {
                     $this->_log_creditos("Cliente ({$credito['ID']} - $cui_cli) tiene más de un registro");
 
                     /* buscamos cual cliente más parecido */
                     $id_cli_ho = $this->_buscar_cliente($id_cli, $id_cli_ho);
-                    $this->_log_creditos($this->_dbsql->last_query());
                 }
 
                 if ($id_cli_ho) {
@@ -133,6 +136,16 @@ class cobranzas_model extends credito_model {
             return FALSE;
         }
 
+        $gastos = 0;
+        $this->_db->select('MONTO');
+        $this->_db->where("ID_CREDITO=" . $credito['ID'] . " AND FECHA > '" . $credito['FECHA_INICIO'] . "' AND FECHA <= '" . ($credito['FECHA_VENCIMIENTO'] + (24 * 3600) - 1) . "'");
+        $arr_gastos = $this->_db->get_tabla("fid_creditos_gastos g");
+        if ($arr_gastos) {
+            foreach ($arr_gastos as $g) {
+                $gastos += $g['MONTO'];
+            }
+        }
+
         $_cuota = array(
             'NUM_CREDITO' => $credito['ID'],
             'ID_FIDEICOMISO' => $credito['ID_FIDEICOMISO'],
@@ -146,14 +159,16 @@ class cobranzas_model extends credito_model {
             'CAPITAL' => round($credito['CAPITAL_CUOTA'], 2),
             'INT_COMP' => round($credito['INT_COMPENSATORIO'], 2),
             'IVA_COMP' => round($credito['INT_COMPENSATORIO_IVA'], 2),
+            'GASTOS' => round($gastos, 2),
             'PROCESO_R_C' => 'C',
             'ESTADO_PROCESO' => 1,
             'FECHA_PROCESO' => str_replace('-', '', $fecha),
         );
 
-        if ($id_ho = $this->_dbsql->insert('A_CREDITOS_CONTABLE', $_cuota)) {
+        if ($this->_dbsql->insert('A_CREDITOS_CONTABLE', $_cuota)) {
+            $id_ho = $this->_dbsql->query('SELECT MAX(ID) AS ID FROM A_CREDITOS_CONTABLE');
             $arr = array(
-                'ID_HO' => $id_ho,
+                'ID_HO' => $id_ho[0]['ID'],
                 'ID_CREDITO' => $credito['ID'],
                 'CUOTAS_RESTANTES' => $credito['CUOTAS_RESTANTES'],
                 'NRO_CUOTA' => $credito['TOTAL_CUOTAS'] - $credito['CUOTAS_RESTANTES'] + 1,
@@ -185,7 +200,7 @@ class cobranzas_model extends credito_model {
             foreach ($id_cli_ho as $id_cli) {
                 $ids_cli[] = $id_cli['CLI'];
             }
-            
+
             $ids_cli = implode(',', $ids_cli);
             $rtn = $this->_dbsql->query("SELECT COD AS CLI FROM clientes WHERE COD IN ($ids_cli) AND NOM LIKE '%$nombre%'");
             if ($rtn && count($rtn) == 1) {
@@ -194,7 +209,7 @@ class cobranzas_model extends credito_model {
         } else {
             $this->_log_creditos("Cliente ({$credito['ID']} - $cui_cli) no se encuentra en la tabla clientes");
         }
-        
+
         return FALSE;
     }
 
