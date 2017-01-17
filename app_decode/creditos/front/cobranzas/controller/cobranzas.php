@@ -88,10 +88,10 @@ class cobranzas extends main_controller {
     
     function init_hoy() {
         set_time_limit(0);
-        $fecha = strtotime('2016-12-15');
+        $fecha = strtotime(date('Y-m-d')) - (24 * 3600); //cambiar por fecha actual
         $fecha_operacion = date('Y-m-d H:i:s');
         
-        $this->mod->init_log($fecha_operacion);
+        $this->mod->init_log('facturacion_creditos', $fecha_operacion);
         $creditos = $this->mod->get_cuotas_a_facturar_hoy($fecha);
         if ($creditos) {
             foreach ($creditos as $credito) {
@@ -99,6 +99,22 @@ class cobranzas extends main_controller {
             }
         }
         $this->mod->cerrar_generar_factura();
+        
+        $this->mod->init_log('facturacion_recuperos', $fecha_operacion);
+        $fecha_pago = strtotime('2016-12-15');
+        $creditos = $this->mod->get_creditos_pagos($fecha_pago);
+        if ($creditos) {
+            foreach ($creditos as $credito) {
+                if ($cliente = $this->mod->getCliente($credito, $fecha_pago, $fecha_operacion)) {
+                    if ($_creditos = $this->mod->get_recuperos($fecha_pago, $credito['ID'])) {
+                        //print_r($_creditos);die;
+                        foreach ($_creditos as $_credito) {
+                            $this->mod->generar_factura_r($cliente, $_credito, $fecha_operacion);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     function facturados_json() {
