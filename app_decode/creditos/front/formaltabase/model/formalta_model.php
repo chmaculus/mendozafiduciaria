@@ -57,6 +57,10 @@ class formalta_model extends credito_model {
         $this->_iva = $iva;
     }
     
+    function set_act_comp($act_comp){
+        $this->_act_comp = $act_comp;
+    }
+    
 
     function save_operacion_credito(){
         
@@ -106,7 +110,7 @@ class formalta_model extends credito_model {
         
         $this->_postulantes = is_array($this->_postulantes) ? $this->_postulantes : array();
         
-        $act_compensatorios = FALSE;
+        /*$act_compensatorios = FALSE;
         
         if ($this->_id_operatoria) {
             $this->_db->select('ACT_COMPENS');
@@ -114,7 +118,7 @@ class formalta_model extends credito_model {
             if ($row_operatoria) {
                 $act_compensatorios = $row_operatoria['ACT_COMPENS'];
             }
-        }
+        }*/
         
         $credito = array(
             "ID"=>$this->_id_credito,
@@ -150,7 +154,7 @@ class formalta_model extends credito_model {
             "POSTULANTES_NOMBRES" => '',
             "POSTULANTES_CUIT" => '',
             "TIPO_CREDITO" => $this->_tipo_credito,
-            "ACT_COMP" => $act_compensatorios
+            "ACT_COMP" => $this->_act_comp
         );
         
         $this->_db->select('RAZON_SOCIAL, CUIT');
@@ -462,7 +466,8 @@ class formalta_model extends credito_model {
                 'COMPENSATORIO' => $rtn['TASA_INTERES_COMPENSATORIA'],
                 'PUNITORIO' => $rtn['TASA_INTERES_POR_PUNITORIOS'],
                 'MORATORIO' => $rtn['TASA_INTERES_MORATORIA'],
-                'SUBSIDIO' => $rtn['TASA_SUBSIDIADA']
+                'SUBSIDIO' => $rtn['TASA_SUBSIDIADA'],
+                'ACT_COMP' => $rtn['ACT_COMPENS']
             );
             
             if ($fecha) {
