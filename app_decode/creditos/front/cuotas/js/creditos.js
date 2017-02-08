@@ -168,6 +168,10 @@ function agregar_pago(id_credito, fecha, monto) {
                 jAlert("No se guardó el recupero. Se deben cargar el 100% de desembolsos", "MENDOZA FIDUICIARIA", function(e) {
                     return;
                 });
+            } else if (result == '-2') {
+                jAlert("El monto ingresado es incorrecto", "MENDOZA FIDUICIARIA", function(e) {
+                    return;
+                });
             } else {
                 $(".div-result").html(result);
                 $.unblockUI();
@@ -179,6 +183,11 @@ function agregar_pago(id_credito, fecha, monto) {
 
 function agregar_variacion() {
     
+    var validar_fecha = $.datepicker.formatDate('dd-mm-yy', $("#txtFecha").datepicker("getDate"));
+    if (validar_fecha != $("#txtFecha").val()) {
+        jAlert("La fecha ingresada es incorrecta", "ERROR");
+        return;
+    }
     var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
     var opcion = parseInt($("#txtEvento option:selected").val());
 
@@ -1011,15 +1020,16 @@ function caducarCuota() {
 }
 
 function refinanciacion_caida() {
-    jConfirm("¿Esta seguro de eliminar este crédito y volver al anterior?","Caducidad", function(i){
+    jConfirm("¿Esta seguro de cancelar este crédito y volver al anterior?","Caducidad", function(i){
         if(i){
+            $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Refinanciaión caida</h4>' });
             $.ajax({
                 url: _cuotas.URL + "/x_refinanciacion_caida",
                 data: {
                     credito_id: _cuotas.ID_CREDITO
                 },
                 type: "post",
-                async : false,
+                async : true,
                 success: function(result) {
                     if (result) {
                         location.href="creditos/front/creditos";
@@ -1069,6 +1079,7 @@ function formaltabase(datos) {
 
 
 function credito_caido() {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando crédito caido</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_credito_caido",
         data: {
@@ -1076,7 +1087,6 @@ function credito_caido() {
             credito_id: _cuotas.ID_CREDITO
         },
         type: "post",
-        async : false,
         success: function(result) {
             if (result=='-1') {
                 ret = true;

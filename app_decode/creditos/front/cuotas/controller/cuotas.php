@@ -84,6 +84,12 @@ class cuotas extends main_controller{
     function _x_set_pago($credito_id, $fecha, $monto, $version) {
         
         if ($this->mod->set_credito_active($credito_id)) {
+            $monto = (float) $monto;
+            
+            if (!$monto || $monto <= 0) {
+                die("-2");
+            }
+            
             $this->mod->set_version_active($version);
             $this->mod->renew_datos();
 
@@ -248,7 +254,7 @@ class cuotas extends main_controller{
         
         if ($retornar) {
             $this->mod->set_fecha_actual($fecha);
-            if ($this->mod->verificiar_eventos_posteriores()) {
+            if ($this->mod->verificiar_eventos_pagos_posteriores()) {
                 //return;
                 $desimputar =TRUE;
             }
@@ -806,7 +812,7 @@ class cuotas extends main_controller{
         $this->mod->renew_datos();
         
         $this->mod->set_fecha_actual($fecha);
-        if ($this->mod->verificiar_eventos_posteriores()){
+        if ($this->mod->verificiar_eventos_pagos_posteriores()){
             echo "1";
         }
         else{
@@ -1279,7 +1285,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                 
                 //cambios de tasas
                 $cambios_tasas = array();
-                for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
+                /*for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $tmp_ct = $objPHPExcel->getActiveSheet()->getCell("H" . $j)->getCalculatedValue();
                     if ($tmp_ct) {
                         $tmp_ct = strtotime(date('Y-m-d', PHPExcel_Shared_Date::ExcelToPHP($tmp_ct) + 86400));
@@ -1290,7 +1296,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     } else {
                         break;
                     }
-                }
+                }*/
                 
                 for ($j = 2; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
                     $credito_id = $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue();
@@ -1300,7 +1306,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
                         
                         if (!$cuit) {
-                            break;
+                            continue;
                         }
                         
                         $cuit = explode("\n", $cuit);
@@ -1326,9 +1332,9 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                         $fpago = strtotime(date('Y-m-d', $fpago));
                         $_fpago = (int)$fpago;
                         
-                        if (isset($arr_creditos[$credito_id][$_fpago])) {
+                        /*if (isset($arr_creditos[$credito_id][$_fpago])) {
                             $_fpago += $j;
-                        }
+                        }*/
                         
                         if (!isset($arr_creditos[$credito_id]) ) {
                             foreach ($cambios_tasas as $k_ct => $tmp_ct) {
@@ -1336,10 +1342,14 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             }
                         }
                         
-                        $arr_creditos[$credito_id][$_fpago] = array(
-                            'FP' => $fpago,
-                            'PAGO' => $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
-                            );
+                        if (isset($arr_creditos[$credito_id][$_fpago])) {
+                            $arr_creditos[$credito_id][$_fpago]['PAGO'] += (float) $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue();
+                        } else {
+                            $arr_creditos[$credito_id][$_fpago] = array(
+                                'FP' => $fpago,
+                                'PAGO' => (float) $objPHPExcel->getActiveSheet()->getCell("F" . $j)->getCalculatedValue()
+                                );
+                        }
                     } else {
                         $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
                         if ($cuit) {
@@ -1378,6 +1388,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             $err .= "El crédito $credito_id no se imputaron pagos porque no tiene el 100% de los desembolsos<br />";
                         } else {
                             $pagos_no = 0;
+                            $pagos_sindatos = 0;
                             foreach ($creditos as $fec => $pago) {
                                 $fec = $pago['FP'];
                                 if (isset($pago['TC'])) {
@@ -1394,12 +1405,19 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                                     $this->mod->agregar_tasa($pago['TC'], $pago['TS'],$pago['TM'],$pago['TP'], $cuotas_restantes, $fec + 1);
                                     $this->mod->assign_id_evento($ret['ID'],EVENTO_TASA);
                                 } elseif (!$ultimo_pago || ($ultimo_pago && $ultimo_pago['FECHA'] < $pago['FP'])) {
-                                    $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
+                                    if ($pago['FP'] && $pago['PAGO']) {
+                                        $this->mod->realizar_pago($pago['FP'], $pago['PAGO']);
+                                    } else {
+                                        ++$pagos_sindatos;
+                                    }
                                 } else {
                                     ++$pagos_no;
                                 }
                             }
 
+                            if ($pagos_sindatos) {
+                                $err .= "El crédito $credito_id ($pagos_sindatos) no se imputaron porque faltan datos<br />";
+                            }
                             if ($pagos_no) {
                                 $err .= "El crédito $credito_id ($pagos_no) no se imputaron por fechas anteriores al último pago realizado<br />";
                             }

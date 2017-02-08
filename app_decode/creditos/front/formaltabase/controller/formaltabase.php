@@ -225,25 +225,22 @@ class formaltabase extends main_controller {
                 $total_creditos = 0;
 
                 for ($j = 7; $j <= $objPHPExcel->getActiveSheet()->getHighestDataRow(); $j++) {
-
-                    $cuit = str_replace(array("\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue());
-                    $_postulantes = str_replace(array(" Y ", " y ", "\\", "/"), "\n", $objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue());
+                    $cuit = $this->clean_postulantes(str_replace(" ", "|", $objPHPExcel->getActiveSheet()->getCell("B" . $j)->getCalculatedValue()));
+                    $_postulantes = $this->clean_postulantes($objPHPExcel->getActiveSheet()->getCell("A" . $j)->getCalculatedValue());
                     if (!$cuit) {
                         continue;
                     }
                     
-                    $cuit = explode("\n", $cuit);
-                    $_postulantes = explode("\n", $_postulantes);
-                    
-                    /*if (count($cuit) != count($_postulantes)) {
+                    if (count($cuit) != count($_postulantes)) {
                         continue; //a pedido de mercedes se saca la validación 14/06/16
-                    }*/
-                    
+                    }
                     
                     $postulantes = array();
                     $_cuits = array();
                     foreach ($cuit as $cj=>$c) {
-                        $c = trim($c);
+                        //$c = trim($c);
+                        $c = preg_replace('/[^0-9-]+/', '', $c);
+                        
                         if (!($postulante = $this->mod->getClienteIdCUIT($c))) {
                             $cliente = array(
                                 'RAZON_SOCIAL' => trim(strip_tags($_postulantes[$cj])),
@@ -254,7 +251,7 @@ class formaltabase extends main_controller {
                         $postulantes[] = $postulante;
                         $_cuits[] = trim(str_replace("-", "", $c));
                     }
-
+                    
                     $credito_id = trim($objPHPExcel->getActiveSheet()->getCell("C" . $j)->getCalculatedValue());
                     
 
@@ -740,6 +737,18 @@ class formaltabase extends main_controller {
             echo json_encode($tasas);
         }
         die();
+    }
+    
+    private function clean_postulantes($dato) {
+        $dato = explode("|", str_replace(array("\\", "/"), "|", $dato));
+        $arr = array();
+        foreach ($dato as $v) {
+            if (trim($v)) {
+                $arr[] = trim($v);
+            }
+        }
+        
+        return count($arr) ? $arr : FALSE;
     }
 
     

@@ -29,37 +29,42 @@ class clientes_model extends main_model{
     function sendobj($obj){
         $iid = $obj["id"];
         /*damian*/
-        $rtn = $this->_db->select("RAZON_SOCIAL,CUIT");
-        $rtn = $this->_db->get_tabla("fid_clientes","ID='".$iid."'");
-        $nombreSocial = $rtn[0]['RAZON_SOCIAL'];
-        $cuitjunto = $rtn[0]['CUIT'];
-        $unidos = $nombreSocial." - ".$cuitjunto;
+        if ($iid) {
+            $rtn = $this->_db->select("RAZON_SOCIAL,CUIT");
+            $rtn = $this->_db->get_tabla("fid_clientes","ID='".$iid."'");
+            $nombreSocial = $rtn[0]['RAZON_SOCIAL'];
+            $cuitjunto = $rtn[0]['CUIT'];
+        } else {
+            $nombreSocial = "";
+            $cuitjunto = "";
+        }
         /**/
         $contactos = isset($obj["contactos"])?$obj["contactos"]:array();
         
         unset($obj["id"]);
         unset($obj["contactos"]);
         
-        if ($iid==0)://agregar
+        if ($iid==0) {//agregar
             $resp = $this->_db->insert($this->_tablamod, $obj);
             $acc = "add";
             $id_new = $resp;
-        else://editar
-        $nombreEdit = $obj['RAZON_SOCIAL'];
-        $cuitEdit = $obj['CUIT'];
-        $unidosEdit = $nombreEdit." - ".$cuitEdit;
+        } else {//editar
+            $unidos = $nombreSocial." - ".$cuitjunto;
+            $nombreEdit = $obj['RAZON_SOCIAL'];
+            $cuitEdit = $obj['CUIT'];
+            $unidosEdit = $nombreEdit." - ".$cuitEdit;
 
             $resp = $this->_db->update($this->_tablamod, $obj, "id='".$iid."'");
             //log_this('qqqq.log',$this->_db->last_query());
             log_this("updateclientemay.log", $this->_db->last_query());
-           $arr_razon = array(
-                        "BENEF"=>$unidosEdit
-                    );    
+            $arr_razon = array(
+                "BENEF"=>$unidosEdit
+                    );
 /*damian*/
            $rtn = $this->_db->update("fid_operaciones",$arr_razon,"BENEF like'%".$unidos."%'");
             $acc = "edit";
             $id_new = $iid;
-            endif;
+        }
         
         //borrar previos
         $this->_db->delete('fid_cliente_contactos', "ID_CLIENTE='" . $id_new . "'");

@@ -1,4 +1,22 @@
-<style>table tr{text-align:left}td.iva{width:65px}</style>
+<style>
+    table tr{text-align:left}td.iva{width:65px}
+    p.dscr{font-weight:bold;font-size:1.2em;padding:10px 10px 20px;}
+</style>
+<?php
+if (!$desembolsos) {
+    echo '<p class="dscr">No hay desembolsos cargados</p>';
+    die();
+} else {
+    $desembolsado = 0;
+    foreach($desembolsos as $desembolso){
+        $desembolsado += $desembolso['MONTO'];
+    }
+    
+    if ($monto_credito != $desembolsado) {
+        echo '<p class="dscr">No están todos los desembolsos cargados</p>';
+    }
+}
+?>
 <ul class="lista-informe cuotas">
     <li class="titulo">
         <span class="numero-desembolso">NUMERO</span>
@@ -50,18 +68,18 @@ $cuotas_pendientes = 0;
 $total_cuota_gastos = 0;
 //print_array($cuotas);
 foreach($cuotas as $kk=>$cuota){
-    $bpunitorio = isset($cuota['PUNITORIO']['TOTAL']) ; 
-    $bmoratorio= isset($cuota['MORATORIO']['TOTAL']) ; 
+    $bpunitorio = isset($cuota['PUNITORIO']['TOTAL']) ;
+    $bmoratorio= isset($cuota['MORATORIO']['TOTAL']) ;
     
-    $iva_moratorio_total = isset($cuota['IVA_MORATORIO']['TOTAL']) ? $cuota['IVA_MORATORIO']['TOTAL'] : 0 ; 
-    $iva_punitorio_total = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['TOTAL'] : 0 ; 
-    $iva_compensatorio_total = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['TOTAL'] : 0 ; 
+    $iva_moratorio_total = isset($cuota['IVA_MORATORIO']['TOTAL']) ? $cuota['IVA_MORATORIO']['TOTAL'] : 0 ;
+    $iva_punitorio_total = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['TOTAL'] : 0 ;
+    $iva_compensatorio_total = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['TOTAL'] : 0 ;
     
-    $iva_moratorio_saldo = isset($cuota['IVA_MORATORIO']['TOTAL']) ? $cuota['IVA_MORATORIO']['SALDO'] : 0 ; 
-    $iva_punitorio_saldo = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['SALDO'] : 0 ;     
-    $iva_compensatorio_saldo = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['SALDO'] : 0 ;     
+    $iva_moratorio_saldo = isset($cuota['IVA_MORATORIO']['TOTAL']) ? $cuota['IVA_MORATORIO']['SALDO'] : 0 ;
+    $iva_punitorio_saldo = isset($cuota['IVA_PUNITORIO']['TOTAL']) ? $cuota['IVA_PUNITORIO']['SALDO'] : 0 ;
+    $iva_compensatorio_saldo = isset($cuota['IVA_COMPENSATORIO']['TOTAL']) ? $cuota['IVA_COMPENSATORIO']['SALDO'] : 0 ;
     
-    $iva_moratorio_pagado = $iva_moratorio_total - $iva_moratorio_saldo; 
+    $iva_moratorio_pagado = $iva_moratorio_total - $iva_moratorio_saldo;
     //echo "<br/>IVAMOR t/s:".$iva_moratorio_total ."/". $iva_punitorio_saldo  ."-";
     $iva_punitorio_pagado = $iva_punitorio_total - $iva_punitorio_saldo;
     $iva_compensatorio_pagado = $cuota['IVA_COMPENSATORIO']['PAGOS'];//$iva_compensatorio_total - $iva_compensatorio_saldo ;
@@ -85,11 +103,11 @@ foreach($cuotas as $kk=>$cuota){
     
     $total_moratorio = 0;
     $pagado_moratorio = 0;
-    $saldo_moratorio = 0;                    
+    $saldo_moratorio = 0;
 
     $total_punitorio = 0;
     $pagado_punitorio = 0;
-    $saldo_punitorio = 0;                    
+    $saldo_punitorio = 0;
 
     $total_compensatorio = $cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO_ACT'];
     $pagado_compenstorio = $cuota['COMPENSATORIO']['PAGOS'];//($cuota['COMPENSATORIO']['TOTAL'] - $cuota['COMPENSATORIO']['SALDO'] );
@@ -97,18 +115,19 @@ foreach($cuotas as $kk=>$cuota){
     $total_compensatorio_act = $cuota['COMPENSATORIO_ACT'] ? '<br />' . number_format($cuota['COMPENSATORIO_ACT'],2,",",".") : '';
     $iva_compensatorio_act_total = '';
     if ($cuota['COMPENSATORIO_ACT'] && $cuota['COMPENSATORIO']['TOTAL']) {
-        $tmp_iva = number_format($iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'],2,",",".");
-        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
+        $tmp_iva = $iva_compensatorio_total * $cuota['COMPENSATORIO_ACT'] / $cuota['COMPENSATORIO']['TOTAL'];
         $iva_compensatorio_total -= $tmp_iva;
+        $tmp_iva = number_format($tmp_iva,2,",",".");
+        $iva_compensatorio_act_total = '<br />' . $tmp_iva;
     }
             
     $total_capital = $cuota['CAPITAL']['TOTAL'];
     $pagado_capital = $cuota['CAPITAL']['TOTAL'] - $cuota['CAPITAL']['SALDO'];
-    $saldo_capital = $total_capital - $pagado_capital;//$cuota['CAPITAL']['SALDO'];                    
-    $total_iva_subsidio = $iva_subsidiado;                   
+    $saldo_capital = $total_capital - $pagado_capital;//$cuota['CAPITAL']['SALDO'];
+    $total_iva_subsidio = $iva_subsidiado;
 
     
-    $total_cuota_gastos = 0; 
+    $total_cuota_gastos = 0;
     
     $total_a_pagar = abs(round($cuota['_INFO']['TOTAL_PAGAR'],2));
     $total_a_pagar = ($total_a_pagar > 0.01) ? $total_a_pagar : 0;
@@ -160,7 +179,7 @@ foreach($cuotas as $kk=>$cuota){
     $saldo_a_favor += $cuota['ADELANTO'];
     
     
-    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos;
+    $total_total = $total_moratorio + $total_punitorio + $total_compensatorio + $total_capital + $total_gastos + $cuota['COMPENSATORIO_ACT'];
     $total_saldo = $saldo_moratorio + $saldo_punitorio + $saldo_compensatorio + $saldo_capital + $saldo_gastos;
     $total_saldo = $total_saldo > 0.5 ? $total_saldo : 0;
     $total_saldo -= $saldo_a_favor;

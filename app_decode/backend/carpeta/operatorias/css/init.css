@@ -229,7 +229,7 @@ iframe{
 #bancoope_chosen{width:140px !important}
 div.cb{clear:both}
 
-#cambio_tasa table table, #cambio_tasa table table tr{border-collapse:collapse}
-#cambio_tasa table table td, #cambio_tasa table table th{text-align:center;border-collapse:collapse;border:1px #777 solid;}
+#cambio_tasa2, #cambio_tasa2 tr{border-collapse:collapse}
+#cambio_tasa2  td, #cambio_tasa2 th{text-align:center;border-collapse:collapse;border:1px #777 solid;}
 #pct{font-size:1.2em;text-align:center;color:#1a6800;padding:10px 0 0}
 #cambio_tasa table .fa{color:#0044ff;text-align:center;cursor:pointer}

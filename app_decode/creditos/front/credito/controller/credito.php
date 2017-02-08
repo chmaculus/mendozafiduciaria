@@ -276,6 +276,8 @@ class credito extends main_controller{
         //tercer parametro true para forzar la deuda con el compensatorio total
         
         $ret_reuda= $this->mod->get_deuda($fecha, true );
+        $ret_reuda['monto_credito'] = $this->mod->get_monto_credito();
+        $ret_reuda['desembolsos'] = $this->mod->get_desembolsos();
         logthis("cuotas",$ret_reuda);
 
         $ret_reuda['fecha_actual'] = $fecha;
