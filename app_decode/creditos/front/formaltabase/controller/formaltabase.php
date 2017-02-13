@@ -526,7 +526,7 @@ class formaltabase extends main_controller {
         //se calcula la fecha de inicio de la primera cuota sobre la fecha del primer vencimiento y la periodicidad
         $primer_vencimiento = $_POST['fecha_inicio'];
         list($d, $m, $y) = explode("/", date("d/m/Y", $_POST['fecha_inicio']));
-        $data['fecha_inicio'] = (mktime(0, 0, 0, $m - $_POST['periodicidad'], $d, $y));
+        $data['fecha_inicio'] = (mktime(0, 0, 0, $m , $d, $y)); //- $_POST['periodicidad'] se quita la diferencia de periodicidad en el m
 
         $data['cuotas'] = $_POST['cuotas'];
         $micro = $_POST['micro'];

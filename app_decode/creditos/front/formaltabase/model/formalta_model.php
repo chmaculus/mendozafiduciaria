@@ -220,6 +220,7 @@ class formalta_model extends credito_model {
 
         $monto_cuotas = $monto / $cuotas_amort;
         $cuotas_arr = array();
+        $primer_cuota = 1;
 
         for ($i = 0; $i < $cuotas_restantes; $i++) {
             $cuotas_arr[$i]['_ACTIVA'] = 1;
@@ -240,10 +241,17 @@ class formalta_model extends credito_model {
                 }
             }
             if (!$bcuota_exist) {
+                if($primer_cuota != 1){
                 $fecha_inicio = $fecha_venvimiento;
+                echo "*".$fecha_venvimiento."*";
                 $fecha_venvimiento = $this->obtener_fecha_vencimiento($DIA_INICIO, $fecha_venvimiento, $variacion['PERIODICIDAD_TASA'], $variacion['PERIODICIDAD']);
+                //echo $fecha_venvimiento."*";                
+                }else{
+                $fecha_inicio = $fecha_venvimiento;                
+                }
+                 
             }
-
+            $primer_cuota = 0;           
             $cuotas_arr[$i]['POR_INT_COMPENSATORIO'] = $variacion['POR_INT_COMPENSATORIO'] / 12 * $periodicidad;
             $cuotas_arr[$i]['POR_INT_MORATORIO'] = $variacion['POR_INT_MORATORIO'];
             $cuotas_arr[$i]['POR_INT_PUNITORIO'] = $variacion['POR_INT_PUNITORIO'];
@@ -427,13 +435,63 @@ class formalta_model extends credito_model {
 
                 $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
                 break;
+            case 60:
+                $mes = date('m', $fecha) + ($periodicidad*2);
+                $anio = date('Y', $fecha);
+                if ($mes>12) {
+                    $mes-=12;
+                    $anio++;
+                }
+                $fecha_vencimiento = $anio . "-" . $mes;
+                $dia_mes = date('t', strtotime($fecha_vencimiento));
+                if ($dia_inicio > $dia_mes) {
+                    $dia_inicio = $dia_mes;
+                }
 
+                $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
+                break;
+            case 90:
+                $mes = date('m', $fecha) + ($periodicidad*3);
+                $anio = date('Y', $fecha);
+                if ($mes>12) {
+                    $mes-=12;
+                    $anio++;
+                }
+                $fecha_vencimiento = $anio . "-" . $mes;
+                $dia_mes = date('t', strtotime($fecha_vencimiento));
+                if ($dia_inicio > $dia_mes) {
+                    $dia_inicio = $dia_mes;
+                }
+
+                $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
+                break;
+            case 180:
+                $mes = date('m', $fecha) + ($periodicidad*6);
+                $anio = date('Y', $fecha);
+                if ($mes>12) {
+                    $mes-=12;
+                    $anio++;
+                }
+                $fecha_vencimiento = $anio . "-" . $mes;
+                $dia_mes = date('t', strtotime($fecha_vencimiento));
+                if ($dia_inicio > $dia_mes) {
+                    $dia_inicio = $dia_mes;
+                }
+
+                $fecha_vencimiento = strtotime($fecha_vencimiento . "-" . $dia_inicio);
+                break;
+            case 360:  
+                $anio = date('Y', $fecha) + $periodicidad;               
+                $fecha_vencimiento = strtotime($anio."-".date('m', $fecha)."-".date('d', $fecha));                
+                break;
+            case 365:
+                $anio = date('Y', $fecha) + $periodicidad;               
+                $fecha_vencimiento = strtotime($anio."-".date('m', $fecha)."-".date('d', $fecha));                
+                break;
             default :
                 $fecha_vencimiento = $fecha + ($periodicidad_tasa * 3600 * 24 * $periodicidad);
                 break;
         }
-
-
 
         return $fecha_vencimiento;
     }
