@@ -41,7 +41,7 @@ class credito_model extends main_model {
     var $_flag_pago_cuota_anterior = FALSE;
     var $_caducado_de = 0;
     var $_prorroga_de = 0;
-    var $log_cuotas = -1;
+    var $log_cuotas = 20404;//6
     
     function clear() {
         $this->_i = 0;
@@ -1093,7 +1093,7 @@ class credito_model extends main_model {
                 $rango_act = 0;
                 
                 foreach($this->_variaciones as $iv => $variacion) {
-                    if ($cuota['FECHA_INICIO'] >= $variacion['FECHA'] && $variacion['TIPO'] != EVENTO_INFORME) {
+                    if ($cuota['FECHA_VENCIMIENTO'] >= $variacion['FECHA'] && $variacion['TIPO'] != EVENTO_INFORME) {
                         
                         $INTERES_COMPENSATORIO_VARIACION = $variacion['POR_INT_COMPENSATORIO'];
                         $PERIODICIDAD_TASA_VARIACION = $variacion['PERIODICIDAD_TASA'];
@@ -1140,13 +1140,13 @@ class credito_model extends main_model {
                     
                     $flag = TRUE;
                     
-                    while(isset($variaciones[$nv]) && $flag) {
-                        if ($variaciones[$nv]['TIPO'] == EVENTO_DESEMBOLSO || $variaciones[$nv]['TIPO'] == EVENTO_TASA) {
-                            $fecha_fin = $variaciones[$nv]['FECHA'];
-                            $flag = FALSE;
-                        }
-                        $nv++;
-                    }
+//                    while(isset($variaciones[$nv]) && $flag) {
+//                        if ($variaciones[$nv]['TIPO'] == EVENTO_DESEMBOLSO || $variaciones[$nv]['TIPO'] == EVENTO_TASA) {
+//                            $fecha_fin = $variaciones[$nv]['FECHA'];
+//                            $flag = FALSE;
+//                        }
+//                        $nv++;
+//                    }
                     
                     if ($variacion['FECHA'] < $_revision_fecha) {
                         //continue;
@@ -1172,7 +1172,7 @@ class credito_model extends main_model {
                     /* RESOLVER RANGOS DE INTERESES COMPENSATORIOS */
                     $rango_comp_real = 0;
                     $calc_rango = ($variacion['TIPO'] == EVENTO_DESEMBOLSO && $variacion['FECHA'] < $cuota['FECHA_VENCIMIENTO']);
-                    $calc_rango = $calc_rango || ($variacion['TIPO'] == EVENTO_TASA && $variacion['FECHA'] < $cuota['FECHA_VENCIMIENTO'] && $variacion['ASOC']['COMPENSATORIO'] != $INTERES_COMPENSATORIO_VARIACION);
+                    //$calc_rango = $calc_rango || ($variacion['TIPO'] == EVENTO_TASA && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && $variacion['ASOC']['COMPENSATORIO'] != $INTERES_COMPENSATORIO_VARIACION);
                     $calc_rango = $calc_rango || ($variacion['FECHA'] >= $cuota['FECHA_VENCIMIENTO']);
                     $calc_rango = $calc_rango || (count($variaciones) - 1 == $iv);
                     

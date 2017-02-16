@@ -202,10 +202,13 @@ class formaltabase extends main_controller {
                 } else {
                     $fideicomiso = 0;
                 }
+                
+                $act_comp = 0;
 
                 $operatoria = trim(strip_tags($objPHPExcel->getActiveSheet()->getCell("B2")->getCalculatedValue()));
                 if ($operatoria) {
                     $operatoria = $this->mod->getOperatoriaId($operatoria);
+                    $act_comp = $this->mod->act_com;
                 } else {
                     $operatoria = 0;
                 }
@@ -311,6 +314,7 @@ class formaltabase extends main_controller {
                                 $_POST['clientes'] = $postulantes;
                                 $_POST['fideicomiso'] = $fideicomiso;
                                 $_POST['operatoria'] = $operatoria;
+                                $_POST['act_comp'] = $act_comp;
 
                                 $_POST['desembolsos'] = array();
 

@@ -3,7 +3,8 @@
 
 
 class formalta_model extends credito_model {
-
+    public $act_com = 0;
+            
     function get_credito_from_id($id){
         $this->_db->where("ID = ".$id);
         $credito = $this->_db->get_row("fid_creditos");
@@ -397,10 +398,11 @@ class formalta_model extends credito_model {
         $operatoria =  str_replace("  ", " ", str_replace(",", " ", $operatoria));
         $operatoria =  "%".str_replace(" ", "%", $operatoria)."%";
         
-        $this->_db->select("ID");
+        $this->_db->select("ID, ACT_COMPENS");
         $this->_db->where("NOMBRE LIKE '$operatoria'");
         
         if ($result = $this->_db->get_row("fid_operatorias")) {
+            $this->act_com = $result['ACT_COMPENS'];
             return $result['ID'];
         } else {
             return 0;
