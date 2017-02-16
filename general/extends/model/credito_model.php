@@ -3241,7 +3241,7 @@ ORDER BY T1.lvl DESC');
             }
             
             $this->_db->select("ID");
-            $this->_db->where("POSTULANTES  LIKE '%$id_cliente%' AND ID>0");
+            $this->_db->where("REPLACE(POSTULANTES, POSTULANTES, CONCAT(',', TRIM(POSTULANTES), ',')) LIKE '%,$id_cliente,%' AND ID>0");
             $this->_db->where("CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
             $this->_db->order_by("ID", "DESC");
             if ($result = $this->_db->get_row("fid_creditos")) {
