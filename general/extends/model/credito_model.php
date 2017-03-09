@@ -41,7 +41,7 @@ class credito_model extends main_model {
     var $_flag_pago_cuota_anterior = FALSE;
     var $_caducado_de = 0;
     var $_prorroga_de = 0;
-    var $log_cuotas = 19662;
+    var $log_cuotas = -1;
     
     function clear() {
         $this->_i = 0;
@@ -1305,7 +1305,9 @@ class credito_model extends main_model {
                                     $SALDO_ACT_COMP = $capital_arr['AMORTIZACION_CUOTA'];
                                 }
                                 
-                                $SALDO_CUOTA = $SALDO_ACT_COMP;
+                                if ($SALDO_CUOTA < $capital_arr['AMORTIZACION_CUOTA']) {
+                                    $SALDO_ACT_COMP = $SALDO_CUOTA; // saldo_act no puede ser superior a la amortización
+                                }
                                 //$pagos_dif_compens = $pagos[PAGO_COMPENSATORIO] + $pagos[PAGO_IVA_COMPENSATORIO];
                                 //$dif_compens = $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $pagos_dif_compens;
                                 
