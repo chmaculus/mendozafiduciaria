@@ -262,6 +262,7 @@ _credito.get_estado_cuotas = function(id, fecha, chequera, planchado){
         data : {
             credito_id : id,
             chequera: chequera,
+            calculo_cuota: $("#calculo_cuota").val(),
             planchado: planchado || 0,
             fecha : fecha
         },

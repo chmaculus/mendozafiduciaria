@@ -303,7 +303,7 @@ class credito_model extends main_model {
     }
 
     //obtiene un array del estado de todas las cuotas a la fecha dada
-    function get_deuda($fecha = false, $renew = true, $monto_pago = 0) {
+    function get_deuda($fecha = false, $renew = true, $monto_pago = 0, $calculo_cuota = 0) {
 
         $temp_saldo = 0;
         $IVA = $this->_iva_operatoria;
@@ -321,7 +321,7 @@ class credito_model extends main_model {
         $arr_deuda = array("gastos" => array(), "cuotas" => array(), "rtn" => 1, "fecha_reimputacion" => 0);
         
         if ($renew) {
-            $this->get_segmentos_cuota();
+            $this->get_segmentos_cuota(NO_FECHA, true, $calculo_cuota);
             $this->renew_datos($fecha);
         }
 
@@ -834,7 +834,7 @@ class credito_model extends main_model {
 
     //funcion principal donde se setean en los arrays de cuotas y/o la base de datos
     //los datos de los campos de intereses
-    function get_segmentos_cuota($fecha = NO_FECHA, $renew = true) {
+    function get_segmentos_cuota($fecha = NO_FECHA, $renew = true, $calculo_cuota = 0) {
 
         if (!$fecha)
             $fecha = $this->_fecha_calculo;
@@ -888,6 +888,9 @@ class credito_model extends main_model {
                     }
 
 
+                    if ($calculo_cuota && $this->log_cuotas < 0) {
+                        $this->log_cuotas = $cuota['ID'] + $calculo_cuota - 1;
+                    }
 
                     //se calculan los segmentos de la cuota segun la fecha establecida
                     $this->_make_segmento_cuota($cuota['ID'], $fecha_actual_calculo);
@@ -1048,6 +1051,7 @@ class credito_model extends main_model {
                 }
                 
                 $INTERES_COMPENSATORIO = 0;
+                $INTERES_COMPENSATORIO_ACT = 0;
                 $IVA_INTERES_COMPENSATORIO = 0;
                 $bfin_segmento = false;
 
@@ -1079,6 +1083,7 @@ class credito_model extends main_model {
                 
                 $_revision_fecha = 0;
                 $INTERES_COMPENSATORIO = 0;
+                $INTERES_COMPENSATORIO_ACT = 0;
                 $IVA_INTERES_COMPENSATORIO = 0;
                 $INT_MORATORIO = 0;
                 $INT_PUNITORIO = 0;
@@ -1305,7 +1310,9 @@ class credito_model extends main_model {
                                     $SALDO_ACT_COMP = $capital_arr['AMORTIZACION_CUOTA'];
                                 }
                                 
-                                $SALDO_CUOTA = $SALDO_ACT_COMP;
+                                if ($SALDO_CUOTA < $capital_arr['AMORTIZACION_CUOTA']) {
+                                    $SALDO_ACT_COMP = $SALDO_CUOTA; // saldo_act no puede ser superior a la amortización
+                                }
                                 //$pagos_dif_compens = $pagos[PAGO_COMPENSATORIO] + $pagos[PAGO_IVA_COMPENSATORIO];
                                 //$dif_compens = $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO - $pagos_dif_compens;
                                 
@@ -1318,8 +1325,13 @@ class credito_model extends main_model {
                                         
                                         $interes_act_comp = $this->_calcular_interes($SALDO_ACT_COMP, $rango_act, $INTERES_COMPENSATORIO_VARIACION_ACT, $PERIODICIDAD_TASA_VARIACION, $cuota['CUOTAS_RESTANTES'] == 16);
                                         $tmp['INT_COMPENSATORIO'] += $interes_act_comp;
-                                        //$INTERES_COMPENSATORIO += $interes_act_comp;
-                                        //$IVA_INTERES_COMPENSATORIO += ($interes_act_comp * $this->_iva_operatoria);
+                                        $INTERES_COMPENSATORIO_ACT += $interes_act_comp;
+                                        
+                                        if ($variacion['TIPO'] == EVENTO_RECUPERO) {
+                                            $INTERES_COMPENSATORIO += $INTERES_COMPENSATORIO_ACT;
+                                            $IVA_INTERES_COMPENSATORIO += ($INTERES_COMPENSATORIO_ACT * $this->_iva_operatoria);
+                                            $INTERES_COMPENSATORIO_ACT = 0;
+                                        }
 
                                         $INT_COMPENSATORIO_ACT += $interes_act_comp;
                                         if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {

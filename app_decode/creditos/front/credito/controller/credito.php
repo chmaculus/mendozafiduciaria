@@ -237,6 +237,7 @@ class credito extends main_controller{
         $credito_id = $_POST['credito_id'];
         $chequera = $_POST['chequera'];
         $planchado = $_POST['planchado'];
+        $calculo_cuota = @$_POST['calculo_cuota'];
         $fecha = isset($_POST['fecha']) ? $_POST['fecha'] : time();
         
         $this->mod->set_credito_active($credito_id);
@@ -275,7 +276,7 @@ class credito extends main_controller{
         //segundo parametro: recalcular datos
         //tercer parametro true para forzar la deuda con el compensatorio total
         
-        $ret_reuda= $this->mod->get_deuda($fecha, true );
+        $ret_reuda= $this->mod->get_deuda($fecha, true, 0, $calculo_cuota);
         $ret_reuda['monto_credito'] = $this->mod->get_monto_credito();
         $ret_reuda['desembolsos'] = $this->mod->get_desembolsos();
         logthis("cuotas",$ret_reuda);

@@ -17,7 +17,9 @@
                     <input type="checkbox" id="chkPlanchado"/>
                 </div>
                 <div class="field_opc-informe">
-                    <span class=""></span><br/>
+                    <span class="">
+                        <input type="hidden" value="" id="calculo_cuota" />
+                    </span><br/>
                     <button onclick="actualizar_informe();">Actualizar Informe</button>
                 </div>
             </div>
