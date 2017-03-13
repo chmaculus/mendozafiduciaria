@@ -627,9 +627,9 @@ class credito_model extends main_model {
                     "IVA_GASTOS" => $arr_iva_gastos,
                     "IVA_PUNITORIO" => $arr_iva_punitorio,
                     "IVA_MORATORIO" => $arr_iva_moratorio,
-                    "IVA_COMPENSATORIO" => $arr_iva_compensatorio,
                     "PUNITORIO" => $arr_punitorio,
                     "MORATORIO" => $arr_moratorio,
+                    "IVA_COMPENSATORIO" => $arr_iva_compensatorio,
                     "COMPENSATORIO" => $arr_compensatorio,
                     "CAPITAL" => $arr_capital,
                     "ADELANTO" => (isset($this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO])) ? $this->_pagos[$cuota['CUOTAS_RESTANTES'] - 1][PAGO_ADELANTADO] : 0,
@@ -1425,7 +1425,7 @@ class credito_model extends main_model {
                 $cuota_segmento['_PARENT'] = $cuota_id;
                 $cuota_segmento['_ACTIVA'] = 0;
 
-                $cuota_segmento['POR_INT_COMPENSATORIO'] = $segmento['POR_INT_COMPENSATORIO'];
+                $cuota_segmento['POR_INT_COMPENSATORIO'] = isset($segmento['POR_INT_COMPENSATORIO']) ? $segmento['POR_INT_COMPENSATORIO'] : 0;
                 $cuota_segmento['_ID_VARIACION'] = $segmento['_ID_VARIACION'];
                 $cuota_segmento['INT_PUNITORIO'] = $segmento['INT_PUNITORIO'];
                 $cuota_segmento['INT_MORATORIO'] = $segmento['INT_MORATORIO'];
@@ -2366,7 +2366,7 @@ class credito_model extends main_model {
             }
         }
 
-        $this->_db->delete("fid_creditos_pagos", "ID_CREDITO = " . $this->_id_credito . " AND ID_TIPO = " . PAGO_ADELANTADO);
+        //$this->_db->delete("fid_creditos_pagos", "ID_CREDITO = " . $this->_id_credito . " AND ID_TIPO = " . PAGO_ADELANTADO);
         foreach ($arr_pago as $pago) {
             $this->_db->insert("fid_creditos_pagos", $pago);
         }
@@ -2855,7 +2855,9 @@ ORDER BY T1.lvl DESC');
                 "ID" => TEMP_ID,
                 "FECHA" => $pagos[0]['FECHA'],
                 "ID_CREDITO" => $this->_id_credito,
-                "TIPO" => 3);
+                "TIPO" => 3,
+                "ESTADO" => 0
+                );
             $variaciones[TEMP_ID]['ASOC'] = $pagos;
         }
 
@@ -4033,8 +4035,8 @@ ORDER BY T1.lvl DESC');
             if ($pago['ID_TIPO'] == PAGO_ADELANTADO) {
                 $this->renew_datos();
 
-                $adelanto_pago = $this->adelantar_pagos($fecha);
-                $pago_total += $adelanto_pago;
+                //$adelanto_pago = $this->adelantar_pagos($fecha);
+                //$pago_total += $adelanto_pago;
                 break;
             }
         }
