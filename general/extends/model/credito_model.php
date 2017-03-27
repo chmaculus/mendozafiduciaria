@@ -2995,7 +2995,7 @@ ORDER BY T1.lvl DESC');
         $pagos_cuota = 0;
         $variaciones = $this->_variaciones;
         foreach ($this->_variaciones as $var) {
-            if (isset($var['ASOC']) && $var['TIPO'] == EVENTO_RECUPERO && $var['FECHA'] == $fecha) {
+            if (isset($var['ASOC']) && $var['TIPO'] == EVENTO_RECUPERO && $var['FECHA'] <= $fecha) {
                 foreach ($var['ASOC'] as $concepto) {
                     if ($concepto['CUOTAS_RESTANTES'] == $cuotas_restantes) {
                         $pagos_cuota += $concepto['MONTO'];
