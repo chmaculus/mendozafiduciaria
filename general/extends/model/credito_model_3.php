@@ -1096,6 +1096,13 @@ class credito_model extends main_model {
                         ++$k;
                     }
                 }
+            
+                if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
+                    foreach ($variaciones as $variacion) {
+                        echo "{$variacion['FECHA']} - {$variacion['TIPO']}<br />";
+                    } 
+                }
+
                 
                 $_revision_fecha = 0;
                 $INTERES_COMPENSATORIO = 0;
@@ -1279,6 +1286,9 @@ class credito_model extends main_model {
 
                         //analizar moratorios y punitorios-- y si es actualización de compensatorios
                         if ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && ($fecha_get >= $variacion['FECHA'] || $variacion['TIPO'] == EVENTO_INFORME)) {
+                            if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
+                                echo "<td>aca</td>";
+                            }
                             //if ($fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']) {
                             //$fecha_get > $cuota['FECHA_VENCIMIENTO'] && $variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO']
                             $rango_int_mor = ($variacion['FECHA'] - $fecha_variacion_moratorio) / (24 * 3600);
@@ -1352,7 +1362,7 @@ class credito_model extends main_model {
                                 
                                 if ($SALDO_ACT_COMP > 0.50) { //&& ($dif_compens > 0.5 || $pagos_dif_compens == 0 )
                                     
-                                    if ((count($variaciones) -1) == $iv || ($variacion['TIPO'] == EVENTO_RECUPERO && $total_pagos > 0) || $variacion['TIPO'] == EVENTO_TASA || $variacion['TIPO'] == EVENTO_INFORME) {
+                                    if (($variacion['TIPO'] == EVENTO_RECUPERO && $total_pagos > 0) || $variacion['TIPO'] == EVENTO_TASA || $variacion['TIPO'] == EVENTO_INFORME) {
                                         if (!isset($INTERES_COMPENSATORIO_VARIACION_ACT)) {
                                             $INTERES_COMPENSATORIO_VARIACION_ACT = $INTERES_COMPENSATORIO_VARIACION;
                                         }
