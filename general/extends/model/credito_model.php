@@ -1308,7 +1308,9 @@ class credito_model extends main_model {
                             
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
-                                break;
+                                if ($INTERES_COMPENSATORIO == 0) {
+                                    break;
+                                }
                             }
                             
                             
