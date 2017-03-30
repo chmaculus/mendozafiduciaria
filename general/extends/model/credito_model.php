@@ -926,8 +926,10 @@ class credito_model extends main_model {
             if (!$fecha) {
                 $fecha = $cuota['FECHA_VENCIMIENTO'];
             }
-
-
+            
+            if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
+                echo '<table id="debug"><tr><td colspan="3">CUOTAS RESTANTES: <strong>' . $cuota['CUOTAS_RESTANTES'] . '</strong></td></tr>';
+            }
 
             $bultima_cuota = false;
             $bprimera_cuota = false;
@@ -955,7 +957,6 @@ class credito_model extends main_model {
                     $fecha = $cuota['FECHA_VENCIMIENTO'];
                 }
             }
-
 
             reset($this->_variaciones);
             $fecha_1erdesembolso = FALSE;
@@ -1133,13 +1134,13 @@ class credito_model extends main_model {
                 $AMOR_REAL_ACT = 0;
                 $total_pagos = 0;
                 $dias_moras = 0;
+                $break = false;
                 $_fecha_inicio = $cuota['FECHA_INICIO'];
                 
-                if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
-                    echo '<table id="debug"><tr><td colspan="3">CUOTAS RESTANTES: <strong>' . $cuota['CUOTAS_RESTANTES'] . '</strong></td></tr>';
-                }
-                
                 foreach($variaciones as $iv => $variacion) {
+                    if ($break) {
+                        break;
+                    }
                     if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
                         echo '<tr>';
                     }
@@ -1308,11 +1309,8 @@ class credito_model extends main_model {
                             
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
-                                if ($INTERES_COMPENSATORIO == 0) {
-                                    break;
-                                }
+                                $break = TRUE;
                             }
-                            
                             
                             $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;
                             $tmp['INT_PUNITORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_PUNITORIO / 100) * $rango_int_mor / $this->_interese_punitorio_plazo) - $SALDO_CUOTA;
