@@ -203,7 +203,7 @@ function agregar_variacion() {
         case 2:
             var gasto = $("#txtMonto").val();
             var descripcion = $("#txtDescripcion").val();
-            _cuotas.agregar_gasto(_cuotas.ID_CREDITO, gasto, fecha, descripcion);
+            _cuotas.agregar_gasto(_cuotas.ID_CREDITO, gasto, fecha, descripcion, true);
             break;
         case 3:
             var tasa = $("#txtMonto").val();
@@ -335,9 +335,24 @@ function agregar_desembolso(id_credito, monto, tipo, fecha, reset) {
     });
 }
 
-_cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion) {
-    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+_cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion, confirm) {
+    confirm = confirm || false;
     
+    if (existEventosPosteriores() && confirm) {
+        jConfirm("¿Hay eventos posteriores, desea reimputar estos eventos? ","MENDOZA FIDUCIARIA", function(e){
+            if (e){
+                _agregar_gasto(id_credito, monto, fecha, descripcion);
+            }
+        });
+        return;
+    }
+    
+    _agregar_gasto(id_credito, monto, fecha, descripcion);
+};
+
+function _agregar_gasto(id_credito, monto, fecha, descripcion) {
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
+
     $.ajax({
         url: _cuotas.URL + "/x_agregar_gasto",
         type: "post",
@@ -359,7 +374,7 @@ _cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion) {
 
           $(".div-result").html(result);
             _events_lista();
-            
+
             jAlert("Se ha agregado el gasto correctamente","Eventos Cargados", function(){
                 return;
             }

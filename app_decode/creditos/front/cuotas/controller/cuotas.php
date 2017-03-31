@@ -454,7 +454,17 @@ class cuotas extends main_controller{
         $descripcion = $_POST['descripcion'];
         $fecha = $_POST['fecha'];
         
+        $this->mod->set_fecha_actual($fecha);
+        $pagos = $this->mod->desimputar_pago();
+        
         $this->mod->agregar_gasto( $gasto, $fecha, $descripcion);
+        if ($pagos) {
+            set_time_limit(0);
+            foreach($pagos as $pago){
+                $this->mod->realizar_pago($pago['fecha'], $pago['monto']);
+            }
+        }
+        
         $this->mod->get_segmentos_cuota();
         $this->mod->renew_datos();
         

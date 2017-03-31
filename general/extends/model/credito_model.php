@@ -330,11 +330,12 @@ class credito_model extends main_model {
         //GASTOS
         $gastos_arr = array();
         foreach ($gastos as $gasto) {
+            $kc = 0;
             foreach ($cuotas as $cuota) {
-                if ($gasto['FECHA'] > $cuota['FECHA_INICIO'] && $gasto['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
+                if (($gasto['FECHA'] > $cuota['FECHA_INICIO'] || $kc == 0) && $gasto['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
                     $this->_db->where("ID_TIPO = 8 AND CUOTAS_RESTANTES = " . $cuota['CUOTAS_RESTANTES']);
                     $pago_gasto = $this->get_tabla_pagos();
-
+                    
                     $pago_gasto_tmp = array(
                         "TOTAL" => $gasto['MONTO'],
                         "PAGOS" => $pago_gasto,
@@ -346,22 +347,24 @@ class credito_model extends main_model {
                     $gastos_arr[] = $pago_gasto_tmp;
                     $arr_deuda['gastos'][] = $pago_gasto_tmp;
                 }
+                ++$kc; //buscamos la primer cuota
             }
         }
-
+        
+        $kc = 0;
         foreach ($cuotas as $cuota) {
             $pago = $this->_pagos[$cuota['CUOTAS_RESTANTES']];
             
             //buscamos los gastos correspondientes a la fecha de la cuota
             $arr_gastos = array();
             for ($g = 0; $g < count($gastos_arr); $g++) {
-                if ($gastos_arr[$g]['ROW']['FECHA'] > $cuota['FECHA_INICIO'] &&
-                        $gastos_arr[$g]['ROW']['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
+                if (($gastos_arr[$g]['ROW']['FECHA'] > $cuota['FECHA_INICIO'] || $kc == 0) && $gastos_arr[$g]['ROW']['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
                     unset($gastos_arr['ROW']);
                     $arr_gastos[] = $gastos_arr[$g];
                     //break;
                 }
             }
+            ++$kc;
             
             $fecha_desembolso = FALSE;
             
@@ -1274,9 +1277,6 @@ class credito_model extends main_model {
                         }*/
                         
                         $total_pagos = $this->_get_pagos_cuota($variacion['FECHA'], $cuota['CUOTAS_RESTANTES']);
-                            if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
-                                echo "<td>{$variacion['TIPO']} - " . date('Y-m-d', $variacion['FECHA']) . "</td>";
-                            }
 
                         //analizar moratorios y punitorios-- y si es actualización de compensatorios
                         if ($variacion['FECHA'] > $cuota['FECHA_VENCIMIENTO'] && ($fecha_get >= $variacion['FECHA'] || $variacion['TIPO'] == EVENTO_INFORME)) {
@@ -1318,7 +1318,7 @@ class credito_model extends main_model {
                             if ($SALDO_CUOTA) {
                                 $dias_moras += $rango_int_mor;
                             }
-                            
+                                
                             if ($this->log_cuotas && $cuota['ID'] == $this->log_cuotas) {
                                 echo "<td>EVENTO " . $variacion['TIPO'] . "<br />" . date(" d/m/Y", $variacion['FECHA']) . "<br />";
                                 echo "PAGOS: " . round($total_pagos, 2) . "<br />AMORT.REAL. $AMOR_REAL_ACT</td>";
@@ -3016,7 +3016,7 @@ ORDER BY T1.lvl DESC');
         foreach ($this->_variaciones as $var) {
             if (isset($var['ASOC']) && $var['TIPO'] == EVENTO_RECUPERO && $var['FECHA'] <= $fecha) {
                 foreach ($var['ASOC'] as $concepto) {
-                    if ($concepto['CUOTAS_RESTANTES'] == $cuotas_restantes) {
+                    if ($concepto['CUOTAS_RESTANTES'] == $cuotas_restantes && !($concepto['ID_TIPO'] == PAGO_GASTOS || $concepto['ID_TIPO'] == PAGO_IVA_GASTOS_ADM || $concepto['ID_TIPO'] == PAGO_GASTOS_ADM)) {
                         $pagos_cuota += $concepto['MONTO'];
                     }
                 }
