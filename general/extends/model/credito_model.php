@@ -332,7 +332,7 @@ class credito_model extends main_model {
         foreach ($gastos as $gasto) {
             $kc = 0;
             foreach ($cuotas as $cuota) {
-                if (($gasto['FECHA'] > $cuota['FECHA_INICIO'] || $kc == 0) && $gasto['FECHA'] < $cuota['FECHA_VENCIMIENTO']) {
+                if (($gasto['FECHA'] > $cuota['FECHA_INICIO'] || $kc == 0) && $gasto['FECHA'] <= $cuota['FECHA_VENCIMIENTO']) {
                     $this->_db->where("ID_TIPO = 8 AND CUOTAS_RESTANTES = " . $cuota['CUOTAS_RESTANTES']);
                     $pago_gasto = $this->get_tabla_pagos();
                     
