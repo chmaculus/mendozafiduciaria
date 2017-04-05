@@ -1225,7 +1225,7 @@ class credito_model extends main_model {
                     }
                     
                     
-                    $capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
+                    $capital_arr = $this->_get_saldo_capital(($fecha_inicio < $cuota['FECHA_VENCIMIENTO'] ? $fecha_inicio : $cuota['FECHA_VENCIMIENTO'] - 1), true, false);
                     //$capital_arr = $this->_get_saldo_capital($fecha_inicio, true, false);
                     $SALDO_CAPITAL = $capital_arr['SALDO_TEORICO'];
                     $tmp['CAPITAL_CUOTA'] = $capital_arr['AMORTIZACION_CUOTA'];
@@ -1445,7 +1445,8 @@ class credito_model extends main_model {
                     
                     //BUSCAMOS UN CAMBIO DE TASA
                     foreach ($this->_variaciones as $tv) {
-                        if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) {
+                        //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get) { 04/04/2017
+                        if ($variacion['TIPO'] != EVENTO_INFORME && $variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA) {
                         //if ($variacion['FECHA'] >= $tv['FECHA'] && $tv['TIPO'] == EVENTO_TASA && $tv['FECHA'] <= $fecha_get && ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO']))) {
                             if ($tv['FECHA'] <= $cuota['FECHA_VENCIMIENTO'] || isset($tv['CRED_CAIDO'])) {
                                 $INT_SUBSIDIO = $tv['POR_INT_SUBSIDIO'];
@@ -1544,6 +1545,7 @@ class credito_model extends main_model {
         
         
         
+        
         return $cuota;
     }
 
@@ -1588,7 +1590,8 @@ class credito_model extends main_model {
                 }
             }
         }
-            
+        $bsegmentos = true;//calculamos segmentos hasta ver cuando arreglar esto
+        
         $cuotas_anteriores = array();
         foreach ($this->_cuotas as $cuota_item) {
             if ($cuota_item['CUOTAS_RESTANTES'] == $cuota['CUOTAS_RESTANTES'])
@@ -1653,7 +1656,7 @@ class credito_model extends main_model {
 
                 $cuota['POR_INT_COMPENSATORIO'] = $segmento['POR_INT_COMPENSATORIO'];
             }
-
+            
             $cuota['INT_MORATORIO'] = $int_moratorio;
             $cuota['INT_PUNITORIO'] = $int_punitorio;
         } else {

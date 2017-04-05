@@ -454,7 +454,7 @@ class cuotas extends main_controller{
         $descripcion = $_POST['descripcion'];
         $fecha = $_POST['fecha'];
         
-        $this->mod->set_fecha_actual($fecha);
+        $this->mod->set_fecha_actual($fecha - 1);
         $pagos = $this->mod->desimputar_pago();
         
         $this->mod->agregar_gasto( $gasto, $fecha, $descripcion);
