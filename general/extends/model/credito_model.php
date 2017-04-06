@@ -1095,9 +1095,14 @@ class credito_model extends main_model {
                     foreach ($variaciones as $variacion) {
                         if ($variacion['FECHA'] >= $evento_informe['FECHA']) {
                             array_splice($variaciones, $k, 0, array($evento_informe));
+                            $evento_informe = FALSE;
                             break;
                         }
                         ++$k;
+                    }
+                    
+                    if ($evento_informe) {
+                        array_splice($variaciones, $k, 0, array($evento_informe));
                     }
                 }
                 
