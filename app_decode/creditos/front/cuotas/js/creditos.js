@@ -103,11 +103,11 @@ function _renew_versiones(){
 }
 
 
-function existDesembolsosTeoricos(creadito_id, fecha){
+function existDesembolsos(creadito_id, fecha){
     var ret = false;
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Verificando desembolsos</h4>' });
     $.ajax({
-        url: _cuotas.URL + "/x_verificar_desembolsos_reales",
+        url: _cuotas.URL + "/x_verificar_desembolsos",
         data: {
             fecha: fecha,
             credito_id: creadito_id,
@@ -117,7 +117,7 @@ function existDesembolsosTeoricos(creadito_id, fecha){
         async : false,
         success: function(result) {
             $.unblockUI();
-            if (result=='-1'){
+            if (result == '-1') {
                 ret = true;
                 return;
             }         
@@ -131,8 +131,8 @@ _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
     confirm = confirm || false;
     _version_change = false;
     if (!confirm){
-        if (existDesembolsosTeoricos(id_credito, fecha)){
-            jAlert("Debe agregar desembolsos reales para agregar este evento.", "MENDOZA FIDUICIARIA", function() {
+        if (!existDesembolsos(id_credito, fecha)){
+            jAlert("Debe agregar el 100% de los desembolsos para agregar este evento.", "MENDOZA FIDUICIARIA", function() {
                 return;
             });      
             return;
@@ -993,24 +993,32 @@ function imprimirEventos(){
 }
 
 function refinanciar() {
-    $.ajax({
-        url: _cuotas.URL + "/x_emitir_una_cuota",
-        data: {
-            fecha: $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000,
-            credito_id: _cuotas.ID_CREDITO
-        },
-        type: "post",
-        async : false,
-        success: function(result) {
-            if (result=='-1') {
-                ret = true;
-                return;
-            } else {
-                $(".div-result").html(result);
-                $(window).scrollTop($(".div-result").offset().top);
+    var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
+    if (!existDesembolsos(_cuotas.ID_CREDITO, fecha)){
+        jAlert("Debe agregar el 100% de los desembolsos para agregar este evento.", "MENDOZA FIDUICIARIA", function() {
+            return;
+        });      
+        return;
+    } else {
+        $.ajax({
+            url: _cuotas.URL + "/x_emitir_una_cuota",
+            data: {
+                fecha: fecha,
+                credito_id: _cuotas.ID_CREDITO
+            },
+            type: "post",
+            async : false,
+            success: function(result) {
+                if (result=='-1') {
+                    ret = true;
+                    return;
+                } else {
+                    $(".div-result").html(result);
+                    $(window).scrollTop($(".div-result").offset().top);
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 function caducar() {

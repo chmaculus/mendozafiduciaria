@@ -830,6 +830,31 @@ class cuotas extends main_controller{
         }
     }
     
+    function x_verificar_desembolsos(){
+        $fecha = $_POST['fecha'];
+        $credito_id = $_POST['credito_id'];
+        $version = $_POST['version_id'];
+        
+        $ret = '';
+        if ($this->mod->set_credito_active($credito_id)) {
+            $this->mod->set_version_active($version);
+            $this->mod->renew_datos();
+
+            $monto_credito = $this->mod->get_monto_credito();
+            $desembolsos = $this->mod->get_desembolsos(0);
+            $desembolsado = 0;
+            
+            foreach($desembolsos as $desembolso){
+                $desembolsado += $desembolso['MONTO'];
+            }
+            
+            if (!($desembolsado == 0 || ($monto_credito - $desembolsado))) {
+                $ret = "-1";
+            }
+        }
+        
+        die($ret);
+    }
     function x_verificar_desembolsos_reales(){
        $fecha = $_POST['fecha'];
         $credito_id = $_POST['credito_id'];
