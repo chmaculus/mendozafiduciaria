@@ -283,7 +283,7 @@ class credito_informes_model extends credito_model {
 
         $fecha_imputacion = date("d/m/Y", $variacion['FECHA']);
         $fecha_carga = date("d/m/Y", $variacion['FECHA']);
-        $recivo = "111111-111";
+        $recivo = str_pad($this->_id_credito, 10, "0", STR_PAD_LEFT) . '-' . str_pad(count($this->_cuotas) + 1 - $variacion['ASOC'][count($variacion['ASOC'])-1]['CUOTAS_RESTANTES'], 3, "0", STR_PAD_LEFT);
 
         $total_cuota = 0;
         $total_gastos = 0;

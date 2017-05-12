@@ -19,9 +19,11 @@ if (!$desembolsos) {
 ?>
 <ul class="lista-informe cuotas">
     <li class="titulo">
-        <span class="numero-desembolso">NUMERO</span>
+        <span class="numero-desembolso">Nº</span>
         <span class="fecha-desembolso">VENCIMIENTO</span>
         <span class="monto-desembolso">ESTADO</span>
+        <span class="porcentaje-desembolso">CUOTA</span>
+        <span class="porcentaje-desembolso">PAGO</span>
         <span class="porcentaje-desembolso">SALDO CUOTA</span>
     </li>    
 <?php 
@@ -138,7 +140,7 @@ foreach($cuotas as $kk=>$cuota){
     
     if ($cuota['_INFO']['HASTA'] < $fecha_actual){
         if ($total_a_pagar > 0){
-            $estado = "Mora";
+            $estado = "MORA";
             $class = "mora";
         }
         else{
@@ -214,6 +216,8 @@ foreach($cuotas as $kk=>$cuota){
         <span class="numero-desembolso"><?=$cuota['_INFO']['NUM']?></span>
         <span class="fecha-desembolso"><?=date("d/m/Y",$cuota['_INFO']['HASTA'])?></span>
         <span class="monto-desembolso"><?=$estado?></span>
+        <span class="porcentaje-desembolso">$<?=number_format($total_total + $iva_total,2,",",".") ?></span>
+        <span class="porcentaje-desembolso">$<?=number_format($total_pagado + $iva_pagado,2,",",".") ?></span>
         <span class="porcentaje-desembolso">$<?=$total_a_pagar ?></span>
         <span class="opcion ampliar">( + )</span>
         <span class="opcion evolucion" >( Evolucion + )</span>

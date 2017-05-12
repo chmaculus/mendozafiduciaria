@@ -5,7 +5,7 @@
 
 
             <div class="elem elem_med">
-                <label>Codigo:</label>
+                <label>Código:</label>
                 <div class="indent formtext">
                     <span ><?=$ID?></span>
                     
@@ -69,7 +69,7 @@
             <div class="elem elem_med tri" >
                 <label>T. Compensatoria:</label>
                 <div class="indent">
-                    <span ><?=number_format($T_COMPENSATORIO,3,",",".");?>%  </span>
+                    <span ><?=number_format($T_COMPENSATORIO,3,",",".");?>%  <?= $ACT_COMP ? '(con actualización)': '' ?></span>
                 </div>
             </div>            
             <div class="elem elem_med tri" >

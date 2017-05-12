@@ -73,25 +73,26 @@ _formaltabase.start = function(){
                     fecha = tmpf;
                 }
             });
-            $.ajax({
-                url : _formaltabase.URL + "/x_get_data_operatoria/",
-                type: "post",
-                data: {
-                    id: $("#comboOperatorias").val(),
-                    fecha: fecha
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data && data !== 'false') {
-                        $("#txtInteresCompensatorio").val(data.COMPENSATORIO);
-                        $("#txtInteresPunitorio").val(data.PUNITORIO);
-                        $("#txtInteresMoratorio").val(data.MORATORIO);
-                        $("#txtTasaSubsidio").val(data.SUBSIDIO);
-                        $("#txtIVA").val(data.IVA);
-                    }
-                }
-            });
         }
+        $.ajax({
+            url : _formaltabase.URL + "/x_get_data_operatoria/",
+            type: "post",
+            data: {
+                id: $("#comboOperatorias").val(),
+                fecha: fecha
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data && data !== 'false') {
+                    $("#txtInteresCompensatorio").val(data.COMPENSATORIO);
+                    $("#txtInteresPunitorio").val(data.PUNITORIO);
+                    $("#txtInteresMoratorio").val(data.MORATORIO);
+                    $("#txtTasaSubsidio").val(data.SUBSIDIO);
+                    $("#txtIVA").val(data.IVA);
+                    $("#chkActComp").attr('checked', (data.ACT_COMP == '1' ? true : false));
+                }
+            }
+        });
     })
 }
 
@@ -322,6 +323,7 @@ function _generar_cuotas(simulacion){
             credito_caduca: $("#credito_caduca").val(),
             fecha_caduca: $("#fecha_caduca").val(),
             prorroga: $("#prorroga").val(),
+            act_comp: $("#chkActComp:checked").length,
             simulacion: simulacion
         },
         type : "post",

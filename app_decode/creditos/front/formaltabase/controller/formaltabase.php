@@ -549,6 +549,7 @@ class formaltabase extends main_controller {
         $fideicomiso = $_POST['fideicomiso'];
         $operatoria = $_POST['operatoria'];
         $iva = isset($_POST['tiva']) ? $_POST['tiva'] : IMP_IVA * 100;
+        $act_comp = (isset($_POST['act_comp']) && $_POST['act_comp']) ? TRUE : FALSE;
 
         $plazo_compensatorio = $_POST['plazo_compensatorio'];
         $plazo_moratorio = $_POST['plazo_moratorio'];
@@ -568,6 +569,7 @@ class formaltabase extends main_controller {
         $this->mod->set_fideicomiso($fideicomiso);
         $this->mod->set_operatoria($operatoria);
         $this->mod->set_iva($iva);
+        $this->mod->set_act_comp($act_comp);
 
 
         //si el desembolso inicial es posterior a la fecha de primer vencimiento agregamos un desembolso ficticio al inicio de la cuota de 0

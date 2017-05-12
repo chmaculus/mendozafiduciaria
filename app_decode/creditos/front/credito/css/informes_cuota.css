@@ -6,10 +6,11 @@
 }
 
 .lista-informe.cuotas .numero-desembolso{
-    width: 80px;
+    min-width:30px;
+    width:30px;
 }
 .lista-informe.cuotas .fecha-desembolso{
-    width: 140px;
+    width: 120px;
 }
 .lista-informe.cuotas .monto-desembolso{
     width: 120px;
