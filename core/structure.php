@@ -89,7 +89,7 @@ function handleShutdownController($path) {
 
             exit;
         } else {
-            echo "asd";
+            echo "Error en el sistema";
         }
     }
 }

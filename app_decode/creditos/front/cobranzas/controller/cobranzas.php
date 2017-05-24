@@ -82,7 +82,7 @@ class cobranzas extends main_controller {
 
     function init_json() {
         $periodo = isset($_POST['fecha']) && $_POST['fecha'] ? strtotime('01-' . $_POST['fecha']) : time();
-        echo trim(json_encode($this->mod->get_cuotas_a_facturar($periodo)));
+        echo trim(json_encode($this->mod->get_cuotas_a_facturar(0, $periodo)));
         die;
     }
     
@@ -128,8 +128,9 @@ class cobranzas extends main_controller {
         $periodo = isset($_POST['fecha']) && $_POST['fecha'] ? strtotime('01-' . $_POST['fecha']) : time();
         
         $fecha = date('Y-m-d H:i:s');
+        $this->mod->init_log('facturacion_cobranzas', strtotime(date('Y-m-d H:i:s')));
         foreach ($_POST['creditos'] as $credito_id) {
-            if ($credito = $this->get_cuotas_a_facturar($periodo, $credito_id)) {
+            if ($credito = $this->mod->get_cuotas_a_facturar($credito_id, $periodo)) {
                 $this->mod->generar_factura_c($credito, $fecha);
             }
         }

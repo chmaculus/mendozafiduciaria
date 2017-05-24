@@ -16,7 +16,9 @@ class cobranzas_model extends credito_model {
     }
 
     private function _log_creditos($msg) {
-        fwrite($this->fd, date('Y-m-d H:i:s') . ": $msg\n");
+        if ($this->fd) {
+            fwrite($this->fd, date('Y-m-d H:i:s') . ": $msg\n");
+        }
     }
 
     public function getCliente($credito) {
@@ -69,7 +71,7 @@ class cobranzas_model extends credito_model {
         return array('id_cliente' => $id_cliente, 'id_cliente_ho' => $id_cliente_ho);
     }
 
-    public function get_cuotas_a_facturar($fecha = FALSE, $credito_id = FALSE) {
+    public function get_cuotas_a_facturar($credito_id = FALSE, $fecha = FALSE) {
         $this->_db->join('fid_creditos_cuotas cc', "c.ID = cc.ID_CREDITO AND cc.FECHA_INICIO < '$fecha' AND cc.FECHA_VENCIMIENTO > '$fecha'");
         return $this->_get_cuotas_a_facturar($credito_id);
     }
