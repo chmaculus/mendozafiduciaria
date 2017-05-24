@@ -256,7 +256,8 @@ function init_grid(id_usuario,tipo){
             { name: 'CARPETA', type: 'integer' },
             { name: 'ESTADO', type: 'string' },
             { name: 'DESEMBOLSOS', type: 'float' },
-            { name: 'PAGOS', type: 'float' }
+            { name: 'PAGOS', type: 'float' },
+            { name: 'SALDO_CAPITAL', type: 'float' }
         ],
         url: 'general/extends/extra/creditos.php',
         data:{
@@ -345,7 +346,8 @@ function init_grid(id_usuario,tipo){
             { text: 'CARPETA', datafield: 'CARPETA', width: '70px', hidden : false, filterable : true },
             { text: 'ESTADO', datafield: 'ESTADO', width: '10%', hidden : false, filterable : true, cellsrenderer: cellsrenderer, cellclassname: 'credEst' },
             { text: 'DESEMBOLSOS', datafield: 'DESEMBOLSOS', width:'70px', hidden : false, filterable : false },
-            { text: 'PAGOS', datafield: 'PAGOS', width: '70px', hidden : false, filterable : false }
+            { text: 'PAGOS', datafield: 'PAGOS', width: '70px', hidden : false, filterable : false },
+            { text: 'SALDO CAPITAL', datafield: 'SALDO_CAPITAL', width: '70px', hidden : false, filterable : false }
         ]
     });
     
