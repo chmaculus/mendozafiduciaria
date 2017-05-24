@@ -237,7 +237,7 @@ class credito extends main_controller{
         $credito_id = $_POST['credito_id'];
         $chequera = $_POST['chequera'];
         $planchado = $_POST['planchado'];
-        $calculo_cuota = @$_POST['calculo_cuota'];
+        $calculo_cuota = isset($_POST['calculo_cuota']) ? $_POST['calculo_cuota'] : '';
         $fecha = isset($_POST['fecha']) ? $_POST['fecha'] : time();
         
         $this->mod->set_credito_active($credito_id);

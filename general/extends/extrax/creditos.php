@@ -14,7 +14,7 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getCreditos') {
     list($d, $m, $y) = explode("-", date("d-m-Y"));
     $time = mktime(0, 0, 0, $m, $d, $y);
 
-    $cnn->where("t.CREDITO_ESTADO <> " . ESTADO_CREDITO_ELIMINADO);
+    $cnn->where("t.ID > 0 AND t.CREDITO_ESTADO <> " . ESTADO_CREDITO_ELIMINADO);
     $cnn->select("t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES_NOMBRES, POSTULANTES_CUIT, ID_OPERACION, ifnull(e.CREDITO_ESTADO,0) as CR_ESTADO, t.CREDITO_ESTADO,"
             . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_desembolsos WHERE ID_CREDITO = t.ID), 0) AS DESEMBOLSOS, "
             . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_pagos WHERE ID_CREDITO = t.ID), 0) AS PAGOS, "
