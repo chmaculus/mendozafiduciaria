@@ -279,6 +279,7 @@ class credito extends main_controller{
         $ret_reuda= $this->mod->get_deuda($fecha, true, 0, $calculo_cuota);
         $ret_reuda['monto_credito'] = $this->mod->get_monto_credito();
         $ret_reuda['desembolsos'] = $this->mod->get_desembolsos();
+        $ret_reuda['ajustes'] = $this->mod->get_ajustes($fecha);
         logthis("cuotas",$ret_reuda);
 
         $ret_reuda['fecha_actual'] = $fecha;

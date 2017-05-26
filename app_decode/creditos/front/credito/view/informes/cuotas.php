@@ -320,9 +320,16 @@ foreach($cuotas as $kk=>$cuota){
             
         </div>
     </li>
-<?php } 
-
-?>
+<?php } if (isset($ajuste) && $ajuste) { ?>
+    <li class="datos ajuste" data-id="ajuste">
+        <span class="numero-desembolso"></span>
+        <span class="fecha-desembolso"><?=date("d/m/Y",$ajuste['FECHA'])?></span>
+        <span class="monto-desembolso">AJUSTE</span>
+        <span class="porcentaje-desembolso"></span>
+        <span class="porcentaje-desembolso"></span>
+        <span class="porcentaje-desembolso">$<?=$ajuste['MONTO'] ?></span>
+    </li>
+<?php } ?>
     <li class="datos totales">
         <span class="porcentaje-desembolso">SALDO TOTAL</span>
         <span class="porcentaje-desembolso">$<?= $saldo_total = number_format($total_cuota_saldo+$saldo_cuota_iva,2) . ($total_cuota_saldo+$saldo_cuota_iva < 0 ? '(a favor)' : '')?></span>

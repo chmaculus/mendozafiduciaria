@@ -1232,3 +1232,72 @@ function isnumeroCiuIns(cadena){
       else
         return false;
 }
+
+$.fn.validationKeySpecial = function (valida) {
+    $(this).keypress(function (e) {
+        if (e.altKey == true || e.ctrlKey == true || e.shiftKey == true) {
+            return false;
+        }
+    
+        if (valida !== undefined) {
+            console.log(e.keyCode)
+            if ((!e.charCode ? e.which : e.charCode) == 8) {//backspace
+                return true;
+            }
+            if (e.keyCode >= 35 && e.keyCode <= 40) { //flechas
+                return true;
+            }
+
+            switch (valida) {
+                case 'mon':
+                    var regex = new RegExp("^[0-9.]+$");
+                    break;
+                case 'num':
+                    var regex = new RegExp("^[0-9]+$");
+                    break;
+                case 'num+':
+                    var regex = new RegExp("^[0-9+]+$");
+                    break;
+                case 'chars':
+                    var regex = new RegExp("^[a-zA-Z]+$");
+                    break;
+                case 'text':
+                    var regex = new RegExp("^[a-zA-Z0-9+.,:;? _-]+$");
+                    break;
+                case 'text_spec':
+                    var regex = new RegExp("^[a-zA-Z0-9ñÑ\u00f1\u00d1+.,:;? _-]+$");
+                    break;
+                case 'cuit':
+                    var regex = new RegExp("^[0-9-]+$");
+                    break;
+                case 'email':
+                    var regex = new RegExp("^[a-z0-9-_.@]+$");
+                    break;
+                case 'alpha':
+                default:
+                    var regex = new RegExp("^[a-zA-Z0-9]+$");
+                    break;
+
+            }
+            var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+            if (!regex.test(key)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            switch (valida) {
+                case 'mon':
+                    if (key == '.') {
+                        var regex = new RegExp("^[0-9]+?$");
+                        var nk = $(this).val();
+                        if (!regex.test(nk)) {
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                    break;
+            }
+
+        }
+    });
+}

@@ -837,6 +837,7 @@ class credito_model extends main_model {
         );
         $this->_db->insert("fid_auditoria", $array);
         $this->_db->delete("fid_creditos", "ID = " . $cred);
+        $this->_db->delete("fid_creditos_ajustes", "ID_CREDITO = " . $cred);
         $this->_db->delete("fid_creditos_cuotas", "ID_CREDITO = " . $cred);
         $this->_db->delete("fid_creditos_desembolsos", "ID_CREDITO = " . $cred);
         $this->_db->delete("fid_creditos_gastos", "ID_CREDITO = " . $cred);
@@ -4449,6 +4450,37 @@ ORDER BY T1.lvl DESC');
         }
         
         return $tasas;
+    }
+    
+    function agregar_ajuste($tipo, $fecha, $monto) {
+        if (!$this->get_ajustes()) {
+            $arr = array(
+                'ID_CREDITO' => $this->_id_credito,
+                'FECHA' => $fecha,
+                'MONTO' => $tipo ? $monto : 0 - $monto,
+                'FECHA_CARGA' => date('Y-m-d H:i:s')
+            );
+
+            $this->_db->insert("fid_creditos_ajustes", $arr);
+            return 1;
+        } else {
+            return 2;
+        }
+        
+        return FALSE;
+    }
+    
+    function get_ajustes($fecha = FALSE) {
+        $this->_db->where("ID_CREDITO = " . $this->_id_credito);
+        if ($fecha) {
+            $this->_db->where("FECHA <= " . $fecha);
+        }
+        $items = $this->_db->get_tabla("fid_creditos_ajustes");
+        if (count($items) > 0) {
+            return $items[0];
+        } else {
+            return FALSE;
+        }
     }
   
 }

@@ -1648,6 +1648,18 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         }
     }
     
+    function x_ajuste() {
+        $id_credito = $_POST['id_credito'];
+        $monto = $_POST['monto'];
+        $fecha = $_POST['fecha'];
+        $tipo = $_POST['tipo'];
+        
+        if ($this->mod->set_credito_active($id_credito)) {
+            echo $this->mod->agregar_ajuste($tipo, $fecha, $monto);
+        }
+        die;
+    }
+    
 }
 
 
