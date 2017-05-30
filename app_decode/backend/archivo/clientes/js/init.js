@@ -812,7 +812,7 @@ $(document).ready(function () {
                     {text: 'PROVINCIA', datafield: 'PROVINCIA', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with'},
                     {text: 'LOCALIDAD', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', datafield: 'LOCALIDAD', width: '20%'},
                     {text: 'DIRECCION', datafield: 'DIRECCION', width: '20%'},
-                    {text: 'CUIT', datafield: 'CUIT', width: '20%', columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with'},
+                    {text: 'CUIT', datafield: 'CUIT', width: '20%', columntype: 'textbox'},
                     {text: 'CBU', datafield: 'CBU', width: '20%', hidden: true, filterable: false},
                     {text: 'CONTACTO', datafield: 'CONTACTO', width: '20%', hidden: true, filterable: false},
                     {text: 'CORREO', datafield: 'CORREO', width: '20%', hidden: true, filterable: false},
