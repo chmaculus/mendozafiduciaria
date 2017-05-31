@@ -655,10 +655,10 @@ class formaltabase extends main_controller {
 
                 $this->x_agregar_desembolso();
             }
+        } else {
+            //buscamos cambios de tasas x operatoria - historial //no lo agregamos en las refinanciaciones
+            $this->mod->setCambiosTasasOperatoria();
         }
-        
-        //buscamos cambios de tasas x operatoria - historial
-        $this->mod->setCambiosTasasOperatoria();
     }
     
     function x_agregar_desembolso(){
