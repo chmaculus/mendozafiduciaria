@@ -178,14 +178,15 @@ class clientes_model extends main_model{
         return $retornar;
     }
     
-    function  verificarcuit($cuit){
+    function  verificarcuit($cuit, $id_cliente){
         if ($cuit!=''){
             $this->_db->select("ID");
-            $rtn = $this->_db->get_tabla("fid_clientes", "CUIT='".$cuit."'");
-            return $rtn;
-        }else{
-            return false;
+            $rtn = $this->_db->get_tabla("fid_clientes", "CUIT='".$cuit."' " . ($id_cliente ? ' AND ID!=' . $id_cliente : ''));
+            if ($rtn) {
+                return $rtn;
+            }
         }
+        return false;
     }
     
         

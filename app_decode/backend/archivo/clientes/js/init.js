@@ -159,131 +159,7 @@ $(document).ready(function () {
                             return false;
 
                         event.preventDefault();
-                        var id = $("#idh").val();
-                        var prov = $("#provinciah").val();
-                        var loca = $("#localidadh").val();
-                        var condicioniibb = $("#condicioniibb").val();
-                        var condicioniva = $("#condicioniva").val();
-                        var falta = $("#falta").val();
-                        var raz = $("#raz").val();
-                        var dir = $("#dir").val();
-                        var postal = $("#postal").val();
-                        var tel = $("#tel").val();
-                        var tel2 = $("#tel2").val();
-                        var tel3 = $("#tel3").val();
-                        var con = $("#con").val();
-                        var cuit = $("#cuit").val();
-                        var insiibb = $("#insiibb").val();
-                        var retencion = $("#input-retencion").val();
-                        var mayorista = $("#mayorista-lista").val();
-                        var insinv = $("#insinv").val();
-                        var ema = $("#ema").val();
-                        var obs = $("#obs").val();
-                        var cbu = $("#cbu").val();
-                        var limite_m = 0;
-                        
-                        if($("#limite-mayorista").val()!=""){
-                            limite_m = $("#limite-mayorista").val();
-                        }
-
-                        $.ajax({
-                            url: _clientes.URL + "/x_verificarcuit",
-                            data: {
-                                cuit: cuit
-                            },
-                            dataType: "json",
-                            type: "post",
-                            success: function (data) {
-                                $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
-
-                                console.dir(data.length);
-
-                                if (data.length > 0) {
-                                    $.unblockUI();
-                                    jAlert('Este cuit (' + cuit + ') ya existe en la base de datos.', $.ucwords(_etiqueta_modulo), function () {
-                                        $("#cuit").focus();
-                                    });
-                                } else {
-                                    /*contactos*/
-                                    var arr_contactos = [];
-                                    $(".group .elem_group").each(function () {
-
-                                        var contacto = $(this).find('#con').val();
-                                        var telefono = $(this).find('#tel').val();
-                                        var telefono2 = $(this).find('#tel2').val();
-                                        var telefono3 = $(this).find('#tel3').val();
-                                        var email = $(this).find('#ema').val();
-                                        arr_contactos.push({con: contacto, tel: telefono, tel2: telefono2, tel3: telefono3, ema: email});
-                                    });
-
-                                    //if ( !$("#customForm").validationEngine('validate') )
-                                    //   return false;
-
-                                    iid = id ? id : 0;
-                                    obj = {
-                                        id: iid,
-                                        ID_PROVINCIA: prov,
-                                        ID_DEPARTAMENTO: loca,
-                                        ID_CONDICION_IIBB: condicioniibb,
-                                        ID_CONDICION_IVA: condicioniva,
-                                        ID_INV: insinv,
-                                        FECHA_ALTA: falta,
-                                        DIRECCION: dir,
-                                        COD_POSTAL: postal,
-                                        RAZON_SOCIAL: raz,
-                                        TELEFONO: tel,
-                                        TEL_CEL: tel2,
-                                        TEL_TRAB: tel3,
-                                        CONTACTO: con,
-                                        CUIT: cuit,
-                                        CORREO: ema,
-                                        OBSERVACION: obs,
-                                        INSCRIPCION_IIBB: insiibb,
-                                        RETENCION: retencion,
-                                        MAYORISTA: mayorista,
-                                        LIMITE_M: limite_m,
-                                        CBU: cbu,
-                                        contactos: arr_contactos
-                                    }
-
-                                    $.ajax({
-                                        url: _clientes.URL + "/x_sendobj",
-                                        data: {
-                                            obj: obj
-                                        },
-                                        dataType: "json",
-                                        type: "post",
-                                        success: function (data) {
-                                            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
-
-                                            if (data.result > 0) {
-                                                setTimeout(function () {
-                                                    $.unblockUI({
-                                                        onUnblock: function () {
-                                                            jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                                                                $('#btnClear').trigger('click');
-                                                                $("#jqxgrid").jqxGrid('updatebounddata');
-                                                                //actualizar contactos
-                                                                var $nuevo = _more.clone();
-                                                                $.fancybox.close();
-                                                            });
-                                                        }
-                                                    });
-                                                }, 500);
-                                            } else {
-                                                jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
-                                                    $.unblockUI();
-                                                });
-                                            }
-                                        }
-                                    });
-                                    return false;
-                                }
-                            }
-                        });
-
-                        return false;
-
+                        guardar_cliente();
                     });
 
                     loadChild(0);
@@ -502,105 +378,8 @@ $(document).ready(function () {
                     });
 
                     $('#send').on('click', function (event) {
-
-                        e.preventDefault();
-
-                        var id = $("#idh").val();
-                        var prov = $("#provinciah").val();
-                        var loca = $("#localidadh").val();
-                        var condicioniibb = $("#condicioniibb").val();
-                        var condicioniva = $("#condicioniva").val();
-                        var tipobeneficiario = $("#tipobeneficiario").val();
-                        var falta = $("#falta").val();
-                        var raz = $("#raz").val();
-                        var dir = $("#dir").val();
-                        var postal = $("#postal").val();
-                        var tel = $("#tel").val();
-                        var tel2 = $("#tel2").val();
-                        var tel3 = $("#tel3").val();
-                        var con = $("#con").val();
-                        var cuit = $("#cuit").val();
-                        var insiibb = $("#insiibb").val();
-                        var retencion = $("#input-retencion").val();
-                        var ema = $("#ema").val();
-                        var obs = $("#obs").val();
-                        var cbu = $("#cbu").val();
-                        var mayorista = $("#mayorista-lista").val();
-                        var limite_m = 0;
-                        if($("#limite-mayorista").val()!=""){
-                            limite_m = $("#limite-mayorista").val();
-                        }
-                        /*contactos*/
-                        var arr_contactos = [];
-                        $(".group .elem_group").each(function () {
-                            var contacto = $(this).find('#con').val();
-                            var telefono = $(this).find('#tel').val();
-                            var telefono2 = $(this).find('#tel2').val();
-                            var telefono3 = $(this).find('#tel3').val();
-                            var email = $(this).find('#ema').val();
-                            arr_contactos.push({con: contacto, tel: telefono, tel2: telefono2, tel3: telefono3, ema: email});
-                        });
-
-                        if (!$("#customForm").validationEngine('validate'))
-                            return false;
-
-                        iid = id ? id : 0;
-                        obj = {
-                            id: iid,
-                            ID_PROVINCIA: prov,
-                            ID_DEPARTAMENTO: loca,
-                            ID_CONDICION_IIBB: condicioniibb,
-                            ID_CONDICION_IVA: condicioniva,
-                            ID_TIPO: tipobeneficiario,
-                            FECHA_ALTA: falta,
-                            DIRECCION: dir,
-                            COD_POSTAL: postal,
-                            RAZON_SOCIAL: raz,
-                            TELEFONO: tel,
-                            TEL_CEL: tel2,
-                            TEL_TRAB: tel3,
-                            CONTACTO: con,
-                            CUIT: cuit,
-                            CORREO: ema,
-                            OBSERVACION: obs,
-                            INSCRIPCION_IIBB: insiibb,
-                            RETENCION: retencion,
-                            MAYORISTA: mayorista,
-                            LIMITE_M: limite_m,
-                            CBU: cbu,
-                            contactos: arr_contactos
-                        }
-
-                        $.ajax({
-                            url: _clientes.URL + "/x_sendobj",
-                            data: {
-                                obj: obj
-                            },
-                            dataType: "json",
-                            type: "post",
-                            success: function (data) {
-                                $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
-
-                                if (data.result > 0) {
-                                    setTimeout(function () {
-                                        $.unblockUI({
-                                            onUnblock: function () {
-                                                jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
-                                                    $("#jqxgrid").jqxGrid('updatebounddata');
-                                                    $.fancybox.close();
-                                                });
-                                            }
-                                        });
-                                    }, 500);
-                                } else {
-                                    jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
-                                        $.unblockUI();
-                                    });
-                                }
-                                return false;
-                            }
-                        });
-                        return false;
+                        event.preventDefault();
+                        guardar_cliente();
                     });
 
                     if (ver != -1) {
@@ -892,4 +671,127 @@ function ingresar_pwd() {
             }
         });
     }
+}
+
+function guardar_cliente() {
+    var id = $("#idh").val();
+    var prov = $("#provinciah").val();
+    var loca = $("#localidadh").val();
+    var condicioniibb = $("#condicioniibb").val();
+    var condicioniva = $("#condicioniva").val();
+    var tipobeneficiario = $("#tipobeneficiario").val();
+    var falta = $("#falta").val();
+    var raz = $("#raz").val();
+    var dir = $("#dir").val();
+    var postal = $("#postal").val();
+    var tel = $("#tel").val();
+    var tel2 = $("#tel2").val();
+    var tel3 = $("#tel3").val();
+    var con = $("#con").val();
+    var cuit = $("#cuit").val();
+    var insiibb = $("#insiibb").val();
+    var retencion = $("#input-retencion").val();
+    var ema = $("#ema").val();
+    var obs = $("#obs").val();
+    var cbu = $("#cbu").val();
+    var mayorista = $("#mayorista-lista").val();
+    var insinv = $("#insinv").val();
+    var limite_m = 0;
+                            
+    if ($("#limite-mayorista").val() != "") {
+        limite_m = $("#limite-mayorista").val();
+    }
+    /*contactos*/
+    var arr_contactos = [];
+    $(".group .elem_group").each(function () {
+        var contacto = $(this).find('#con').val();
+        var telefono = $(this).find('#tel').val();
+        var telefono2 = $(this).find('#tel2').val();
+        var telefono3 = $(this).find('#tel3').val();
+        var email = $(this).find('#ema').val();
+        arr_contactos.push({con: contacto, tel: telefono, tel2: telefono2, tel3: telefono3, ema: email});
+    });
+
+    if (!$("#customForm").validationEngine('validate'))
+        return false;
+
+    iid = id ? id : 0;
+    $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
+    $.ajax({
+        url: _clientes.URL + "/x_verificarcuit",
+        data: {
+            cuit: cuit,
+            cliente_id: iid
+        },
+        dataType: "json",
+        type: "post",
+        success: function (data) {
+            console.log(data);
+            console.log(data.length);
+            if (data.length > 0) {
+                $.unblockUI();
+                jAlert('Este cuit (' + cuit + ') ya existe en la base de datos.', $.ucwords(_etiqueta_modulo), function () {
+                    $("#cuit").focus();
+                });
+            } else {
+                obj = {
+                    id: iid,
+                    ID_PROVINCIA: prov,
+                    ID_DEPARTAMENTO: loca,
+                    ID_CONDICION_IIBB: condicioniibb,
+                    ID_CONDICION_IVA: condicioniva,
+                    ID_INV: insinv,
+                    ID_TIPO: tipobeneficiario,
+                    FECHA_ALTA: falta,
+                    DIRECCION: dir,
+                    COD_POSTAL: postal,
+                    RAZON_SOCIAL: raz,
+                    TELEFONO: tel,
+                    TEL_CEL: tel2,
+                    TEL_TRAB: tel3,
+                    CONTACTO: con,
+                    CUIT: cuit,
+                    CORREO: ema,
+                    OBSERVACION: obs,
+                    INSCRIPCION_IIBB: insiibb,
+                    RETENCION: retencion,
+                    MAYORISTA: mayorista,
+                    LIMITE_M: limite_m,
+                    CBU: cbu,
+                    contactos: arr_contactos
+                }
+
+                $.ajax({
+                    url: _clientes.URL + "/x_sendobj",
+                    data: {
+                        obj: obj
+                    },
+                    dataType: "json",
+                    type: "post",
+                    success: function (data) {
+                        $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>'});
+
+                        if (data.result > 0) {
+                            setTimeout(function () {
+                                $.unblockUI({
+                                    onUnblock: function () {
+                                        jAlert('Operacion Exitosa.', $.ucwords(_etiqueta_modulo), function () {
+                                            $("#jqxgrid").jqxGrid('updatebounddata');
+                                            $.fancybox.close();
+                                        });
+                                    }
+                                });
+                            }, 500);
+                        } else {
+                            jAlert('Operacion Erronea. Intente Otra vez.', $.ucwords(_etiqueta_modulo), function () {
+                                $.unblockUI();
+                            });
+                        }
+                        return false;
+                    }
+                });
+                return false;
+            }
+        }
+    });
 }

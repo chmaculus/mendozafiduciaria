@@ -228,7 +228,8 @@ class clientes extends main_controller{
     
     function x_verificarcuit(){
         $cuit = $_POST['cuit'];
-        $obj = $this->mod->verificarcuit($cuit);
+        $cliente_id = $_POST['cliente_id'];
+        $obj = $this->mod->verificarcuit($cuit, $cliente_id);
         $tmp = $obj?$obj:array();
         echo json_encode($tmp);
     }
