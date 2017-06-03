@@ -459,6 +459,25 @@ class credito_informes_model extends credito_model {
         $this->_db->select('ID, NOMBRE');
         return $this->_db->get_tabla("fid_fideicomiso", "estado=1");
     }
+    
+    public function eliminar_basura() {
+        $this->_eliminar_basura('fid_creditos_desembolsos');
+        $this->_eliminar_basura('fid_creditos_cuotas');
+    }
+    
+    private function _eliminar_basura($tabla) {
+        $this->_db->select('ID_CREDITO');
+        $this->_db->join("fid_creditos c", "ct.ID_CREDITO = c.ID", "left");
+        $this->_db->where("c.ID IS NULL");
+        $creditos = $this->_db->get_tabla($tabla . " ct");
+        
+        if ($creditos) {
+            foreach ($creditos as $credito_id) {
+                $this->set_credito_active($credito_id['ID_CREDITO']);
+                $this->borrar_credito();
+            }
+        }
+    }
     /*
     public function getCreditosMoratorios() {
         $_creditos = $this->get_creditos_moratorios();
