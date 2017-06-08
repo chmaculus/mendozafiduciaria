@@ -6742,13 +6742,13 @@ function agregar_garantias_1(acc, _array_obj) {
                                             $("#valortas").numeric({negative: false});
                                             $("#aforo").numeric({negative: false, decimal: false});
 
-                                            $("#aforo").keyup(function () {
-                                                if ($(this).val() == 0)
-                                                    $("#valorgar").val(0);
-                                                else
-                                                    $("#valorgar").val($("#valortas").val() * 100 / $(this).val());
+                                            $("#valortas").keyup(function () {
+                                                calcularValorGarantia();
                                             });
 
+                                            $("#aforo").keyup(function () {
+                                                calcularValorGarantia();
+                                            });
 
                                             $('#tipo_garantia').bind('change', function (event) {
                                                 event.preventDefault();
@@ -6972,12 +6972,15 @@ function agregar_garantias_1(acc, _array_obj) {
                                 init_datepicker('#pretas', '-3', '+5', '0', 0);
                                 $("#valortas").numeric({negative: false});
                                 $("#aforo").numeric({negative: false, decimal: false});
-                                $("#aforo").keyup(function () {
-                                    if ($(this).val() == 0)
-                                        $("#valorgar").val(0);
-                                    else
-                                        $("#valorgar").val($("#valortas").val() * 100 / $(this).val());
+                                
+                                $("#valortas").keyup(function () {
+                                    calcularValorGarantia();
                                 });
+
+                                $("#aforo").keyup(function () {
+                                    calcularValorGarantia();
+                                });
+
                                 $('#tipo_garantia').bind('change', function (event) {
                                     event.preventDefault();
                                     $(this).validationEngine('validate');
@@ -7175,8 +7178,15 @@ function actualizarBarraHerramientas() {
 
 }
 
-
-
+function calcularValorGarantia(){
+    var valortas = $('#valortas').val();
+    var aforo = $('#aforo').val();
+    if (valortas == '' || valortas == 0 || aforo == '' || aforo == 0){
+        $("#valorgar").val(0);
+    } else {
+        $("#valorgar").val(valortas * 100 / aforo);
+    }
+}
 
 
 function setMenuCarpeta(boton1, boton2) {
