@@ -68,8 +68,8 @@ class compravino_model extends main_model {
         $this->_db->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
         $this->_db->join("fid_entidades ent", "ent.ID=f.ID_BODEGA", "left");
         $this->_db->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
-        $this->_db->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
-        $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+        $this->_db->join("fid_usuarios u1", "u1.ID=f.USU_CARGA AND u1.ESTADO = 1", "left");
+        $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO AND u2.ESTADO = 1", "left");
         $this->_db->join("fid_operatoria_vino of", "of.ID_OPERATORIA = f.ID_OPERATORIA", "left");
         $this->_db->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
         $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
@@ -2151,7 +2151,7 @@ class compravino_model extends main_model {
 
     function getTitularidad($id) {
         $this->_db->select("t.ID_FACTURA,u.NOMBRE,t.FECHA,t.CHECK_ESTADO");
-        $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID");
+        $this->_db->join("fid_usuarios u", "t.ID_USUARIO=u.ID AND u.ESTADO = 1");
 //        $this->_db->order_by("t.FECHA", "DESC");
         $this->_db->where("t.ID_FACTURA=" . $id);
         $rtn = $this->_db->get_tabla("fid_op_vino_cambio_tit t");
@@ -2517,13 +2517,13 @@ class compravino_model extends main_model {
 
     function get_coordinadores() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_usuarios");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1");
         return $rtn;
     }
 
     function get_jefes() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_usuarios");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1");
         return $rtn;
     }
 
@@ -2937,6 +2937,7 @@ class compravino_model extends main_model {
         if ($puesto_in) {
             $cad_where .= "and p.ID='" . $puesto_in . "'";
         }
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
 
         $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");

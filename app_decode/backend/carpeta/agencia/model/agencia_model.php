@@ -58,8 +58,8 @@ class agencia_model extends main_model {
         $this->_db->join("fid_cliente_condicion_iibb ciibb", "ciibb.ID=c.ID_CONDICION_IIBB", "left");
         $this->_db->join("fid_entidades ent", "ent.ID=f.ID_BODEGA", "left");
         $this->_db->join("fid_cu_factura_estados fe", "fe.ID=f.ID_ESTADO", "left");
-        $this->_db->join("fid_usuarios u1", "u1.ID=f.USU_CARGA", "left");
-        $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO", "left");
+        $this->_db->join("fid_usuarios u1", "u1.ID=f.USU_CARGA AND u1.ESTADO = 1", "left");
+        $this->_db->join("fid_usuarios u2", "u2.ID=f.USU_CHEQUEO AND u2.ESTADO = 1", "left");
         $this->_db->join("fid_cu_pagos cu", "cu.NUM_FACTURA=f.NUMERO", "left");
         $fact_enviadas = $this->_db->get_tabla('fid_cu_factura f', "( f.ID LIKE '%%' OR c.CUIT LIKE '%%' OR c.RAZON_SOCIAL LIKE '%%' ) 
             AND f.ID_PROVINCIA='12' AND f.TIPO=2 AND f.ID_ESTADO='5' AND cu.TIPO=2");
@@ -866,7 +866,7 @@ class agencia_model extends main_model {
     }
 
     function get_usuarios() {
-        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO='1'");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1");
         return $rtn;
     }
 
@@ -2129,13 +2129,13 @@ class agencia_model extends main_model {
 
     function get_coordinadores() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_usuarios");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1");
         return $rtn;
     }
 
     function get_jefes() {
         $this->_db->select("*");
-        $rtn = $this->_db->get_tabla("fid_usuarios");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1");
         return $rtn;
     }
 
@@ -2276,8 +2276,9 @@ class agencia_model extends main_model {
         }
 
         if ($puesto_in) {
-            $cad_where .= "and p.ID='" . $puesto_in . "'";
+            $cad_where .= " and p.ID='" . $puesto_in . "'";
         }
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
 
         $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");

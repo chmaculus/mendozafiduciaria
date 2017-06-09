@@ -5,7 +5,7 @@ class roles_model extends main_model{
     
     function get_obj($id){
         if (!$id) return array();
-        $this->_db->where("id = '".$id   ."'");
+        $this->_db->where("id = '".$id   ."' AND ESTADO = 1");
         $rtn = $this->_db->get_tabla($this->_tablamod);
         return $rtn;
     }
@@ -24,7 +24,7 @@ class roles_model extends main_model{
     function get_info_grid(){
         $this->_db->select("u.*, r.DENOMINACION as ROLNAME");
         $this->_db->join("fid_roles r","r.ID=u.ID_ROL");
-        $rtn = $this->_db->get_tabla($this->_tablamod . " u");
+        $rtn = $this->_db->get_tabla($this->_tablamod . " u", "u.ESTADO = 1");
         return $rtn;
     }
     

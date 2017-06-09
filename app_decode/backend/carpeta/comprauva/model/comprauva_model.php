@@ -783,6 +783,7 @@ class comprauva_model extends main_model {
         if ($puesto_in) {
             $cad_where .= "and p.ID='" . $puesto_in . "'";
         }
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
 
         $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");

@@ -102,6 +102,7 @@
                 
                 <div><input <?php echo (isset($entidad['SU_3']) && $entidad['SU_3']=='1'? "checked":"" ) ?> id="pie_vestde" type="checkbox" value="1"><label for="pie_vestde">Vestirse de</label></div>
                 <div><input <?php echo (isset($entidad['SU_4']) && $entidad['SU_4']=='1'? "checked":"" ) ?> id="pie_hatras" type="checkbox" value="1"><label for="pie_hatras">Hacia Atras</label></div>
+                <div><input <?php echo (isset($entidad['ESTADO']) && $entidad['ESTADO']=='1'? "checked":"" ) ?> id="pie_habilitado" type="checkbox" value="1"><label for="pie_habilitado">Habilitado</label></div>
             </div>
             
             <div class="notapie">Username: Entre 4 y 16 caracteres. Permite minúsculas y digitos.</div>

@@ -15,7 +15,7 @@
         }
         $cad_like = substr($cad_like,0,-2);
         
-        $cnn->select("u.ID,r.DENOMINACION,USERNAME,NOMBRE,APELLIDO,EMAIL,a.DENOMINACION as AREA,p.DENOMINACION as PUESTO");
+        $cnn->select("u.ID,r.DENOMINACION,USERNAME,NOMBRE,APELLIDO,EMAIL,a.DENOMINACION as AREA,p.DENOMINACION as PUESTO,u.ESTADO");
         
         $cnn->join("fid_roles r","r.ID=u.ID_ROL");
         $cnn->join("fid_xareas a","a.ID=u.ID_AREA","left");

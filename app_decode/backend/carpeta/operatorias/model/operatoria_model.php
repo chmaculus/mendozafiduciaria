@@ -143,13 +143,13 @@ class operatoria_model extends main_model{
     
     function get_jefeope(){
         $this->_db->select("ID,NOMBRE,APELLIDO");
-        $rtn = $this->_db->get_tabla("fid_usuarios", "ID_PUESTO='6'");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ID_PUESTO='6' AND ESTADO = 1");
         return $rtn;
     }
     
     function get_cope(){
         $this->_db->select("ID,NOMBRE,APELLIDO");
-        $rtn = $this->_db->get_tabla("fid_usuarios", "ID_PUESTO='7'");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ID_PUESTO='7' AND ESTADO = 1");
         return $rtn;
     }
     

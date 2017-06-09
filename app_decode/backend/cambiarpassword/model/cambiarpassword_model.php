@@ -13,7 +13,7 @@
             $obj_up =   array(
                             "CLAVE"=>$nuevaclave
                         );
-            $resp = $this->_db->update('fid_usuarios', $obj_up, "ID='".$iid."'");
+            $resp = $this->_db->update('fid_usuarios', $obj_up, "ID='".$iid."' AND ESTADO = 1");
             if ($resp)
                 unset($_SESSION); 
             
