@@ -17,14 +17,14 @@ var myfancy = 0;
 
 function tooltip_evento() {
 
-    $(".tb_cli").jqxTooltip({content: '<b>Clientes</b><br/>Ir a clientes', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_ents").jqxTooltip({content: '<b>Entidades</b><br/>Ir a entidades', position: 'bottom', name: 'movieTooltip', theme: theme});
-
-    $(".tb_todas").jqxTooltip({content: '<b>Todas las Carpetas</b>', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_miscar").jqxTooltip({content: '<b>Mis Carpetas</b><br/>Son las Carpetas en las que tengo pendiente alguna acción', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_cart").jqxTooltip({content: '<b>En Cartera</b><br/>Son las Carpetas que tengo a mi cargo', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_pend").jqxTooltip({content: '<b>Pendientes</b><br/>Son las Carpetas que me las enviaron pero aun no las acepto', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_autor").jqxTooltip({content: '<b>Por Autorizar</b><br/>Son las Carpetas que me las enviaron para autorizarlas', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_cli").jqxTooltip({content: '<b>Clientes</b><br/>Ir a clientes', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_ents").jqxTooltip({content: '<b>Entidades</b><br/>Ir a entidades', position: 'bottom', name: 'movieTooltip', theme: theme});
+//
+//    $(".tb_todas").jqxTooltip({content: '<b>Todas las Carpetas</b>', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_miscar").jqxTooltip({content: '<b>Mis Carpetas</b><br/>Son las Carpetas en las que tengo pendiente alguna acción', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_cart").jqxTooltip({content: '<b>En Cartera</b><br/>Son las Carpetas que tengo a mi cargo', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_pend").jqxTooltip({content: '<b>Pendientes</b><br/>Son las Carpetas que me las enviaron pero aun no las acepto', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_autor").jqxTooltip({content: '<b>Por Autorizar</b><br/>Son las Carpetas que me las enviaron para autorizarlas', position: 'bottom', name: 'movieTooltip', theme: theme});
 
     /*
      $(".tb_min").each(function( index ) {
@@ -488,7 +488,8 @@ $(document).ready(function () {
                         }
                     });
 
-                    $("#cuit").jqxMaskedInput({mask: '##-########-#', width: 150, height: 22, theme: theme});
+                    if ($("#cuit").length)
+                        $("#cuit").jqxMaskedInput({mask: '##-########-#', width: 150, height: 22, theme: theme});
                     $("#montom").numeric({negative: false});
                     $("#montosol").numeric({negative: false});
 
@@ -4012,7 +4013,9 @@ $(document).ready(function () {
 
         } else if (top == 'fil') {
             $.unblockUI();
-            $('#jqxlistbox').slideToggle('slow', function () {});
+            if ($('#jqxlistbox').length) {
+                $('#jqxlistbox').slideToggle('slow', function () {});
+            }
         } else if (top == 'lis') {
             $.unblockUI();
             $('#btnClear').trigger('click');
@@ -4132,15 +4135,17 @@ $(document).ready(function () {
     });
 
     var listSource = tmp_campos;
-    $("#jqxlistbox").hide();
-    $("#jqxlistbox").jqxListBox({source: listSource, width: 300, height: 130, theme: theme, checkboxes: true});
-    $("#jqxlistbox").on('checkChange', function (event) {
-        if (event.args.checked) {
-            $("#jqxgrid").jqxGrid('showcolumn', event.args.value);
-        } else {
-            $("#jqxgrid").jqxGrid('hidecolumn', event.args.value);
-        }
-    });
+    if ($('#jqxlistbox').length) {
+        $("#jqxlistbox").hide();
+        $("#jqxlistbox").jqxListBox({source: listSource, width: 300, height: 130, theme: theme, checkboxes: true});
+        $("#jqxlistbox").on('checkChange', function (event) {
+            if (event.args.checked) {
+                $("#jqxgrid").jqxGrid('showcolumn', event.args.value);
+            } else {
+                $("#jqxgrid").jqxGrid('hidecolumn', event.args.value);
+            }
+        });
+    }
 
 });
 
