@@ -833,7 +833,8 @@ class credito_model extends main_model {
             'TABLA' => "creditos",
             'ACCION' => "B",
             'Registro' => $cred,
-            'FECHA' => date('Y-m-d H:i:s')
+            'FECHA' => date('Y-m-d H:i:s'),
+            'IP' => $_SERVER['REMOTE_ADDR']
         );
         $this->_db->insert("fid_auditoria", $array);
         $this->_db->delete("fid_creditos", "ID = " . $cred);

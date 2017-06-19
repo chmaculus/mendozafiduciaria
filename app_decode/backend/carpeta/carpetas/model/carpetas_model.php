@@ -2266,9 +2266,12 @@ class carpetas_model extends main_model {
     function jefe_operaciones($operacion) {
         $rtn = $this->_db->query("SELECT t.CARTERADE,u.USERNAME FROM fid_traza t 
                                 JOIN fid_usuarios AS u ON t.carterade = u.id 
-                                WHERE t.id_operacion='".$operacion."' AND u.id_rol=10 AND u.id_area=4  AND u.ESTADO = 1 
+                                WHERE t.id_operacion='".$operacion."' AND u.estado=1 AND u.id_rol=10 AND u.id_area=4  
                                 GROUP BY t.CARTERADE
                                 ");
+        if (!$rtn) {
+            $rtn = $this->_db->query("SELECT ID AS CARTERADE, USERNAME FROM fid_usuarios AS u WHERE u.id_rol=10 AND u.id_area=4");
+        }
         return $rtn;
     }
 
@@ -2370,7 +2373,7 @@ function getenviar_a2($arr_send, $puesto_in) {
         $this->_db->join("fid_xareas a", "a.ID=u.ID_AREA");
         $this->_db->order_by("AREA,PUESTO");
         $rtn = $this->_db->get_tabla("fid_usuarios u", $cad_where);
-        //log_this('xxxxxx.log', $this->_db->last_query() );
+        log_this('xxxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 

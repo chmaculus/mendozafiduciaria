@@ -74,7 +74,8 @@ class formalta_model extends credito_model {
             'TABLA' => "creditos",
             'ACCION' => "A",
             'Registro' => $this->_id_credito,
-            'FECHA' => date('Y-m-d H:i:s')
+            'FECHA' => date('Y-m-d H:i:s'),
+            'IP' => $_SERVER['REMOTE_ADDR']
         );
         $this->_db->insert("fid_auditoria", $array);
         
