@@ -937,7 +937,11 @@ function actualiza_ss(valu) {
 //console.log("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
 //console.log($("#_arr_obj_n").val());
 
-            $("#id_rol").val(_arr_obj_n[0].ID_ROL).trigger("chosen:updated");
+            if(typeof _arr_obj_n !== 'undefined' && _arr_obj_n !== null){
+                $("#id_rol").val(_arr_obj_n[0].ID_ROL).trigger("chosen:updated");
+            } else {
+                $("#id_rol").val(valu).trigger('chosen:updated');
+            }
 
             //$("#id_permiso").val(_array_obj.ID_PERMISO).trigger("chosen:updated");
 
@@ -989,52 +993,51 @@ function actualiza_ss(valu) {
             });
 
             //cargar valoresss
+            if(typeof _arr_obj_n !== 'undefined' && _arr_obj_n !== null){
+                $.each(_arr_obj_n, function (index, value){
 
 
-            $.each(_arr_obj_n, function (index, value){
+                    $(".CSSTableGenerator table tr:gt(0)").eq(index).find('input').each(function(index1){
+                        //$(this).eq(0).attr("checked","checked");
 
-
-                $(".CSSTableGenerator table tr:gt(0)").eq(index).find('input').each(function(index1){
-                    //$(this).eq(0).attr("checked","checked");
-
-                    if (index1=='0'){
-                        if (value.MOSTRAR==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='0'){
+                            if (value.MOSTRAR==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='1'){
-                        if (value.ALTA==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='1'){
+                            if (value.ALTA==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='2'){
-                        if (value.BAJA==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='2'){
+                            if (value.BAJA==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='3'){
-                        if (value.MODIFICACION==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='3'){
+                            if (value.MODIFICACION==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='4'){
-                        if (value.VER==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='4'){
+                            if (value.VER==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='5'){
-                        if (value.EXPORTAR==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='5'){
+                            if (value.EXPORTAR==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                    if (index1=='6'){
-                        if (value.OTROS==1){
-                            $(this).attr("checked","checked");
+                        if (index1=='6'){
+                            if (value.OTROS==1){
+                                $(this).attr("checked","checked");
+                            }
                         }
-                    }
-                   });
-            });
-
+                       });
+                });
+            }
             $("#jqxButton").jqxToggleButton({ width: '200', toggled: true, theme: theme });
             $("#jqxButton").on('click', function () {
                 var toggled = $("#jqxButton").jqxToggleButton('toggled');
@@ -1182,7 +1185,7 @@ function actualiza_ss(valu) {
             });
 
 
-            if (ver!=-1){
+            if (typeof ver !== 'undefined' && ver != -1){
                 $(".elempie").html('').hide();
             }
 
