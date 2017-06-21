@@ -1519,9 +1519,10 @@ $(document).ready(function () {
 
                         //$("#estadoreq").val(2).attr('disabled', true).trigger("chosen:updated");
                         if (_USER_ROL != 1 && 0) {
-                            $("#provincia").val(idph).attr('disabled', true).trigger("chosen:updated");
+                            $("#provincia").val(idph);
                             loadChild(idph);
-                            $("#subrubro").val(idlh).attr('disabled', true).trigger("chosen:updated");
+                            $("#subrubro").val(idlh);
+                            soloLectura();
                         } else {
                             $("#provincia").val(idph).trigger("chosen:updated");
                             loadChild(idph);
@@ -1534,11 +1535,8 @@ $(document).ready(function () {
                         var idfh = $("#fideicomisoh").val();
                         var idoh = $("#operatoriah").val();
 
-                        if (_USER_ROL != 1 && 0) {
-                            $("#fideicomiso").val(idfh).attr('disabled', true).trigger("chosen:updated");
-                        } else {
-                            $("#fideicomiso").val(idfh).attr('disabled', true).trigger("chosen:updated");
-                        }
+                        $("#fideicomiso").val(idfh);
+                        soloLectura();
 
                         $('#provincia').bind('change', function (event) {
                             event.preventDefault();
@@ -1579,8 +1577,8 @@ $(document).ready(function () {
 
                         loadChild_fid(idfh);
                         if (_USER_ROL != 1 && 0) {
-                            $("#operatoria").val(idoh).attr('disabled', true).trigger("chosen:updated");
-                            $("#clientes").attr('disabled', true);
+                            $("#operatoria").val(idoh);
+                            soloLectura();
                         } else {
                             $("#operatoria").val(idoh).attr('disabled', true).trigger("chosen:updated");
                         }
@@ -7708,4 +7706,14 @@ function validar_alta() {
     }
     
     return true;
+}
+
+function soloLectura(){
+    $('#fideicomiso').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#operatoria').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#provincia').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#subrubro').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#montosol').attr('disabled', 'disabled');
+    $('#destino').attr('disabled', 'disabled');
+    $('#clientes').attr('disabled', 'disabled').trigger('chosen:updated');
 }
