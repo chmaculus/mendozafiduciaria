@@ -17,6 +17,20 @@ LEFT JOIN fid_creditos_cuotas cc ON c.ID=cc.ID_CREDITO
 WHERE cc.CUOTAS_RESTANTES IS NULL
 GROUP BY c.ID
 
+SELECT * FROM fid_creditos_cuotas cc
+LEFT JOIN fid_creditos c ON c.ID=cc.ID_CREDITO
+WHERE c.MONTO_CREDITO IS NULL
+GROUP BY cc.ID_CREDITO
+
+SELECT ID_CREDITO, COUNT(*) AS TT FROM fid_creditos_cuotas cc
+GROUP BY ID_CREDITO
+ORDER BY TT DESC
+
+select c.ID, c.POSTULANTES_NOMBRES, cc.ID from fid_creditos c
+LEFT JOIN fid_creditos_cuotas cc ON c.ID=cc.ID_CREDITO
+GROUP BY c.ID
+ORDER BY c.ID ASC, cc.CUOTAS_RESTANTES DESC
+INTO OUTFILE 'C:\\xampp\\mysql\\bin\\creditos.txt'
 
 # BUSCAR CAMBIOS DE TASAS SIN CREDITOS
 SELECT * FROM fid_creditos_cambiotasas ct
@@ -24,3 +38,12 @@ LEFT JOIN fid_creditos c ON c.ID=ct.ID_CREDITO
 WHERE c.POSTULANTES IS NULL
 GROUP BY c.ID
 
+# BUSCAR CREDITOS CADUCADOS ERRONEOS
+select c.ID, c.POSTULANTES_NOMBRES, c.ID_CADUCADO, cc.ID, cc.POSTULANTES_NOMBRES from fid_creditos c
+left join fid_creditos cc on c.ID_CADUCADO=cc.ID
+WHERE c.ID_CADUCADO!=0 AND c.POSTULANTES_NOMBRES!=cc.POSTULANTES_NOMBRES
+
+
+SELECT * FROM fiduciaria_20170614.fid_creditos cbk
+LEFT JOIN fiduciaria.fid_creditos c ON cbk.ID=c.ID
+WHERE c.ID IS NULL
