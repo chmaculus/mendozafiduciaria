@@ -64,3 +64,12 @@ CREATE TABLE IF NOT EXISTS `fid_cr_cont_recuperos` (
   `ANU` tinyint(1) NOT NULL,
   KEY `ID_CREDITO` (`ID_CREDITO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE IF NOT EXISTS `fid_creditos_ajustes` (
+  `ID_CREDITO` int(11) NOT NULL,
+  `FECHA` int(11) NOT NULL,
+  `MONTO` double NOT NULL,
+  `FECHA_CARGA` datetime NOT NULL,
+  KEY `ID_CREDITO` (`ID_CREDITO`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
