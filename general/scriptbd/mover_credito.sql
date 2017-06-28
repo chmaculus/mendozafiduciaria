@@ -1,3 +1,7 @@
+--SELECT cambiarIdCredito(20220715478, 1240, 1999);
+
+DROP FUNCTION IF EXISTS cambiarIdCredito;
+
 DELIMITER //
 
 CREATE FUNCTION cambiarIdCredito (cui VARCHAR(20), n INT, m INT)
@@ -36,6 +40,7 @@ CREATE FUNCTION cambiarIdCredito (cui VARCHAR(20), n INT, m INT)
                     UPDATE fid_creditos_extra SET CREDITO_ID=m WHERE CREDITO_ID=n;
                     UPDATE fid_creditos_pagos SET ID_CREDITO=m WHERE ID_CREDITO=n;
                     UPDATE fid_creditos_version SET ID_CREDITO_VERSION=m WHERE ID_CREDITO_VERSION=n;
+                    UPDATE fid_creditos SET ID_CADUCADO=m WHERE ID_CADUCADO=n;
                     SET s = CONCAT('Se movió el crédito ', n, ' a ', m);
                 END IF;
             END IF;
@@ -45,6 +50,3 @@ CREATE FUNCTION cambiarIdCredito (cui VARCHAR(20), n INT, m INT)
     END //
 
 DELIMITER ;
-
-
-//SELECT cambiarIdCredito(20220715478, 1240, 1999)

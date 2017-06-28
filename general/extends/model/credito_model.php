@@ -1344,6 +1344,9 @@ class credito_model extends main_model {
                             if ($SALDO_CUOTA < 0.2) {
                                 $SALDO_CUOTA = 0;
                                 $break = TRUE;
+                            } elseif ($cuota['CUOTAS_RESTANTES'] == 1 && $SALDO_CUOTA < 1) { //ultima cuota
+                                $SALDO_CUOTA = 0;
+                                $break = TRUE;
                             }
                             
                             $tmp['INT_MORATORIO'] = $SALDO_CUOTA * (1 + ($POR_INT_MORATORIO / 100) * $rango_int_mor / $this->_interese_moratorio_plazo ) - $SALDO_CUOTA;

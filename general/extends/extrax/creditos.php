@@ -18,7 +18,8 @@ if (isset($_GET["accion"]) && $_GET["accion"] == 'getCreditos') {
     $cnn->select("t.ID as ID_CREDITO, ifnull(f.NOMBRE,' - ') as FIDEICOMISO, ifnull(o.NOMBRE,' - ') as OPERATORIA, POSTULANTES_NOMBRES, POSTULANTES_CUIT, ID_OPERACION, ifnull(e.CREDITO_ESTADO,0) as CR_ESTADO, t.CREDITO_ESTADO,"
             . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_desembolsos WHERE ID_CREDITO = t.ID), 0) AS DESEMBOLSOS, "
             . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_pagos WHERE ID_CREDITO = t.ID), 0) AS PAGOS, "
-            . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_pagos WHERE ID_CREDITO = t.ID AND ID_TIPO = " . PAGO_CAPITAL . "), 0) AS PAGOS_CAPITAL ");    $cnn->order_by("t.ID", "DESC");
+            . " ifnull((SELECT SUM(MONTO) FROM fid_creditos_pagos WHERE ID_CREDITO = t.ID AND ID_TIPO = " . PAGO_CAPITAL . "), 0) AS PAGOS_CAPITAL ");
+    $cnn->order_by("CASE WHEN t.ID > 90000 THEN (t.ID - 90000) WHEN t.ID <= 90000 THEN (t.ID) END", "DESC");
     $cnn->join("fid_fideicomiso f", "f.ID = t.ID_FIDEICOMISO", "left");
     $cnn->join("fid_operatorias o", "o.ID = t.ID_OPERATORIA", "left");
     $cnn->join("fid_creditos_extra e", "e.CREDITO_ID = t.ID AND CREDITO_ESTADO_FECHA = " . $time, "left");
