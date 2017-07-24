@@ -81,7 +81,7 @@ class notificaciones_model extends main_model {
     function send_traza_sem($obj, $destino) {
         $id_usuario = $_SESSION["USERADM"];
 
-        $array_usuario = $this->_db->query("select USERNAME from fid_usuarios where id='" . $id_usuario . "'");
+        $array_usuario = $this->_db->query("select USERNAME from fid_usuarios where id='" . $id_usuario . "' AND ESTADO = 1");
 
         $fecha_actual = date("Y-m-d H:i:s");
         $id_op = $obj['ID_OPERACION'];
@@ -138,7 +138,7 @@ class notificaciones_model extends main_model {
         $this->_db->join("fid_operaciones o", "o.id=t.ID_OPERACION", 'left');
 //        $this->_db->join("fid_operatorias ot", "ot.id=o.ID_OPERATORIA", 'left');
         $this->_db->join("fid_operatorias ot", "ot.id=o.ID_OPERATORIA");
-        $this->_db->join("fid_usuarios u", "t.CARTERADE=u.ID");
+        $this->_db->join("fid_usuarios u", "t.CARTERADE=u.ID AND u.ESTADO = 1");
         $this->_db->join("fid_nota_req n", "t.NOTA = n.ID", 'left');
         //$this->_db->join("fid_usuarios u1","t.CARTERADE=u1.ID");
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
@@ -200,7 +200,7 @@ class notificaciones_model extends main_model {
 //        $this->_db->join("fid_operatorias ot", "ot.id=o.ID_OPERATORIA", "left");
         $this->_db->join("fid_operatorias ot", "ot.id=o.ID_OPERATORIA");
         //$this->_db->join("fid_nota_req nr","t.NOTA=nr.ID","LEFT");
-        $this->_db->join("fid_usuarios u", "t.CARTERADE=u.ID");
+        $this->_db->join("fid_usuarios u", "t.CARTERADE=u.ID AND u.ESTADO = 1");
         $items = $this->_db->get_tabla("fid_traza t", "t.DESTINO='" . $id . "' AND AUTOR='' AND AUTOR_REQ='' AND (  (ACTIVO=1 AND LEIDO='1') OR (NOTIF=1 AND LEIDO='1') ) or (t.AUTOR='" . $id . "' and t.LEIDO='1' ) or (AUTOR_REQ='" . $id . "' AND LEIDO='1')");
 //        log_this('verqueconsultaCARPETAAAS.log',$this->_db->last_query() );
 

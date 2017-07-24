@@ -833,7 +833,8 @@ class credito_model extends main_model {
             'TABLA' => "creditos",
             'ACCION' => "B",
             'Registro' => $cred,
-            'FECHA' => date('Y-m-d H:i:s')
+            'FECHA' => date('Y-m-d H:i:s'),
+            'IP' => $_SERVER['REMOTE_ADDR']
         );
         $this->_db->insert("fid_auditoria", $array);
         $this->_db->delete("fid_creditos", "ID = " . $cred);
@@ -1342,6 +1343,9 @@ class credito_model extends main_model {
                             }
                             
                             if ($SALDO_CUOTA < 0.2) {
+                                $SALDO_CUOTA = 0;
+                                $break = TRUE;
+                            } elseif ($cuota['CUOTAS_RESTANTES'] == 1 && $SALDO_CUOTA < 1) { //ultima cuota
                                 $SALDO_CUOTA = 0;
                                 $break = TRUE;
                             }

@@ -739,5 +739,9 @@ class creditos extends main_controller{
         
         return array($ffid, $fdesde, $fhasta);
     }
+    
+    public function eliminar_basura() {
+        $this->mod->eliminar_basura();
+    }
 
 }

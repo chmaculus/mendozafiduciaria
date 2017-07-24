@@ -17,14 +17,14 @@ var myfancy = 0;
 
 function tooltip_evento() {
 
-    $(".tb_cli").jqxTooltip({content: '<b>Clientes</b><br/>Ir a clientes', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_ents").jqxTooltip({content: '<b>Entidades</b><br/>Ir a entidades', position: 'bottom', name: 'movieTooltip', theme: theme});
-
-    $(".tb_todas").jqxTooltip({content: '<b>Todas las Carpetas</b>', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_miscar").jqxTooltip({content: '<b>Mis Carpetas</b><br/>Son las Carpetas en las que tengo pendiente alguna acción', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_cart").jqxTooltip({content: '<b>En Cartera</b><br/>Son las Carpetas que tengo a mi cargo', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_pend").jqxTooltip({content: '<b>Pendientes</b><br/>Son las Carpetas que me las enviaron pero aun no las acepto', position: 'bottom', name: 'movieTooltip', theme: theme});
-    $(".tb_autor").jqxTooltip({content: '<b>Por Autorizar</b><br/>Son las Carpetas que me las enviaron para autorizarlas', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_cli").jqxTooltip({content: '<b>Clientes</b><br/>Ir a clientes', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_ents").jqxTooltip({content: '<b>Entidades</b><br/>Ir a entidades', position: 'bottom', name: 'movieTooltip', theme: theme});
+//
+//    $(".tb_todas").jqxTooltip({content: '<b>Todas las Carpetas</b>', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_miscar").jqxTooltip({content: '<b>Mis Carpetas</b><br/>Son las Carpetas en las que tengo pendiente alguna acción', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_cart").jqxTooltip({content: '<b>En Cartera</b><br/>Son las Carpetas que tengo a mi cargo', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_pend").jqxTooltip({content: '<b>Pendientes</b><br/>Son las Carpetas que me las enviaron pero aun no las acepto', position: 'bottom', name: 'movieTooltip', theme: theme});
+//    $(".tb_autor").jqxTooltip({content: '<b>Por Autorizar</b><br/>Son las Carpetas que me las enviaron para autorizarlas', position: 'bottom', name: 'movieTooltip', theme: theme});
 
     /*
      $(".tb_min").each(function( index ) {
@@ -488,7 +488,8 @@ $(document).ready(function () {
                         }
                     });
 
-                    $("#cuit").jqxMaskedInput({mask: '##-########-#', width: 150, height: 22, theme: theme});
+                    if ($("#cuit").length)
+                        $("#cuit").jqxMaskedInput({mask: '##-########-#', width: 150, height: 22, theme: theme});
                     $("#montom").numeric({negative: false});
                     $("#montosol").numeric({negative: false});
 
@@ -1518,9 +1519,10 @@ $(document).ready(function () {
 
                         //$("#estadoreq").val(2).attr('disabled', true).trigger("chosen:updated");
                         if (_USER_ROL != 1 && 0) {
-                            $("#provincia").val(idph).attr('disabled', true).trigger("chosen:updated");
+                            $("#provincia").val(idph);
                             loadChild(idph);
-                            $("#subrubro").val(idlh).attr('disabled', true).trigger("chosen:updated");
+                            $("#subrubro").val(idlh);
+                            soloLectura();
                         } else {
                             $("#provincia").val(idph).trigger("chosen:updated");
                             loadChild(idph);
@@ -1533,11 +1535,8 @@ $(document).ready(function () {
                         var idfh = $("#fideicomisoh").val();
                         var idoh = $("#operatoriah").val();
 
-                        if (_USER_ROL != 1 && 0) {
-                            $("#fideicomiso").val(idfh).attr('disabled', true).trigger("chosen:updated");
-                        } else {
-                            $("#fideicomiso").val(idfh).attr('disabled', true).trigger("chosen:updated");
-                        }
+                        $("#fideicomiso").val(idfh);
+                        soloLectura();
 
                         $('#provincia').bind('change', function (event) {
                             event.preventDefault();
@@ -1578,8 +1577,8 @@ $(document).ready(function () {
 
                         loadChild_fid(idfh);
                         if (_USER_ROL != 1 && 0) {
-                            $("#operatoria").val(idoh).attr('disabled', true).trigger("chosen:updated");
-                            $("#clientes").attr('disabled', true);
+                            $("#operatoria").val(idoh);
+                            soloLectura();
                         } else {
                             $("#operatoria").val(idoh).attr('disabled', true).trigger("chosen:updated");
                         }
@@ -4012,7 +4011,9 @@ $(document).ready(function () {
 
         } else if (top == 'fil') {
             $.unblockUI();
-            $('#jqxlistbox').slideToggle('slow', function () {});
+            if ($('#jqxlistbox').length) {
+                $('#jqxlistbox').slideToggle('slow', function () {});
+            }
         } else if (top == 'lis') {
             $.unblockUI();
             $('#btnClear').trigger('click');
@@ -4132,15 +4133,17 @@ $(document).ready(function () {
     });
 
     var listSource = tmp_campos;
-    $("#jqxlistbox").hide();
-    $("#jqxlistbox").jqxListBox({source: listSource, width: 300, height: 130, theme: theme, checkboxes: true});
-    $("#jqxlistbox").on('checkChange', function (event) {
-        if (event.args.checked) {
-            $("#jqxgrid").jqxGrid('showcolumn', event.args.value);
-        } else {
-            $("#jqxgrid").jqxGrid('hidecolumn', event.args.value);
-        }
-    });
+    if ($('#jqxlistbox').length) {
+        $("#jqxlistbox").hide();
+        $("#jqxlistbox").jqxListBox({source: listSource, width: 300, height: 130, theme: theme, checkboxes: true});
+        $("#jqxlistbox").on('checkChange', function (event) {
+            if (event.args.checked) {
+                $("#jqxgrid").jqxGrid('showcolumn', event.args.value);
+            } else {
+                $("#jqxgrid").jqxGrid('hidecolumn', event.args.value);
+            }
+        });
+    }
 
 });
 
@@ -6742,13 +6745,13 @@ function agregar_garantias_1(acc, _array_obj) {
                                             $("#valortas").numeric({negative: false});
                                             $("#aforo").numeric({negative: false, decimal: false});
 
-                                            $("#aforo").keyup(function () {
-                                                if ($(this).val() == 0)
-                                                    $("#valorgar").val(0);
-                                                else
-                                                    $("#valorgar").val($("#valortas").val() * 100 / $(this).val());
+                                            $("#valortas").keyup(function () {
+                                                calcularValorGarantia();
                                             });
 
+                                            $("#aforo").keyup(function () {
+                                                calcularValorGarantia();
+                                            });
 
                                             $('#tipo_garantia').bind('change', function (event) {
                                                 event.preventDefault();
@@ -6972,12 +6975,15 @@ function agregar_garantias_1(acc, _array_obj) {
                                 init_datepicker('#pretas', '-3', '+5', '0', 0);
                                 $("#valortas").numeric({negative: false});
                                 $("#aforo").numeric({negative: false, decimal: false});
-                                $("#aforo").keyup(function () {
-                                    if ($(this).val() == 0)
-                                        $("#valorgar").val(0);
-                                    else
-                                        $("#valorgar").val($("#valortas").val() * 100 / $(this).val());
+                                
+                                $("#valortas").keyup(function () {
+                                    calcularValorGarantia();
                                 });
+
+                                $("#aforo").keyup(function () {
+                                    calcularValorGarantia();
+                                });
+
                                 $('#tipo_garantia').bind('change', function (event) {
                                     event.preventDefault();
                                     $(this).validationEngine('validate');
@@ -7175,8 +7181,15 @@ function actualizarBarraHerramientas() {
 
 }
 
-
-
+function calcularValorGarantia(){
+    var valortas = $('#valortas').val();
+    var aforo = $('#aforo').val();
+    if (valortas == '' || valortas == 0 || aforo == '' || aforo == 0){
+        $("#valorgar").val(0);
+    } else {
+        $("#valorgar").val(valortas * 100 / aforo);
+    }
+}
 
 
 function setMenuCarpeta(boton1, boton2) {
@@ -7693,4 +7706,14 @@ function validar_alta() {
     }
     
     return true;
+}
+
+function soloLectura(){
+    $('#fideicomiso').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#operatoria').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#provincia').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#subrubro').attr('disabled', 'disabled').trigger('chosen:updated');
+    $('#montosol').attr('disabled', 'disabled');
+    $('#destino').attr('disabled', 'disabled');
+    $('#clientes').attr('disabled', 'disabled').trigger('chosen:updated');
 }

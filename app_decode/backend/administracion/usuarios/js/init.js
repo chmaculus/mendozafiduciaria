@@ -239,12 +239,13 @@ $(document).ready(function(){
                             
                             var _arr_adicionales = [];
                             _arr_adicionales = {
-                                'c_hist':  $("#pie_chist").is(":checked")?'1':'0',
-                                'e_hist':  $("#pie_ehist").is(":checked")?'1':'0',
-                                'v_de':    $("#pie_vestde").is(":checked")?'1':'0',
-                                'h_atras': $("#pie_hatras").is(":checked")?'1':'0',
-                                'c_hist1': $("#pie_chist1").is(":checked")?'1':'0',
-                                'e_hist1': $("#pie_ehist1").is(":checked")?'1':'0'
+                                'c_hist':     $("#pie_chist").is(":checked")?'1':'0',
+                                'e_hist':     $("#pie_ehist").is(":checked")?'1':'0',
+                                'v_de':       $("#pie_vestde").is(":checked")?'1':'0',
+                                'h_atras':    $("#pie_hatras").is(":checked")?'1':'0',
+                                'c_hist1':    $("#pie_chist1").is(":checked")?'1':'0',
+                                'e_hist1':    $("#pie_ehist1").is(":checked")?'1':'0',
+                                'habilitado': $("#pie_habilitado").is(":checked")?'1':'0'
                             }
                             
                             
@@ -330,7 +331,7 @@ $(document).ready(function(){
                     return false;
                 }
                 
-                jConfirm('Esta seguro de borrar este item??.', $.ucwords(_etiqueta_modulo),function(r){
+                jConfirm('Esta seguro de deshabilitar este item??.', $.ucwords(_etiqueta_modulo),function(r){
                     if(r==true){
                 
                         var selectedrowindex = $("#jqxgrid").jqxGrid('getselectedrowindex');
@@ -357,7 +358,8 @@ $(document).ready(function(){
 
                                     if (selectedrowindex >= 0 && selectedrowindex < rowscount) {
                                         var id = $("#jqxgrid").jqxGrid('getrowid', selectedrowindex);
-                                        var commit = $("#jqxgrid").jqxGrid('deleterow', id);
+                                        mydata['ESTADO'] = 0;
+                                        var commit = $("#jqxgrid").jqxGrid('updaterow', id, mydata);
                                     }
 
                                 }
@@ -472,6 +474,7 @@ $(document).ready(function(){
             { name: 'NOMBRE', type: 'string' },
             { name: 'APELLIDO' , type: 'string'},
             { name: 'EMAIL', type: 'string' },
+            { name: 'ESTADO', type: 'string' },
             { name: 'ID' }
         ],
         url: 'general/extends/extra/roles_permisos.php',
@@ -534,10 +537,11 @@ $(document).ready(function(){
             { text: 'AREA', datafield: 'AREA', width: '20%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
             { text: 'PUESTO', datafield: 'PUESTO', width: '20%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
             { text: 'ROL', datafield: 'DENOMINACION', width: '20%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
-            { text: 'NOMBRE', datafield: 'NOMBRE', width: '20%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
-            { text: 'APELLIDO', datafield: 'APELLIDO', width: '20%', groupable:false , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
-            { text: 'USERNAME', datafield: 'USERNAME', width: '20%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
+            { text: 'NOMBRE', datafield: 'NOMBRE', width: '10%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
+            { text: 'APELLIDO', datafield: 'APELLIDO', width: '10%', groupable:false , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
+            { text: 'USERNAME', datafield: 'USERNAME', width: '10%' , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
             { text: 'EMAIL', datafield: 'EMAIL', width: '20%', groupable:false , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
+            { text: 'HABILITADO', datafield: 'ESTADO', width: '10%', groupable:false , columntype: 'textbox', filtertype: 'checkedlist', filtercondition: 'starts_with', filterable : true},
             { text: 'ID', datafield: 'ID', width: '0%' }
         ]
     });

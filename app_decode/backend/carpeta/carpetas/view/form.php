@@ -471,9 +471,9 @@
 <!--            <p class="div_chk" id="div_chk_checklist1">
                     <input type="checkbox" id="chk_rcontrato" name="chk_rcontrato" value="2" class="styled" <?php echo (isset($array_chk['RCONTRATO']) && $array_chk['RCONTRATO']==1 ? 'checked="checked"':'') ?>/> <label for="chk_rcontrato">Dar conformidad</label>
                 </p>-->
-            <!--<p class="div_chk" id="div_chk_checklist1">-->
+                <div class="elem elem_med">
                     <input type="checkbox" id="chk_rcontrato" name="chk_rcontrato" value="2" class="styled"/> <label for="chk_rcontrato">Dar conformidad</label>
-                <!--</p>-->
+                </div>
                 
                 <?php if(is_array($lst_escribanos)): ?>
                 <div class="elem elem_med" >

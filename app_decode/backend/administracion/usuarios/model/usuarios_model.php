@@ -36,32 +36,54 @@ class usuarios_model extends main_model{
         if (isset($obj['var_ins']['CLAVE'])){
             $obj['var_ins']['CLAVE'] = crypt_blowfish($obj['var_ins']['CLAVE']);
         }
-        if ($iid==0)://agregar
+        if ($iid == 0){ //agregar
             $acc = "add";
             $obj['var_ins']['CREATEDON'] = $obj['var_ins']['UPDATEDON'];
             $obj['var_ins']['ESTADO'] = '1';
             $test = $this->_db->get_tabla($this->_tablamod,"USERNAME='".$obj['var_ins']['USERNAME']."'");
             if ($test){
                 $resp = '-1'; //username ya existe
-            }else{
+            } else {
                 $test_e = $this->_db->get_tabla($this->_tablamod,"EMAIL='".$obj['var_ins']['EMAIL']."'");
                 if ($test_e){
                     $resp = '-2';//email ya existe
-                }else{
+                } else {
                     $resp = $this->_db->insert($this->_tablamod, $obj['var_ins']);
                     $id_new = $resp;
                 }
             }
-        else://editar
+        } else { //editar
+            $usuarioOriginal = $this->_db->get_tabla($this->_tablamod, "ID = '".$iid."'");
+            $usuarioOriginal = $usuarioOriginal[0];
             $resp = $this->_db->update($this->_tablamod, $obj['var_ins'], "id='".$iid."'");
             $acc = "edit";
-            
-        endif;
-        
+        }
+        if(isset($usuarioOriginal)){
+            $campos = array('USERNAME', 'NOMBRE', 'APELLIDO', 'ID_ROL', 'ID_AREA', 'ID_PUESTO', 'EMAIL');
+            foreach($campos as $campo){
+                if($obj['var_ins'][$campo] != $usuarioOriginal[$campo]){
+                    $this->auditoria('usuarios', 'M', $iid, 'Se cambia '.$campo.' de '.$usuarioOriginal[$campo].' a '.$obj['var_ins'][$campo]);
+                }
+            }
+            $campos = array(
+                'ESTADO' => 'habilitado',
+                'SU_1' => 'c_hist',
+                'SU_2' => 'e_hist',
+                'SU_3' => 'v_de',
+                'SU_4' => 'h_atras',
+                'SU_5' => 'c_hist1',
+                'SU_6' => 'e_hist1'
+            );
+            foreach($campos as $campo1 => $campo2){
+                if($obj['_arr_adicionales'][$campo2] != $usuarioOriginal[$campo1]){
+                    $this->auditoria('usuarios', 'M', $iid, 'Se cambia '.$campo2.' / '.$campo1.' de '.$usuarioOriginal[$campo1].' a '.$obj['_arr_adicionales'][$campo2]);
+                }
+            }
+        }
         //su
         if (isset($obj['_arr_adicionales'])):
             
-            $this->_db->update('fid_usuarios', array("SU_1"=>"0","SU_2"=>"0","SU_3"=>"0","SU_4"=>"0","SU_5"=>"0","SU_6"=>"0"), "ID='".$id_new."'");
+            $this->_db->update('fid_usuarios', array("ESTADO"=>"0","SU_1"=>"0","SU_2"=>"0","SU_3"=>"0","SU_4"=>"0","SU_5"=>"0","SU_6"=>"0"), "ID='".$id_new."'");
             //log_this('eeeeeeee.log',$this->_db->last_query());
         
             //actualizar usuario
@@ -83,6 +105,9 @@ class usuarios_model extends main_model{
             if ($obj['_arr_adicionales']['h_atras']==1):
                 $this->_db->update( 'fid_usuarios', array("SU_4"=>"1"), "ID='".$id_new."'" );
             endif;
+            if ($obj['_arr_adicionales']['habilitado']==1):
+                $this->_db->update( 'fid_usuarios', array("ESTADO"=>"1"), "ID='".$id_new."'" );
+            endif;
         endif;
         
         
@@ -102,7 +127,9 @@ class usuarios_model extends main_model{
             $id_rol = $tmp[0]["ID_ROL"];
             $this->update_rol_update($id_rol,"1");
         }
-        $this->_db->delete($this->_tablamod, "id =' " . $id . "'" );
+        //$this->_db->delete($this->_tablamod, "id =' " . $id . "'" );
+        $this->_db->update($this->_tablamod, array("ESTADO"=>"0"), "ID='".$id."'" );
+        $this->auditoria('usuarios', 'M', $id, 'Se cambia habilitado / ESTADO de 1 a 0');
     }
     
     function get_dependencia_operatoria($tabla, $campo, $valor){
@@ -117,8 +144,17 @@ class usuarios_model extends main_model{
         //log_this('qqqq.log',$this->_db->last_query());
         return $rtn;
     }
-          
-    
-    
+
+    function auditoria($tabla, $accion, $registro, $descripcion) {
+        $array = array(
+            'ID_USUARIO' => $_SESSION['USERADM'],
+            'TABLA' => $tabla,
+            'ACCION' => $accion,
+            'REGISTRO' => $registro,
+            'DESCRIPCION' => $descripcion,
+            'FECHA' => date('Y-m-d H:i:s')
+        );
+        $this->_db->insert("fid_auditoria", $array);
+    }
 }
 ?>

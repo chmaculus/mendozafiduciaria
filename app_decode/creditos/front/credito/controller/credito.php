@@ -285,7 +285,7 @@ class credito extends main_controller{
         $ret_reuda['fecha_actual'] = $fecha;
         echo $this->view("informes/cuotas",$ret_reuda);
         
-        if (isset($_SESSION['simulacion_credito']) && $_SESSION['simulacion_credito']) {
+        if (isset($_SESSION['simulacion_credito']) && $_SESSION['simulacion_credito'] && $credito_id < 0) {
             $this->mod->borrar_credito();
             unset($_SESSION['simulacion_credito']);
         }

@@ -56,7 +56,7 @@ class carpetash_model extends main_model{
     
     function get_carterade($id){
         $this->_db->select(" CONCAT(NOMBRE,' ', APELLIDO) as nombrecarterade ");
-        $rtn = $this->_db->get_tabla('fid_usuarios',"ID='".$id."'");
+        $rtn = $this->_db->get_tabla('fid_usuarios',"ID = '".$id."' AND ESTADO = 1");
         return $rtn;
     }
     
@@ -122,7 +122,7 @@ class carpetash_model extends main_model{
     function get_uploads($id){
         $this->_db->select("a.*,a.ID as IID, a.ID_USUARIO as USUARIO, CONCAT(u.NOMBRE,' ',u.APELLIDO) AS USUARIO_NOMBRE, e.NOMBRE AS ETAPA");
         $this->_db->where("ID_OPERACION = '".$id   ."'");
-        $this->_db->join("fid_usuarios u","u.ID=a.ID_USUARIO");
+        $this->_db->join("fid_usuarios u","u.ID = a.ID_USUARIO AND u.ESTADO = 1");
         $this->_db->join("fid_etapas e","e.ID=a.ID_ETAPA");
         $rtn = $this->_db->get_tabla('fid_operacion_adjunto a');
         //log_this('xxxxx.log', $this->_db->last_query() );
@@ -139,7 +139,7 @@ class carpetash_model extends main_model{
     function get_uploads_gar($idgar){
         $this->_db->select("ga.*,CONCAT(u.NOMBRE,' ',u.APELLIDO) AS USUARIO_NOMBRE");
         $this->_db->where("ID_GARANTIA = '".$idgar   ."'");
-        $this->_db->join("fid_usuarios u","u.ID=ga.ID_USUARIO");
+        $this->_db->join("fid_usuarios u","u.ID = ga.ID_USUARIO AND u.ESTADO = 1");
         $rtn = $this->_db->get_tabla('fid_garantia_adjunto ga');
         //log_this('xxxxx.log', $this->_db->last_query() );
         return $rtn;
@@ -1357,7 +1357,8 @@ class carpetash_model extends main_model{
             $cad_where = substr($cad_where,0,-1);
             $cad_where = "u.ID_AREA IN (".$cad_where.")";
         }
-        
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
+
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA");
         $this->_db->join("fid_xpuestos p","p.ID=u.ID_PUESTO");
         $this->_db->join("fid_xareas a","a.ID=u.ID_AREA");
@@ -1445,7 +1446,8 @@ class carpetash_model extends main_model{
         if ($puesto_in){
             $cad_where .= "and p.ID='".$puesto_in."'";
         }
-        
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
+
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID");
         $this->_db->join("fid_xpuestos p","p.ID=u.ID_PUESTO");
         $this->_db->join("fid_xareas a","a.ID=u.ID_AREA");
@@ -1457,7 +1459,7 @@ class carpetash_model extends main_model{
     
     function getetapas_menor2( $etapa, $id_operacion ,$proceso = '1' ){
         
-        $cad_where = "u.ID IN ( SELECT CARTERADE FROM fid_traza WHERE (OBSERVACION='ACEPTADO' OR OBSERVACION='CREACION') and ID_OPERACION='".$id_operacion."' AND ETAPA='".$etapa."' )";
+        $cad_where = "u.ID IN ( SELECT CARTERADE FROM fid_traza WHERE (OBSERVACION='ACEPTADO' OR OBSERVACION='CREACION') and ID_OPERACION='".$id_operacion."' AND ETAPA='".$etapa."' ) AND u.ESTADO = 1";
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID, ".$etapa." as ETAPA_OLD");
         $this->_db->join("fid_xpuestos p","p.ID=u.ID_PUESTO");
         $this->_db->join("fid_xareas a","a.ID=u.ID_AREA");
@@ -1473,7 +1475,7 @@ class carpetash_model extends main_model{
         
         //gope
         $this->_db->select("ID,ID_AREA");
-        $rtn = $this->_db->get_tabla("fid_usuarios", "(ID_AREA=4 AND ID_PUESTO=4) || (ID_AREA=9 AND ID_PUESTO=17)");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1 AND ((ID_AREA=4 AND ID_PUESTO=4) || (ID_AREA=9 AND ID_PUESTO=17))");
         
         if ($rtn){
             $tmp = array();

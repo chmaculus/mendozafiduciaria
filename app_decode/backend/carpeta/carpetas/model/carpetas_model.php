@@ -76,7 +76,7 @@ class carpetas_model extends main_model {
 
     function get_carterade($id) {
         $this->_db->select(" CONCAT(NOMBRE,' ', APELLIDO) as nombrecarterade ");
-        $rtn = $this->_db->get_tabla('fid_usuarios', "ID='" . $id . "'");
+        $rtn = $this->_db->get_tabla('fid_usuarios', "ID='" . $id . "' AND ESTADO = 1");
         return $rtn;
     }
 
@@ -141,7 +141,7 @@ class carpetas_model extends main_model {
     function get_uploads($id) {
         $this->_db->select("a.*,a.ID as IID, a.ID_USUARIO as USUARIO, CONCAT(u.NOMBRE,' ',u.APELLIDO) AS USUARIO_NOMBRE, e.NOMBRE AS ETAPA");
         $this->_db->where("ID_OPERACION = '" . $id . "'");
-        $this->_db->join("fid_usuarios u", "u.ID=a.ID_USUARIO");
+        $this->_db->join("fid_usuarios u", "u.ID=a.ID_USUARIO AND u.ESTADO = 1");
         $this->_db->join("fid_etapas e", "e.ID=a.ID_ETAPA");
         $rtn = $this->_db->get_tabla('fid_operacion_adjunto a');
         return $rtn;
@@ -156,7 +156,7 @@ class carpetas_model extends main_model {
     function get_uploads_gar($idgar) {
         $this->_db->select("ga.*,CONCAT(u.NOMBRE,' ',u.APELLIDO) AS USUARIO_NOMBRE");
         $this->_db->where("ID_GARANTIA = '" . $idgar . "'");
-        $this->_db->join("fid_usuarios u", "u.ID=ga.ID_USUARIO");
+        $this->_db->join("fid_usuarios u", "u.ID=ga.ID_USUARIO AND u.ESTADO = 1");
         $rtn = $this->_db->get_tabla('fid_garantia_adjunto ga');
         return $rtn;
     }
@@ -1018,7 +1018,7 @@ class carpetas_model extends main_model {
         $reg = $this->_db->get_tabla($this->_tablamodtra, "id_operacion='" . $valorOperacion . "' AND etapa='" . $valorid . "'");
         $valor_a_comparar = $reg[0]["CARTERADE"];
         $this->_db->select('nombre,apellido,email');
-        $us = $this->_db->get_tabla($this->_tablamodusu, "ID='" . $reg[0]['CARTERADE'] . "'");
+        $us = $this->_db->get_tabla($this->_tablamodusu, "ID='" . $reg[0]['CARTERADE'] . "' AND ESTADO = 1");
         return $us;
     }
     function obtener_datos_cliente($valorOperacion){
@@ -1936,7 +1936,7 @@ class carpetas_model extends main_model {
 
         $enviadoa = $reg[0]["ENVIADOA"];
         $this->_db->select('NOMBRE,APELLIDO');
-        $ususend = $this->_db->get_tabla('fid_usuarios', "ID='" . $enviadoa . "'");
+        $ususend = $this->_db->get_tabla('fid_usuarios', "ID='" . $enviadoa . "' AND ESTADO = 1");
 
 
         $obj_ed = array(
@@ -1977,7 +1977,7 @@ class carpetas_model extends main_model {
 
         $enviadoa = $reg[0]["ENVIADOA"];
         $this->_db->select('NOMBRE,APELLIDO');
-        $ususend = $this->_db->get_tabla('fid_usuarios', "ID='" . $enviadoa . "'");
+        $ususend = $this->_db->get_tabla('fid_usuarios', "ID='" . $enviadoa . "' AND ESTADO = 1");
 
 
         $obj_ed = array(
@@ -2114,6 +2114,7 @@ class carpetas_model extends main_model {
             $cad_where = substr($cad_where, 0, -1);
             $cad_where = "u.ID_AREA IN (" . $cad_where . ")";
         }
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
 
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");
@@ -2238,36 +2239,39 @@ class carpetas_model extends main_model {
 //        $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
 //                . "WHERE id= '".$rtn[0]['ID_NOTIFICAR']."'");
         $rtn_n = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios "
-                . "WHERE id_area=2 AND id_puesto=2");
+                . "WHERE id_area=2 AND id_puesto=2 AND ESTADO = 1");
         return $rtn_n;
     }
     function notificar_gerente(){
-        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=19 AND id_area=4");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=19 AND id_area=4 AND ESTADO = 1");
         return $rtn;
     }
     function obtener_nombre($id_obtener){
-        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id='".$id_obtener."'");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id='".$id_obtener."' AND ESTADO = 1");
         return $rtn;
     }
     function notificar_gerente_administracion(){
-        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9 AND ESTADO = 1");
         return $rtn;
     }
     
      function gerente_legales() {  
-        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=12 AND id_area=5");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=12 AND id_area=5 AND ESTADO = 1");
         return $rtn;
     }
      function jefe_administracion() {  
-        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9");
+        $rtn = $this->_db->query("SELECT ID,USERNAME FROM fid_usuarios WHERE id_rol=23 AND id_area=9 AND ESTADO = 1");
         return $rtn;
     }
     function jefe_operaciones($operacion) {
         $rtn = $this->_db->query("SELECT t.CARTERADE,u.USERNAME FROM fid_traza t 
                                 JOIN fid_usuarios AS u ON t.carterade = u.id 
-                                WHERE t.id_operacion='".$operacion."' AND u.id_rol=10 AND u.id_area=4  
+                                WHERE t.id_operacion='".$operacion."' AND u.estado=1 AND u.id_rol=10 AND u.id_area=4  
                                 GROUP BY t.CARTERADE
                                 ");
+        if (!$rtn) {
+            $rtn = $this->_db->query("SELECT ID AS CARTERADE, USERNAME FROM fid_usuarios AS u WHERE u.id_rol=10 AND u.id_area=4");
+        }
         return $rtn;
     }
 
@@ -2362,19 +2366,20 @@ function getenviar_a2($arr_send, $puesto_in) {
         if ($puesto_in) {
             $cad_where .= "and p.ID='" . $puesto_in . "'";
         }
+        $cad_where = strlen($cad_where) > 0 ? $cad_where . " AND u.ESTADO = 1" : "u.ESTADO = 1";
 
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");
         $this->_db->join("fid_xareas a", "a.ID=u.ID_AREA");
         $this->_db->order_by("AREA,PUESTO");
         $rtn = $this->_db->get_tabla("fid_usuarios u", $cad_where);
-        //log_this('xxxxxx.log', $this->_db->last_query() );
+        log_this('xxxxxx.log', $this->_db->last_query() );
         return $rtn;
     }
 
     function getetapas_menor2($etapa, $id_operacion, $proceso = '1') {
 
-        $cad_where = "u.ID IN ( SELECT CARTERADE FROM fid_traza WHERE (OBSERVACION='ACEPTADO' OR OBSERVACION='CREACION') and ID_OPERACION='" . $id_operacion . "' AND ETAPA='" . $etapa . "' )";
+        $cad_where = "u.ID IN ( SELECT CARTERADE FROM fid_traza WHERE (OBSERVACION='ACEPTADO' OR OBSERVACION='CREACION') and ID_OPERACION='" . $id_operacion . "' AND ETAPA='" . $etapa . "' ) AND u.ESTADO = 1";
         $rtn = $this->_db->select("u.ID as IID,NOMBRE,APELLIDO,a.DENOMINACION AS AREA, p.DENOMINACION AS PUESTO, a.ETAPA AS ETAPA, u.ID_PUESTO AS PUESTOID, " . $etapa . " as ETAPA_OLD");
         $this->_db->join("fid_xpuestos p", "p.ID=u.ID_PUESTO");
         $this->_db->join("fid_xareas a", "a.ID=u.ID_AREA");
@@ -2388,7 +2393,7 @@ function getenviar_a2($arr_send, $puesto_in) {
         //devuelve los id de gerente de ope y gerente de finanza
         //gope
         $this->_db->select("ID,ID_AREA");
-        $rtn = $this->_db->get_tabla("fid_usuarios", "(ID_AREA=4 AND ID_PUESTO=4) || (ID_AREA=9 AND ID_PUESTO=17)");
+        $rtn = $this->_db->get_tabla("fid_usuarios", "ESTADO = 1 AND ((ID_AREA=4 AND ID_PUESTO=4) || (ID_AREA=9 AND ID_PUESTO=17))");
 
         if ($rtn) {
             $tmp = array();

@@ -5,7 +5,7 @@ class login_model extends main_model{
         //$pass;
         //crypt($pass, $passwordenBD)
         $this->_db->select("ID,CLAVE,USERNAME,NOMBRE,APELLIDO,ID_ROL,ID_PUESTO,ID_AREA,SU_1,SU_2,SU_3,SU_4,SU_5,SU_6");
-        $this->_db->where("USERNAME = '".$user."'");
+        $this->_db->where("USERNAME = '".$user."' AND ESTADO = 1");
         $rtn = $this->_db->get_tabla("fid_usuarios");
                 
         if ($rtn){
@@ -23,7 +23,7 @@ class login_model extends main_model{
     
     function get_permisos( $id_user ){
         //obtener rol
-        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."'");
+        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."' AND ESTADO = 1");
         if ($user){
             $rol = $user[0]['ID_ROL'];
             //obtener roles_permisos
@@ -39,7 +39,7 @@ class login_model extends main_model{
     
     function get_permisos_menu( $id_user ){
         //obtener rol
-        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."'");
+        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."' AND ESTADO = 1");
         if ($user){
             $rol = $user[0]['ID_ROL'];
             //obtener roles_menu
@@ -53,7 +53,7 @@ class login_model extends main_model{
     
     function get_permisos_etapas( $id_user ){
         //obtener rol
-        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."'");
+        $user =  $this->_db->get_tabla("fid_usuarios","ID='".$id_user."' AND ESTADO = 1");
         if ($user){
             $rol = $user[0]['ID_ROL'];
             //obtener roles_menu
