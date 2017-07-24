@@ -20,7 +20,6 @@ CREATE FUNCTION cambiarIdCredito (cui VARCHAR(20), n INT, m INT)
                     THEN SET s = CONCAT('No se puede mover ya que existe el crédito ID = ', m);
                 ELSE
                     DELETE FROM fid_creditos_cuotas WHERE ID_CREDITO=m;
-                    DELETE FROM fid_creditos_bancos_cobros WHERE ID_CREDITO=m;
                     DELETE FROM fid_creditos_desembolsos WHERE ID_CREDITO=m;
                     DELETE FROM fid_creditos_cambiotasas WHERE ID_CREDITO=m;
                     DELETE FROM fid_creditos_gastos WHERE ID_CREDITO=m;
@@ -32,7 +31,6 @@ CREATE FUNCTION cambiarIdCredito (cui VARCHAR(20), n INT, m INT)
 
                     UPDATE fid_creditos SET ID=m WHERE ID=n;
                     UPDATE fid_creditos_cuotas SET ID_CREDITO=m WHERE ID_CREDITO=n;
-                    UPDATE fid_creditos_bancos_cobros SET ID_CREDITO=m WHERE ID_CREDITO=n;
                     UPDATE fid_creditos_desembolsos SET ID_CREDITO=m WHERE ID_CREDITO=n;
                     UPDATE fid_creditos_cambiotasas SET ID_CREDITO=m WHERE ID_CREDITO=n;
                     UPDATE fid_creditos_gastos SET ID_CREDITO=m WHERE ID_CREDITO=n;

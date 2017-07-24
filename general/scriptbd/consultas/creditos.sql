@@ -44,6 +44,24 @@ left join fid_creditos cc on c.ID_CADUCADO=cc.ID
 WHERE c.ID_CADUCADO!=0 AND c.POSTULANTES_NOMBRES!=cc.POSTULANTES_NOMBRES
 
 
+# BUSCAR CREDITOS QUE HAN SIDO MOVIDOS
 SELECT * FROM fiduciaria_20170614.fid_creditos cbk
 LEFT JOIN fiduciaria.fid_creditos c ON cbk.ID=c.ID
 WHERE c.ID IS NULL
+
+# BUSCAR CREDITOS QUE EL DESEMBOLSO SEA SUPERIOR A LA FECHA DE VENCIMIENTO DE LA PRIMER CUOTA
+SELECT c.ID, FROM_UNIXTIME(cc.FECHA_VENCIMIENTO), FROM_UNIXTIME(cd.FECHA) FROM fid_creditos c
+INNER JOIN fid_creditos_cuotas cc ON (c.ID = cc.ID_CREDITO)
+INNER JOIN fid_creditos_desembolsos cd ON (c.ID = cd.ID_CREDITO)
+WHERE cd.FECHA > cc.FECHA_VENCIMIENTO
+GROUP BY c.ID ORDER BY cc.FECHA_VENCIMIENTO ASC
+
+# BUSCAR desembolsos sin créditos
+SELECT C.ID_CREDITO from fid_creditos_desembolsos cd 
+LEFT JOIN fid_creditos c ON cd.ID_CREDITO=c.ID 
+WHERE c.MONTO_CREDITO IS NULL
+
+# BUSCAR eventos de desembolsos sin créditos
+SELECT ce.ID_CREDITO from fid_creditos_eventos ce
+LEFT JOIN fid_creditos_desembolsos cd ON cd.ID_CREDITO=ce.ID_CREDITO 
+WHERE ce.TIPO=1 AND cd.ID_CREDITO IS NULL
