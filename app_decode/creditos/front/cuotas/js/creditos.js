@@ -1134,24 +1134,27 @@ function ajuste(tipo) {
     var monto = $("#txtMonto").val();
     if (monto != '' && monto > 0) {
         jConfirm("¿Está seguro de agregar el ajuste al crédito? ", "MENDOZA FIDUCIARIA", function (e) {
-            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando crédito caido</h4>'});
+            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando ajuste</h4>'});
             var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
             $.ajax({
                 url: _cuotas.URL + "/x_ajuste",
                 data: {
                     fecha: fecha,
-                    monto: $("#txtMonto").val(),
+                    monto: monto,
                     tipo: tipo, //0 cobro, 1 pago
+                    version_id: _version_id || 0,
                     id_credito: _cuotas.ID_CREDITO
                 },
                 type: "post",
                 success: function (result) {
                     if (result == '1') {
-                        _cuotas.mostrar_estado(_cuotas.ID_CREDITO, fecha);
+                        jAlert('Hubo un inconveniente, intente nuevamente', 'MENDOZA FIDUCIARIA');
                     } else if (result == '2') {
                         jAlert('El crédito ya tiene un ajuste cargado', 'MENDOZA FIDUCIARIA');
                     } else {
-                        jAlert('Hubo un inconveniente, intente nuevamente', 'MENDOZA FIDUCIARIA');
+                        $(".div-result").html(result);
+                        $.unblockUI();
+                        _events_lista();
                     }
                 }
             });

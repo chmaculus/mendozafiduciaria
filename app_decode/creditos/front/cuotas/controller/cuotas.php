@@ -86,9 +86,9 @@ class cuotas extends main_controller{
         if ($this->mod->set_credito_active($credito_id)) {
             $monto = (float) $monto;
             
-            if (!$monto || $monto <= 0) {
-                die("-2");
-            }
+//            if (!$monto || $monto <= 0) {
+//                die("-2");
+//            }
             
             $this->mod->set_version_active($version);
             $this->mod->renew_datos();
@@ -1653,13 +1653,29 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $monto = $_POST['monto'];
         $fecha = $_POST['fecha'];
         $tipo = $_POST['tipo'];
-        
+        $version = $_POST['version_id'];
+
         if ($this->mod->set_credito_active($id_credito)) {
-            echo $this->mod->agregar_ajuste($tipo, $fecha, $monto);
+            define('CREDITO_AJUSTE', TRUE);
+            $ajuste = $this->mod->agregar_ajuste($tipo, $fecha, $monto);
+            if ($ajuste) {
+                if ($tipo) {
+                    $monto = 0 - $monto;
+                }
+                if (!$this->_x_set_pago($id_credito, $fecha, $monto, $version)) {
+                    $this->mod->eliminar_ajuste($ajuste);
+                    echo '1';
+                } else {
+                    $this->mod->renew_datos();
+                    echo $this->_get_cuotas();
+                }
+            } else {
+                echo '2';
+            }
         }
         die;
     }
-    
+
 }
 
 

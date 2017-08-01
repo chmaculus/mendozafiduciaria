@@ -35,8 +35,8 @@
                     <?php } else { ?>
                     <option value="10" class="editar">Refinanciación caída</option>
                     <?php } ?>
-                    <option value="12" class="editar">Cobro por ajuste</option>
-                    <option value="13" class="editar">Pago por ajuste</option>
+                    <option value="13" class="editar">Cobro por ajuste</option>
+                    <option value="12" class="editar">Pago por ajuste</option>
                 </select>
             </div>
 

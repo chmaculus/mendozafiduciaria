@@ -2938,11 +2938,11 @@ ORDER BY T1.lvl DESC');
 
         foreach ($variaciones as $variacion) {
             switch ($variaciones[$variacion['ID']]['TIPO']) {
-                case EVENTO_AJUSTE:
-                    $this->_db->where("ID_VARIACION = " . $variacion['ID']);
-                    $row = $this->_db->get_row("fid_creditos_desembolsos");
-                    $variaciones[$variacion['ID']]['ASOC'] = $row;
-                    break;
+//                case EVENTO_AJUSTE:
+//                    $this->_db->where("ID_VARIACION = " . $variacion['ID']);
+//                    $row = $this->_db->get_row("fid_creditos_desembolsos");
+//                    $variaciones[$variacion['ID']]['ASOC'] = $row;
+//                    break;
                 case EVENTO_DESEMBOLSO:
                     $this->_db->where("ID_VARIACION = " . $variacion['ID']);
                     $row = $this->_db->get_row("fid_creditos_desembolsos");
@@ -2953,7 +2953,7 @@ ORDER BY T1.lvl DESC');
                     $row = $this->_db->get_row("fid_creditos_cambiotasas");
                     $variaciones[$variacion['ID']]['ASOC'] = $row;
                     break;
-
+                case EVENTO_AJUSTE:
                 case EVENTO_RECUPERO:
                     $this->_db->where("ID_VARIACION = " . $variacion['ID']);
                     $row = $this->_db->get_tabla("fid_creditos_pagos");
@@ -3171,8 +3171,7 @@ ORDER BY T1.lvl DESC');
         $pagos = array();
         $i = 1;
         foreach ($this->_variaciones as $variacion) {
-            if ($variacion['TIPO'] == EVENTO_RECUPERO AND $variacion['ESTADO'] == 0) {
-
+            if (($variacion['TIPO'] == EVENTO_RECUPERO || $variacion['TIPO'] == EVENTO_AJUSTE) &&  $variacion['ESTADO'] == 0) {
                 if ($fecha > 0 && $variacion['FECHA'] > $fecha)
                     break;
 
@@ -3192,7 +3191,8 @@ ORDER BY T1.lvl DESC');
                     "FECHA" => date("d/m/Y", $variacion['FECHA']),
                     "FECHA2" => $variacion['FECHA'],
                     "ID_PAGO" => $variacion['ID'],
-                    "RECIBO" => $recibo
+                    "RECIBO" => $recibo,
+                    "AJUSTE" => $variacion['TIPO'] == EVENTO_AJUSTE
                 );
             }
         }
@@ -3987,6 +3987,9 @@ ORDER BY T1.lvl DESC');
     function eliminar_pagos($id_evento) {
         $this->_db->select("ID_VARIACION");
         $ids_eventos = $this->_db->get_tabla("fid_creditos_pagos", "ID_CREDITO=" . $this->_id_credito . " AND FECHA >= (SELECT FECHA FROM fid_creditos_pagos WHERE ID_CREDITO=" . $this->_id_credito . " AND ID_VARIACION=$id_evento LIMIT 1) GROUP BY ID_VARIACION");
+        if (!$ids_eventos) {
+            $ids_eventos = array(array('ID_VARIACION' => $id_evento));
+        }
         
         if($ids_eventos) {
             $arr = array();
@@ -4156,7 +4159,7 @@ ORDER BY T1.lvl DESC');
             }
         }
         $data['monto'] = $pago_total;
-        $data['TIPO'] = EVENTO_RECUPERO;
+        $data['TIPO'] = defined('CREDITO_AJUSTE') ? EVENTO_AJUSTE : EVENTO_RECUPERO;
         $ret = $this->generar_evento($data, true, $fecha);
 
         $this->assign_id_evento($ret['ID'], EVENTO_RECUPERO);
@@ -4171,165 +4174,178 @@ ORDER BY T1.lvl DESC');
         //print_r($arr_deuda);
         
         $cuotas_canceladas = array();
+        $ajuste = defined('CREDITO_AJUSTE') ? TRUE : FALSE;
 
-        if ($monto <= 0)
-            return;
-        
-        //pagamos gasto
-        /*foreach ($arr_deuda['gastos'] as $key => $val) {
-            $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
-            if ($pago > 0) {
-                $arr_pago[] = array(
-                    "ID_CREDITO" => $id_credito,
-                    "FECHA" => $fecha,
-                    "ID_TIPO" => PAGO_GASTOS,
-                    "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
-                    "CUOTAS_RESTANTES" => $val['ID'],
-                    "ID_VARIACION" => TEMP_ID
-                );
+        if ($monto > 0) {
 
-                $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
-            }
-        }*/
-        
-        //pagamos cuotas
-        for ($x = 0; $x < count($arr_deuda['cuotas']); $x++) {
-            
-            
-            foreach ($arr_deuda['gastos'] as $key => $val) {
-                if ($val['ROW']['FECHA'] <= $arr_deuda['cuotas'][$x]['_INFO']['HASTA']) {
-                    $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
-                    
-                    if ($pago > 0) {
-                        $arr_pago[] = array(
-                            "ID_CREDITO" => $id_credito,
-                            "FECHA" => $fecha,
-                            "ID_TIPO" => PAGO_GASTOS,
-                            "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
-                            "CUOTAS_RESTANTES" => $arr_deuda['cuotas'][$x]['CUOTAS_RESTANTES'],
-                            "ID_VARIACION" => TEMP_ID
-                        );
-
-                        $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
-                        $arr_deuda['gastos'][$key]['SALDO'] -= $pago;
-                    }
-                }
-            }
-            
-            //antes de quitar los otros gastos pagamos los gastos administrativos de la cuota
-            foreach ($arr_deuda['cuotas'][$x]['GASTOS'] as $key => $val) {
-                if ($val['TIPO'] == PAGO_GASTOS_ADM) {
-                    $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
-                    if ($pago > 0) {
-                        $arr_pago[] = array(
-                            "ID_CREDITO" => $id_credito,
-                            "FECHA" => $fecha,
-                            "ID_TIPO" => PAGO_GASTOS_ADM,
-                            "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
-                            "CUOTAS_RESTANTES" => $arr_deuda['cuotas'][$x]['CUOTAS_RESTANTES'],
-                            "ID_VARIACION" => TEMP_ID
-                        );
-
-                        $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
-                    }
-                }
-            }
-            
-            unset($arr_deuda['cuotas'][$x]['GASTOS']);
-            $cuota = $arr_deuda['cuotas'][$x];
-
-            $bmoratorio = false;
-            $bpunitorio = false;
-            $bcompensatorio = false;
-            $bcapital = false;
-            $bgastos = false;
-            
-            foreach ($cuota as $key => $val) {
-                if (!isset($val['TIPO'])) {
-                    continue;
-                }
-                if ($monto <= 0.2)
-                    break 2;
-                if ($key == 'ID' || $key == 'CUOTAS_RESTANTES')
-                    break;
-
-                if (startsWith($key, "_"))
-                    continue;
-
-
-                //se carga el pago a montos superiores a 0.01 centavo.
-                if ((round($val['SALDO'], 2) > 0)) {
-                    //  $monto = $monto <= $val['SALDO'] ? $monto : $val['SALDO'] ;
-                    $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
+            //pagamos gasto
+            /*foreach ($arr_deuda['gastos'] as $key => $val) {
+                $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
+                if ($pago > 0) {
                     $arr_pago[] = array(
                         "ID_CREDITO" => $id_credito,
                         "FECHA" => $fecha,
-                        "ID_TIPO" => $val['TIPO'],
-                        "MONTO" => $pago,
-                        "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
+                        "ID_TIPO" => PAGO_GASTOS,
+                        "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
+                        "CUOTAS_RESTANTES" => $val['ID'],
                         "ID_VARIACION" => TEMP_ID
                     );
-                    
-                    //verificamos si el saldo es 0 (que esta cancelado el item)
-                    if ($monto >= $val['SALDO']) {
-                        switch ($val['TIPO']) {
-                            case PAGO_IVA_GASTOS_ADM:
-                                $bgastos = true;
-                                break;
-                            case PAGO_MORATORIO: //Moratorio
-                                $bmoratorio = true;
-                                $bgastos = true;
-                                break;
-                            case PAGO_PUNITORIO: //punitorio
-                                $bpunitorio = true;
-                                $bgastos = true;
-                                break;
-                            case PAGO_COMPENSATORIO: //compensatorio
-                                $bmoratorio = true;
-                                $bpunitorio = true;
-                                $bcompensatorio = true;
-                                $bgastos = true;
-                                break;
-                            case PAGO_CAPITAL: //capital
-                                $bmoratorio = true;
-                                $bpunitorio = true;
-                                $bcompensatorio = true;                                
-                                $bcapital = true;
-                                $bgastos = true;
-                                break;
+
+                    $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
+                }
+            }*/
+
+            //pagamos cuotas
+            for ($x = 0; $x < count($arr_deuda['cuotas']); $x++) {
+
+
+                foreach ($arr_deuda['gastos'] as $key => $val) {
+                    if ($val['ROW']['FECHA'] <= $arr_deuda['cuotas'][$x]['_INFO']['HASTA']) {
+                        $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
+
+                        if ($pago > 0) {
+                            $arr_pago[] = array(
+                                "ID_CREDITO" => $id_credito,
+                                "FECHA" => $fecha,
+                                "ID_TIPO" => PAGO_GASTOS,
+                                "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
+                                "CUOTAS_RESTANTES" => $arr_deuda['cuotas'][$x]['CUOTAS_RESTANTES'],
+                                "ID_VARIACION" => TEMP_ID
+                            );
+
+                            $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
+                            $arr_deuda['gastos'][$key]['SALDO'] -= $pago;
                         }
                     }
-                    $monto = $monto >= $val['SALDO'] ? $monto - $val['SALDO'] : 0;
+                }
+
+                //antes de quitar los otros gastos pagamos los gastos administrativos de la cuota
+                foreach ($arr_deuda['cuotas'][$x]['GASTOS'] as $key => $val) {
+                    if ($val['TIPO'] == PAGO_GASTOS_ADM) {
+                        $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
+                        if ($pago > 0) {
+                            $arr_pago[] = array(
+                                "ID_CREDITO" => $id_credito,
+                                "FECHA" => $fecha,
+                                "ID_TIPO" => PAGO_GASTOS_ADM,
+                                "MONTO" => $monto <= $val['SALDO'] ? $monto : $val['SALDO'],
+                                "CUOTAS_RESTANTES" => $arr_deuda['cuotas'][$x]['CUOTAS_RESTANTES'],
+                                "ID_VARIACION" => TEMP_ID
+                            );
+
+                            $monto = $monto <= $val['SALDO'] ? 0 : $monto - $val['SALDO'];
+                        }
+                    }
+                }
+
+                unset($arr_deuda['cuotas'][$x]['GASTOS']);
+                $cuota = $arr_deuda['cuotas'][$x];
+
+                $bmoratorio = false;
+                $bpunitorio = false;
+                $bcompensatorio = false;
+                $bcapital = false;
+                $bgastos = false;
+
+                foreach ($cuota as $key => $val) {
+                    if (!isset($val['TIPO'])) {
+                        continue;
+                    }
+                    if ($monto <= 0.2)
+                        break 2;
+                    if ($key == 'ID' || $key == 'CUOTAS_RESTANTES')
+                        break;
+
+                    if (startsWith($key, "_"))
+                        continue;
+
+
+                    //se carga el pago a montos superiores a 0.01 centavo.
+                    if ((round($val['SALDO'], 2) > 0)) {
+                        //  $monto = $monto <= $val['SALDO'] ? $monto : $val['SALDO'] ;
+                        $pago = $monto <= $val['SALDO'] ? $monto : $val['SALDO'];
+                        $arr_pago[] = array(
+                            "ID_CREDITO" => $id_credito,
+                            "FECHA" => $fecha,
+                            "ID_TIPO" => $val['TIPO'],
+                            "MONTO" => $pago,
+                            "CUOTAS_RESTANTES" => $cuota['CUOTAS_RESTANTES'],
+                            "ID_VARIACION" => TEMP_ID
+                        );
+
+                        //verificamos si el saldo es 0 (que esta cancelado el item)
+                        if ($monto >= $val['SALDO']) {
+                            switch ($val['TIPO']) {
+                                case PAGO_IVA_GASTOS_ADM:
+                                    $bgastos = true;
+                                    break;
+                                case PAGO_MORATORIO: //Moratorio
+                                    $bmoratorio = true;
+                                    $bgastos = true;
+                                    break;
+                                case PAGO_PUNITORIO: //punitorio
+                                    $bpunitorio = true;
+                                    $bgastos = true;
+                                    break;
+                                case PAGO_COMPENSATORIO: //compensatorio
+                                    $bmoratorio = true;
+                                    $bpunitorio = true;
+                                    $bcompensatorio = true;
+                                    $bgastos = true;
+                                    break;
+                                case PAGO_CAPITAL: //capital
+                                    $bmoratorio = true;
+                                    $bpunitorio = true;
+                                    $bcompensatorio = true;                                
+                                    $bcapital = true;
+                                    $bgastos = true;
+                                    break;
+                            }
+                        }
+                        $monto = $monto >= $val['SALDO'] ? $monto - $val['SALDO'] : 0;
+                    }
+                }
+
+                //print_r($arr_pago);die();
+
+                ////si el capital es 0 (cuota de gracia) la cuota queda cancelada
+                //sin contar el capital.
+                if ($arr_deuda['cuotas'][$x]['CAPITAL'] == 0) {
+                    if ($bgastos && $bmoratorio && $bpunitorio && $bcompensatorio && $bcapital) {
+                        $arr_deuda['cuotas'][$x]['_INFO']['ESTADO'] = 1;
+                    }
+                }
+
+                //si el capital es mayor a 0 (cuota con amortizacion de capital) la cuota queda cancelada
+                //si estan cancelados todos los items.            
+                else {
+                    if ($bgastos && $bmoratorio && $bpunitorio && $bcompensatorio) {
+
+                        //las cuotas que han sido canceladas pagando capital se retornan
+                        //para cambiarles la fecha de vencimiento si asi corresponde
+                        $cuota_paga = $arr_deuda['cuotas'][$x];
+                        $cuota_paga['FECHA_CANCELADA'] = $fecha;
+                        $cuotas_canceladas[] = $cuota_paga;
+                        $arr_deuda['cuotas'][$x]['_INFO']['ESTADO'] = 1;
+                    }
                 }
             }
             
-            //print_r($arr_pago);die();
-            
-            ////si el capital es 0 (cuota de gracia) la cuota queda cancelada
-            //sin contar el capital.
-            if ($arr_deuda['cuotas'][$x]['CAPITAL'] == 0) {
-                if ($bgastos && $bmoratorio && $bpunitorio && $bcompensatorio && $bcapital) {
-                    $arr_deuda['cuotas'][$x]['_INFO']['ESTADO'] = 1;
-                }
-            }
-            
-            //si el capital es mayor a 0 (cuota con amortizacion de capital) la cuota queda cancelada
-            //si estan cancelados todos los items.            
-            else {
-                if ($bgastos && $bmoratorio && $bpunitorio && $bcompensatorio) {
-                    
-                    //las cuotas que han sido canceladas pagando capital se retornan
-                    //para cambiarles la fecha de vencimiento si asi corresponde
-                    $cuota_paga = $arr_deuda['cuotas'][$x];
-                    $cuota_paga['FECHA_CANCELADA'] = $fecha;
-                    $cuotas_canceladas[] = $cuota_paga;
-                    $arr_deuda['cuotas'][$x]['_INFO']['ESTADO'] = 1;
-                }
-            }
+           // print_r($arr_pago);echo $monto;die("aca");
+        } else {
+            //ajuste
+            $restante = array(
+                "ID_CREDITO" => $id_credito,
+                "FECHA" => $fecha,
+                "ID_TIPO" => PAGO_ADELANTADO,
+                "MONTO" => $monto,
+                "CUOTAS_RESTANTES" => 0,
+                "ID_VARIACION" => TEMP_ID
+            );
+
+            $arr_pago[] = $restante;
         }
         
-       // print_r($arr_pago);echo $monto;die("aca");
-
         //TIPO 10 es un monto no asignado.
         if ($monto > 0.2) {
             $restante = array(
@@ -4350,7 +4366,8 @@ ORDER BY T1.lvl DESC');
         
         //INSERCION EN BASE DE DATOS
         foreach ($arr_pago as $pago) {
-            if ((round($pago['MONTO'], 2) > 0))
+            $pago['AJUSTE'] = $ajuste;
+            if ((round($pago['MONTO'], 2) > 0) || $ajuste)
                 $this->_db->insert("fid_creditos_pagos", $pago);
         }
 
@@ -4465,13 +4482,10 @@ ORDER BY T1.lvl DESC');
                 'FECHA_CARGA' => date('Y-m-d H:i:s')
             );
 
-            $this->_db->insert("fid_creditos_ajustes", $arr);
-            return 1;
+            return $this->_db->insert("fid_creditos_ajustes", $arr);
         } else {
-            return 2;
+            return FALSE;
         }
-        
-        return FALSE;
     }
     
     function get_ajustes($fecha = FALSE) {
@@ -4485,6 +4499,10 @@ ORDER BY T1.lvl DESC');
         } else {
             return FALSE;
         }
+    }
+    
+    function eliminar_ajuste($id_ajuste) {
+        $this->_db->delete("fid_creditos_ajustes", 'ID=' . $id_ajuste);
     }
   
 }
