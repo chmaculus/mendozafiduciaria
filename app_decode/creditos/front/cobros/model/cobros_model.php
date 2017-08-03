@@ -37,10 +37,20 @@ class cobros_model extends credito_model{
     }
     
     function get_archivos_bancarios_mes(){
+        $caducados = $this->_db->get_row('fid_settings', "variable='pagos_creditos_caducados'");
+        if ($caducados && $caducados['valor']) {
+            $caducados = (int) $caducados['valor'];
+        } else {
+            $caducados = FALSE;
+        }
+        
         $this->_db->select('FECHA_RENDICION');
         $this->_db->group_by("YEAR( FROM_UNIXTIME( FECHA_RENDICION ) ) , MONTH( FROM_UNIXTIME( FECHA_RENDICION ) )");
         $this->_db->order_by("FECHA_RENDICION", "DESC");
-        $rtn = $this->_db->get_tabla("fid_creditos_bancos_cobros", 'ID_CREDITO > 0');
+        if (!$caducados) {
+            $this->_db->join("fid_creditos c", "c.ID=bc.ID_CREDITO AND c.CREDITO_ESTADO=" . ESTADO_CREDITO_NORMAL, 'inner');
+        }
+        $rtn = $this->_db->get_tabla("fid_creditos_bancos_cobros bc", 'bc.ID_CREDITO > 0');
         return $rtn;
     }
     
@@ -74,9 +84,20 @@ class cobros_model extends credito_model{
     }
     
     function get_cobros_bancos_mes($mes){
+        $caducados = $this->_db->get_row('fid_settings', "variable='pagos_creditos_caducados'");
+        if ($caducados && $caducados['valor']) {
+            $caducados = (int) $caducados['valor'];
+        } else {
+            $caducados = FALSE;
+        }
+        
         $this->_db->select("cb.*, cl.RAZON_SOCIAL");
         
-        $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID", "left");
+        if ($caducados) {
+            $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID", "inner");
+        } else {
+            $this->_db->join("fid_creditos c","cb.ID_CREDITO = c.ID AND c.CREDITO_ESTADO=" . ESTADO_CREDITO_NORMAL, "inner");
+        }
         $this->_db->join("fid_clientes cl","cl.ID = c.POSTULANTES", "left");
         $year = date('Y', $mes);
         $mes = date('m', $mes);

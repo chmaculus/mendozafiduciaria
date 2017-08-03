@@ -85,6 +85,10 @@ class cuotas extends main_controller{
         
         if ($this->mod->set_credito_active($credito_id)) {
             $monto = (float) $monto;
+            //revisar si el crédito está caducado
+            if (!$this->mod->validar_caducado()) {
+                return FALSE;
+            }
             
 //            if (!$monto || $monto <= 0) {
 //                die("-2");
@@ -1406,6 +1410,10 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                     //obtener array de cuotas
                     $this->mod->clear();
                     if ($this->mod->set_credito_active($credito_id)) {
+                        if (!$this->mod->validar_caducado()) {
+                            $err .= "El crédito $credito_id está caducado<br />";
+                            continue;
+                        }
                         $ultimo_pago = $this->mod->obtener_ultimo_pago();
                         $this->mod->set_version_active();
                         $this->mod->renew_datos();
