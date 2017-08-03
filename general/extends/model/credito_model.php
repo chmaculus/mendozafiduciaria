@@ -4454,5 +4454,20 @@ ORDER BY T1.lvl DESC');
         
         return $tasas;
     }
+    
+    function validar_caducado() {
+        $caducados = $this->_db->get_row('fid_settings', "variable='pagos_creditos_caducados'");
+        if ($caducados && $caducados['valor']) {
+            $caducados = (int) $caducados['valor'];
+        } else {
+            $caducados = FALSE;
+        }
+ 
+        if (!$caducados) {
+            return $this->_db->get_row("fid_creditos", "ID={$this->_id_credito} AND CREDITO_ESTADO=" . ESTADO_CREDITO_NORMAL);
+        } else {
+            return TRUE;
+        }
+    }
   
 }
