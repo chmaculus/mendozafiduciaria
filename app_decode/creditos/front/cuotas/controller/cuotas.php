@@ -26,6 +26,7 @@ class cuotas extends main_controller{
         
         $estado = $this->mod->get_estado_credito();
         $this->_js_var['ESTADO']  = $estado;
+        $this->_js_var['AJUSTES'] = $this->mod->get_ajustes() ? TRUE : FALSE;
         
         $datax['titulo']= "Administracion";
         $datax['name_modulo'] = $this->get_controller_name();
@@ -73,8 +74,8 @@ class cuotas extends main_controller{
     
     
     function x_set_pago(){
-        if (!$this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id'])) {
-            die('-1');
+        if (($ret_pago = $this->_x_set_pago($_POST['credito_id'], $_POST['fecha'], $_POST['monto'], $_POST['version_id'])) !== TRUE) {
+            die($ret_pago);
         }
         
         $this->mod->renew_datos();
@@ -87,7 +88,10 @@ class cuotas extends main_controller{
             $monto = (float) $monto;
             //revisar si el crédito está caducado
             if (!$this->mod->validar_caducado()) {
-                return FALSE;
+                return '-1';
+            }
+            if ($this->mod->get_ajustes()) {
+                return '-2';
             }
             
 //            if (!$monto || $monto <= 0) {
@@ -241,6 +245,10 @@ class cuotas extends main_controller{
         $this->mod->set_credito_active($credito_id);
         $version = $_POST['version_id'];
         $this->mod->set_version_active($version);
+        if ($this->mod->get_ajustes()) {
+            echo "-1";
+            return;
+        }
 
         if (!$this->_verificar_desembolsos_teoricos( false) && !$retornar){
             echo "-1";
@@ -1414,6 +1422,10 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
                             $err .= "El crédito $credito_id está caducado<br />";
                             continue;
                         }
+                        if ($this->mod->get_ajustes()) {
+                            $err .= "El crédito $credito_id tiene ajuste<br />";
+                            continue;
+                        }
                         $ultimo_pago = $this->mod->obtener_ultimo_pago();
                         $this->mod->set_version_active();
                         $this->mod->renew_datos();
@@ -1546,6 +1558,7 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $cobros = $_POST['cobros'];
 
         $fecha = time();
+        $error_ajuste = array();
         
         set_time_limit(0);
         //die();
@@ -1559,12 +1572,19 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             $vencimiento_cuota = mktime(0, 0, 0, $m, $d, $y);
 
             if ($version =$this->mod->existCredito($ID_CREDITO)) {
-                if ($this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION'])) {
+                $ret_pago = $this->_x_set_pago($ID_CREDITO, $fecha, $cobro['IMPORTE'], $version['ID_VERSION']);
+                if ($ret_pago === TRUE) {
                     $this->mod->marcar_cobro_bancario($cobro['ID'], $fecha);
+                } elseif ($ret_pago == -2) {
+                    if (!in_array($ID_CREDITO, $error_ajuste)) {
+                        $error_ajuste[] = $ID_CREDITO;
+                    }
                 }
-            } else {
-                echo "llega-----";
             }
+        }
+        
+        if (count($error_ajuste) > 0) {
+            echo 'Los siguientes créditos tienen ajustes ' . implode(', ', $error_ajuste);
         }
     }
     
@@ -1664,20 +1684,8 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $version = $_POST['version_id'];
 
         if ($this->mod->set_credito_active($id_credito)) {
-            define('CREDITO_AJUSTE', TRUE);
             $ajuste = $this->mod->agregar_ajuste($tipo, $fecha, $monto);
-            if ($ajuste) {
-                if ($tipo) {
-                    $monto = 0 - $monto;
-                }
-                if (!$this->_x_set_pago($id_credito, $fecha, $monto, $version)) {
-                    $this->mod->eliminar_ajuste($ajuste);
-                    echo '1';
-                } else {
-                    $this->mod->renew_datos();
-                    echo $this->_get_cuotas();
-                }
-            } else {
+            if (!$ajuste) {
                 echo '2';
             }
         }

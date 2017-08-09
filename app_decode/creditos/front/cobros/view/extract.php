@@ -30,7 +30,18 @@
                 <span class="importe dinero"><span><?= number_format((float) $dato['IMPORTE'], 2, ',', '.') ?></span></span>
                 <span class="importe dinero"><span ><?= number_format((float) $dato['CREDITO_IMPORTE'], 2, ',', '.') ?></span></span>
                 <span class="importe"><?= $dato['CREDITO_VENCIMIENTO'] ?></span>
-                <span class="opciones_chk"><input type="checkbox"<?= $dato['PAGADO'] ? '' : ' checked="checked"' ?><?= ((float) $dato['IMPORTE']) ? '' : ' disabled="disabled"' ?>/></span>
+                <span class="opciones_chk">
+                    <?php if ($dato['CREDITO_ESTADO'] == ESTADO_CREDITO_NORMAL) { ?>
+                    <input type="checkbox"<?= $dato['PAGADO'] ? '' : ' checked="checked"' ?><?= ((float) $dato['IMPORTE']) ? '' : ' disabled="disabled"' ?>/>
+                    <?php } else { 
+                        if ($dato['CREDITO_ESTADO'] == ESTADO_CREDITO_CANCELADO) {
+                            echo "CANCELADO";
+                        } elseif ($dato['CREDITO_ESTADO'] == ESTADO_CREDITO_CADUCADO) {
+                            echo "CADUCADO";
+                        }
+                    }
+                    ?>
+                </span>
             </li>
             <?php } ?>
         <?php } ?>

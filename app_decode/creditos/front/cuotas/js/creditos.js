@@ -125,6 +125,11 @@ function existDesembolsos(creadito_id, fecha){
 
 _cuotas.agregar_pago = function(id_credito, fecha, monto, confirm){
     confirm = confirm || false;
+    
+    if (control_ajustes()) {
+        return;
+    }
+    
     _version_change = false;
     if (!confirm){
         if (!existDesembolsos(id_credito, fecha)){
@@ -305,6 +310,9 @@ _cuotas.agregar_desembolso = function(id_credito, monto, tipo, fecha, reset, con
 };
 
 function agregar_desembolso(id_credito, monto, tipo, fecha, reset) {
+    if (control_ajustes()) {
+        return;
+    }
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $.ajax({
         url: _cuotas.URL + "/x_agregar_desembolso",
@@ -344,6 +352,9 @@ function agregar_desembolso(id_credito, monto, tipo, fecha, reset) {
 _cuotas.agregar_gasto = function(id_credito, monto, fecha, descripcion, confirm) {
     confirm = confirm || false;
     
+    if (control_ajustes()) {
+        return;
+    }
     if (existEventosPosteriores() && confirm) {
         jConfirm("¿Hay eventos posteriores, desea reimputar estos eventos? ","MENDOZA FIDUCIARIA", function(e){
             if (e){
@@ -405,6 +416,10 @@ _cuotas.agregar_cambiotasa = function(id_credito, tasa, subsidio, moratorio, pun
 }
 
 function agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fecha, reimputar) {
+    if (control_ajustes()) {
+        return;
+    }
+    
     reimputar = reimputar || false;
     $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     
@@ -437,6 +452,9 @@ function agregar_cambiotasa(id_credito, tasa, subsidio, moratorio, punitorio, fe
 
 
 function eliminar_variacion(id_variacion) {
+    if (control_ajustes()) {
+        return;
+    }
     $.ajax({
         url: _cuotas.URL + "/x_eliminar_variacion",
         data: {
@@ -792,6 +810,10 @@ function volver_desembolsos_solicitados(){
 
 function desimputar_pagos(id_credito, fecha, confirm){
     _version_change  = false;
+    
+    if (control_ajustes()) {
+        return;
+    }
 
     $.ajax({
         url: _cuotas.URL + "/x_recalcular_pago_imputaciones",
@@ -1131,9 +1153,13 @@ function credito_caido() {
 }
 
 function ajuste(tipo) {
+    if (control_ajustes()) {
+        return;
+    }
+    
     var monto = $("#txtMonto").val();
     if (monto != '' && monto > 0) {
-        jConfirm("¿Está seguro de agregar el ajuste al crédito? ", "MENDOZA FIDUCIARIA", function (e) {
+        jConfirm("El ajuste hará el cierre del crédito, impidiendo realizar otras operaciones ¿Está seguro? ", "MENDOZA FIDUCIARIA", function (e) {
             $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando ajuste</h4>'});
             var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
             $.ajax({
@@ -1147,15 +1173,12 @@ function ajuste(tipo) {
                 },
                 type: "post",
                 success: function (result) {
-                    if (result == '1') {
-                        jAlert('Hubo un inconveniente, intente nuevamente', 'MENDOZA FIDUCIARIA');
-                    } else if (result == '2') {
+                    if (result == '2') {
                         jAlert('El crédito ya tiene un ajuste cargado', 'MENDOZA FIDUCIARIA');
-                    } else {
-                        $(".div-result").html(result);
-                        $.unblockUI();
-                        _events_lista();
                     }
+                    _credito.AJUSTES = "1";
+                    $.unblockUI();
+                    _events_lista();
                 }
             });
         });

@@ -1345,7 +1345,7 @@ function _reimp_ct(id, creditos, key) {
                 dataType : "html",
                 type : "post",
                 success : function() {
-                    _reimp_ct(id, creditos, ++key);
+                    _reimp_ct(id, creditos, (key + 1));
                     if ((key + 1) == creditos.length) {
                         $.ajax({
                             async: false,

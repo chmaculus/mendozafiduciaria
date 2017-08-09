@@ -236,7 +236,9 @@ _cobros.agregar_coboros_credito = function(cobros){
         },
         type : "post",
         success : function(rtn){
-            console.log(rtn);
+            if (rtn) {
+                jAlert(rtn, 'MENDOZA FIDUCIARIA');
+            }
             $.unblockUI();
             $.fancybox.close();
         }

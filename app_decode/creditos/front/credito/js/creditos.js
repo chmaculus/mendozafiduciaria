@@ -429,6 +429,9 @@ function ver_detalle(id_evento,elem){
 }
 
 function eliminar_pago(id_evento){
+    if (control_ajustes()) {
+        return;
+    }
     
     jConfirm("¿Esta seguro de eliminar pagos?", "Eliminar pagos de créditos", function (i) {
         if (i) {
@@ -664,4 +667,13 @@ function bloq() {
 
 function ver_print(id_evento){
     window.open(_credito.URL + "/x_prints_credito/" + _credito.ID + '/' + id_evento, "credito_cuota", "width=300,height=300");
+}
+
+function control_ajustes() {
+    if (_credito.AJUSTES) {
+        jAlert("Hay un ajuste realizado, no se puede efectuar otras operaciónes","MENDOZA FIDUCIARIA");
+        return true;
+    } else {
+        return false;
+    }
 }

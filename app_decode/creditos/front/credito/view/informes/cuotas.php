@@ -320,19 +320,24 @@ foreach($cuotas as $kk=>$cuota){
             
         </div>
     </li>
-<?php } if (isset($ajuste) && $ajuste) { ?>
+<?php } if (isset($ajustes) && $ajustes) { ?>
     <li class="datos ajuste" data-id="ajuste">
         <span class="numero-desembolso"></span>
-        <span class="fecha-desembolso"><?=date("d/m/Y",$ajuste['FECHA'])?></span>
+        <span class="fecha-desembolso"><?=date("d/m/Y",$ajustes['FECHA'])?></span>
         <span class="monto-desembolso">AJUSTE</span>
         <span class="porcentaje-desembolso"></span>
         <span class="porcentaje-desembolso"></span>
-        <span class="porcentaje-desembolso">$<?=$ajuste['MONTO'] ?></span>
+        <span class="porcentaje-desembolso">$<?=abs($ajustes['MONTO']) ?> (por <?= $ajustes['MONTO'] > 0 ? 'pago' : 'cobro' ?>)</span>
     </li>
-<?php } ?>
+<?php }
+    $saldo_credito = $total_cuota_saldo+$saldo_cuota_iva;
+    if ($ajustes && $ajustes['MONTO'] < 0) {
+        $saldo_credito = round($saldo_credito - $ajustes['MONTO'], 2);
+    }
+?>
     <li class="datos totales">
         <span class="porcentaje-desembolso">SALDO TOTAL</span>
-        <span class="porcentaje-desembolso">$<?= $saldo_total = number_format($total_cuota_saldo+$saldo_cuota_iva,2) . ($total_cuota_saldo+$saldo_cuota_iva < 0 ? '(a favor)' : '')?></span>
+        <span class="porcentaje-desembolso">$<?= $saldo_total = number_format($saldo_credito,2) . ($saldo_credito < 0 ? '(a favor)' : '')?></span>
         <span class="opcion ampliar">( + )</span>
         <div class="especificaciones">
             <table width="100%">
@@ -355,8 +360,8 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_cuota_moratorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($pagado_cuota_iva_moratorio,2,",",".")?></td>
-                    <td class="dato-esp"><?=number_format($saldo_cuota_moratorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_moratorio,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_moratorio > 0 ? $saldo_cuota_moratorio : 0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_moratorio > 0 ? $saldo_cuota_iva_moratorio : 0,2,",",".")?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Interes Punitorio</td>
@@ -366,8 +371,8 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp iva"></td>
                     <td class="dato-esp"><?=number_format($pagado_cuota_punitorio,2,",",".")?></td>
                     <td class="dato-esp iva"><?=number_format($pagado_cuota_iva_punitorio,2,",",".")?></td>
-                    <td class="dato-esp"><?=number_format($saldo_cuota_punitorio,2,",",".")?></td>
-                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_punitorio,2,",",".")?></td>
+                    <td class="dato-esp"><?=number_format($saldo_cuota_punitorio > 0 ? $saldo_cuota_punitorio : 0,2,",",".")?></td>
+                    <td class="dato-esp iva"><?=number_format($saldo_cuota_iva_punitorio > 0 ? $saldo_cuota_iva_punitorio : 0,2,",",".")?></td>
                 </tr>
                 <tr>
                     <td class="titulo-esp ">Interes Compensatorio</td>
@@ -400,8 +405,8 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp total iva"><?=number_format($total_cuota_iva_subsidio,2,",",".")  ?></td>
                     <td class="dato-esp total"><?=number_format($total_cuota_pagado,2,",",".")  ?></td>
                     <td class="dato-esp total iva"><?=number_format($pagado_cuota_iva,2,",",".")  ?></td>
-                    <td class="dato-esp total"><?=number_format($total_cuota_saldo,2,",",".")  ?></td>
-                    <td class="dato-esp total iva"><?=number_format($saldo_cuota_iva,2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format($total_cuota_saldo > 0 ? $total_cuota_saldo : 0,2,",",".")  ?></td>
+                    <td class="dato-esp total iva"><?=number_format($saldo_cuota_iva > 0 ? $saldo_cuota_iva : 0,2,",",".")  ?></td>
                 </tr>
             </table>
             

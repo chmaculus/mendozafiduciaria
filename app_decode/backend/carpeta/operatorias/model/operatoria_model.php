@@ -284,7 +284,7 @@ class operatoria_model extends main_model{
         $this->_db->join("fid_creditos_eventos e", 'c.ID=e.ID_CREDITO AND TIPO=0', 'INNER');
         $this->_db->group_by('c.ID');
         $this->_db->order_by('e.FECHA', 'ASC');
-        $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID_OPERATORIA = $id AND e.FECHA <= $fecha");
+        $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID_OPERATORIA = $id AND e.FECHA <= $fecha AND CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
         
         return $rtn;
     }
@@ -299,7 +299,7 @@ class operatoria_model extends main_model{
             
             $this->_db->select("c.ID");
             $this->_db->join("fid_creditos_cambiotasas cct", 'c.ID=cct.ID_CREDITO AND cct.FECHA=' . $fecha, 'LEFT');
-            $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID IN ($_creditos) AND cct.ID_CREDITO IS NULL");
+            $rtn = $this->_db->get_tabla("fid_creditos c", "c.ID IN ($_creditos) AND cct.ID_CREDITO IS NULL AND CREDITO_ESTADO = " . ESTADO_CREDITO_NORMAL);
             
             if ($rtn) {
                 return $rtn;

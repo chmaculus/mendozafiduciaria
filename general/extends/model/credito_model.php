@@ -41,6 +41,7 @@ class credito_model extends main_model {
     var $_flag_pago_cuota_anterior = FALSE;
     var $_caducado_de = 0;
     var $_prorroga_de = 0;
+    var $_ajuste = 0;
     var $log_cuotas = -1;
     
     function clear() {
@@ -309,6 +310,23 @@ class credito_model extends main_model {
         $IVA = $this->_iva_operatoria;
 
         $fecha = !$fecha ? time() : strtotime(date("Y-m-d", $fecha)) + 86399;
+        
+        $this->_ajuste = $this->get_ajustes();
+        if ($this->_ajuste && $this->_ajuste['MONTO'] > 0) {
+            foreach ($this->_variaciones as $it) {
+                if ($it['TIPO'] == EVENTO_RECUPERO) {
+                    $_ultimo_evento = $it;
+                }
+            }
+            if ($_ultimo_evento && $_ultimo_evento['FECHA'] < $this->_ajuste['FECHA']) {
+                $this->_ajuste['FECHA'] = $_ultimo_evento['FECHA'];
+            }
+            if ($this->_ajuste['FECHA'] > $fecha) {
+                $this->_ajuste = 0;
+            }
+        } else {
+            $this->_ajuste = 0;
+        }
 
         //obtenemos gastos
         $this->_db->where("ESTADO = 0");
@@ -410,11 +428,12 @@ class credito_model extends main_model {
             
             $dif_dias = ceil(($fecha - $cuota['FECHA_VENCIMIENTO']) / (60 * 60 * 24));
             
+            $ajuste = (isset($cuota['AJUSTE']) && $cuota['AJUSTE'] > 0) ? $cuota['AJUSTE'] : 0;
             $arr_capital = array(
                 "TOTAL" => $arr_saldo['AMORTIZACION_CUOTA'],
-                "PAGOS" => $pago[PAGO_CAPITAL],
+                "PAGOS" => $pago[PAGO_CAPITAL] + $ajuste,
                 "TIPO" => 7,
-                "SALDO" => $arr_saldo['AMORTIZACION_CUOTA'] - $pago[PAGO_CAPITAL]);
+                "SALDO" => $arr_saldo['AMORTIZACION_CUOTA'] - $pago[PAGO_CAPITAL] - $ajuste);
             
             if ($cuota['ESTADO'] == 1 && false) {
                 //IVA COMPENSATORIO
@@ -1340,6 +1359,11 @@ class credito_model extends main_model {
                                     $SALDO_CUOTA -= $total;
                                 }
                                 //echo "SALDO CUOTA:<br/>AMOR:{$capital_arr['AMORTIZACION_CUOTA']} <br/>IC:$INTERES_COMPENSATORIO <br/>ICI:$IVA_INTERES_COMPENSATORIO <br/>T: $total<br/>";
+                                
+                                if ($SALDO_CUOTA > 0.2 && $this->_ajuste && $variacion['FECHA'] > $this->_ajuste['FECHA']) {
+                                    $SALDO_CUOTA -= $this->_ajuste['MONTO'];
+                                    $ajuste = $this->_ajuste['MONTO'];
+                                }
                             }
                             
                             if ($SALDO_CUOTA < 0.2) {
@@ -1575,6 +1599,7 @@ class credito_model extends main_model {
             }
             $this->_cuotas[$cuota_id]['CHILDREN'] = $ARR_CHLD;
             $this->_cuotas[$cuota_id]['DIAS_MORAS'] = $dias_moras;
+            $this->_cuotas[$cuota_id]['AJUSTE'] = isset($ajuste) ? $ajuste : 0;
             $this->_cuotas[$cuota_id]['INT_COMPENSATORIO_ACT'] = $INT_COMPENSATORIO_ACT;
             
             $this->_cuotas[$cuota_id]['FECHA_INICIO'] = $cuota['FECHA_INICIO'];
@@ -1880,6 +1905,9 @@ class credito_model extends main_model {
         
 
         if ($this->_bsave) {
+            if (isset($cuota['AJUSTE'])) {
+                unset($cuota['AJUSTE']);
+            }
             $this->_db->update("fid_creditos_cuotas", $cuota, "ID = " . $cuota_id);
         }
 
@@ -4159,7 +4187,7 @@ ORDER BY T1.lvl DESC');
             }
         }
         $data['monto'] = $pago_total;
-        $data['TIPO'] = defined('CREDITO_AJUSTE') ? EVENTO_AJUSTE : EVENTO_RECUPERO;
+        $data['TIPO'] = EVENTO_RECUPERO;
         $ret = $this->generar_evento($data, true, $fecha);
 
         $this->assign_id_evento($ret['ID'], EVENTO_RECUPERO);
@@ -4174,7 +4202,6 @@ ORDER BY T1.lvl DESC');
         //print_r($arr_deuda);
         
         $cuotas_canceladas = array();
-        $ajuste = defined('CREDITO_AJUSTE') ? TRUE : FALSE;
 
         if ($monto > 0) {
 
@@ -4333,17 +4360,7 @@ ORDER BY T1.lvl DESC');
             
            // print_r($arr_pago);echo $monto;die("aca");
         } else {
-            //ajuste
-            $restante = array(
-                "ID_CREDITO" => $id_credito,
-                "FECHA" => $fecha,
-                "ID_TIPO" => PAGO_ADELANTADO,
-                "MONTO" => $monto,
-                "CUOTAS_RESTANTES" => 0,
-                "ID_VARIACION" => TEMP_ID
-            );
-
-            $arr_pago[] = $restante;
+            return FALSE;
         }
         
         //TIPO 10 es un monto no asignado.
@@ -4366,8 +4383,7 @@ ORDER BY T1.lvl DESC');
         
         //INSERCION EN BASE DE DATOS
         foreach ($arr_pago as $pago) {
-            $pago['AJUSTE'] = $ajuste;
-            if ((round($pago['MONTO'], 2) > 0) || $ajuste)
+            if ((round($pago['MONTO'], 2) > 0))
                 $this->_db->insert("fid_creditos_pagos", $pago);
         }
 
@@ -4482,7 +4498,9 @@ ORDER BY T1.lvl DESC');
                 'FECHA_CARGA' => date('Y-m-d H:i:s')
             );
 
-            return $this->_db->insert("fid_creditos_ajustes", $arr);
+            $this->_db->insert("fid_creditos_ajustes", $arr);
+            $this->_db->update('fid_creditos', array('CREDITO_ESTADO' => ESTADO_CREDITO_CANCELADO), 'ID=' . $this->_id_credito);
+            return $this->get_ajustes();
         } else {
             return FALSE;
         }
