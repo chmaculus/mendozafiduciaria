@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `fid_cr_cont_cobranzas` (
 
 CREATE TABLE IF NOT EXISTS `fid_cr_cont_recuperos` (
   `ID_CREDITO` int(11) NOT NULL,
+  `ID_EVENTO` bigint NULL,
   `MONTO` double NOT NULL,
   `FECHA` int(11) NOT NULL,
   `FEC_OPE` datetime NOT NULL,
@@ -73,3 +74,6 @@ CREATE TABLE IF NOT EXISTS `fid_creditos_ajustes` (
   `FECHA_CARGA` datetime NOT NULL,
   KEY `ID_CREDITO` (`ID_CREDITO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `fiduciaria`.`fid_cr_cont_recuperos` ADD INDEX ( `ID_EVENTO` );

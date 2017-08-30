@@ -192,6 +192,11 @@ class sqldatasql {
         timequery();
         $res = sqlsrv_query($this->_conn, $sql);
         $this->_stack_transaction($res);
+        if ($res) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function insert($tabla, $data) {
