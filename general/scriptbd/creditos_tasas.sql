@@ -41,7 +41,7 @@ INSERT INTO `fid_roles_menu` (`ID_ROL`, `ID_MENU`) VALUES ('20', '40');
 -- `CUOTAS_RESTANTES`
 -- );
 
-ALTER TABLE `fid_clientes` ADD `ID_CLIENTE_HO` INT NOT NULL AFTER `ID` 
+ALTER TABLE `fid_clientes` ADD `ID_CLIENTE_HO` INT NOT NULL AFTER `ID`;
 
 CREATE TABLE IF NOT EXISTS `fid_cr_cont_cobranzas` (
   `ID_HO` int(11) NOT NULL,
@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS `fid_cr_cont_cobranzas` (
 
 CREATE TABLE IF NOT EXISTS `fid_cr_cont_recuperos` (
   `ID_CREDITO` int(11) NOT NULL,
+  `ID_EVENTO` bigint NULL,
   `MONTO` double NOT NULL,
   `FECHA` int(11) NOT NULL,
   `FEC_OPE` datetime NOT NULL,
@@ -73,3 +74,6 @@ CREATE TABLE IF NOT EXISTS `fid_creditos_ajustes` (
   `FECHA_CARGA` datetime NOT NULL,
   KEY `ID_CREDITO` (`ID_CREDITO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `fid_cr_cont_recuperos` ADD INDEX ( `ID_EVENTO` );

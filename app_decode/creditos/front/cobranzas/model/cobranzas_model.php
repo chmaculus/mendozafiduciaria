@@ -12,7 +12,24 @@ class cobranzas_model extends credito_model {
         if (!($this->fd = fopen('log\\' . $operacion . '_' . $fecha . '.log', 'a+'))) {
             die("No se puede crear archivo log");
         }
-        $this->_log_creditos('Se inicia el proceso de envio a facturación');
+        
+        $init = '';
+        switch ($operacion) {
+            case 'facturacion_creditos':
+                $init = 'Se inicia el proceso de envio a facturación';
+                break;
+            case '':
+                $init = 'Se inicia el proceso de paso de recuperos a contabilidad';
+                break;
+            case 'facturacion_control':
+                $init = 'Se inicia el proceso de control de reimputación';
+                break;
+            default:
+                $init = 'Se inicia el proceso: ' . $operacion;
+                break;
+        }
+        
+        $this->_log_creditos($init);
     }
 
     private function _log_creditos($msg) {
@@ -159,6 +176,7 @@ class cobranzas_model extends credito_model {
         }
 
         $_cuota = array(
+            'ID_EVENTO' => 0,
             'NUM_CREDITO' => $credito['ID'],
             'ID_FIDEICOMISO' => $credito['ID_FIDEICOMISO'],
             'ID_OPERATORIA' => $credito['ID_OPERATORIA'],
@@ -197,9 +215,30 @@ class cobranzas_model extends credito_model {
         }
     }
 
-    public function cerrar_generar_factura() {
-        echo 'Finaliza el proceso';
-        $this->_log_creditos('Se finaliza el proceso de envio para facturación');
+    public function cerrar_generar_factura($error = FALSE) {
+        if ($error)
+            $this->_log_creditos('ERROR y no finaliza el proceso de envio para facturación');
+        else
+            $this->_log_creditos('Se finaliza correctamente el proceso de envio para facturación');
+        
+        fclose($this->fd);
+    }
+
+    public function cerrar_envio_recuperos($error = FALSE) {
+        if ($error)
+            $this->_log_creditos('ERROR y no finaliza el proceso de envio de recuperos');
+        else
+            $this->_log_creditos('Se finaliza correctamente el proceso de envio de recuperos');
+        
+        fclose($this->fd);
+    }
+
+    public function cerrar_control_anulados($error = FALSE) {
+        if ($error)
+            $this->_log_creditos('ERROR y no finaliza el proceso de control de reimputación');
+        else
+            $this->_log_creditos('Se finaliza correctamente el proceso de control de reimputación');
+        
         fclose($this->fd);
     }
 
@@ -239,7 +278,7 @@ class cobranzas_model extends credito_model {
     public function get_recuperos($fecha_pago, $credito_id = FALSE) {
         $this->_db->select("c.ID, f.ID_CONTABLE AS ID_CONT_FID, ROUND(SUM(cp.MONTO), 2) as MONTO, "
                 . "cp.FECHA AS FECHA_PAGO, cr.FECHA, (SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, cp.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, "
+                . "ID_FIDEICOMISO, ID_OPERATORIA, ID_VARIACION AS ID_EVENTO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_CAPITAL . " THEN cp.MONTO ELSE 0 END) AS CAPITAL_CUOTA, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_COMPENSATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_COMPENSATORIO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_MORATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_MORATORIO, "
@@ -259,7 +298,7 @@ class cobranzas_model extends credito_model {
         $this->_db->where('CREDITO_ESTADO = ' . ESTADO_CREDITO_NORMAL);
         $this->_db->where('cr.FECHA IS NULL');
         $this->_db->where('(SELECT SUM(MONTO) FROM fid_creditos_desembolsos WHERE ID_CREDITO = c.ID) > 0');
-        $this->_db->group_by('cp.ID_CREDITO, cp.FECHA');
+        $this->_db->group_by('cp.ID_CREDITO, cp.ID_VARIACION');
         $this->_db->order_by('cp.FECHA');
         $rtn = $this->_db->get_tabla('fid_creditos c');
         
@@ -268,7 +307,7 @@ class cobranzas_model extends credito_model {
 
     public function generar_factura_r($cliente, $credito, $fecha_ope) {
         $num_cuota = $credito['TOTAL_CUOTAS'] + 1 - $credito['CUOTAS_RESTANTES'];
-        $rtn = $this->_dbsql->query("SELECT TOP 1 NUM_CREDITO FROM A_CREDITOS_CONTABLE WHERE NUM_CREDITO={$credito['ID']} AND FECHA_AAAA_PERIODO=" . date('Y', $credito['FECHA_PAGO']) . " AND FECHA_MM_PERIODO=" . date('m', $credito['FECHA_PAGO']) . " AND FECHA_DD_PERIODO=" . date('d', $credito['FECHA_PAGO']) . " AND PROCESO_R_C='R'");
+        $rtn = $this->_dbsql->query("SELECT TOP 1 NUM_CREDITO FROM A_CREDITOS_CONTABLE WHERE NUM_CREDITO={$credito['ID']} AND ID_EVENTO={$credito['ID_EVENTO']} AND PROCESO_R_C='R'");
 
         if ($rtn) {
             $this->_log_creditos("Crédito ({$credito['ID']}) C{$num_cuota} ya tiene registro de facturación");
@@ -276,6 +315,7 @@ class cobranzas_model extends credito_model {
         }
 
         $_cuota = array(
+            'ID_EVENTO' => $credito['ID_EVENTO'],
             'NUM_CREDITO' => $credito['ID'],
             'ID_FIDEICOMISO' => $credito['ID_FIDEICOMISO'],
             'ID_OPERATORIA' => $credito['ID_OPERATORIA'],
@@ -297,20 +337,52 @@ class cobranzas_model extends credito_model {
             'ESTADO_PROCESO' => 1,
             'FECHA_PROCESO' => str_replace('-', '', $fecha_ope),
         );
-
+        
+        $this->_dbsql->init();
         if ($this->_dbsql->insert('A_CREDITOS_CONTABLE', $_cuota)) {
             $id_ho = $this->_dbsql->query('SELECT MAX(ID) AS ID FROM A_CREDITOS_CONTABLE');
             $arr = array(
                 'ID_CREDITO' => $credito['ID'],
+                'ID_EVENTO' => $credito['ID_EVENTO'],
                 'MONTO' => $credito['MONTO'],
                 'FECHA' => $credito['FECHA_PAGO'],
                 'FEC_OPE' => $fecha_ope
             );
 
-            $this->_db->insert('fid_cr_cont_recuperos', $arr);
+            if (!$this->_db->insert('fid_cr_cont_recuperos', $arr)) {
+                $this->_dbsql->delete('A_CREDITOS_CONTABLE', "NUM_CREDITO={$credito['ID']} AND ID_EVENTO={$credito['ID_EVENTO']}");
+            }
         } else {
             $this->_log_creditos("Crédito ({$credito['ID']}) no pudo ser guardado en la base de datos SQL");
             return FALSE;
+        }
+    }
+    
+    public function controlar_anulados() {
+        $this->_db->select('cr.ID_EVENTO, cr.ID_CREDITO');
+        $this->_db->join("fid_creditos_pagos cp", "cr.ID_EVENTO = cp.ID_VARIACION", "left");
+        $this->_db->where('ANU=0 AND cp.ID IS NULL');
+        $this->_db->group_by('cp.ID_VARIACION');
+        $pagos_eliminados = $this->_db->get_tabla('fid_cr_cont_recuperos cr');
+        
+        if ($pagos_eliminados) {
+            foreach ($pagos_eliminados as $pg_el) {
+                $rtn = $this->_dbsql->query("SELECT TOP 1 ESTADO_PROCESO FROM A_CREDITOS_CONTABLE WHERE NUM_CREDITO={$pg_el['ID_CREDITO']} AND ID_EVENTO={$pg_el['ID_EVENTO']} AND PROCESO_R_C='R'");
+                
+                if ($rtn && $rtn[0]['ESTADO_PROCESO'] == 1) {
+                    //si no ha sido procesado se elimina
+                    $res = $this->_dbsql->delete("A_CREDITOS_CONTABLE", "NUM_CREDITO={$pg_el['ID_CREDITO']} AND ID_EVENTO={$pg_el['ID_EVENTO']} AND PROCESO_R_C='R'");
+                } elseif ($rtn && $rtn[0]['ESTADO_PROCESO'] == 2) {
+                    //si se ha procesado se hace un update para que se haga una NC
+                    $res = $this->_dbsql->update("A_CREDITOS_CONTABLE", array('ESTADO_PROCESO' =>9),  "NUM_CREDITO={$pg_el['ID_CREDITO']} AND ID_EVENTO={$pg_el['ID_EVENTO']} AND PROCESO_R_C='R'");
+                } else {
+                    $res = TRUE;
+                }
+                
+                if ($res) {
+                    $this->_db->update('fid_cr_cont_recuperos', array('ANU' => TRUE), "ID_CREDITO={$pg_el['ID_CREDITO']} AND ID_EVENTO={$pg_el['ID_EVENTO']}");
+                }
+            }
         }
     }
     
@@ -318,6 +390,27 @@ class cobranzas_model extends credito_model {
         echo "\n" . 'Finaliza el proceso de recibos';
         $this->_log_creditos('Se finaliza el proceso de envio para recibos');
         fclose($this->fd);
+    }
+    
+    public function control_proceso_creditos($todo) {
+        $rtn = $this->_dbsql->query("SELECT TOP 1 * FROM A_CREDITOS_PROCESOS");
+        if ($rtn) {
+            $rtn = $rtn[0];
+            if ($rtn['CONTABILIDAD']) {
+                return FALSE;
+            }
+            if ($todo && $rtn['CREDITO']) {
+                return FALSE;
+            }
+            $this->_dbsql->query("UPDATE A_CREDITOS_PROCESOS SET CREDITO=1");
+            return TRUE;
+        }
+        
+        return FALSE;
+    }
+    
+    public function finalizar_proceso_creditos() {
+        $rtn = $this->_dbsql->query("UPDATE A_CREDITOS_PROCESOS SET CREDITO=0");
     }
 
 }

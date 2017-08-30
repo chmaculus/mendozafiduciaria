@@ -88,18 +88,49 @@ class cobranzas extends main_controller {
     
     function init_hoy() {
         set_time_limit(0);
-        $fecha = strtotime(date('Y-m-d')) - (24 * 3600); //cambiar por fecha actual
+        
+        if (!$this->mod->control_proceso_creditos(1)) {
+            die('Otra operación está activo');
+        }
+        
+        $fecha_proceso = strtotime(date('Y-m-d')) - (24 * 3600); //cambiar por fecha actual
         $fecha_operacion = date('Y-m-d H:i:s');
         
+        try {
+            $this->_envio_facturacion($fecha_operacion, $fecha_proceso);
+        } catch (Exception $ex) {
+            $this->mod->cerrar_generar_factura(TRUE);
+        }
+        
+        try {
+            $this->_envio_recuperos($fecha_operacion, $fecha_proceso);
+        } catch (Exception $ex) {
+            $this->mod->cerrar_envio_recuperos(TRUE);
+        }
+        
+        try {
+            $this->_control_anulados($fecha_operacion);
+        } catch (Exception $ex) {
+            $this->mod->cerrar_control_anulados(TRUE);
+        }
+        
+        echo "Finalizan procesos";
+        $this->mod->finalizar_proceso_creditos();
+    }
+    
+    private function _envio_facturacion($fecha_operacion, $fecha_proceso) {
+        
         $this->mod->init_log('facturacion_creditos', $fecha_operacion);
-        $creditos = $this->mod->get_cuotas_a_facturar_hoy($fecha);
+        $creditos = $this->mod->get_cuotas_a_facturar_hoy($fecha_proceso);
         if ($creditos) {
             foreach ($creditos as $credito) {
                 $this->mod->generar_factura_c($credito, $fecha_operacion);
             }
         }
         $this->mod->cerrar_generar_factura();
-        
+    }
+    
+    private function _envio_recuperos($fecha_operacion, $fecha_proceso) {
         $this->mod->init_log('facturacion_recuperos', $fecha_operacion);
         $fecha_pago = strtotime('2016-12-15');
         $creditos = $this->mod->get_creditos_pagos($fecha_pago);
@@ -113,8 +144,16 @@ class cobranzas extends main_controller {
                         }
                     }
                 }
+                break;
             }
         }
+        $this->mod->cerrar_envio_recuperos();
+    }
+    
+    private function _control_anulados($fecha_operacion) {
+        $this->mod->init_log('facturacion_control', $fecha_operacion);
+        $this->mod->controlar_anulados();
+        $this->mod->cerrar_control_anulados();
     }
 
     function facturados_json() {
