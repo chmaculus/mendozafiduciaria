@@ -90,6 +90,7 @@ class cobranzas extends main_controller {
         set_time_limit(0);
         
         if (!$this->mod->control_proceso_creditos(1)) {
+            $this->mod->finalizar_proceso_creditos();
             die('Otra operación está activo');
         }
         
