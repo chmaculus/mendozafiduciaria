@@ -100,7 +100,7 @@ class cobranzas_model extends credito_model {
 
     public function _get_cuotas_a_facturar($credito_id = FALSE) {
         $this->_db->select("c.ID, c.IVA, POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, ifnull(o.NOMBRE,' - ') as OPERATORIA, cc.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, cc.FECHA_INICIO, FECHA_VENCIMIENTO, "
+                . "ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, cc.FECHA_INICIO, FECHA_VENCIMIENTO, c.ID_CLIENTE_HO, "
                 . "cc.CAPITAL_CUOTA, cc.INT_COMPENSATORIO, cc.INT_COMPENSATORIO_IVA, cc.INT_COMPENSATORIO_SUBSIDIO, cc.INT_MORATORIO, cc.INT_PUNITORIO, "
                 . "(SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, FROM_UNIXTIME(FECHA_VENCIMIENTO) AS FECHA_V_U");
         $this->_db->join("fid_operatorias o", "o.ID = c.ID_OPERATORIA", "left");
@@ -113,6 +113,7 @@ class cobranzas_model extends credito_model {
         }
         $this->_db->where('CREDITO_ESTADO = ' . ESTADO_CREDITO_NORMAL);
         $this->_db->where('cf.CUOTAS_RESTANTES IS NULL');
+        $this->_db->where('c.ID_CLIENTE_HO > 0');
         $this->_db->where('(SELECT SUM(MONTO) FROM fid_creditos_desembolsos WHERE ID_CREDITO = c.ID) > 0');
         $this->_db->group_by('cc.ID_CREDITO');
         $this->_db->order_by('POSTULANTES_NOMBRES');
@@ -151,11 +152,6 @@ class cobranzas_model extends credito_model {
     }
 
     public function generar_factura_c($credito, $fecha) {
-        if (!($result = $this->getCliente($credito))) {
-            return FALSE;
-        }
-        $id_cliente = $result['id_cliente'];
-        $id_cliente_ho = $result['id_cliente_ho'];
 
         $num_cuota = $credito['TOTAL_CUOTAS'] + 1 - $credito['CUOTAS_RESTANTES'];
         $rtn = $this->_dbsql->query("SELECT TOP 1 NUM_CREDITO FROM A_CREDITOS_CONTABLE WHERE NUM_CREDITO={$credito['ID']} AND CUOTA={$num_cuota} AND PROCESO_R_C='C'");
@@ -180,8 +176,8 @@ class cobranzas_model extends credito_model {
             'NUM_CREDITO' => $credito['ID'],
             'ID_FIDEICOMISO' => $credito['ID_FIDEICOMISO'],
             'ID_OPERATORIA' => $credito['ID_OPERATORIA'],
-            'ID_CLIENTE_CREDITOS' => $id_cliente,
-            'ID_CLIENTE_HO' => $id_cliente_ho,
+            'ID_CLIENTE_CREDITOS' => $this->_getClienteFromHO($credito['ID_CLIENTE_HO']),
+            'ID_CLIENTE_HO' => $credito['ID_CLIENTE_HO'],
             'CUOTA' => $num_cuota,
             'FECHA_AAAA_PERIODO' => date('Y', $credito['FECHA_VENCIMIENTO']),
             'FECHA_MM_PERIODO' => date('m', $credito['FECHA_VENCIMIENTO']),
@@ -264,11 +260,31 @@ class cobranzas_model extends credito_model {
         return FALSE;
     }
     
+    public function set_creditos_clientes_HO() {
+        $this->_db->select("c.ID, c.POSTULANTES, c.POSTULANTES_CUIT AS CUIT, f.ID_CONTABLE AS ID_CONT_FID");
+        $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
+        $this->_db->where('CREDITO_ESTADO = ' . ESTADO_CREDITO_NORMAL);
+        $this->_db->where('c.ID > 0');
+        $this->_db->where('ID_CLIENTE_HO <= 0 AND ID_CLIENTE_HO > -' . strtotime(date('Y-m-d')));
+        $creditos = $this->_db->get_tabla('fid_creditos c');
+        
+        foreach ($creditos as $credito) {
+            if ($cliente = $this->getCliente($credito)) {
+                $this->_db->update('fid_creditos', array('ID_CLIENTE_HO' => $cliente['id_cliente_ho']), 'ID=' . $credito['ID']);
+            } else {
+                $this->_db->update('fid_creditos', array('ID_CLIENTE_HO' => 0 - strtotime(date('Y-m-d'))), 'ID=' . $credito['ID']);
+            }
+        }
+        return TRUE;
+    }
+    
     public function get_creditos_pagos($fecha_pago) {
-        $this->_db->select("c.ID, c.POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, f.ID_CONTABLE AS ID_CONT_FID");
+        $this->_db->select("c.ID, c.POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, f.ID_CONTABLE AS ID_CONT_FID, ID_CLIENTE_HO");
         $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
         $this->_db->join('fid_creditos_pagos cp', "cp.ID_CREDITO = c.ID AND cp.FECHA < '$fecha_pago'");
         $this->_db->join("fid_cr_cont_recuperos cr", "cr.ID_CREDITO = c.ID AND cr.FECHA = cp.FECHA AND cr.ANU=0", "left");
+        $this->_db->where('CREDITO_ESTADO = ' . ESTADO_CREDITO_NORMAL);
+        $this->_db->where('ID_CLIENTE_HO > 0');
         $this->_db->where('cr.FECHA IS NULL');
         $this->_db->group_by('cp.ID_CREDITO');
         $this->_db->order_by('cp.FECHA');
@@ -278,7 +294,7 @@ class cobranzas_model extends credito_model {
     public function get_recuperos($fecha_pago, $credito_id = FALSE) {
         $this->_db->select("c.ID, f.ID_CONTABLE AS ID_CONT_FID, ROUND(SUM(cp.MONTO), 2) as MONTO, "
                 . "cp.FECHA AS FECHA_PAGO, cr.FECHA, (SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, cp.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, ID_VARIACION AS ID_EVENTO, "
+                . "ID_FIDEICOMISO, ID_OPERATORIA, ID_VARIACION AS ID_EVENTO, ID_CLIENTE_HO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_CAPITAL . " THEN cp.MONTO ELSE 0 END) AS CAPITAL_CUOTA, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_COMPENSATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_COMPENSATORIO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_MORATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_MORATORIO, "
@@ -305,7 +321,7 @@ class cobranzas_model extends credito_model {
         return $rtn;
     }
 
-    public function generar_factura_r($cliente, $credito, $fecha_ope) {
+    public function generar_factura_r($credito, $fecha_ope) {
         $num_cuota = $credito['TOTAL_CUOTAS'] + 1 - $credito['CUOTAS_RESTANTES'];
         $rtn = $this->_dbsql->query("SELECT TOP 1 NUM_CREDITO FROM A_CREDITOS_CONTABLE WHERE NUM_CREDITO={$credito['ID']} AND ID_EVENTO={$credito['ID_EVENTO']} AND PROCESO_R_C='R'");
 
@@ -319,8 +335,8 @@ class cobranzas_model extends credito_model {
             'NUM_CREDITO' => $credito['ID'],
             'ID_FIDEICOMISO' => $credito['ID_FIDEICOMISO'],
             'ID_OPERATORIA' => $credito['ID_OPERATORIA'],
-            'ID_CLIENTE_CREDITOS' => $cliente['id_cliente'],
-            'ID_CLIENTE_HO' => $cliente['id_cliente_ho'],
+            'ID_CLIENTE_CREDITOS' => $this->_getClienteFromHO($credito['ID_CLIENTE_HO']),
+            'ID_CLIENTE_HO' => $credito['ID_CLIENTE_HO'],
             'CUOTA' => $num_cuota,
             'FECHA_AAAA_PERIODO' => date('Y', $credito['FECHA_PAGO']),
             'FECHA_MM_PERIODO' => date('m', $credito['FECHA_PAGO']),
@@ -411,6 +427,17 @@ class cobranzas_model extends credito_model {
     
     public function finalizar_proceso_creditos() {
         $rtn = $this->_dbsql->query("UPDATE A_CREDITOS_PROCESOS SET CREDITO=0");
+    }
+    
+    private function _getClienteFromHO($idClienteHO) {
+        $this->_db->select('ID');
+        $this->_db->where("ID_CLIENTE_HO=" . $idClienteHO);
+        $id_cliente = $this->_db->get_tabla("fid_clientes");
+        if ($id_cliente) {
+            return $id_cliente[0]['ID'];
+        } else {
+            return 0;
+        }
     }
 
 }

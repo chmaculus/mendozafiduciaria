@@ -86,7 +86,7 @@ class cobranzas extends main_controller {
         die;
     }
     
-    function init_hoy() {
+    function init_hoy($fecha_ini = NULL, $fecha_fin = NULL) {
         set_time_limit(0);
         
         if (!$this->mod->control_proceso_creditos(1)) {
@@ -95,20 +95,38 @@ class cobranzas extends main_controller {
         }
         
         $fecha_proceso = strtotime(date('Y-m-d')) - (24 * 3600); //cambiar por fecha actual
-        $fecha_operacion = date('Y-m-d H:i:s');
+        $fecha_operacion = date('Y-m-d H:i:s'); //fecha cdo se hace el proceso
+        $fecha_ini = strtotime($fecha_ini);
+        $fecha_fin = strtotime($fecha_fin);
         
-        try {
-            $this->_envio_facturacion($fecha_operacion, $fecha_proceso);
-        } catch (Exception $ex) {
-            $this->mod->cerrar_generar_factura(TRUE);
+        if (!($fecha_ini && $fecha_fin && $fecha_ini < $fecha_fin)) {
+            $fecha_fin = $fecha_ini = $fecha_proceso;
         }
+            
+        try {
+            $this->mod->set_creditos_clientes_HO();
+        } catch (Exception $ex) {
+            $this->mod->cerrar_set_creditos_clientes_HO(TRUE);
+        }
+        
+        do {
+            $fecha_proceso = $fecha_ini;
+        
+            try {
+                $this->_envio_facturacion($fecha_operacion, $fecha_proceso);
+            } catch (Exception $ex) {
+                $this->mod->cerrar_generar_factura(TRUE);
+            }
+                    
+            $fecha_ini += (24 * 3600);
+        } while ($fecha_ini < $fecha_fin);
         
         try {
             $this->_envio_recuperos($fecha_operacion, $fecha_proceso);
         } catch (Exception $ex) {
             $this->mod->cerrar_envio_recuperos(TRUE);
         }
-        
+
         try {
             $this->_control_anulados($fecha_operacion);
         } catch (Exception $ex) {
@@ -133,19 +151,14 @@ class cobranzas extends main_controller {
     
     private function _envio_recuperos($fecha_operacion, $fecha_proceso) {
         $this->mod->init_log('facturacion_recuperos', $fecha_operacion);
-        $fecha_pago = strtotime('2016-12-15');
-        $creditos = $this->mod->get_creditos_pagos($fecha_pago);
-        if ($creditos) {
+        
+        if ($creditos = $this->mod->get_creditos_pagos($fecha_proceso)) {
             foreach ($creditos as $credito) {
-                if ($cliente = $this->mod->getCliente($credito, $fecha_pago, $fecha_operacion)) {
-                    if ($_creditos = $this->mod->get_recuperos($fecha_pago, $credito['ID'])) {
-                        //print_r($_creditos);die;
-                        foreach ($_creditos as $_credito) {
-                            $this->mod->generar_factura_r($cliente, $_credito, $fecha_operacion);
-                        }
+                if ($_creditos = $this->mod->get_recuperos($fecha_proceso, $credito['ID'])) {
+                    foreach ($_creditos as $_credito) {
+                        $this->mod->generar_factura_r($_credito, $fecha_operacion);
                     }
                 }
-                break;
             }
         }
         $this->mod->cerrar_envio_recuperos();

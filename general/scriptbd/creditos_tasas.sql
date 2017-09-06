@@ -77,3 +77,5 @@ CREATE TABLE IF NOT EXISTS `fid_creditos_ajustes` (
 
 
 ALTER TABLE `fid_cr_cont_recuperos` ADD INDEX ( `ID_EVENTO` );
+
+ALTER TABLE `fid_creditos` ADD `ID_CLIENTE_HO` INT NOT NULL AFTER `ID_OPERATORIA`;

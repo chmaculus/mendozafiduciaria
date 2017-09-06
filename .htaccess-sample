@@ -6,7 +6,7 @@ Options +SymLinksIfOwnerMatch
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
 
-RewriteBase /fiduciaria.dev
+RewriteBase /fideicomiso
 
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
