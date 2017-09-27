@@ -100,11 +100,11 @@ class cobranzas_model extends credito_model {
 
     public function _get_cuotas_a_facturar($credito_id = FALSE) {
         $this->_db->select("c.ID, c.IVA, POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, ifnull(o.NOMBRE,' - ') as OPERATORIA, cc.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, cc.FECHA_INICIO, FECHA_VENCIMIENTO, c.ID_CLIENTE_HO, "
+                . "f.ID_CONTABLE AS ID_FIDEICOMISO, ID_OPERATORIA, POSTULANTES, f.ID_CONTABLE AS ID_CONT_FID, cc.FECHA_INICIO, FECHA_VENCIMIENTO, c.ID_CLIENTE_HO, "
                 . "cc.CAPITAL_CUOTA, cc.INT_COMPENSATORIO, cc.INT_COMPENSATORIO_IVA, cc.INT_COMPENSATORIO_SUBSIDIO, cc.INT_MORATORIO, cc.INT_PUNITORIO, "
                 . "(SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, FROM_UNIXTIME(FECHA_VENCIMIENTO) AS FECHA_V_U");
         $this->_db->join("fid_operatorias o", "o.ID = c.ID_OPERATORIA", "left");
-        $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
+        $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO AND f.ID_CONTABLE > 0", "inner");
         $this->_db->join("fid_cr_cont_cobranzas cf", "cf.ID_CREDITO = c.ID AND cc.CUOTAS_RESTANTES = cf.CUOTAS_RESTANTES", "left");
         if ($credito_id) {
             $this->_db->where('c.ID = ' . $credito_id);
@@ -278,6 +278,18 @@ class cobranzas_model extends credito_model {
         return TRUE;
     }
     
+    public function set_otros_clientes_HO() {
+        $this->_db->select("0 AS ID, ID AS POSTULANTES, CUIT, 0 AS ID_CONT_FID, RAZON_SOCIAL");
+        $this->_db->where('ID_CLIENTE_HO = 0');
+        $clientes = $this->_db->get_tabla('fid_clientes c');
+        
+        foreach ($clientes as $cli) {
+            print_r($cli);
+            $this->getCliente($cli);
+        }
+        return TRUE;
+    }
+    
     public function get_creditos_pagos($fecha_pago) {
         $this->_db->select("c.ID, c.POSTULANTES, POSTULANTES_NOMBRES, POSTULANTES_CUIT AS CUIT, f.ID_CONTABLE AS ID_CONT_FID, ID_CLIENTE_HO");
         $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
@@ -294,7 +306,7 @@ class cobranzas_model extends credito_model {
     public function get_recuperos($fecha_pago, $credito_id = FALSE) {
         $this->_db->select("c.ID, f.ID_CONTABLE AS ID_CONT_FID, ROUND(SUM(cp.MONTO), 2) as MONTO, "
                 . "cp.FECHA AS FECHA_PAGO, cr.FECHA, (SELECT MAX(CUOTAS_RESTANTES) FROM fid_creditos_cuotas WHERE ID_CREDITO = c.ID) AS TOTAL_CUOTAS, cp.CUOTAS_RESTANTES, "
-                . "ID_FIDEICOMISO, ID_OPERATORIA, ID_VARIACION AS ID_EVENTO, ID_CLIENTE_HO, "
+                . "f.ID_CONTABLE AS ID_FIDEICOMISO, ID_OPERATORIA, ID_VARIACION AS ID_EVENTO, ID_CLIENTE_HO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_CAPITAL . " THEN cp.MONTO ELSE 0 END) AS CAPITAL_CUOTA, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_COMPENSATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_COMPENSATORIO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_MORATORIO . " THEN cp.MONTO ELSE 0 END) AS INT_MORATORIO, "
@@ -303,7 +315,7 @@ class cobranzas_model extends credito_model {
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_IVA_MORATORIO . " THEN cp.MONTO ELSE 0 END) AS IVA_MORATORIO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_IVA_PUNITORIO . " THEN cp.MONTO ELSE 0 END) AS IVA_PUNITORIO, "
                 . "SUM(CASE WHEN cp.ID_TIPO = " . PAGO_GASTOS . " THEN cp.MONTO ELSE 0 END) AS GASTOS");
-        $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO", "inner");
+        $this->_db->join("fid_fideicomiso f", "f.ID = c.ID_FIDEICOMISO AND ID_CONTABLE > 0", "inner");
         $this->_db->join('fid_creditos_pagos cp', "cp.ID_CREDITO = c.ID AND cp.FECHA < '$fecha_pago'");
         $this->_db->join("fid_cr_cont_recuperos cr", "cr.ID_CREDITO = c.ID AND cr.FECHA = cp.FECHA AND cr.ANU=0", "left");
         if ($credito_id) {
@@ -365,9 +377,24 @@ class cobranzas_model extends credito_model {
                 'FEC_OPE' => $fecha_ope
             );
 
-            if (!$this->_db->insert('fid_cr_cont_recuperos', $arr)) {
-                $this->_dbsql->delete('A_CREDITOS_CONTABLE', "NUM_CREDITO={$credito['ID']} AND ID_EVENTO={$credito['ID_EVENTO']}");
-            }
+            $this->_db->insert('fid_cr_cont_recuperos', $arr);
+            
+            $arr = array(
+                'ID_CONTABLE' => $id_ho[0]['ID'],
+                'ID_CREDITO' => $credito['ID'],
+                'MEDIO_COBRO' => 'E',
+                'IMPORTE' => $credito['MONTO'],
+                'FECHA' => date('Ymd H:i', $credito['FECHA_PAGO']),
+                'ID_BANCO' => 0,
+                'ID_CTA' => 0,
+                'NUMERO_COMP' => 0,
+                //'FECHA_EMI_COMP' => NULL,
+                //'FECHA_VEN_COMP' => NULL,
+                'LIBRADOR' => '',
+                'OBSERVACION' => ''
+            );
+            $this->_dbsql->insert('A_CREDITO_CONTABLE_COBROS', $arr);
+            
         } else {
             $this->_log_creditos("Crédito ({$credito['ID']}) no pudo ser guardado en la base de datos SQL");
             return FALSE;

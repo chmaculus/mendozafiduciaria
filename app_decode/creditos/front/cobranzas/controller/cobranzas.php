@@ -188,5 +188,10 @@ class cobranzas extends main_controller {
             }
         }
     }
+    
+    function init_clientes() {
+        set_time_limit(0);
+        $this->mod->set_otros_clientes_HO();
+    }
 
 }
