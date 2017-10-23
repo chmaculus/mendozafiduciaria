@@ -1354,10 +1354,13 @@ class credito_model extends main_model {
                                 $SALDO_CUOTA += $INTERES_COMPENSATORIO + $IVA_INTERES_COMPENSATORIO;
                                 
                                 if ($this->_actualizacion_compensatorios) {
-                                    $SALDO_CUOTA -= $AMOR_REAL_ACT;
-                                } else {
-                                    $SALDO_CUOTA -= $total;
+                                    $variacion_inicial = reset($this->_variaciones);                  
+                                    if (($cantidad_cuotas - $cuota['CUOTAS_RESTANTES']) >= $variacion_inicial['CUOTAS_GRACIA']) {
+                                        $total = $AMOR_REAL_ACT;//$total
+                                    }
                                 }
+                                
+                                $SALDO_CUOTA -= $total;
                                 //echo "SALDO CUOTA:<br/>AMOR:{$capital_arr['AMORTIZACION_CUOTA']} <br/>IC:$INTERES_COMPENSATORIO <br/>ICI:$IVA_INTERES_COMPENSATORIO <br/>T: $total<br/>";
                                 
                                 if ($SALDO_CUOTA > 0.2 && $this->_ajuste && $variacion['FECHA'] > $this->_ajuste['FECHA']) {
@@ -4224,7 +4227,10 @@ ORDER BY T1.lvl DESC');
 
             //pagamos cuotas
             for ($x = 0; $x < count($arr_deuda['cuotas']); $x++) {
-
+                if (isset($arr_deuda['cuotas'][$x]['_INFO']['SALDO_CUOTA']) && $arr_deuda['cuotas'][$x]['_INFO']['SALDO_CUOTA'] <= 0) {
+                    continue;
+                }
+                
 
                 foreach ($arr_deuda['gastos'] as $key => $val) {
                     if ($val['ROW']['FECHA'] <= $arr_deuda['cuotas'][$x]['_INFO']['HASTA']) {
@@ -4267,7 +4273,7 @@ ORDER BY T1.lvl DESC');
 
                 unset($arr_deuda['cuotas'][$x]['GASTOS']);
                 $cuota = $arr_deuda['cuotas'][$x];
-
+                
                 $bmoratorio = false;
                 $bpunitorio = false;
                 $bcompensatorio = false;

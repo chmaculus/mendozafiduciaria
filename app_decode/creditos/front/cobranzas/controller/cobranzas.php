@@ -99,7 +99,7 @@ class cobranzas extends main_controller {
         $fecha_ini = strtotime($fecha_ini);
         $fecha_fin = strtotime($fecha_fin);
         
-        if (!($fecha_ini && $fecha_fin && $fecha_ini < $fecha_fin)) {
+        if (!($fecha_ini && $fecha_fin && $fecha_ini <= $fecha_fin)) {
             $fecha_fin = $fecha_ini = $fecha_proceso;
         }
             
