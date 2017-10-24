@@ -1160,27 +1160,38 @@ function ajuste(tipo) {
     var monto = $("#txtMonto").val();
     if (monto != '' && monto > 0) {
         jConfirm("El ajuste hará el cierre del crédito, impidiendo realizar otras operaciones ¿Está seguro? ", "MENDOZA FIDUCIARIA", function (e) {
-            $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando ajuste</h4>'});
-            var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
-            $.ajax({
-                url: _cuotas.URL + "/x_ajuste",
-                data: {
-                    fecha: fecha,
-                    monto: monto,
-                    tipo: tipo, //0 cobro, 1 pago
-                    version_id: _version_id || 0,
-                    id_credito: _cuotas.ID_CREDITO
-                },
-                type: "post",
-                success: function (result) {
-                    if (result == '2') {
-                        jAlert('El crédito ya tiene un ajuste cargado', 'MENDOZA FIDUCIARIA');
+            if (e) {
+                $.blockUI({message: '<h4><img src="general/images/block-loader.gif" /> Procesando ajuste</h4>'});
+                var fecha = $.datepicker.formatDate('@', $("#txtFecha").datepicker("getDate")) / 1000;
+                $.ajax({
+                    url: _cuotas.URL + "/x_ajuste",
+                    data: {
+                        fecha: fecha,
+                        monto: monto,
+                        tipo: tipo, //0 cobro, 1 pago
+                        version_id: _version_id || 0,
+                        id_credito: _cuotas.ID_CREDITO
+                    },
+                    type: "post",
+                    success: function (result) {
+                        $.unblockUI();
+                        switch(result) {
+                            case '2':
+                                jAlert('El crédito ya tiene un ajuste cargado', 'MENDOZA FIDUCIARIA');
+                                break;
+                            case '3':
+                                jAlert('El tipo de ajuste ingresado es incorrecto', 'MENDOZA FIDUCIARIA');
+                                return;
+                                break;
+                            case '4':
+                                jAlert('El monto de ajuste ingresado es incorrecto', 'MENDOZA FIDUCIARIA');
+                                return;
+                                break;
+                        }
+                        location.href="creditos/front/credito/init/" + _cuotas.ID_CREDITO + "/1";
                     }
-                    _credito.AJUSTES = "1";
-                    $.unblockUI();
-                    _events_lista();
-                }
-            });
+                });
+            }
         });
     } else {
         $("#txtMonto").focus();

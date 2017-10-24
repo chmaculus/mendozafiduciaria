@@ -222,6 +222,7 @@ function generar_cuotas(){
 }
 
 function _generar_cuotas(simulacion){
+    $.blockUI({ message: '<h4><img src="general/images/block-loader.gif" /> Procesando</h4>' });
     $("#txtMonto").removeClass("error");
     $("#txtCantidadCuotasGracia").removeClass("error");
     $("#txtCreditoID-opc").removeClass("error");
@@ -368,9 +369,11 @@ function _generar_cuotas(simulacion){
                                 }
                             }
                         });
+                        $.unblockUI();
                     }
                 });
             } else {
+                $.unblockUI();
                 $(".div-result").html(data);
                 if ($("#credito_caduca").val()) {
                     jAlert("El credito ha sido caducado y emitido uno nuevo correctamente","Error en generacion de Credito", function(){

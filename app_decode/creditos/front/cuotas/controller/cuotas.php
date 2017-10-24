@@ -1682,11 +1682,49 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
         $fecha = $_POST['fecha'];
         $tipo = $_POST['tipo'];
         $version = $_POST['version_id'];
-
+        
         if ($this->mod->set_credito_active($id_credito)) {
+            //ver acá si
+            if ($this->mod->get_ajustes()) {
+                die('2');
+            }
+            $this->mod->set_version_active($version);
+            $this->mod->set_fecha_actual($fecha);
+            $this->mod->renew_datos();
+        
+            $ret_reduda = $this->mod->get_deuda($fecha);
+            
+            $saldo = 0;
+            foreach ($ret_reduda['cuotas'] as $kc => $cuota) {
+                $_saldo = (isset($cuota['GASTOS']['SALDO']) && $cuota['GASTOS']['SALDO'] > 0) ? $cuota['GASTOS']['SALDO'] : 0;
+                $_saldo += ($cuota['GASTOS_VARIOS']['SALDO'] > 0) ? $cuota['GASTOS_VARIOS']['SALDO'] : 0;
+                $_saldo += ($cuota['IVA_GASTOS']['SALDO'] > 0) ? $cuota['IVA_GASTOS']['SALDO'] : 0;
+                $_saldo += ($cuota['IVA_PUNITORIO']['SALDO'] > 0) ? $cuota['IVA_PUNITORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['IVA_MORATORIO']['SALDO'] > 0) ? $cuota['IVA_MORATORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['PUNITORIO']['SALDO'] > 0) ? $cuota['PUNITORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['MORATORIO']['SALDO'] > 0) ? $cuota['MORATORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['IVA_COMPENSATORIO']['SALDO'] > 0) ? $cuota['IVA_COMPENSATORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['COMPENSATORIO']['SALDO'] > 0) ? $cuota['COMPENSATORIO']['SALDO'] : 0;
+                $_saldo += ($cuota['CAPITAL']['SALDO'] > 0) ? $cuota['CAPITAL']['SALDO'] : 0;
+                
+                $saldo += $_saldo > 0.2 ? $_saldo : 0;
+            }
+            
+            $saldo -= isset($cuota['ADELANTO']) ? $cuota['ADELANTO'] : 0;
+            
+            $saldo =  round($saldo, 2);
+            
+            if ($saldo < 0 && $tipo == 1) {
+                die('3');
+            } elseif ($saldo > 0 && $tipo == 0) {
+                die('3');
+            } elseif (abs($saldo) != $monto) {
+                die('4');
+            }
+            
             $ajuste = $this->mod->agregar_ajuste($tipo, $fecha, $monto);
             if (!$ajuste) {
-                echo '2';
+                die('2');
             }
         }
         die;

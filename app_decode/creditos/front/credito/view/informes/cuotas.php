@@ -303,7 +303,7 @@ foreach($cuotas as $kk=>$cuota){
                     <td class="dato-esp total iva"><?=number_format($iva_subsidiado,2,",",".")  ?></td>
                     <td class="dato-esp total"><?=number_format($total_pagado,2,",",".")  ?></td>
                     <td class="dato-esp total iva"><?=number_format($iva_pagado,2,",",".")  ?></td>
-                    <td class="dato-esp total"><?=number_format(abs(round($total_saldo,2)),2,",",".")  ?></td>
+                    <td class="dato-esp total"><?=number_format(($total_saldo > 0 ? round($total_saldo,2) : 0),2,",",".")  ?></td>
                     <td class="dato-esp total iva"><?=number_format(abs(round($iva_saldo,2)),2,",",".")  ?></td>
                 </tr>
                 <tr class="totales-cuota-c">
@@ -333,6 +333,10 @@ foreach($cuotas as $kk=>$cuota){
     $saldo_credito = $total_cuota_saldo+$saldo_cuota_iva;
     if ($ajustes && $ajustes['MONTO'] < 0) {
         $saldo_credito = round($saldo_credito - $ajustes['MONTO'], 2);
+    }
+    
+    if ($saldo_credito > -0.1 && $saldo_credito < 0.1) {
+        $saldo_credito = 0;
     }
 ?>
     <li class="datos totales">
