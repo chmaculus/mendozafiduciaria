@@ -1688,10 +1688,12 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             if ($this->mod->get_ajustes()) {
                 die('2');
             }
-            $this->mod->set_version_active($version);
+            $this->mod->set_version_active();
             $this->mod->set_fecha_actual($fecha);
             $this->mod->renew_datos();
-        
+            
+            $this->mod->generar_evento( array(), true, $fecha);
+            $this->mod->set_devengamiento_tipo(TIPO_DEVENGAMIENTO_FORZAR_DEVENGAMIENTO);
             $ret_reduda = $this->mod->get_deuda($fecha);
             
             $saldo = 0;
