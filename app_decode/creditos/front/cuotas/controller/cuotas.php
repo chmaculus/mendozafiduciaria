@@ -1716,12 +1716,13 @@ conforme lo establecido en el contrato de prestamo y sin perjuicio de otros dere
             
             $saldo =  round($saldo, 2);
             
-            if ($saldo < 0 && $tipo == 1) {
+            if (($saldo < 0 && $tipo == 1) || ($saldo > 0 && $tipo == 0)) {
                 die('3');
-            } elseif ($saldo > 0 && $tipo == 0) {
-                die('3');
-            } elseif (abs($saldo) != $monto) {
-                die('4');
+            } else {
+                $saldo = abs($saldo) - $monto;
+                if (!($saldo >=0 && $saldo < 0.01)) {
+                    die('4');
+                }
             }
             
             $ajuste = $this->mod->agregar_ajuste($tipo, $fecha, $monto);
