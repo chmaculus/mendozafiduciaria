@@ -1125,7 +1125,9 @@ $(document).ready(function () {
 
                     event_d_tab_left();
 
-                    $("#periodicidad").jqxNumberInput({width: '100px', height: '25px', inputMode: 'simple', spinButtons: true, decimal: 0, decimalDigits: 0, min: 0, max: 60});
+                    if ($("#periodicidad").length > 0) {
+                        $("#periodicidad").jqxNumberInput({width: '100px', height: '25px', inputMode: 'simple', spinButtons: true, decimal: 0, decimalDigits: 0, min: 0, max: 60});
+                    }
                     $("#desembolsos").jqxNumberInput({width: '100px', height: '25px', inputMode: 'simple', spinButtons: true, decimal: 0, decimalDigits: 0, min: 0, max: 60});
                     $("#devoluciones").jqxNumberInput({width: '100px', height: '25px', inputMode: 'simple', spinButtons: true, decimal: 0, decimalDigits: 0, min: 0, max: 60});
 
