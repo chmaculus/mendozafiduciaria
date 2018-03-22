@@ -88,6 +88,8 @@ class cobranzas extends main_controller {
     
     function init_hoy($fecha_ini = NULL, $fecha_fin = NULL) {
         set_time_limit(0);
+        $test_id_credito = array(1427); //2031
+        $test_id_credito = array(); //2031
         
         if (!$this->mod->control_proceso_creditos(1)) {
             $this->mod->finalizar_proceso_creditos();
@@ -113,7 +115,7 @@ class cobranzas extends main_controller {
             $fecha_proceso = $fecha_ini;
         
             try {
-                $this->_envio_facturacion($fecha_operacion, $fecha_proceso);
+                $this->_envio_facturacion($test_id_credito, $fecha_operacion, $fecha_proceso);
             } catch (Exception $ex) {
                 $this->mod->cerrar_generar_factura(TRUE);
             }
@@ -122,7 +124,7 @@ class cobranzas extends main_controller {
         } while ($fecha_ini < $fecha_fin);
         
         try {
-            $this->_envio_recuperos($fecha_operacion, $fecha_proceso);
+            $this->_envio_recuperos($test_id_credito, $fecha_operacion, $fecha_proceso);
         } catch (Exception $ex) {
             $this->mod->cerrar_envio_recuperos(TRUE);
         }
@@ -137,10 +139,9 @@ class cobranzas extends main_controller {
         $this->mod->finalizar_proceso_creditos();
     }
     
-    private function _envio_facturacion($fecha_operacion, $fecha_proceso) {
-        
+    private function _envio_facturacion($test_id_credito, $fecha_operacion, $fecha_proceso) {
         $this->mod->init_log('facturacion_creditos', $fecha_operacion);
-        $creditos = $this->mod->get_cuotas_a_facturar_hoy($fecha_proceso);
+        $creditos = $this->mod->get_cuotas_a_facturar_hoy($test_id_credito, $fecha_proceso);
         if ($creditos) {
             foreach ($creditos as $credito) {
                 $this->mod->generar_factura_c($credito, $fecha_operacion);
@@ -149,10 +150,10 @@ class cobranzas extends main_controller {
         $this->mod->cerrar_generar_factura();
     }
     
-    private function _envio_recuperos($fecha_operacion, $fecha_proceso) {
+    private function _envio_recuperos($test_id_credito, $fecha_operacion, $fecha_proceso) {
         $this->mod->init_log('facturacion_recuperos', $fecha_operacion);
         
-        if ($creditos = $this->mod->get_creditos_pagos($fecha_proceso)) {
+        if ($creditos = $this->mod->get_creditos_pagos($test_id_credito, $fecha_proceso)) {
             foreach ($creditos as $credito) {
                 if ($_creditos = $this->mod->get_recuperos($fecha_proceso, $credito['ID'])) {
                     foreach ($_creditos as $_credito) {
@@ -195,3 +196,4 @@ class cobranzas extends main_controller {
     }
 
 }
+
